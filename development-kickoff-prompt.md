@@ -4,6 +4,12 @@
 **Use Case**: When you have a complete TRD and ready to begin implementation  
 **Output**: Working implementation with tests and documentation
 
+## 🎯 Core Development Principles
+
+- **Keep it Simple**: Don't overcomplicate the solution - choose the most straightforward approach that meets requirements
+- **Provide Options**: When multiple implementation approaches are possible, present 2-3 viable options with trade-offs
+- **Avoid Feature Creep**: Only implement what's specified in the TRD - don't add extra fields or functionality
+
 ## 📋 Step 0: Create Development Checklist
 
 **Create temporary checklist file** in the same directory as the TRD:
