@@ -52,6 +52,12 @@ Collection of specialized prompts designed for AI agents to handle software deve
 **Complexity**: Complex - requires architectural analysis and cross-system integration planning
 **Output**: Adapted TRD for target system ("to-be" TRD) with migration strategy
 
+### 9. [BRD Creation with Research](brd-creation-with-research-prompt.md)
+**Purpose**: Create comprehensive BRD based on research from multiple external sources  
+**Use Case**: When you need complete business requirements analysis with context from Atlassian, GitHub, and other systems  
+**Complexity**: Medium-High - requires extensive research, analysis and stakeholder interviews
+**Output**: Complete BRD following the template with integrated external research and user interviews
+
 ## 📝 Document Templates
 
 ### Business Requirements
@@ -100,6 +106,7 @@ Collection of specialized prompts designed for AI agents to handle software deve
 | Need to automate business processes | Medium | Normal | Medium | [N8N Workflow](n8n-workflow-prompt.md) | Create automated workflows and integrations |
 | Need to understand existing feature | Medium-Complex | Normal | Low-Medium | [Existing Feature Analysis](existing-feature-analysis-prompt.md) | Reverse-engineer functionality for documentation or migration |
 | Migrate feature to different system | Complex | Normal | Low | [Feature Migration Planning](feature-migration-prompt.md) | Adapt requirements for new architecture and technology |
+| Need comprehensive BRD with research | Medium-High | Normal | Medium | [BRD Creation with Research](brd-creation-with-research-prompt.md) | Automated research from external sources plus structured interviews |
 
 ## 🚨 Emergency Procedures
 
@@ -124,6 +131,8 @@ New Product Idea → Product Development from Scratch → First TRD → Developm
 Feature Request → TRD Creation from Scratch → Development Kickoff → Implementation
 
 Business Requirements → BRD to TRD Translation → Development Kickoff → Implementation
+
+Feature Idea + External Research → BRD Creation with Research → BRD to TRD Translation → Development Kickoff → Implementation
 
 Bug/Small Feature → Quick Fix Process → Implementation (with complexity assessment)
 
