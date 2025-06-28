@@ -1,3 +1,9 @@
+# Technical Requirements Document (TRD) Template
+
+> **AI-Optimized Template**: This template is designed for AI agents to generate comprehensive technical requirements. All sections are structured for automated completion and consistency across AI-generated documentation.
+
+---
+
 # 🧠 Vision
 
 [Describe the high-level goal and value proposition of the feature. What problem does it solve and how does it benefit users?]
@@ -95,6 +101,25 @@
 - `[ServiceName]` — [service responsibility description]
 - `[ComponentName]` — [component responsibility and integration point]
 - [Processing Logic]: `[Handler1]`, `[Handler2]`, `[Handler3]`
+
+---
+
+# 🏗️ Architecture Impact
+
+### Changes to Existing Architecture
+- [What existing systems/components need to be modified]
+- [New architectural patterns being introduced]
+- [Database schema changes or migrations needed]
+
+### Affected Features
+- **[Feature 1]**: [how it will be impacted] → [required changes]
+- **[Feature 2]**: [potential conflicts] → [resolution approach]
+- **[Feature 3]**: [integration points] → [coordination needed]
+
+### Future Extensibility
+- [How this feature enables future development]
+- [What architectural decisions support scalability]
+- [Potential extension points for related features]
 
 ---
 
@@ -198,9 +223,7 @@ Error Responses: [400, 401, 403, 404, 500] with descriptive messages
 - [ ] [Critical user journey 2]
 - [ ] [Error scenarios and recovery]
 
-### Performance Testing (if needed)
-- [ ] [Load testing]: [concurrent users, response time targets]
-- [ ] [Database performance]: [query optimization if relevant]
+### AI Testing if feasible
 
 ---
 

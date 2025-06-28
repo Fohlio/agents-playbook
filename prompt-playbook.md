@@ -1,6 +1,6 @@
 # Prompt Playbook
 
-Collection of specialized prompts for AI-driven software development and product management tasks.
+Collection of specialized prompts designed for AI agents to handle software development and product management tasks. All prompts and templates are optimized for AI-driven workflows and automated code generation.
 
 ## 📋 Available Prompts
 
@@ -39,6 +39,18 @@ Collection of specialized prompts for AI-driven software development and product
 **Use Case**: When you need to automate business processes, integrate systems, or create data pipelines  
 **Complexity**: Medium - workflow design and configuration
 **Output**: Ready-to-import n8n JSON workflow file
+
+### 7. [Existing Feature Analysis](existing-feature-analysis-prompt.md)
+**Purpose**: Reverse-engineer existing functionality to create comprehensive TRD  
+**Use Case**: When you need to understand and document how existing feature works before migration or enhancement  
+**Complexity**: Medium-Complex - requires deep codebase analysis and architectural understanding
+**Output**: Complete TRD documenting current implementation ("as-is" TRD)
+
+### 8. [Feature Migration Planning](feature-migration-prompt.md)
+**Purpose**: Adapt existing feature TRD for implementation in different architecture/system  
+**Use Case**: When migrating functionality from one system to another with different tech stack or architecture  
+**Complexity**: Complex - requires architectural analysis and cross-system integration planning
+**Output**: Adapted TRD for target system ("to-be" TRD) with migration strategy
 
 ## 📝 Document Templates
 
@@ -86,6 +98,8 @@ Collection of specialized prompts for AI-driven software development and product
 | Have TRD, ready to start development | Variable | Normal | High | [Development Kickoff](development-kickoff-prompt.md) | Automated implementation with quality assurance |
 | Small enhancement or improvement | Simple | Normal | High | [Quick Fix](quick-fix-prompt.md) | Rapid implementation without overhead |
 | Need to automate business processes | Medium | Normal | Medium | [N8N Workflow](n8n-workflow-prompt.md) | Create automated workflows and integrations |
+| Need to understand existing feature | Medium-Complex | Normal | Low-Medium | [Existing Feature Analysis](existing-feature-analysis-prompt.md) | Reverse-engineer functionality for documentation or migration |
+| Migrate feature to different system | Complex | Normal | Low | [Feature Migration Planning](feature-migration-prompt.md) | Adapt requirements for new architecture and technology |
 
 ## 🚨 Emergency Procedures
 
@@ -114,6 +128,10 @@ Business Requirements → BRD to TRD Translation → Development Kickoff → Imp
 Bug/Small Feature → Quick Fix Process → Implementation (with complexity assessment)
 
 Automation Need → N8N Workflow Creation → Automated Process
+
+Existing Feature (same system) → Existing Feature Analysis → Development Kickoff → Implementation
+
+Existing Feature (different system) → Existing Feature Analysis → Feature Migration Planning → Development Kickoff → Implementation
 ```
 
 ## 🛠️ Getting Started
@@ -162,6 +180,22 @@ Each prompt includes:
 
 ---
 
-*This playbook is designed for AI-driven development with emphasis on automation, pattern recognition, and efficient delivery. Each prompt adapts to different complexity levels while maintaining quality standards.*
+## 🤖 AI-Optimized Design
+
+**This playbook is specifically designed for AI agents and automated development workflows:**
+
+- **Prompts are structured** for AI comprehension and execution
+- **Templates are formatted** for automated document generation  
+- **Instructions are optimized** for AI pattern recognition and code generation
+- **Complexity levels are calibrated** for AI decision-making and automation
+- **Workflows are designed** to minimize human intervention while maintaining quality
+
+**For Human Developers:** These prompts work best when used with AI coding assistants (Claude, ChatGPT, etc.) rather than as standalone human instructions.
+
+**For AI Agents:** Each prompt includes structured phases, clear deliverables, and automation guidelines optimized for AI execution.
+
+---
+
+*This playbook enables AI-driven development with emphasis on automation, pattern recognition, and efficient delivery. Each prompt adapts to different complexity levels while maintaining quality standards.*
 
 

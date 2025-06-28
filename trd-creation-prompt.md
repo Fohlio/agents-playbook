@@ -48,6 +48,24 @@ You are an experienced system analyst and software architect specializing in cre
 
 Use the following template and fill ALL sections [template](trd-template.md)
 
+### TRD Naming Convention
+
+**IMPORTANT**: All created TRD documents must follow this naming pattern:
+```
+[feature-name]-[phase-number]-trd.md
+```
+
+**Examples:**
+- `user-authentication-01-trd.md` (Phase 1 of user authentication feature)
+- `payment-gateway-02-trd.md` (Phase 2 of payment gateway feature)
+- `dashboard-analytics-01-trd.md` (Phase 1 of dashboard analytics feature)
+
+**Rules:**
+- Use lowercase with hyphens for feature names
+- Use 2-digit phase numbers (01, 02, 03, etc.)
+- Always end with `-trd.md`
+- Keep feature names descriptive but concise
+
 ## Important Principles
 
 - **Detail**: Each section should contain specific, actionable information
@@ -55,6 +73,7 @@ Use the following template and fill ALL sections [template](trd-template.md)
 - **Completeness**: Don't leave empty sections; if a section doesn't apply, explain why
 - **Clarity**: Use simple language, avoid abstractions without examples
 - **Testability**: Every requirement should be testable
+- **Phases**: Split into phases if needed
 
 ## Final Checklist
 

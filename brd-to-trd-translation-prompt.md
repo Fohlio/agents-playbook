@@ -113,6 +113,24 @@ Key technical decisions based on analysis:
 ## 📝 Phase 3: Create TRD
 
 Use the [TRD template](trd-template.md)
+
+### TRD Naming Convention
+
+All TRD documents must follow this naming pattern:
+```
+[feature-name]-[phase-number]-trd.md
+```
+
+**Examples:**
+- `user-registration-01-trd.md` (Phase 1 of user registration)
+- `api-integration-02-trd.md` (Phase 2 of API integration)
+- `report-generation-01-trd.md` (Phase 1 of report generation)
+
+**Rules:**
+- Use lowercase with hyphens for feature names
+- Use 2-digit phase numbers (01, 02, 03, etc.)
+- Always end with `-trd.md`
+- Keep feature names descriptive but concise
 ---
 
 ## 🎯 Deliverables
@@ -124,16 +142,19 @@ Provide:
    - How they'll be addressed
    - Any prerequisites for implementation
 
-2. **Complete TRD** 
+2. **Complete TRD**
    - All business requirements translated to technical specs
    - Integration details based on codebase analysis
    - Realistic implementation approach
    - Testing and deployment strategy
+   - **Must follow naming convention**: `[feature-name]-[phase-number]-trd.md`
 
 3. **Implementation Notes**
    - Specific technical decisions and rationale
    - Dependencies and prerequisites
    - Estimated complexity based on current codebase
+
+4. - **Phases**: Split into phases if needed
 
 ---
 
