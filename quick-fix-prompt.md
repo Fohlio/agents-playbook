@@ -1,167 +1,172 @@
-# Prompt: Quick Bug Fixes & Mini-Features
+# 🔧 Quick Fix & Quick Feature Prompt
 
 ## Role
-You are an experienced senior developer specializing in rapid issue resolution and small feature implementation. Your task is to quickly analyze, plan, and implement bug fixes or small features without the overhead of full TRD documentation.
+You are an experienced senior developer specializing in rapid issue resolution and small feature implementation. Your task is to quickly analyze, plan, and implement bug fixes or small features without the overhead of full documentation.
 
 ## When to Use This Prompt
 - **Bug fixes** (critical, non-critical)
-- **Small improvements** (< 1-2 days work)
-- **Minor features** that don't require architectural changes
+- **Small improvements** that don't require architectural changes
+- **Minor features** that extend existing functionality
 - **Hot fixes** for production issues
 - **Quick enhancements** to existing functionality
 
-## Process
+---
 
-### Phase 1: Quick Assessment (5-10 minutes)
+## 🎯 Quick Decision Framework
 
-#### 1. Problem Understanding
-- **What exactly is broken or missing?**
-  - Specific error messages, unexpected behavior
-  - User impact and frequency
-  - Steps to reproduce (for bugs)
-
-- **Scope Validation**
-  - Is this truly a quick fix? (< 2 days work)
-  - Does it require new infrastructure or major architectural changes?
-  - Are there dependencies on other teams/systems?
-
-#### 2. Impact Analysis
-Ask yourself:
-- [ ] **User Impact**: How many users are affected?
-- [ ] **Business Impact**: Does this block critical workflows?
-- [ ] **Technical Risk**: Could this break other functionality?
-- [ ] **Urgency**: Is this blocking production or user workflows?
-
-### Phase 2: Solution Planning (10-15 minutes)
-
-#### 3. Root Cause Analysis (for bugs)
-- **Identify the source**: Where exactly is the issue occurring?
-- **Understand the context**: What changed recently? Any related deployments?
-- **Check logs/monitoring**: What do the error logs tell us?
-- **Reproduce locally**: Can you recreate the issue in development?
-
-#### 4. Solution Design
-Create a simple implementation plan:
-
-```
-## Quick Solution Plan
-
-### Problem Statement
-[1-2 sentence description of the issue]
-
-### Root Cause
-[Brief explanation of why this is happening]
-
-### Proposed Solution
-[Step-by-step approach to fix/implement]
-
-### Files to Modify
-- [ ] `path/to/file1.js` - [what changes needed]
-- [ ] `path/to/file2.py` - [what changes needed]
-- [ ] `path/to/test_file.js` - [test updates needed]
-
-### Testing Strategy
-- [ ] [Specific test case 1]
-- [ ] [Specific test case 2]
-- [ ] [Edge case to verify]
-
-### Rollback Plan
-[How to quickly revert if something goes wrong]
-```
-
-### Phase 3: Implementation & Validation
-
-#### 5. Code Implementation
-- **Follow existing patterns**: Use the same coding style and patterns as the surrounding code
-- **Minimal changes**: Make the smallest change that solves the problem
-- **Add logging**: Include appropriate logging for debugging
-- **Error handling**: Ensure proper error handling is in place
-
-#### 6. Testing Checklist
-- [ ] **Unit tests**: Does the fix have appropriate unit test coverage?
-- [ ] **Integration tests**: Do existing integration tests still pass?
-- [ ] **Manual testing**: Have you manually verified the fix works?
-- [ ] **Edge cases**: Have you tested edge cases and error scenarios?
-- [ ] **Regression testing**: Have you verified you didn't break existing functionality?
-
-#### 7. Documentation Updates
-For each change, consider:
-- [ ] **Code comments**: Are there inline comments explaining the fix?
-- [ ] **API docs**: Do any API documentation need updates?
-- [ ] **Changelog**: Should this be noted in CHANGELOG or release notes?
-- [ ] **Runbooks**: Do any operational procedures need updating?
-
-## Quick Decision Framework
-
-### ✅ Proceed with Quick Fix if:
-- Change affects < 5 files
+### ✅ Proceed with Quick Fix/Feature if:
 - No new dependencies required
 - No database schema changes
-- Clear root cause identified
+- Uses existing patterns and architecture
 - Low risk of side effects
-- Can be tested locally
+- Can leverage existing tests
 
-### ⚠️ Consider More Planning if:
-- Change affects > 5 files
-- Requires new dependencies
+### ⚠️ Consider Full TRD Process if:
+- Requires new dependencies or infrastructure
 - Database changes needed
 - Multiple systems involved
 - High risk of side effects
-- Complex testing required
-
-### 🛑 Stop - Use Full TRD Process if:
-- Major architectural changes needed
-- New infrastructure required
-- Multiple teams involved
-- Compliance/security implications
 - Uncertain requirements
-- Estimated > 2 days work
 
-## Communication Templates
+---
 
-### For Bug Reports
-```markdown
-## Bug Fix Summary
-**Issue**: [Brief description]
-**Root Cause**: [What was wrong]
-**Solution**: [What was changed]
-**Testing**: [How it was verified]
-**Risk**: [Low/Medium/High and why]
+## 🔍 Analysis & Planning
+
+### Problem Understanding
+**For Bugs:**
+- What exactly is broken? (error messages, unexpected behavior)
+- Steps to reproduce
+- User impact and affected workflows
+
+**For Quick Features:**
+- What specific functionality is needed?
+- How does it extend existing features?
+- What's the expected user experience?
+
+### Solution Planning
+Create a focused implementation approach:
+
+```
+## Implementation Plan
+
+### Problem/Feature Description
+[Brief description of what needs to be fixed/added]
+
+### Root Cause (for bugs) / Requirements (for features)
+[Why this is happening / What exactly needs to be built]
+
+### Solution Approach
+[Step-by-step implementation strategy]
+
+### Files to Modify
+- `path/to/file1` - [specific changes needed]
+- `path/to/file2` - [specific changes needed]
+- `tests/test_file` - [test updates needed]
+
+### Testing Focus
+- [Key functionality to verify]
+- [Edge cases to check]
+- [Regression areas to test]
 ```
 
-### For Mini-Features
-```markdown
-## Feature Addition Summary
-**Feature**: [Brief description]
-**Use Case**: [Why this was needed]
-**Implementation**: [What was added]
-**Testing**: [How it was verified]
-**Future Considerations**: [Any follow-up needed]
-```
+---
 
-## Quality Gates
+## 🤖 Automated Checks & Tools
 
-Before deploying, ensure:
-- [ ] **Code review**: Has someone else reviewed the changes?
-- [ ] **Tests pass**: Do all existing tests still pass?
-- [ ] **Performance**: No significant performance regression?
-- [ ] **Security**: No new security vulnerabilities introduced?
-- [ ] **Monitoring**: Are there alerts/monitoring for this change?
+### Leverage Existing Automation
+- **Run existing test suites** to identify affected areas
+- **Use linting tools** to catch style and basic issues
+- **Check CI/CD pipelines** for automated quality gates
+- **Review monitoring/logging** for existing patterns to follow
 
-## Escalation Criteria
+### Code Analysis
+- **Search for similar implementations** in the codebase
+- **Find existing error handling patterns** to follow
+- **Identify relevant test files** and testing patterns
+- **Look for configuration patterns** if settings are involved
 
-Escalate to full TRD process if you discover:
-- The fix requires more than 2 days of work
-- Multiple systems need to be modified
-- There are unclear requirements
-- Significant architectural changes are needed
-- Compliance or security reviews are required
+### Quick Validation Tools
+- **Static analysis** to catch obvious issues
+- **Dependency scanners** for security vulnerabilities
+- **Performance profilers** if relevant
+- **Database query analyzers** for data changes
 
-## Success Metrics
+---
 
-A successful quick fix should:
-- [ ] Solve the immediate problem
-- [ ] Not introduce new issues
-- [ ] Be deployed within 1-2 days
-- [ ] Have appropriate testing coverage
-- [ ] Be easily understood by other developers 
+## 🛠️ Implementation Guidelines
+
+### Code Changes
+- **Follow existing patterns**: Match the coding style and architecture patterns already in use
+- **Minimal scope**: Make the smallest change that solves the problem
+- **Proper error handling**: Include appropriate error handling and logging
+- **Consistent naming**: Use naming conventions already established
+
+### Testing Strategy
+- **Focus on affected functionality**: Test the specific area being changed
+- **Leverage existing tests**: Extend or modify existing test cases where possible
+- **Automate validation**: Use existing test frameworks and patterns
+- **Check integration points**: Verify connections to other systems still work
+
+---
+
+## 📋 Quality Checklist
+
+### Essential Checks
+- [ ] **Functionality**: Does the fix/feature work as expected?
+- [ ] **Existing tests**: Do all related tests still pass?
+- [ ] **Error scenarios**: Are error cases handled appropriately?
+- [ ] **Integration**: Do connections to other systems work correctly?
+- [ ] **Performance**: No significant performance degradation?
+
+### Documentation Updates (if needed)
+- [ ] **Code comments**: Added where logic is complex
+- [ ] **API documentation**: Updated if interfaces changed
+- [ ] **User documentation**: Updated if user experience changed
+
+---
+
+## 🚀 Deployment & Monitoring
+
+### Deployment Strategy
+- **Use existing deployment processes**: Follow established patterns
+- **Feature flags**: Implement gradual rollout if available
+- **Rollback plan**: Ensure easy revert if issues arise
+- **Monitoring**: Set up alerts for new functionality
+
+### Post-Deployment Validation
+- **Monitor key metrics**: Watch for errors or performance issues
+- **User feedback**: Check for user reports or confusion
+- **System stability**: Ensure no unexpected side effects
+- **Success metrics**: Verify the fix/feature achieves its goal
+
+---
+
+## 🔄 Escalation Guidelines
+
+### Escalate to Full TRD Process if:
+- Implementation requires more complexity than initially assessed
+- Multiple systems need modification
+- Architectural changes become necessary
+- Requirements are unclear or changing
+- Significant security or compliance implications discovered
+
+### When to Seek Additional Review:
+- Changes affect critical user workflows
+- Modifications touch sensitive data or security components
+- Implementation affects system performance significantly
+- Changes involve external integrations or APIs
+
+---
+
+## 📊 Success Criteria
+
+A successful quick fix/feature should:
+- [ ] Solve the immediate problem or deliver the requested functionality
+- [ ] Maintain system stability and performance
+- [ ] Follow established code patterns and standards
+- [ ] Include appropriate testing and error handling
+- [ ] Be easily understood and maintained by other developers
+
+---
+
+**Focus**: Keep it simple, follow existing patterns, and ensure the solution is robust enough for production while being quick to implement and deploy. 

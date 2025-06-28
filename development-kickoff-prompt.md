@@ -2,7 +2,6 @@
 
 **Purpose**: Systematic approach to starting development based on existing TRD  
 **Use Case**: When you have a complete TRD and ready to begin implementation  
-**Timeline**: Project kickoff to completion (days-weeks)  
 **Output**: Working implementation with tests and documentation
 
 ## 🚀 Phase 1: Pre-Development Setup
@@ -24,156 +23,140 @@ If any tools are unavailable, document limitations:
 Alert user about any missing tools and their impact on development process.
 ```
 
-### Step 1.2: TRD Analysis and Clarification
+### Step 1.2: TRD Analysis and Complexity Assessment
 1. **Read the provided TRD thoroughly**
-2. **Analyze scope and complexity**
-3. **Identify any unclear requirements**
-4. **Ask clarifying questions** if needed:
-   - Technical implementation details
-   - Business logic edge cases
-   - Integration requirements
-   - Performance expectations
-   - Security considerations
+2. **Assess implementation complexity**:
 
-## 🔄 Phase 2: Development Planning
+#### Complexity Classification:
+**Simple Implementation** (< 3 files, established patterns):
+- Basic CRUD operations
+- UI component additions
+- Configuration changes
+- Bug fixes with clear scope
 
-### Step 2.1: Feature Breakdown Assessment
-Evaluate if the TRD contains multiple features:
+**Standard Implementation** (3-10 files, some new patterns):
+- New feature with frontend/backend
+- API integrations
+- Database schema changes
+- Multi-component features
 
-**Single Feature**: Proceed directly to implementation
-**Multiple Features**: Propose phase-based approach:
-1. **Identify logical feature groups**
-2. **Prioritize by business value and dependencies**
-3. **Create vertical slices** for each phase:
-   - Include frontend, backend, and data layer changes
-   - Ensure each phase delivers working functionality
-   - Minimize inter-phase dependencies
+**Complex Implementation** (10+ files, architectural changes):
+- New system integrations
+- Performance optimizations
+- Security implementations
+- Cross-cutting concerns
 
-### Step 2.2: Phase Planning
-For each phase, define:
-- **Scope**: What specific functionality will be delivered
-- **Success Criteria**: How to measure completion
-- **Testing Strategy**: How the phase will be validated
-- **Dependencies**: What must be completed first
+3. **Identify any unclear requirements** and ask clarifying questions if needed
 
-## 🛠️ Phase 3: Implementation Cycle
+## 🔄 Phase 2: Implementation Planning & Automation Setup
+
+### Step 2.1: Automated Analysis (if Context7 available)
+**Leverage automated codebase analysis**:
+- Search for similar existing implementations
+- Identify relevant patterns and conventions
+- Find related test files and testing patterns
+- Locate configuration files and deployment patterns
+- Check for existing error handling approaches
+
+### Step 2.2: Implementation Strategy
+Based on complexity assessment:
+
+**For Simple Implementation**:
+- Direct implementation following existing patterns
+- Extend existing tests
+- Minimal documentation updates
+
+**For Standard Implementation**:
+- Break into logical implementation phases
+- Create comprehensive tests
+- Update relevant documentation
+- Plan integration testing
+
+**For Complex Implementation**:
+- Design implementation phases
+- Plan architectural considerations
+- Design comprehensive testing strategy
+- Plan documentation and migration strategy
+
+### Step 2.3: Automated Testing Strategy
+**Leverage existing automation**:
+- **Run existing test suites** to understand current coverage
+- **Use CI/CD pipelines** for automated quality checks
+- **Leverage static analysis** tools for code quality
+- **Set up automated monitoring** for new functionality
+
+## 🛠️ Phase 3: Implementation
 
 ### Step 3.1: Development Process
-For each phase/feature:
+**Follow automated development workflow**:
 
-1. **Codebase Analysis** (if Context7 available):
-   - Understand existing architecture
-   - Identify relevant files and patterns
-   - Check for similar implementations
+1. **Automated Codebase Analysis**:
+   - Use semantic search to understand existing architecture
+   - Identify relevant files and patterns to follow
+   - Check for similar implementations to reference
 
 2. **Implementation**:
-   - Follow established code patterns
-   - Implement backend logic first
-   - Add frontend components
-   - Ensure proper error handling
+   - Follow established code patterns and conventions
+   - Implement backend logic first, then frontend
+   - Ensure proper error handling and logging
+   - Use existing configuration and deployment patterns
 
-3. **Code Review**:
-   - Self-review for code quality
-   - Check against TRD requirements
-   - Verify security best practices
+3. **Automated Validation**:
+   - Run automated tests continuously
+   - Use linting and formatting tools
+   - Leverage static analysis for quality checks
+   - Check performance impact if relevant
 
-### Step 3.2: Phase Completion Testing
-After each phase implementation:
+### Step 3.2: Testing Implementation
+**Automated Testing Approach**:
 
-**AI Test Strategy Implementation**:
-1. **Unit Testing**: Test individual components
-2. **Integration Testing**: Test component interactions
-3. **User Acceptance Testing** (if Playwright available):
-   - Create automated E2E test scenarios
-   - Test critical user journeys
-   - Validate business requirements
+1. **Unit Testing**: Test individual components using existing test patterns
+2. **Integration Testing**: Test component interactions and API endpoints
+3. **E2E Testing** (if Playwright available):
+   - Automate critical user journeys
+   - Test cross-browser functionality
+   - Validate business requirements automatically
 
-**Manual Testing Checklist**:
-- [ ] Core functionality works as specified
-- [ ] Error cases are handled gracefully
-- [ ] Performance meets expectations
-- [ ] Security requirements are satisfied
-- [ ] Integration points function correctly
+**Test Automation**:
+- Use existing test frameworks and patterns
+- Extend existing test suites where possible
+- Automate regression testing for existing functionality
+- Set up automated performance monitoring
 
-## 📝 Phase 4: Documentation and Closure
+## 📝 Phase 4: Documentation & Completion
 
-### Step 4.1: TRD Closure
-Upon project completion:
+### Step 4.1: Automated Documentation Updates
+**Leverage automation for documentation**:
+- Update API documentation if interfaces changed
+- Generate code documentation from comments
+- Update configuration documentation if settings changed
+- Link to implementation commits/PRs
 
-1. **Update TRD status**: Mark as "Implemented"
-2. **Add implementation notes**:
+### Step 4.2: Simple Closure Process
+**Essential completion steps**:
+1. **Update TRD status**: Mark relevant sections as "Implemented"
+2. **Add brief implementation notes**:
    - Key technical decisions made
-   - Deviations from original plan (if any)
-   - Known limitations or future considerations
-3. **Link to relevant code/PRs**
+   - Any deviations from original plan
+   - Links to relevant code changes
+3. **Update README** with feature summary and usage (if user-facing)
 
-### Step 4.2: README Updates
-Update project README with:
-- **Brief feature description** (1-2 sentences)
-- **Link to TRD** for detailed specifications
-- **Usage instructions** if user-facing
-- **Technical notes** for developers
-
-Example README section:
-```markdown
-## Recent Updates
-
-### [Feature Name] - [Date]
-Brief description of what was implemented.
-See [TRD-XXX](link-to-trd) for detailed specifications.
-```
-
-### Step 4.3: Test Suite Completion
-Ensure comprehensive test coverage:
-
-1. **Unit Tests**:
-   - All new functions/methods
-   - Edge cases and error conditions
-   - Mock external dependencies
-
-2. **Integration Tests**:
-   - API endpoints
-   - Database operations
-   - Third-party integrations
-
-3. **E2E Tests** (if Playwright available):
-   - Critical user workflows
-   - Cross-browser compatibility
-   - Performance benchmarks
-
-## 🔄 Continuous Process Guidelines
-
-### Quality Gates
-Before proceeding to next phase:
-- [ ] All tests pass
-- [ ] Code review completed
-- [ ] Performance benchmarks met
-- [ ] Security review passed
-- [ ] Documentation updated
-
-### Communication Checkpoints
-- **Phase Start**: Confirm scope and approach
-- **Mid-Phase**: Update on progress and blockers
-- **Phase End**: Demo functionality and gather feedback
-
-### Risk Management
-Monitor and address:
-- **Technical Debt**: Refactor as needed
-- **Scope Creep**: Refer back to TRD for boundaries
-- **Performance Issues**: Address immediately
-- **Security Concerns**: Never defer security fixes
+### Step 4.3: Automated Quality Validation
+**Final automated checks**:
+- All automated tests pass
+- Code quality metrics meet standards
+- Security scans pass
+- Performance benchmarks maintained
+- Documentation builds successfully
 
 ## 🎯 Success Criteria
 
-Project is considered complete when:
-- [ ] All TRD requirements implemented
-- [ ] Full test suite passing
-- [ ] Documentation updated
-- [ ] Code reviewed and approved
-- [ ] Performance benchmarks met
-- [ ] Security requirements satisfied
-- [ ] User acceptance criteria met
+Implementation is complete when:
+- [ ] All TRD requirements implemented and working
+- [ ] Automated test suite passing with appropriate coverage
+- [ ] Code follows established patterns and quality standards
+- [ ] Documentation updated (API docs, README, code comments)
+- [ ] Feature integrates properly with existing system
+- [ ] Automated monitoring/alerting in place (if applicable)
 
----
-
-*This prompt ensures systematic, quality-focused development with proper testing and documentation at each step.* 
+**Focus**: Leverage automation and existing patterns to implement features efficiently while maintaining code quality and system stability. 
