@@ -4,6 +4,24 @@
 **Use Case**: When you have a complete TRD and ready to begin implementation  
 **Output**: Working implementation with tests and documentation
 
+## 📋 Step 0: Create Development Checklist
+
+**Create temporary checklist file** in the same directory as the TRD:
+- Filename: `[TRD-name]-dev-checklist.md`
+- Mark each phase as completed during development
+- Mark each implementation phase as completed during development
+- Delete after completion
+
+**Template**:
+```markdown
+# [Feature Name] Development Checklist
+
+- [ ] Phase 1: Pre-Development Setup
+- [ ] Phase 2: Implementation Planning
+- [ ] Phase 3: Implementation
+- [ ] Phase 4: Documentation & Completion
+```
+
 ## 🚀 Phase 1: Pre-Development Setup
 
 ### Step 1.1: MCP Tools Verification
