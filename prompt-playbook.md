@@ -28,7 +28,13 @@ Collection of specialized prompts for software development and product managemen
 **Timeline**: Quick implementation (hours-1-2 days)  
 **Output**: Working solution with minimal documentation
 
-### 5. [N8N Workflow Creation](n8n-workflow-prompt.md)
+### 5. [Development Kickoff](development-kickoff-prompt.md)
+**Purpose**: Systematic development process from TRD to implementation  
+**Use Case**: When you have a complete TRD and ready to begin development with proper testing and documentation  
+**Timeline**: Full development cycle (days-weeks)  
+**Output**: Working implementation with comprehensive tests and updated documentation
+
+### 6. [N8N Workflow Creation](n8n-workflow-prompt.md)
 **Purpose**: Create automated workflows using n8n platform  
 **Use Case**: When you need to automate business processes, integrate systems, or create data pipelines  
 **Timeline**: Workflow design and configuration (hours-days)  
@@ -50,17 +56,18 @@ Collection of specialized prompts for software development and product managemen
 | New product idea, unclear requirements | [Product Development](product-development-prompt.md) | Need comprehensive discovery and planning |
 | Clear feature request, need technical spec | [TRD Creation](trd-creation-prompt.md) | Direct path to technical requirements |
 | Have BRD, need technical implementation | [BRD to TRD Translation](brd-to-trd-translation-prompt.md) | Systematic translation with codebase analysis |
+| Have TRD, ready to start development | [Development Kickoff](development-kickoff-prompt.md) | Systematic implementation with testing and documentation |
 | Bug fix or small enhancement | [Quick Fix](quick-fix-prompt.md) | Rapid implementation without overhead |
 | Need to automate business processes | [N8N Workflow](n8n-workflow-prompt.md) | Create automated workflows and integrations |
 
 ## 🔄 Process Flow
 
 ```
-New Product Idea → Product Development from Scratch → First TRD
+New Product Idea → Product Development from Scratch → First TRD → Development Kickoff → Implementation
                                 ↓
-Feature Request → TRD Creation from Scratch → Implementation
+Feature Request → TRD Creation from Scratch → Development Kickoff → Implementation
                                 ↓
-Business Requirements → BRD to TRD Translation → Implementation
+Business Requirements → BRD to TRD Translation → Development Kickoff → Implementation
                                 ↓
 Bug/Small Feature → Quick Fix Process → Implementation
                                 ↓
