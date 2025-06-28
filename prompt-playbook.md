@@ -28,6 +28,12 @@ Collection of specialized prompts for software development and product managemen
 **Timeline**: Quick implementation (hours-1-2 days)  
 **Output**: Working solution with minimal documentation
 
+### 5. [N8N Workflow Creation](n8n-workflow-prompt.md)
+**Purpose**: Create automated workflows using n8n platform  
+**Use Case**: When you need to automate business processes, integrate systems, or create data pipelines  
+**Timeline**: Workflow design and configuration (hours-days)  
+**Output**: Ready-to-import n8n JSON workflow file
+
 ## 📝 Document Templates
 
 ### Business Requirements
@@ -45,6 +51,7 @@ Collection of specialized prompts for software development and product managemen
 | Clear feature request, need technical spec | [TRD Creation](trd-creation-prompt.md) | Direct path to technical requirements |
 | Have BRD, need technical implementation | [BRD to TRD Translation](brd-to-trd-translation-prompt.md) | Systematic translation with codebase analysis |
 | Bug fix or small enhancement | [Quick Fix](quick-fix-prompt.md) | Rapid implementation without overhead |
+| Need to automate business processes | [N8N Workflow](n8n-workflow-prompt.md) | Create automated workflows and integrations |
 
 ## 🔄 Process Flow
 
@@ -56,6 +63,8 @@ Feature Request → TRD Creation from Scratch → Implementation
 Business Requirements → BRD to TRD Translation → Implementation
                                 ↓
 Bug/Small Feature → Quick Fix Process → Implementation
+                                ↓
+Automation Need → N8N Workflow Creation → Automated Process
 ```
 
 ## 🛠️ Getting Started
