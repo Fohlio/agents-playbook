@@ -58,6 +58,12 @@ Collection of specialized prompts designed for AI agents to handle software deve
 **Complexity**: Medium-High - requires extensive research, analysis and stakeholder interviews
 **Output**: Complete BRD following the template with integrated external research and user interviews
 
+### 10. [Code Refactoring to Scalable Architecture](code-refactoring-prompt.md)
+**Purpose**: Transform existing code into more scalable, maintainable architecture with pattern analysis  
+**Use Case**: When existing code needs architectural improvements for better scalability and maintainability  
+**Complexity**: Medium-High - requires deep code analysis, pattern recognition, and architectural planning
+**Output**: Current state analysis, 3 refactoring options with complexity assessment, and implementation roadmap
+
 ## 📝 Document Templates
 
 ### Business Requirements
@@ -107,6 +113,7 @@ Collection of specialized prompts designed for AI agents to handle software deve
 | Need to understand existing feature | Medium-Complex | Normal | Low-Medium | [Existing Feature Analysis](existing-feature-analysis-prompt.md) | Reverse-engineer functionality for documentation or migration |
 | Migrate feature to different system | Complex | Normal | Low | [Feature Migration Planning](feature-migration-prompt.md) | Adapt requirements for new architecture and technology |
 | Need comprehensive BRD with research | Medium-High | Normal | Medium | [BRD Creation with Research](brd-creation-with-research-prompt.md) | Automated research from external sources plus structured interviews |
+| Code needs architectural refactoring | Medium-High | Normal | Low-Medium | [Code Refactoring to Scalable Architecture](code-refactoring-prompt.md) | Deep analysis and pattern-based architectural improvements |
 
 ## 🚨 Emergency Procedures
 
@@ -141,6 +148,8 @@ Automation Need → N8N Workflow Creation → Automated Process
 Existing Feature (same system) → Existing Feature Analysis → Development Kickoff → Implementation
 
 Existing Feature (different system) → Existing Feature Analysis → Feature Migration Planning → Development Kickoff → Implementation
+
+Code Quality Issues → Code Refactoring to Scalable Architecture → Development Kickoff → Implementation
 ```
 
 ## 🛠️ Getting Started
