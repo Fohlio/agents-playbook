@@ -6,6 +6,7 @@ Specialized prompts for AI agents handling software development and product mana
 
 | # | Prompt | Complexity | Use Case | Output |
 |---|--------|------------|----------|---------|
+| 0 | [Project Initialization](project-initialization-prompt.md) | Medium | New codebase → AI setup | AGENTS.MD, navigation, stack analysis |
 | 1 | [Product Development](product-development-prompt.md) | High | Product idea → comprehensive planning | PRD, feature breakdown, MVP, first TRD |
 | 2 | [TRD Creation](trd-creation-prompt.md) | Medium | Feature idea → technical spec | Complete TRD |
 | 3 | [BRD to TRD Translation](brd-to-trd-translation-prompt.md) | Medium | BRD + codebase → technical requirements | TRD from business requirements |
@@ -29,6 +30,7 @@ Specialized prompts for AI agents handling software development and product mana
 
 | What You Have | What You Need | Use This Prompt |
 |---------------|---------------|-----------------|
+| New codebase | AI agent setup | [Project Initialization](project-initialization-prompt.md) |
 | Product idea | Full planning | [Product Development](product-development-prompt.md) |
 | Feature idea | Technical spec | [TRD Creation](trd-creation-prompt.md) |
 | BRD document | Technical implementation | [BRD to TRD Translation](brd-to-trd-translation-prompt.md) |
@@ -44,6 +46,7 @@ Skip planning • Fix fast • Document later
 
 ## 🔄 Common Flows
 ```
+New Project → Project Initialization → [Choose other prompts] → Done
 Product Idea → Product Development → TRD → Dev Kickoff → Done
 Feature Request → TRD Creation → Dev Kickoff → Done  
 BRD → BRD to TRD → Dev Kickoff → Done
@@ -52,6 +55,7 @@ Code Issues → Code Refactoring → Dev Kickoff → Done
 ```
 
 ## 🛠️ Quick Start
+0. **New to codebase?** → Run [Project Initialization](project-initialization-prompt.md) first
 1. **Identify what you have** (idea, BRD, TRD, bug, etc.)
 2. **Check decision guide** above
 3. **Run the recommended prompt**
