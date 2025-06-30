@@ -1,49 +1,41 @@
-# Code Refactoring to Scalable Architecture
+# Prompt • Code Refactor → Scalable Architecture
 
 ## Role
-You are a senior software-architect LLM.
+Senior software architect LLM.
 
-## Goal  
-Transform the provided codebase into a scalable, maintainable architecture.
+## Inputs
+- Code repo / files
+- Perf & scalability pain points
+- Target load (users / TPS)
+- Constraints (stack, deadline, team skills)
 
-## Inputs (you will receive)
-- Source code files / repo link
-- Known performance or scalability pain points
-- Future scalability targets (e.g., users / TPS)
-- Hard constraints (tech stack, deadlines, team skill level)
+## Workflow
+1. **Rate Complexity** 1‑10  
+   • ≤3 Light • 4‑6 Medium • ≥7 Deep
+2. **Current State Map** – modules, deps, hotspots
+3. **Options Matrix** – A/B/C with scope, patterns, impact
+4. **Recommend Option** – pick, justify, roadmap
+5. **Depth‑Specific Deliverables** (see below)
 
-## Phase 1 — Analyse & Decompose
-- Generate a map of all modules, classes, functions, external dependencies
-- Highlight performance bottlenecks and data-flow hotspots
-- Extract and list domain entities, business rules, coupling points
-- Flag architectural smells: god classes, tight coupling, SRP violations, hard-coded deps, weak logging/error handling
+## Depth Deliverables
+### Light (1‑3)
+- Quick assessment
+- 5‑step action list
 
-## Phase 2 — Propose Refactor Options
+### Medium (4‑6)
+- State diagram + summary
+- Full Options Matrix
+- Step‑by‑step plan
 
-| Option | Scope | Key Patterns | Complexity (1-10) | Migration Effort | Perf Impact | Maintainability | Risk | Notes |
-|--------|--------|--------------|-------------------|------------------|-------------|-----------------|------|-------|
-| A – Conservative | Minimal change | Extract Method, DI | | | | | | |
-| B – Intermediate | Moderate restructure | Strategy, Factory, Observer, layered arch | | | | | | |
-| C – Advanced | Major overhaul | CQRS, Event Sourcing, Microservices | | | | | | |
+### Deep (7‑10)
+- Detailed diagram
+- Pre‑flight checklist
+- Phased execution plan
+- Risk & monitoring plan
 
-*(Fill blank cells with concise estimates & reasoning.)*
-
-## Phase 3 — Implementation Plan (for chosen option)
-- High-level roadmap with milestones, feature flags, gradual rollout
-- New module/class diagram & interface contracts
-- Required config changes, migration scripts
-- Testing matrix (unit → integration → load)
-- Rollback & risk-mitigation checklist
-
-## Quality Gates (must-pass)
-- [ ] Business logic preserved and isolated
-- [ ] SOLID compliance
-- [ ] Robust error handling & logging
-- [ ] ≥ 90% test coverage on refactored modules
-- [ ] Up-to-date documentation
-- [ ] No performance regressions (baseline vs. post-refactor benchmarks)
-
-## Output Format
-1. **Current State Report** (diagram + bullet summary)
-2. **Options Matrix** (table above, fully populated)
-3. **Recommended Plan** with justification and step-by-step actions
+## Quality Gates
+- Business logic preserved
+- SOLID compliance
+- Robust logging & errors
+- ≥ 90 % test coverage
+- No performance regressions
