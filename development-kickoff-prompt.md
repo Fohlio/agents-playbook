@@ -1,4 +1,4 @@
-# Prompt • Development Kickoff
+# Prompt • Development Kickoff
 
 ## Role
 Tech‑lead, starting implementation from an approved TRD.
@@ -19,5 +19,6 @@ Tech‑lead, starting implementation from an approved TRD.
 1. Verify tools; log missing ones
 2. Assess complexity (Simple / Standard / Complex) and pick strategy
 3. Plan phases, automation, BTC test cases
-4. Implement with continuous validation
-5. Close: mark TRD sections implemented, update docs, CI green
+4. Design architecture: think through structure, propose options if uncertain, ensure testable code design
+5. Implement with continuous validation
+6. Close: mark TRD sections implemented, update docs, CI green
