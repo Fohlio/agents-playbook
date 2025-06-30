@@ -11,11 +11,10 @@ Specialized prompts for AI agents handling software development and product mana
 | 3 | [BRD to TRD Translation](brd-to-trd-translation-prompt.md) | Medium | BRD + codebase → technical requirements | TRD from business requirements |
 | 4 | [Quick Fix](quick-fix-prompt.md) | Simple-Medium | Bug fixes, mini-features | Working solution, minimal docs |
 | 5 | [Development Kickoff](development-kickoff-prompt.md) | Variable | TRD → implementation | Working code, tests, docs |
-| 6 | [N8N Workflow](n8n-workflow-prompt.md) | Medium | Process automation | n8n JSON workflow |
-| 7 | [Existing Feature Analysis](existing-feature-analysis-prompt.md) | Medium-High | Reverse-engineer feature | "As-is" TRD |
-| 8 | [Feature Migration](feature-migration-prompt.md) | High | Cross-system migration | "To-be" TRD + migration plan |
-| 9 | [BRD with Research](brd-creation-with-research-prompt.md) | Medium-High | External research → BRD | Complete BRD with research |
-| 10 | [Code Refactoring](code-refactoring-prompt.md) | Medium-High | Code → scalable architecture | Analysis + 3 refactoring options |
+| 6 | [Existing Feature Analysis](existing-feature-analysis-prompt.md) | Medium-High | Reverse-engineer feature | "As-is" TRD |
+| 7 | [Feature Migration](feature-migration-prompt.md) | High | Cross-system migration | "To-be" TRD + migration plan |
+| 8 | [BRD with Research](brd-creation-with-research-prompt.md) | Medium-High | External research → BRD | Complete BRD with research |
+| 9 | [Code Refactoring](code-refactoring-prompt.md) | Medium-High | Code → scalable architecture | Analysis + 3 refactoring options |
 
 ## 📝 Templates
 - [BRD Template](brd-template.md) • [TRD Template](trd-template.md)
@@ -35,7 +34,6 @@ Specialized prompts for AI agents handling software development and product mana
 | BRD document | Technical implementation | [BRD to TRD Translation](brd-to-trd-translation-prompt.md) |
 | TRD document | Working code | [Development Kickoff](development-kickoff-prompt.md) |
 | Bug/small task | Quick fix | [Quick Fix](quick-fix-prompt.md) |
-| Process need | Automation | [N8N Workflow](n8n-workflow-prompt.md) |
 | Existing feature | Documentation | [Existing Feature Analysis](existing-feature-analysis-prompt.md) |
 | Feature to migrate | Migration plan | [Feature Migration](feature-migration-prompt.md) |
 | Research need | Complete BRD | [BRD with Research](brd-creation-with-research-prompt.md) |
