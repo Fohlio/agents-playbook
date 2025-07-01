@@ -83,6 +83,12 @@ Coming soon:
 - **Specialized prompts** for DevOps, testing, documentation
 - **Integrations** with other no-code platforms
 
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+Feel free to use, modify, and distribute these prompts in your projects!
+
 ---
 
 **💡 Start here:** [prompt-playbook.md](prompt-playbook.md) — main navigator for all prompts and scenarios. 
