@@ -53,7 +53,7 @@ agents-playbook/
 
 ### New Project
 ```
-1. Project Initialization → AGENTS.MD
+1. Project Initialization → AGENTS.MD + CLAUDE.md
 2. Product Development → PRD + first TRD
 3. Development Kickoff → working code
 ```

@@ -10,7 +10,7 @@ Tech Lead or AI Agent performing complete project initialization and audit.
 
 ## Expected Outputs
 1. **docs/project-navigation.md** — structured project guide
-2. **AGENTS.md** — instructions for AI agents in project root
+2. **AGENTS.md** and **CLAUDE.md** — instructions for AI agents in project root
 3. **Technology table** with versions
 4. **Legacy code analysis** with clarifying questions
 5. **Complete catalog** of current documentation (with link to prompt-playbook.md)
@@ -84,7 +84,7 @@ Create table:
 - [Critical do's & don'ts]
 ```
 
-### 6️⃣ Create AGENTS.md
+### 6️⃣ Create AGENTS.md and CLAUDE.md
 
 ```markdown
 # 🤖 AI Agents Setup
@@ -118,8 +118,8 @@ Create table:
 
 ## 🆘 Fallback
 **If project is too complex or confusing:**
-Create basic AGENTS.md with:
+Create basic AGENTS.md and CLAUDE.md with:
 - Link to playbook
-- Note about high complexity
+- Note about high complexity modules
 - Recommendation to run "Existing Feature Analysis" first
 
