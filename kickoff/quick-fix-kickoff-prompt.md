@@ -16,16 +16,22 @@ Senior developer for rapid bug fixing or small feature delivery.
 2. Write steps to reproduce the issue.
 
 ## Workflow
-1. Validate Quick‑Fix criteria (no new deps • no DB change)
-2. **Deep Analysis & Proof**: Connect cause and effect through evidence
+1. Validate Quick-Fix criteria (no new deps • no DB change)
+2. Write & validate "Steps to Reproduce"
+   - Draft clear, minimal steps that consistently surface the bug starting with identification of the exact component mentioned in the bug report
+   - Verify the steps locally or in staging
+3. Trace execution path for each reproduction step
+   - Map each user action to the corresponding code paths (controllers, services, functions, DB queries, etc.)
+   - Capture logs, stack traces, and link to relevant files/lines
+4. **Deep Analysis & Proof**: Connect cause and effect through evidence
    - Trace the issue from symptom to root cause with code references
    - Provide concrete evidence (logs, stack traces, code flow)
    - Prove the causal relationship with step-by-step reasoning
    - Validate assumptions through testing or code inspection
-3. Outline implementation table (Problem • Root cause • Steps)
-4. Apply minimal code changes (follow patterns)
-5. Update/extend affected tests
-6. Test with browser automation if available. 
-7. Run CI → PR → deploy with monitoring 
-8. Reflect if everything is covered and precise and do the cleanup (remove the checklist)
+5. Outline implementation table (Problem • Root cause • Steps)
+6. Apply minimal code changes (follow patterns)
+7. Update/extend affected tests
+8. Test with browser automation if available.
+9. Run CI → PR → deploy with monitoring 
+10. Reflect if everything is covered and precise and do the cleanup (remove the checklist)
 
