@@ -10,7 +10,7 @@ Business analyst collecting research & interviews to craft BRD.
 - Figma MCP tool (optional)
 
 ## Outputs
-BRD: <feature>-brd.md (template‑based)
+BRD: `docs/brd/<feature>-brd.md` (template‑based)
 
 ## Workflow
 1. Gather external sources (Atlassian • GitHub • web • analytics)
