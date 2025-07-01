@@ -2,39 +2,42 @@
 
 **A collection of specialized prompts for AI agents in software development**
 
-This repository contains a set of ready-to-use prompts that help AI agents (Claude, ChatGPT, etc.) effectively perform software development tasks — from product planning to code implementation.
+This repository contains ready-to-use prompts that help AI agents (Claude, ChatGPT, etc.) effectively perform software development tasks — from product planning to code implementation.
 
-## 🎯 What is this?
+## 🚀 Quick Setup in Your Project
 
-**AI Agents Playbook** is a structured methodology for working with AI in development, including:
+### 1. Install the Playbook
+```bash
+# Copy all files to your project
+cp -r agents-playbook/ your-project/docs/agents-playbook/
+```
+
+### 2. Initialize with AI
+1. Add **@project-initialization-kickoff-prompt.md** to your AI chat
+2. Ask for project initialization
+
+### 3. Setup Tools
+- Add **MCP Playwright** and **Context7** to your AI
+- Add to `.cursor/rules`: 
+  ```
+  Use @prompt-playbook.md to select the proper flow if not guided
+  ```
+
+## 🎯 What You Get
 
 - **10 specialized prompts** for different development stages
-- **Ready-to-use templates** for documentation (BRD, TRD)
-- **Step-by-step workflows** for process automation
-- **Integrations** with GitHub, Context7, Playwright
+- **Ready-to-use templates** (BRD, TRD)
+- **Step-by-step workflows** for automation
+- **Tool integrations** (GitHub, Context7, Playwright)
 
-## 🚀 Quick Start
+## 📚 Main Flows
 
-### 1. Starting with a new project?
-→ Use [**Project Initialization Kickoff**](kickoff/project-initialization-kickoff-prompt.md)
-
-### 2. Have a product idea?
-→ Use [**Product Development**](planning/product-development-prompt.md)
-
-### 3. Need to implement a feature?
-→ Create [**TRD**](planning/trd-creation-prompt.md) → run [**Development Kickoff**](kickoff/development-kickoff-prompt.md)
-
-### 4. Urgent bug?
-→ Use [**Quick Fix**](kickoff/quick-fix-kickoff-prompt.md)
-
-## 📚 Key Files
-
-| File | Description |
-|------|-------------|
-| **[prompt-playbook.md](prompt-playbook.md)** | 📋 Main navigator for all prompts |
-| **[project-initialization-kickoff-prompt.md](kickoff/project-initialization-kickoff-prompt.md)** | 🆕 AI setup for new projects |
-| **[development-kickoff-prompt.md](kickoff/development-kickoff-prompt.md)** | 🔨 Feature implementation from TRD |
-| **[quick-fix-kickoff-prompt.md](kickoff/quick-fix-kickoff-prompt.md)** | ⚡ Quick fixes and mini-features |
+| Scenario | Start With |
+|----------|------------|
+| 🆕 **New project** | [Project Initialization](kickoff/project-initialization-kickoff-prompt.md) |
+| 💡 **Product idea** | [Product Development](planning/product-development-prompt.md) |
+| ⚡ **Feature/bug** | [Quick Fix](kickoff/quick-fix-kickoff-prompt.md) |
+| 🏗️ **Major feature** | [TRD Creation](planning/trd-creation-prompt.md) → [Development Kickoff](kickoff/development-kickoff-prompt.md) |
 
 ## 🏗️ Repository Structure
 
@@ -45,75 +48,45 @@ agents-playbook/
 ├── kickoff/                     # 🚀 Implementation prompts
 ├── templates/                   # 📝 Document templates
 └── n8n/                         # 🔄 n8n automation
-    ├── ba-agent-workflow.json   # Telegram bot workflow
-    └── ...
 ```
 
-## 🔄 Common Scenarios
+## 🛠️ Usage Options
 
-### New Project
-```
-1. Project Initialization → AGENTS.MD + CLAUDE.md
-2. Product Development → PRD + first TRD
-3. Development Kickoff → working code
-```
+### Option 1: IDE Integration (Recommended)
+1. Copy to `docs/agents-playbook/`
+2. Use `@prompt-playbook.md` in AI chat
+3. Follow guided workflows
 
-### New Feature
-```
-1. TRD Creation → technical specification
-2. Development Kickoff → implementation
-```
+### Option 2: Direct Copy-Paste
+1. Open needed prompt from folders
+2. Copy to your AI agent
+3. Follow instructions
 
-### Refactoring
-```
-1. Code Refactoring → analysis + options
-2. Development Kickoff → new architecture
-```
-
-## 🎮 How to Use
-
-### Option 1: Direct Copy-Paste
-1. Open the needed prompt from `planning/` or `kickoff/` folder
-2. Copy the prompt to your AI agent
-3. Follow the prompt instructions
-
-### Option 2: Via n8n (automation)
+### Option 3: n8n Automation
 1. Import [ba-agent-workflow.json](n8n/ba-agent-workflow.json)
 2. Set up Telegram bot
-3. Work through chat
 
-### Option 3: IDE Integration
-1. Add prompts to your AI coding assistant
-2. Use as custom instructions
-
-## 🛠️ Tools
-
-Prompts are optimized for working with:
-
-- **Context7** — access to up-to-date library documentation
-- **GitHub** — repository work, PRs, issues
-- **Playwright** — automated testing
-
-## 📊 Complexity Levels
+## 📊 Complexity Guide
 
 | 🟢 Simple | 🟡 Standard | 🔴 Complex |
 |-----------|-------------|------------|
 | Quick Fix | TRD Creation | Product Development |
-| - | Development Kickoff | Feature Migration |
-| - | - | Code Refactoring |
+| | Development Kickoff | Feature Migration |
+| | | Code Refactoring |
 
 ## 📝 Templates
 
 - **[BRD Template](templates/brd-template.md)** — Business Requirements
 - **[TRD Template](templates/trd-template.md)** — Technical Requirements
 
-## 🤝 Contributing
+## 🚧 Roadmap
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Create a Pull Request
+Планируется добавление:
+- **n8n промпт-темплейты** для автоматизации workflow
+- **Готовые шаблоны** для популярных фреймворков (Django, React, FastAPI)
+- **Специализированные промпты** для DevOps, тестирования, документации
+- **Интеграции** с другими no-code платформами
 
 ---
 
-**💡 Tip:** Start with [prompt-playbook.md](prompt-playbook.md) — it has a convenient navigator for all prompts and usage scenarios. 
+**💡 Start here:** [prompt-playbook.md](prompt-playbook.md) — main navigator for all prompts and scenarios. 
