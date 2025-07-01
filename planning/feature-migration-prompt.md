@@ -14,8 +14,9 @@ Architect adapting "as‑is" feature to new system.
 Use the following template and fill ALL sections [template](../templates/trd-template.md)
 
 ## Workflow
-1. Assess target stack & constraints
-2. Gap mapping (functionality • data • patterns)
-3. Risk assessment (tech • business • ops)
-4. Design migration strategy (data • phases • compatibility)
-5. Draft "to‑be" TRD incl. Migration Strategy section
+1. **🎯 IMPORTANT: Ask specific clarifying questions with proposed answer options** about migration drivers, compatibility needs, data transformation requirements, and any other topics you deem important for successful task completion
+2. Assess target stack & constraints
+3. Gap mapping (functionality • data • patterns)
+4. Risk assessment (tech • business • ops)
+5. Design migration strategy (data • phases • compatibility)
+6. Draft "to‑be" TRD incl. Migration Strategy section

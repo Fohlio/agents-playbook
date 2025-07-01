@@ -1,7 +1,7 @@
 # Prompt • Product Development from Scratch (AI‑Ready)
 
 ## Role
-Act as a senior product manager & solution architect. Lead the user from raw idea to the first TRD.
+Act as a senior product manager & solution architect. Lead the user from raw idea to the first TRD.
 
 ## Inputs
 - Vision statement (problem • audience • value)
@@ -18,7 +18,7 @@ Act as a senior product manager & solution architect. Lead the user from raw
 Use the following template and fill ALL sections [template](../templates/trd-template.md)
 
 ## Workflow
-1. Clarify inputs via concise checklist
+1. **🎯 IMPORTANT: Ask specific clarifying questions with proposed answer options** about problem definition, success criteria, user context, solution constraints, and any other topics you deem important for successful task completion
 2. Synthesise answers → discovery
 3. Build feature map + priority matrix
 4. Propose architecture & tech stack

@@ -17,14 +17,16 @@ Tech Lead or AI Agent performing complete project initialization and audit.
 
 ## ⚙️ Workflow
 
-### 1️⃣ Codebase Discovery
+### 1️⃣ **🎯 IMPORTANT: Ask specific clarifying questions with proposed answer options** about audit purpose, project state, documentation priorities, and any other topics you deem important for successful task completion
+
+### 2️⃣ Codebase Discovery
 - Scan entire project (ignore .git, node_modules, __pycache__)
 - Identify entry points (main.py, index.js, package.json, requirements.txt, etc.)
 - Record dependency managers and key configs
 - Recognize frameworks and architectural patterns (Django, FastAPI, React, Express, etc.)
 - Collect documentation links (README.md, docs/, Wiki)
 
-### 2️⃣ Tech Stack Map
+### 3️⃣ Tech Stack Map
 Create table:
 
 | Component | Technology | Version | Notes |
@@ -34,14 +36,14 @@ Create table:
 | Database  | [detected] | [ver]   | [connection info] |
 | Runtime   | [detected] | [ver]   | [requirements] |
 
-### 3️⃣ Architecture Review
+### 4️⃣ Architecture Review
 - Identify key modules and connections between them
 - Outline API boundaries and data flows
 - Determine architectural style (monolith, MVC, microservices, etc.)
 - Note anything non-standard or complex
 - Mark potential legacy areas for review
 
-### 4️⃣ Legacy Check
+### 5️⃣ Legacy Check
 **If legacy is detected — ask clarifying questions:**
 - How long will these components be supported?
 - Are there migration plans or constraints?
@@ -49,7 +51,7 @@ Create table:
 - What standards need to be followed?
 - Are there outdated dependencies?
 
-### 5️⃣ Create PROJECT-NAVIGATION.md
+### 6️⃣ Create PROJECT-NAVIGATION.md
 
 ```markdown
 # 🗂️ Project Navigation Guide
@@ -84,7 +86,7 @@ Create table:
 - [Critical do's & don'ts]
 ```
 
-### 6️⃣ Create AGENTS.md and CLAUDE.md
+### 7️⃣ Create AGENTS.md and CLAUDE.md
 
 ```markdown
 # 🤖 AI Agents Setup
