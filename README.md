@@ -62,10 +62,6 @@ agents-playbook/
 2. Copy to your AI agent
 3. Follow instructions
 
-### Option 3: n8n Automation
-1. Import [ba-agent-workflow.json](n8n/ba-agent-workflow.json)
-2. Set up Telegram bot
-
 ## 📊 Complexity Guide
 
 | 🟢 Simple | 🟡 Standard | 🔴 Complex |
@@ -81,11 +77,11 @@ agents-playbook/
 
 ## 🚧 Roadmap
 
-Планируется добавление:
-- **n8n промпт-темплейты** для автоматизации workflow
-- **Готовые шаблоны** для популярных фреймворков (Django, React, FastAPI)
-- **Специализированные промпты** для DevOps, тестирования, документации
-- **Интеграции** с другими no-code платформами
+Coming soon:
+- **n8n prompt templates** for workflow automation
+- **Ready-to-use templates** for popular frameworks (Django, React, FastAPI)
+- **Specialized prompts** for DevOps, testing, documentation
+- **Integrations** with other no-code platforms
 
 ---
 
