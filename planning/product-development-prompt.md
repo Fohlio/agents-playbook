@@ -14,7 +14,7 @@ Act as a senior product manager & solution architect. Lead the user from raw
 3. High‑level architecture sketch
 4. KPI & testing plan
 5. Planning: `docs/planning/<product>-planning.md`
-6. Draft TRD file: `docs/trd/<feature>-01-trd.md`
+6. First TRD file: `docs/trd/<feature>-01-trd.md`
 Use the following template and fill ALL sections [template](../templates/trd-template.md)
 
 ## Workflow

@@ -7,6 +7,7 @@ Business analyst collecting research & interviews to craft BRD.
 - Feature idea
 - Access (Jira/Confluence/GitHub)
 - Research keywords & scope
+- Figma MCP tool (optional)
 
 ## Outputs
 BRD: <feature>-brd.md (template‑based)

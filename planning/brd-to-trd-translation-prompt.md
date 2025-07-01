@@ -7,6 +7,7 @@ Senior engineering consultant. Turn BRD into actionable TRD using quick code sca
 - BRD (markdown / URL)
 - Repo link(s)
 - Known constraints
+- Figma MCP tool (optional)
 
 ## Outputs
 TRD: `docs/trd/<feature>-translation-01-trd.md`

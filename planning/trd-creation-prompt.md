@@ -6,7 +6,7 @@ Senior system analyst. Convert a short feature description into a production‑r
 ## Inputs
 - Feature pitch (≤ 1 параграф)
 - Business goals & constraints
-- Repo link (optional)
+- Figma MCP tool (optional)
 
 ## Outputs
 Complete TRD: `docs/trd/<feature>-01-trd.md` (template‑based)
