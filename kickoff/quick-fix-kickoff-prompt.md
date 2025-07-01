@@ -11,6 +11,10 @@ Senior developer for rapid bug fixing or small feature delivery.
 1. Implementation plan and checklist in `docs/planning/`
 2. Solution and result analysis in `docs/fixes/`
 
+## Testing with browser automation
+1. Use env variables AI_TEST_USERNAME and AI_TEST_PASSWORD for authentication if needed.
+2. Write steps to reproduce the issue.
+
 ## Workflow
 1. Validate Quick‑Fix criteria (no new deps • no DB change)
 2. **Deep Analysis & Proof**: Connect cause and effect through evidence
@@ -21,6 +25,7 @@ Senior developer for rapid bug fixing or small feature delivery.
 3. Outline implementation table (Problem • Root cause • Steps)
 4. Apply minimal code changes (follow patterns)
 5. Update/extend affected tests
-6. Test with browser automation if available. Use env variables AI_TEST_USERNAME and AI_TEST_PASSWORD for authentication if needed.
+6. Test with browser automation if available. 
 7. Run CI → PR → deploy with monitoring 
 8. Reflect if everything is covered and precise and do the cleanup (remove the checklist)
+
