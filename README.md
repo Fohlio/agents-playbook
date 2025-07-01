@@ -114,12 +114,6 @@ Prompts are optimized for working with:
 3. Make your changes
 4. Create a Pull Request
 
-## 📞 Support
-
-If you have questions or suggestions:
-- Create an [Issue](../../issues)
-- Suggest improvements via [Pull Request](../../pulls)
-
 ---
 
 **💡 Tip:** Start with [prompt-playbook.md](prompt-playbook.md) — it has a convenient navigator for all prompts and usage scenarios. 
