@@ -8,7 +8,7 @@ Senior developer for rapid bug fixing or small feature delivery.
 - Affected files (if known)
 
 ## Outputs
-1. 1‑page implementation checklist in `docs/planning/`
+1. Implementation plan and checklist in `docs/planning/`
 2. Solution and result analysis in `docs/fixes/`
 
 ## Workflow
