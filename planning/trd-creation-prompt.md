@@ -19,7 +19,7 @@ Planning: `docs/planning/<feature>-planning.md` (if necessary)
 4. Split delivery into phases, flag risks
 5. Fill template sections, mark N/A where irrelevant
 6. Provide acceptance criteria & test plan
-7. Create a planning document (if the feature is too big) for helicopter view planning, mark open questions
+7. Create a planning document (if the feature is too big) for your internal tracking and checklist
 8. Reflect if everything is covered and precise
 
 Use the following template and fill ALL sections [template](../templates/trd-template.md)

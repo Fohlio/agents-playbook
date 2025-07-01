@@ -18,7 +18,7 @@ Planning: `docs/planning/<feature>-analysis-<system>-planning.md`
 ## Workflow
 1. Define scope & boundaries
 2. Analyse architecture • data • APIs • deps
-3. Create a planning document (if the feature is too big) for helicopter view planning, mark open questions
+3. Create a planning document (if the feature is too big) for your internal tracking and checklist
 4. Map user journeys & edge cases
 5. Document code structure & environment
 6. Capture tests coverage, debt, perf

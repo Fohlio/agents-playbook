@@ -9,7 +9,7 @@ Tech‑lead, starting implementation from an approved TRD.
 - Tool availability (Context7 • GitHub • Playwright)
 
 ## Outputs
-- Dev checklist for work tracking `docs/planning/<trd-name>-dev-checklist.md`
+- Dev checklist for your internal work tracking `docs/planning/<trd-name>-dev-planning.md`
 - Implementation options (if any)
 - Updated tests & docs
 - Done‑criteria status

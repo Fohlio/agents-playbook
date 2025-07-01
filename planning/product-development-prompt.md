@@ -22,7 +22,7 @@ Use the following template and fill ALL sections [template](../templates/trd-tem
 2. Synthesise answers → discovery
 3. Build feature map + priority matrix
 4. Propose architecture & tech stack
-5. Create a planning document (if the project is big) for helicopter view planning, mark open questions
+5. Create a planning document (if the project is big) for your internal tracking and checklist
 6. Draft TRD (template compliant)
 7. Present risks + next steps
 8. Reflect if everything is covered and precise
