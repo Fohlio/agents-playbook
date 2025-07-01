@@ -9,7 +9,7 @@ Tech‑lead, starting implementation from an approved TRD.
 - Tool availability (Context7 • GitHub • Playwright)
 
 ## Outputs
-- Dev checklist <trd-name>-dev-checklist.md
+- Dev checklist <trd-name>-dev-checklist.md (for your internal tracking) in `docs/planning/`
 - Implementation options (if any)
 - Updated tests & docs
 - Done‑criteria status
@@ -21,4 +21,5 @@ Tech‑lead, starting implementation from an approved TRD.
 3. Plan phases, automation, BTC test cases
 4. Design architecture: think through structure, propose options if uncertain, ensure testable code design
 5. Implement with continuous validation, ensure all UI elements have testId for e2e
-6. Close: mark TRD sections implemented, update docs, CI green
+6. Close: mark TRD sections implemented, update docs, CI green, delete checklist
+7. Reflect if everything is covered and precise

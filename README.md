@@ -16,33 +16,34 @@ This repository contains a set of ready-to-use prompts that help AI agents (Clau
 ## 🚀 Quick Start
 
 ### 1. Starting with a new project?
-→ Use [**Project Initialization**](project-initialization-prompt.md)
+→ Use [**Project Initialization Kickoff**](kickoff/project-initialization-kickoff-prompt.md)
 
 ### 2. Have a product idea?
-→ Use [**Product Development**](product-development-prompt.md)
+→ Use [**Product Development**](planning/product-development-prompt.md)
 
 ### 3. Need to implement a feature?
-→ Create [**TRD**](trd-creation-prompt.md) → run [**Development Kickoff**](development-kickoff-prompt.md)
+→ Create [**TRD**](planning/trd-creation-prompt.md) → run [**Development Kickoff**](kickoff/development-kickoff-prompt.md)
 
 ### 4. Urgent bug?
-→ Use [**Quick Fix**](quick-fix-prompt.md)
+→ Use [**Quick Fix**](kickoff/quick-fix-kickoff-prompt.md)
 
 ## 📚 Key Files
 
 | File | Description |
 |------|-------------|
 | **[prompt-playbook.md](prompt-playbook.md)** | 📋 Main navigator for all prompts |
-| **[project-initialization-prompt.md](project-initialization-prompt.md)** | 🆕 AI setup for new projects |
-| **[development-kickoff-prompt.md](development-kickoff-prompt.md)** | 🔨 Feature implementation from TRD |
-| **[quick-fix-prompt.md](quick-fix-prompt.md)** | ⚡ Quick fixes and mini-features |
+| **[project-initialization-kickoff-prompt.md](kickoff/project-initialization-kickoff-prompt.md)** | 🆕 AI setup for new projects |
+| **[development-kickoff-prompt.md](kickoff/development-kickoff-prompt.md)** | 🔨 Feature implementation from TRD |
+| **[quick-fix-kickoff-prompt.md](kickoff/quick-fix-kickoff-prompt.md)** | ⚡ Quick fixes and mini-features |
 
 ## 🏗️ Repository Structure
 
 ```
 agents-playbook/
 ├── prompt-playbook.md           # 📋 Main navigator
-├── *-prompt.md                  # 🤖 Prompts for different tasks
-├── *-template.md                # 📝 Document templates
+├── planning/                    # 📋 Planning prompts
+├── kickoff/                     # 🚀 Implementation prompts
+├── templates/                   # 📝 Document templates
 └── n8n/                         # 🔄 n8n automation
     ├── ba-agent-workflow.json   # Telegram bot workflow
     └── ...
@@ -72,7 +73,7 @@ agents-playbook/
 ## 🎮 How to Use
 
 ### Option 1: Direct Copy-Paste
-1. Open the needed `*-prompt.md`
+1. Open the needed prompt from `planning/` or `kickoff/` folder
 2. Copy the prompt to your AI agent
 3. Follow the prompt instructions
 
@@ -103,8 +104,8 @@ Prompts are optimized for working with:
 
 ## 📝 Templates
 
-- **[BRD Template](brd-template.md)** — Business Requirements
-- **[TRD Template](trd-template.md)** — Technical Requirements
+- **[BRD Template](templates/brd-template.md)** — Business Requirements
+- **[TRD Template](templates/trd-template.md)** — Technical Requirements
 
 ## 🤝 Contributing
 

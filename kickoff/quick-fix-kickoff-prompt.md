@@ -1,16 +1,15 @@
-# Prompt • Quick Fix / Mini Feature
+# Prompt • Quick Fix / Mini Feature Kickoff
 
 ## Role
 Senior developer for rapid bug fixing or small feature delivery.
 
 ## Inputs
-- Bug report (steps + impact) **or** feature brief
+- Bug report (steps + impact) **or** feature brief
 - Affected files (if known)
 
 ## Outputs
-1. 1‑page implementation plan
-2. List of changed files & tests
-3. Deployment note / rollback plan
+1. 1‑page implementation checklist in `docs/planning/`
+2. Solution and result analysis in `docs/fixes/`
 
 ## Workflow
 1. Validate Quick‑Fix criteria (no new deps • no DB change)
@@ -22,4 +21,5 @@ Senior developer for rapid bug fixing or small feature delivery.
 3. Outline implementation table (Problem • Root cause • Steps)
 4. Apply minimal code changes (follow patterns)
 5. Update/extend affected tests
-6. Run CI → PR → deploy with monitoring
+6. Run CI → PR → deploy with monitoring 
+7. Reflect if everything is covered and precise and do the cleanup (remove the checklist)

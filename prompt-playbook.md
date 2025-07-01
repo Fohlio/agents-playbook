@@ -2,23 +2,28 @@
 
 Specialized prompts for AI agents handling software development and product management tasks.
 
-## 📋 Available Prompts
+## 📋 Planning Prompts
 
 | # | Prompt | Complexity | Use Case | Output |
 |---|--------|------------|----------|---------|
-| 0 | [Project Initialization](project-initialization-prompt.md) | Medium | New codebase → AI setup | AGENTS.MD, navigation, stack analysis |
-| 1 | [Product Development](product-development-prompt.md) | High | Product idea → comprehensive planning | PRD, feature breakdown, MVP, first TRD |
-| 2 | [TRD Creation](trd-creation-prompt.md) | Medium | Feature idea → technical spec | Complete TRD |
-| 3 | [BRD to TRD Translation](brd-to-trd-translation-prompt.md) | Medium | BRD + codebase → technical requirements | TRD from business requirements |
-| 4 | [Quick Fix](quick-fix-prompt.md) | Simple-Medium | Bug fixes, mini-features | Working solution, minimal docs |
-| 5 | [Development Kickoff](development-kickoff-prompt.md) | Variable | TRD → implementation | Working code, tests, docs |
-| 6 | [Existing Feature Analysis](existing-feature-analysis-prompt.md) | Medium-High | Reverse-engineer feature | "As-is" TRD |
-| 7 | [Feature Migration](feature-migration-prompt.md) | High | Cross-system migration | "To-be" TRD + migration plan |
-| 8 | [BRD with Research](brd-creation-with-research-prompt.md) | Medium-High | External research → BRD | Complete BRD with research |
-| 9 | [Code Refactoring](code-refactoring-prompt.md) | Medium-High | Code → scalable architecture | Analysis + 3 refactoring options |
+| 0 | [Product Development](planning/product-development-prompt.md) | High | Product idea → comprehensive planning | PRD, feature breakdown, MVP, first TRD |
+| 1 | [TRD Creation](planning/trd-creation-prompt.md) | Medium | Feature idea → technical spec | Complete TRD |
+| 2 | [BRD to TRD Translation](planning/brd-to-trd-translation-prompt.md) | Medium | BRD + codebase → technical requirements | TRD from business requirements |
+| 3 | [Existing Feature Analysis](planning/existing-feature-analysis-prompt.md) | Medium-High | Reverse-engineer feature | "As-is" TRD |
+| 4 | [Feature Migration](planning/feature-migration-prompt.md) | High | Cross-system migration | "To-be" TRD + migration plan |
+| 5 | [BRD with Research](planning/brd-creation-with-research-prompt.md) | Medium-High | External research → BRD | Complete BRD with research |
+| 6 | [Code Refactoring](planning/code-refactoring-prompt.md) | Medium-High | Code → scalable architecture | Analysis + 3 refactoring options |
+
+## 🚀 Kickoff Prompts
+
+| # | Prompt | Complexity | Use Case | Output |
+|---|--------|------------|----------|---------|
+| 7 | [Project Initialization Kickoff](kickoff/project-initialization-kickoff-prompt.md) | Medium | New codebase → AI setup | AGENTS.MD, navigation, stack analysis |
+| 8 | [Quick Fix / Mini Feature Kickoff](kickoff/quick-fix-kickoff-prompt.md) | Simple-Medium | Bug fixes, mini-features | Working solution, minimal docs |
+| 9 | [Development Kickoff](kickoff/development-kickoff-prompt.md) | Variable | TRD → implementation | Working code, tests, docs |
 
 ## 📝 Templates
-- [BRD Template](brd-template.md) • [TRD Template](trd-template.md)
+- [BRD Template](templates/brd-template.md) • [TRD Template](templates/trd-template.md)
 
 ## 🤖 Complexity Assessment
 | Simple | Standard | Complex |
@@ -28,20 +33,25 @@ Specialized prompts for AI agents handling software development and product mana
 
 ## 🎯 Quick Decision Guide
 
+### Planning Phase
 | What You Have | What You Need | Use This Prompt |
 |---------------|---------------|-----------------|
-| New codebase | AI agent setup | [Project Initialization](project-initialization-prompt.md) |
-| Product idea | Full planning | [Product Development](product-development-prompt.md) |
-| Feature idea | Technical spec | [TRD Creation](trd-creation-prompt.md) |
-| BRD document | Technical implementation | [BRD to TRD Translation](brd-to-trd-translation-prompt.md) |
-| TRD document | Working code | [Development Kickoff](development-kickoff-prompt.md) |
-| Bug/small task | Quick fix | [Quick Fix](quick-fix-prompt.md) |
-| Existing feature | Documentation | [Existing Feature Analysis](existing-feature-analysis-prompt.md) |
-| Feature to migrate | Migration plan | [Feature Migration](feature-migration-prompt.md) |
-| Research need | Complete BRD | [BRD with Research](brd-creation-with-research-prompt.md) |
-| Legacy code | Modern architecture | [Code Refactoring](code-refactoring-prompt.md) |
+| Product idea | Full planning | [Product Development](planning/product-development-prompt.md) |
+| Feature idea | Technical spec | [TRD Creation](planning/trd-creation-prompt.md) |
+| BRD document | Technical implementation | [BRD to TRD Translation](planning/brd-to-trd-translation-prompt.md) |
+| Existing feature | Documentation | [Existing Feature Analysis](planning/existing-feature-analysis-prompt.md) |
+| Feature to migrate | Migration plan | [Feature Migration](planning/feature-migration-prompt.md) |
+| Research need | Complete BRD | [BRD with Research](planning/brd-creation-with-research-prompt.md) |
+| Legacy code | Modern architecture | [Code Refactoring](planning/code-refactoring-prompt.md) |
 
-## 🚨 Emergency: Use [Quick Fix](quick-fix-prompt.md)
+### Kickoff Phase
+| What You Have | What You Need | Use This Prompt |
+|---------------|---------------|-----------------|
+| New codebase | AI agent setup | [Project Initialization Kickoff](kickoff/project-initialization-kickoff-prompt.md) |
+| TRD document | Working code | [Development Kickoff](kickoff/development-kickoff-prompt.md) |
+| Bug/small task | Quick fix | [Quick Fix / Mini Feature Kickoff](kickoff/quick-fix-kickoff-prompt.md) |
+
+## 🚨 Emergency: Use [Quick Fix / Mini Feature Kickoff](kickoff/quick-fix-kickoff-prompt.md)
 Skip planning • Fix fast • Document later
 
 ## 🔄 Common Flows
@@ -50,12 +60,12 @@ New Project → Project Initialization → [Choose other prompts] → Done
 Product Idea → Product Development → TRD → Dev Kickoff → Done
 Feature Request → TRD Creation → Dev Kickoff → Done  
 BRD → BRD to TRD → Dev Kickoff → Done
-Bug/Task → Quick Fix → Done
+Bug/Task → Quick Fix Kickoff → Done
 Code Issues → Code Refactoring → Dev Kickoff → Done
 ```
 
 ## 🛠️ Quick Start
-0. **New to codebase?** → Run [Project Initialization](project-initialization-prompt.md) first
+0. **New to codebase?** → Run [Project Initialization Kickoff](kickoff/project-initialization-kickoff-prompt.md) first
 1. **Identify what you have** (idea, BRD, TRD, bug, etc.)
 2. **Check decision guide** above
 3. **Run the recommended prompt**

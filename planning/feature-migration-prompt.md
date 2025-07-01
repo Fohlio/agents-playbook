@@ -9,9 +9,9 @@ Architect adapting "as‑is" feature to new system.
 - Constraints (timeline • tech)
 
 ## Outputs
-1. "To‑Be" TRD: <feature>-migration-<src>-to-<tgt>-02-trd.md
+1. "To‑Be" TRD: docs/trd/<feature>-migration-<src>-to-<tgt>-02-trd.md
 2. Migration analysis summary
-Use the following template and fill ALL sections [template](trd-template.md)
+Use the following template and fill ALL sections [template](../templates/trd-template.md)
 
 ## Workflow
 1. Assess target stack & constraints

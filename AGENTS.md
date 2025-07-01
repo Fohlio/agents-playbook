@@ -12,20 +12,20 @@ This is a **prompts collection repository** for AI agents in software developmen
 - **`README.md`** - Public documentation for users
 
 ### 🤖 Core Prompts
-- **`project-initialization-prompt.md`** - Set up AI for new codebases
-- **`development-kickoff-prompt.md`** - Implement features from TRD
-- **`quick-fix-prompt.md`** - Handle bugs and mini-features
-- **`trd-creation-prompt.md`** - Create technical requirements
-- **`product-development-prompt.md`** - Full product planning
-- **`code-refactoring-prompt.md`** - Architecture improvements
-- **`existing-feature-analysis-prompt.md`** - Reverse-engineer features
-- **`feature-migration-prompt.md`** - Cross-system migrations
-- **`brd-creation-with-research-prompt.md`** - Business requirements with research
-- **`brd-to-trd-translation-prompt.md`** - Convert business to technical specs
+- **`kickoff/project-initialization-kickoff-prompt.md`** - Set up AI for new codebases
+- **`kickoff/development-kickoff-prompt.md`** - Implement features from TRD
+- **`kickoff/quick-fix-kickoff-prompt.md`** - Handle bugs and mini-features
+- **`planning/trd-creation-prompt.md`** - Create technical requirements
+- **`planning/product-development-prompt.md`** - Full product planning
+- **`planning/code-refactoring-prompt.md`** - Architecture improvements
+- **`planning/existing-feature-analysis-prompt.md`** - Reverse-engineer features
+- **`planning/feature-migration-prompt.md`** - Cross-system migrations
+- **`planning/brd-creation-with-research-prompt.md`** - Business requirements with research
+- **`planning/brd-to-trd-translation-prompt.md`** - Convert business to technical specs
 
 ### 📝 Templates
-- **`brd-template.md`** - Business Requirements Document template
-- **`trd-template.md`** - Technical Requirements Document template
+- **`templates/brd-template.md`** - Business Requirements Document template
+- **`templates/trd-template.md`** - Technical Requirements Document template
 
 ### 🔄 Automation
 - **`n8n/`** - n8n workflows for automation
@@ -48,12 +48,12 @@ This is a **prompts collection repository** for AI agents in software developmen
 
 ### Common Scenarios
 ```
-User has: Product idea → Recommend: product-development-prompt.md
-User has: Feature request → Recommend: trd-creation-prompt.md → development-kickoff-prompt.md  
-User has: Bug/urgent task → Recommend: quick-fix-prompt.md
-User has: New codebase → Recommend: project-initialization-prompt.md
-User has: Legacy code → Recommend: code-refactoring-prompt.md
-User has: BRD document → Recommend: brd-to-trd-translation-prompt.md
+User has: Product idea → Recommend: planning/product-development-prompt.md
+User has: Feature request → Recommend: planning/trd-creation-prompt.md → kickoff/development-kickoff-prompt.md  
+User has: Bug/urgent task → Recommend: kickoff/quick-fix-kickoff-prompt.md
+User has: New codebase → Recommend: kickoff/project-initialization-kickoff-prompt.md
+User has: Legacy code → Recommend: planning/code-refactoring-prompt.md
+User has: BRD document → Recommend: planning/brd-to-trd-translation-prompt.md
 ```
 
 ### Repository Modifications
@@ -75,7 +75,7 @@ User has: BRD document → Recommend: brd-to-trd-translation-prompt.md
 - Documentation stays current
 
 ## Emergency Situations
-For urgent bugs or critical issues → **Always recommend `quick-fix-prompt.md`** first, skip planning.
+For urgent bugs or critical issues → **Always recommend `kickoff/quick-fix-kickoff-prompt.md`** first, skip planning.
 
 ---
 **Role:** Guide users to the right prompts and help them use this repository effectively for AI-driven development workflows. 
