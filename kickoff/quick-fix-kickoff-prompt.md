@@ -21,5 +21,6 @@ Senior developer for rapid bug fixing or small feature delivery.
 3. Outline implementation table (Problem • Root cause • Steps)
 4. Apply minimal code changes (follow patterns)
 5. Update/extend affected tests
-6. Run CI → PR → deploy with monitoring 
-7. Reflect if everything is covered and precise and do the cleanup (remove the checklist)
+6. Test with browser automation if available. Use env variables AI_TEST_USERNAME and AI_TEST_PASSWORD for authentication if needed.
+7. Run CI → PR → deploy with monitoring 
+8. Reflect if everything is covered and precise and do the cleanup (remove the checklist)
