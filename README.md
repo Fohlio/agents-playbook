@@ -4,6 +4,8 @@
 
 This repository contains ready-to-use prompts that help AI agents (Claude, ChatGPT, etc.) effectively perform software development tasks — from product planning to code implementation.
 
+> ⚠️ **Early Version**: This playbook is currently in active development and testing. Some features may change as we gather feedback and improve the workflows.
+
 ## 🚀 Quick Setup in Your Project
 
 ### 1. Install the Playbook
