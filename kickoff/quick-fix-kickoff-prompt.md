@@ -11,7 +11,7 @@ Senior developer for rapid bug fixing or small feature delivery.
 
 ## Outputs
 
-1. Implementation plan and checklist in `docs/planning/`
+1. Implementation plan and checklist in `docs/planning/` with task breakdown and complexity analysis
 2. Solution and result analysis in `docs/fixes/`
 
 ## Testing with browser automation
@@ -35,7 +35,10 @@ Senior developer for rapid bug fixing or small feature delivery.
    - Prove the causal relationship with step-by-step reasoning
    - Validate assumptions through testing or code inspection
 6. **Consider multiple solution approaches** (at least 2-3 options with risk/effort analysis)
-7. Outline implementation table (Problem • Root cause • Steps)
+7. **Create structured implementation plan** using `planning/task-breakdown-helper-prompt.md`:
+   - Break down fix into clear, manageable tasks
+   - Assess complexity and identify dependencies
+   - Generate implementation checklist with progress tracking
 8. Apply minimal code changes (follow patterns)
 9. Update/extend affected tests
 10. Test with browser automation if available.
