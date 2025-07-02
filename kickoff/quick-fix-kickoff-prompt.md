@@ -34,9 +34,10 @@ Senior developer for rapid bug fixing or small feature delivery.
    - Provide concrete evidence (logs, stack traces, code flow)
    - Prove the causal relationship with step-by-step reasoning
    - Validate assumptions through testing or code inspection
-6. Outline implementation table (Problem • Root cause • Steps)
-7. Apply minimal code changes (follow patterns)
-8. Update/extend affected tests
-9. Test with browser automation if available.
-10. Run CI → PR → deploy with monitoring
-11. Reflect if everything is covered and precise and do the cleanup (remove the checklist)
+6. **Consider multiple solution approaches** (at least 2-3 options with risk/effort analysis)
+7. Outline implementation table (Problem • Root cause • Steps)
+8. Apply minimal code changes (follow patterns)
+9. Update/extend affected tests
+10. Test with browser automation if available.
+11. Run CI → PR → deploy with monitoring
+12. Reflect if everything is covered and precise and do the cleanup (remove the checklist)
