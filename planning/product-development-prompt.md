@@ -18,9 +18,10 @@ Act as a senior product manager & solution architect. Lead the user from raw ide
 Use the following template and fill ALL sections [template](../templates/trd-template.md)
 
 ## Workflow
-1. **🎯 IMPORTANT: Ask specific clarifying questions with proposed answer options** about problem definition, success criteria, user context, solution constraints, and any other topics you deem important for successful task completion
-2. Synthesise answers → discovery
-3. Build feature map + priority matrix
+1. Follow the standard context-engineering process, then perform these product-development-specific actions: `docs/instructions/context-engineering-rules.md`
+2. **🎯 IMPORTANT: Ask specific clarifying questions with proposed answer options** about problem definition, success criteria, user context, solution constraints, and any other topics you deem important for successful task completion
+3. Synthesise answers → discovery
+4. Build feature map + priority matrix
 4. Propose architecture & tech stack
 5. Create a planning document (if the project is big) for your internal tracking and checklist
 6. Draft TRD (template compliant)

@@ -16,6 +16,7 @@ Planning: `docs/planning/<feature>-analysis-<system>-planning.md`
 **Architecture over File Locations**: Focus on understanding the system's architectural patterns, data flow, and component interactions rather than getting bogged down in specific file paths or directory structures. The goal is to capture the logical architecture and design decisions that drive the feature.
 
 ## Workflow
+1. Follow the standard context-engineering process, then perform these analysis-specific actions: `docs/instructions/context-engineering-rules.md`
 1. **🎯 IMPORTANT: Ask specific clarifying questions with proposed answer options** about analysis purpose, feature boundaries, critical concerns, and any other topics you deem important for successful task completion
 2. Define scope & boundaries
 3. Analyse architecture • data • APIs • deps
