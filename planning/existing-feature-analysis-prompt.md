@@ -10,7 +10,6 @@ Senior engineer reverse‑engineering a live feature.
 
 ## Outputs
 TRD: `docs/trd/<feature>-analysis-<system>-trd.md`
-Planning: `docs/planning/<feature>-analysis-<system>-planning.md`
 
 ## Analysis Focus
 **Architecture over File Locations**: Focus on understanding the system's architectural patterns, data flow, and component interactions rather than getting bogged down in specific file paths or directory structures. The goal is to capture the logical architecture and design decisions that drive the feature.

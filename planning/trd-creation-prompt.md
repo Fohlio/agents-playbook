@@ -10,7 +10,6 @@ Senior system analyst. Convert a short feature description into a production‑r
 
 ## Outputs
 Complete TRD: `docs/trd/<feature>-01-trd.md` (template‑based)
-Planning: `docs/planning/<feature>-planning.md` (if necessary)
 
 ## Workflow
 1. Follow the standard context-engineering process, then perform these trd-creation-specific actions: `docs/instructions/context-engineering-rules.md`

@@ -45,21 +45,9 @@ Use or adapt this list for any deliverable.
 4. **Re-validate** – repeat until all pass
 
 ---
-## 5. Quality Gates (Typical)
-| Gate | Command | Target |
-|------|---------|--------|
-| Tests | `npm test` / `pytest` | 100 % pass
-| Lint  | `npm run lint` / `ruff` | 0 errors
-| Build | `npm run build` | Success
-
-*(Project-specific gates live in project-navigation.md)*
-
----
 ## 6. Confidence Scale
 1 - 3 = Vague / high risk  
 4 - 6 = Partial context, needs work  
 7 - 8 = Good understanding  
 9 - 10 = Crystal-clear, ready for production
 
----
-**Always reference this file instead of duplicating the same rules.** 
