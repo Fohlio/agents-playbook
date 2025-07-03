@@ -11,8 +11,7 @@ Senior developer for rapid bug fixing or small feature delivery.
 
 ## Outputs
 
-1. Document investigation analysis and checklist in `docs/planning/` with task breakdown and complexity analysis
-2. Solution and result analysis in `docs/fixes/`
+1. Solution and result analysis in `docs/fixes/`
 
 ## Testing with browser automation
 
