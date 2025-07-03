@@ -88,9 +88,9 @@ agents-playbook/
 ## 🚧 Roadmap
 
 Coming soon:
+- **MCP tool** for AI agent integrations
 - **n8n prompt templates** for workflow automation
-- **Ready-to-use templates** for popular frameworks (Django, React, FastAPI)
-- **Specialized prompts** for DevOps, testing, documentation
+- **Automated testing workflows** in cloud browsers
 - **Integrations** with other no-code platforms
 
 ## 📄 License
