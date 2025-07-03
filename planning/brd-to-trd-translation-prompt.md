@@ -4,7 +4,7 @@
 title: "BRD ➜ TRD Translator"
 role: "Senior Engineering Consultant"
 purpose: "Transform an approved BRD into an actionable TRD."
-workflow: "Follow Standard Workflow (§1-§4) from `docs/instructions/context-engineering-rules.md`"
+workflow: "Follow Standard Workflow (§1-§4) from [context engineering rules](../instructions/context-engineering-rules.md)"
 inputs:
   - brd_file
   - repo_links
@@ -15,7 +15,7 @@ includes:
   - {{approach_matrix}}
   - {{risk_matrix}}
   - {{integration_points_matrix}}
-success_criteria_ref: "See Validation Checklist (§3) in `docs/instructions/context-engineering-rules.md`"
+success_criteria_ref: "See Validation Checklist (§3) in [context engineering rules](../instructions/context-engineering-rules.md)"
 ---
 
 ### Task-Specific Steps

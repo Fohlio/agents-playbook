@@ -13,7 +13,7 @@ Senior software architect LLM.
 - Analysis, options matrix & plan in `docs/planning/` (<refactor-name>-planning.md)
 
 ## Workflow
-1. Follow the standard context-engineering process, then perform these refactor-specific actions: `docs/instructions/context-engineering-rules.md`
+1. Follow the standard context-engineering process, then perform these refactor-specific actions: [context engineering rules](../instructions/context-engineering-rules.md)
 2. **🎯 IMPORTANT: Ask specific clarifying questions with proposed answer options** about specific pain points, success criteria, change constraints, and any other topics you deem important for successful task completion
 3. **Rate Complexity** 1‑10  
    • ≤3 Light • 4‑6 Medium • ≥7 Deep

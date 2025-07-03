@@ -33,7 +33,7 @@ Rate your confidence 1-10 for each major section. <7 = gather more context befor
 - Best practices referenced: [sources]
 
 **Project Context:**
-- Rules and standards followed: [from project-navigation.md]
+- Rules and standards followed: [context engineering rules](../instructions/context-engineering-rules.md)
 - Validation requirements met: [specific commands]
 - Security/performance standards: [requirements]
 
@@ -44,7 +44,7 @@ Commands that MUST pass before considering this TRD implementation complete:
 - [ ] `npm test` (or project-specific test command)
 - [ ] `npm run lint` (or project-specific linting)
 - [ ] `npm run build` (or project-specific build)
-- [ ] [Custom validation commands from project-navigation.md]
+- [ ] Custom validation commands from [context engineering rules](../instructions/context-engineering-rules.md)
 
 **Quality Gates:**
 - [ ] Code coverage > [X]% for new features
@@ -152,7 +152,7 @@ Errors: 4xx/5xx JSON
 - Audit events
 
 **Security Confidence**: [score]/10
-**Standards Met**: [project security requirements from project-navigation.md]
+**Standards Met**: project security requirements from [context engineering rules](../instructions/context-engineering-rules.md)
 **Pattern Reference**: [security patterns from examples/]
 
 ---
@@ -206,7 +206,7 @@ Errors: 4xx/5xx JSON
 Before starting implementation, verify:
 - [ ] Overall confidence ≥7/10 (if <7, gather more context)
 - [ ] All patterns from examples/ folder considered
-- [ ] Project standards from project-navigation.md followed
+- [ ] Project standards from [context engineering rules](../instructions/context-engineering-rules.md) followed
 - [ ] Validation commands identified and tested
 - [ ] Similar features in codebase analyzed
 
@@ -221,7 +221,7 @@ During implementation, ensure:
 After implementation:
 - [ ] Update confidence scores based on actual implementation
 - [ ] Add successful patterns to examples/ folder
-- [ ] Update project-navigation.md with new learnings
+- [ ] Update [context engineering rules](../instructions/context-engineering-rules.md) with new learnings
 - [ ] Document any deviations from planned approach
 
 ## Self-Correction Protocol
