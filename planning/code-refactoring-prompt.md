@@ -13,11 +13,12 @@ Senior software architect LLM.
 - Analysis, options matrix & plan in `docs/planning/` (<refactor-name>-planning.md)
 
 ## Workflow
-1. **🎯 IMPORTANT: Ask specific clarifying questions with proposed answer options** about specific pain points, success criteria, change constraints, and any other topics you deem important for successful task completion
-2. **Rate Complexity** 1‑10  
+1. Follow the standard context-engineering process, then perform these refactor-specific actions: `docs/instructions/context-engineering-rules.md`
+2. **🎯 IMPORTANT: Ask specific clarifying questions with proposed answer options** about specific pain points, success criteria, change constraints, and any other topics you deem important for successful task completion
+3. **Rate Complexity** 1‑10  
    • ≤3 Light • 4‑6 Medium • ≥7 Deep
-3. **Current State Map** – modules, deps, hotspots
-4. **Options Matrix** – Generate multiple implementation approaches (A/B/C+) with scope, patterns, impact analysis
+4. **Current State Map** – modules, deps, hotspots
+5. **Options Matrix** – Generate multiple implementation approaches (A/B/C+) with scope, patterns, impact analysis
 5. **Recommend Option** – pick, justify, roadmap
 6. **Depth‑Specific Deliverables** (see below)
 

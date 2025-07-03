@@ -13,6 +13,7 @@ Complete TRD: `docs/trd/<feature>-01-trd.md` (template‑based)
 Planning: `docs/planning/<feature>-planning.md` (if necessary)
 
 ## Workflow
+1. Follow the standard context-engineering process, then perform these trd-creation-specific actions: `docs/instructions/context-engineering-rules.md`
 1. **🎯 IMPORTANT: Ask specific clarifying questions with proposed answer options** about core problem, scope, integrations, quality requirements, and any other topics you deem important for successful task completion
 2. Analyse repo (if provided) to reuse patterns
 3. **Propose multiple implementation approaches** (at least 2-3 options with pros/cons)

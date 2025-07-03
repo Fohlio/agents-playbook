@@ -9,14 +9,14 @@ Tech‑lead, starting implementation from an approved TRD.
 - Tool availability (Context7 • GitHub • Playwright)
 
 ## Outputs
-- Dev checklist for your internal work tracking `docs/planning/<trd-name>-dev-planning.md` with systematic task breakdown, dependencies, and complexity analysis
+- Dev checklist for your internal work tracking `docs/planning/<trd-name>-dev-planning.md` with systematic task breakdown, dependencies, and complexity analysis as the checklist
 - Implementation options (if any)
 - Updated tests & docs
 - Done‑criteria status
 
 ## Workflow
 0. **🎯 IMPORTANT: Ask specific clarifying questions with proposed answer options** about TRD completeness, development standards, deployment requirements, and any other topics you deem important for successful task completion
-1. **Generate structured development checklist** using `planning/task-breakdown-helper-prompt.md`:
+1. **Generate structured development checklist** using `instructions/task-breakdown-helper-prompt.md`:
    - Break down TRD into manageable tasks with complexity assessment
    - Map dependencies and identify critical path
    - Create phased implementation plan with progress tracking
