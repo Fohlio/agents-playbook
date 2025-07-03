@@ -4,8 +4,6 @@
 
 This repository contains ready-to-use prompts that help AI agents (Claude, ChatGPT, etc.) effectively perform software development tasks — from product planning to code implementation.
 
-> ⚠️ **Early Version**: This playbook is currently in active development and testing. Some features may change as we gather feedback and improve the workflows.
-
 ## 🚀 Quick Setup in Your Project
 
 ### 1. Install the Playbook
@@ -27,19 +25,28 @@ cp -r agents-playbook/ your-project/docs/agents-playbook/
 
 ## 🎯 What You Get
 
-- **10 specialized prompts** for different development stages
+- **11 specialized prompts** for different development stages
 - **Ready-to-use templates** (BRD, TRD)
 - **Step-by-step workflows** for automation
 - **Tool integrations** (GitHub, Context7, Playwright)
+
+## 🔄 Development Stages
+
+Our prompts follow a structured 4-stage development flow:
+
+1. **📋 BRD Stage** - Business requirements and research
+2. **📐 TRD Stage** - Technical planning and architecture
+3. **🚀 Kickoff Stage** - Implementation and development
+4. **🧪 QA Stage** - Testing, validation, and quality assurance
 
 ## 📚 Main Flows
 
 | Scenario | Start With |
 |----------|------------|
 | 🆕 **New project** | [Project Initialization](kickoff/project-initialization-kickoff-prompt.md) |
-| 💡 **Product idea** | [Product Development](planning/product-development-prompt.md) |
-| ⚡ **Feature/bug** | [Quick Fix](kickoff/quick-fix-kickoff-prompt.md) |
-| 🏗️ **Major feature** | [TRD Creation](planning/trd-creation-prompt.md) → [Development Kickoff](kickoff/development-kickoff-prompt.md) |
+| 💡 **Product idea** | [Product Development](planning/product-development-prompt.md) → [QA Validation](qa/qa-validation-prompt.md) |
+| ⚡ **Feature/bug** | [Quick Fix](kickoff/quick-fix-kickoff-prompt.md) → [QA Validation](qa/qa-validation-prompt.md) |
+| 🏗️ **Major feature** | [TRD Creation](planning/trd-creation-prompt.md) → [Development Kickoff](kickoff/development-kickoff-prompt.md) → [QA Validation](qa/qa-validation-prompt.md) |
 
 ## 🏗️ Repository Structure
 
@@ -48,6 +55,7 @@ agents-playbook/
 ├── prompt-playbook.md           # 📋 Main navigator
 ├── planning/                    # 📋 Planning prompts
 ├── kickoff/                     # 🚀 Implementation prompts
+├── qa/                          # 🧪 Quality assurance prompts
 ├── templates/                   # 📝 Document templates
 └── n8n/                         # 🔄 n8n automation
 ```
@@ -69,8 +77,8 @@ agents-playbook/
 | 🟢 Simple | 🟡 Standard | 🔴 Complex |
 |-----------|-------------|------------|
 | Quick Fix | TRD Creation | Product Development |
-| | Development Kickoff | Feature Migration |
-| | | Code Refactoring |
+| QA Validation | Development Kickoff | Feature Migration |
+| | BRD Creation | Code Refactoring |
 
 ## 📝 Templates
 

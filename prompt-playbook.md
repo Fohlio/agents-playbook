@@ -22,6 +22,12 @@ Specialized prompts for AI agents handling software development and product mana
 | 8 | [Quick Fix / Mini Feature Kickoff](kickoff/quick-fix-kickoff-prompt.md) | Simple-Medium | Bug fixes, mini-features | Working solution, minimal docs |
 | 9 | [Development Kickoff](kickoff/development-kickoff-prompt.md) | Variable | TRD → implementation | Working code, tests, docs |
 
+## 🧪 QA Prompts
+
+| # | Prompt | Complexity | Use Case | Output |
+|---|--------|------------|----------|---------|
+| 10 | [QA Validation & Testing](qa/qa-validation-prompt.md) | Medium | Feature/fix → comprehensive testing | Test cases, validation report, automated tests |
+
 ## 📝 Templates
 - [BRD Template](templates/brd-template.md) • [TRD Template](templates/trd-template.md)
 
@@ -56,12 +62,12 @@ Skip planning • Fix fast • Document later
 
 ## 🔄 Common Flows
 ```
-New Project → Project Initialization → [Choose other prompts] → Done
-Product Idea → Product Development → TRD → Dev Kickoff → Done
-Feature Request → TRD Creation → Dev Kickoff → Done  
-BRD → BRD to TRD → Dev Kickoff → Done
-Bug/Task → Quick Fix Kickoff → Done
-Code Issues → Code Refactoring → Dev Kickoff → Done
+New Project → Project Initialization → [Choose other prompts] → QA Validation → Done
+Product Idea → Product Development → TRD → Dev Kickoff → QA Validation → Done
+Feature Request → TRD Creation → Dev Kickoff → QA Validation → Done  
+BRD → BRD to TRD → Dev Kickoff → QA Validation → Done
+Bug/Task → Quick Fix Kickoff → QA Validation → Done
+Code Issues → Code Refactoring → Dev Kickoff → QA Validation → Done
 ```
 
 ## 🛠️ Quick Start

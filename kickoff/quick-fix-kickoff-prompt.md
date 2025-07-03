@@ -13,11 +13,6 @@ Senior developer for rapid bug fixing or small feature delivery.
 
 1. Solution and result analysis in `docs/fixes/`
 
-## Testing with browser automation
-
-1. Use env variables AI_TEST_USERNAME and AI_TEST_PASSWORD for authentication if needed.
-2. Write steps to reproduce the issue.
-
 ## Workflow
 
 1. **🎯 IMPORTANT: Ask specific clarifying questions with proposed answer options** about impact, reproduction context, fix constraints, and any other topics you deem important for successful task completion
@@ -39,7 +34,6 @@ Senior developer for rapid bug fixing or small feature delivery.
    - Assess complexity and identify dependencies
    - Generate implementation checklist with progress tracking
 8. Apply minimal code changes (follow patterns)
-9. Update/extend affected tests
-10. Test with browser automation if available.
-11. Run CI → PR → deploy with monitoring
-12. Reflect if everything is covered and precise and do the cleanup (remove the checklist)
+9. **QA & Testing**: Use [QA Validation & Testing](../qa/qa-validation-prompt.md) for comprehensive testing
+10. Run CI → PR → deploy with monitoring
+11. Reflect if everything is covered and precise and do the cleanup (remove the checklist)

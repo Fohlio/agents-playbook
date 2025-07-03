@@ -22,9 +22,9 @@ Tech‑lead, starting implementation from an approved TRD.
    - Create phased implementation plan with progress tracking
 2. Verify tools; log missing ones
 3. Assess complexity (Simple / Standard / Complex) and pick strategy
-4. Plan phases, automation, BTC test cases
+4. Plan phases and automation
 5. **Design architecture**: think through structure, **propose multiple implementation options** (at least 2-3 approaches), ensure testable code design
 6. Implement with continuous validation, ensure you cover all UI elements with testId for e2e
-7. Test with browser automation if available. Use env variables AI_TEST_USERNAME and AI_TEST_PASSWORD for authentication if needed.
+7. **QA & Testing**: Use [QA Validation & Testing](../qa/qa-validation-prompt.md) for comprehensive testing
 8. Close: mark TRD sections implemented, update docs, CI green, delete checklist
 9. Reflect if everything is covered and precise

@@ -11,17 +11,26 @@ This is a **prompts collection repository** for AI agents in software developmen
 - **`prompt-playbook.md`** - MAIN NAVIGATOR - always start here to find the right prompt
 - **`README.md`** - Public documentation for users
 
-### 🤖 Core Prompts
+### 🤖 Core Prompts by Stage
+
+#### 📋 Business Requirements (BRD Creation)
+- **`planning/brd-creation-with-research-prompt.md`** - Business requirements with research
+- **`planning/product-development-prompt.md`** - Full product planning (includes BRD)
+
+#### 📐 Technical Requirements (TRD Creation)
+- **`planning/trd-creation-prompt.md`** - Create technical requirements from feature ideas
+- **`planning/brd-to-trd-translation-prompt.md`** - Convert business to technical specs
+- **`planning/existing-feature-analysis-prompt.md`** - Reverse-engineer features to TRD
+- **`planning/feature-migration-prompt.md`** - Cross-system migrations to TRD
+- **`planning/code-refactoring-prompt.md`** - Architecture improvements to TRD
+
+#### 🚀 Implementation (Kickoff)
 - **`kickoff/project-initialization-kickoff-prompt.md`** - Set up AI for new codebases
 - **`kickoff/development-kickoff-prompt.md`** - Implement features from TRD
 - **`kickoff/quick-fix-kickoff-prompt.md`** - Handle bugs and mini-features
-- **`planning/trd-creation-prompt.md`** - Create technical requirements
-- **`planning/product-development-prompt.md`** - Full product planning
-- **`planning/code-refactoring-prompt.md`** - Architecture improvements
-- **`planning/existing-feature-analysis-prompt.md`** - Reverse-engineer features
-- **`planning/feature-migration-prompt.md`** - Cross-system migrations
-- **`planning/brd-creation-with-research-prompt.md`** - Business requirements with research
-- **`planning/brd-to-trd-translation-prompt.md`** - Convert business to technical specs
+
+#### 🧪 Quality Assurance (QA)
+- **`qa/qa-validation-prompt.md`** - Comprehensive testing and validation
 
 ### 📝 Templates
 - **`templates/brd-template.md`** - Business Requirements Document template
@@ -38,7 +47,8 @@ This is a **prompts collection repository** for AI agents in software developmen
 1. **Always check `prompt-playbook.md` first** - it has the decision matrix
 2. **Identify what the user has** (idea, BRD, TRD, bug, etc.)
 3. **Recommend the appropriate prompt** from the playbook
-4. **Guide them to copy-paste the prompt** or help them use it
+4. **Include QA stage** in the workflow recommendation
+5. **Guide them to copy-paste the prompt** or help them use it
 
 ### Working with Prompts
 - **Read the full prompt** before recommending it
@@ -46,14 +56,26 @@ This is a **prompts collection repository** for AI agents in software developmen
 - **Help customize** the prompt if needed for their specific case
 - **Reference the templates** when BRD/TRD creation is needed
 
-### Common Scenarios
+### Common Scenarios & Stage Flow
 ```
-User has: Product idea → Recommend: planning/product-development-prompt.md
-User has: Feature request → Recommend: planning/trd-creation-prompt.md → kickoff/development-kickoff-prompt.md  
-User has: Bug/urgent task → Recommend: kickoff/quick-fix-kickoff-prompt.md
-User has: New codebase → Recommend: kickoff/project-initialization-kickoff-prompt.md
-User has: Legacy code → Recommend: planning/code-refactoring-prompt.md
-User has: BRD document → Recommend: planning/brd-to-trd-translation-prompt.md
+📋 BRD Stage:
+Product idea → planning/product-development-prompt.md (creates BRD + first TRD)
+Need business requirements → planning/brd-creation-with-research-prompt.md
+
+📐 TRD Stage:
+Feature request → planning/trd-creation-prompt.md
+BRD document → planning/brd-to-trd-translation-prompt.md
+Existing feature → planning/existing-feature-analysis-prompt.md
+Legacy code → planning/code-refactoring-prompt.md
+Feature migration → planning/feature-migration-prompt.md
+
+🚀 Kickoff Stage:
+TRD ready → kickoff/development-kickoff-prompt.md
+Bug/urgent task → kickoff/quick-fix-kickoff-prompt.md
+New codebase → kickoff/project-initialization-kickoff-prompt.md
+
+🧪 QA Stage:
+Implementation done → qa/qa-validation-prompt.md
 ```
 
 ### Repository Modifications
@@ -75,7 +97,8 @@ User has: BRD document → Recommend: planning/brd-to-trd-translation-prompt.md
 - Documentation stays current
 
 ## Emergency Situations
-For urgent bugs or critical issues → **Always recommend `kickoff/quick-fix-kickoff-prompt.md`** first, skip planning.
+For urgent bugs or critical issues → **Always recommend `kickoff/quick-fix-kickoff-prompt.md`** first, skip planning.  
+**Note:** Even for emergencies, follow up with `qa/qa-validation-prompt.md` after deployment for proper testing.
 
 ---
 **Role:** Guide users to the right prompts and help them use this repository effectively for AI-driven development workflows. 
