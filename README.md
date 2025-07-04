@@ -1,14 +1,16 @@
-# 🤖 AI Workflow MCP Server
+# 🤖 AI Agents Playbook MCP Server
 
-**Model Context Protocol server providing intelligent workflow recommendations using OpenAI semantic search across 15 real development workflows.**
+**Early Beta** - Model Context Protocol server providing intelligent workflow recommendations using semantic search across real development workflows.
 
 ## 🎯 What It Does
 
-This MCP server uses **OpenAI embeddings** to provide semantic search across real markdown workflows:
+This MCP server helps you find the right development workflow for your task using **AI-powered semantic search**:
 
-1. **🧠 Semantic Search** - Find workflows using natural language (not just keywords)
-2. **📄 Real MD Content** - Returns actual workflow files from `playbook/` directory  
-3. **🎯 Step Navigation** - Guided execution through workflow steps
+1. **🧠 Smart Search** - Describe your task in natural language, get relevant workflows
+2. **📄 Real Workflows** - Access proven development workflows used by experienced teams  
+3. **🎯 Step-by-Step** - Get guided execution through each workflow
+
+**Status**: Early testing phase - feedback welcome!
 
 ## 🚀 Quick Setup
 
@@ -23,13 +25,12 @@ Create `.env` file:
 OPENAI_API_KEY=your_openai_api_key_here
 ```
 
-### 3. Generate Workflow Embeddings
+### 3. Generate Workflow Search Index
 ```bash
 npm run build:embeddings
 ```
-This processes all **15 workflows** from `playbook/` and creates semantic search embeddings.
 
-### 4. Start Development Server
+### 4. Start the Server
 ```bash
 npm run dev
 ```
@@ -49,125 +50,69 @@ DANGEROUSLY_OMIT_AUTH=true npx @modelcontextprotocol/inspector@latest http://loc
 3. URL: `http://localhost:3000/api/mcp`
 4. Click "Connect"
 
-## 🛠️ MCP Tools
+## 🛠️ Available Tools
 
 ### 1. `get_available_workflows`
-**Semantic search** using OpenAI embeddings to find relevant workflows.
+**Find workflows** that match your task description.
 
-**Input**: `task_description` (string)  
-**Output**: Workflows ranked by similarity score
-
-**Examples:**
-- `"fix a bug"` → Quick Fix Kickoff (46% similarity)
-- `"product development"` → Product Development from Scratch (51% similarity)
-- `"create technical spec"` → TRD Creation workflow
+**Example**: 
+- Input: `"fix a critical bug"`
+- Output: Quick Fix Kickoff workflow (46% match)
 
 ### 2. `select_workflow`
-Returns **complete markdown content** from original workflow files.
+**Get complete workflow** with all steps and details.
 
-**Input**: `workflow_id` (string)  
-**Output**: Full workflow with instructions, context, and examples
-**Source**: Real MD files from `playbook/` directory
+**Example**:
+- Input: `"quick-fix-kickoff"`
+- Output: Full 11-step bug fix workflow
 
 ### 3. `get_next_step`
-Navigate through workflow with guided step-by-step execution.
+**Navigate step-by-step** through your chosen workflow.
 
-**Input**: `workflow_id`, `current_step` (0-based)  
-**Output**: Current step details and progress tracking
+**Example**:
+- Input: Workflow ID + current step
+- Output: Next step with progress tracking
 
-## 📁 Available Workflows (15 Total)
+## 📁 Available Workflows (11 Total)
 
 ### 📋 Planning Workflows (7)
-- **product-development** - Product Development from Scratch (AI-Ready)
-- **trd-creation** - TRD From Scratch (AI-Ready)  
-- **brd-to-trd-translation** - BRD to TRD Translation
-- **existing-feature-analysis** - Existing Feature → "As-Is" TRD
-- **feature-migration** - Feature Migration Planner
-- **brd-creation-with-research** - BRD with External Research
-- **code-refactoring** - Code Refactor → Scalable Architecture
+- **product-development** - Product Development from Scratch
+- **trd-creation** - Technical Requirements Document Creation  
+- **brd-to-trd-translation** - Business to Technical Requirements
+- **existing-feature-analysis** - Analyze Existing Features
+- **feature-migration** - Feature Migration Planning
+- **brd-creation-with-research** - Business Requirements with Research
+- **code-refactoring** - Code Refactoring to Scalable Architecture
 
 ### 🚀 Kickoff Workflows (3)
-- **quick-fix-kickoff** - Quick Fix / Mini Feature Kickoff
-- **development-kickoff** - Development Kickoff  
-- **project-initialization-kickoff** - Project Initialization Kickoff
+- **quick-fix-kickoff** - Quick Bug Fix / Mini Feature
+- **development-kickoff** - Development Project Kickoff  
+- **project-initialization-kickoff** - New Project Setup
 
 ### 🧪 QA Workflows (1)
-- **qa-validation** - QA Validation & Testing
-
-### 📚 Instructions & Templates (4)
-- **context-engineering-rules** - Context Engineering Rules
-- **task-breakdown-helper** - Task Breakdown & Planning Helper
-- **brd-template** - BRD Template (AI Edition)
-- **trd-template** - TRD Template
+- **qa-validation** - Quality Assurance & Testing
 
 ## 🧪 Usage Examples
 
-### Example 1: Bug Fix
-```json
-// 1. Search for bug fix workflows
-{
-  "method": "tools/call",
-  "params": {
-    "name": "get_available_workflows", 
-    "arguments": {"task_description": "fix a critical bug"}
-  }
-}
-
-// Response: Quick Fix Kickoff (46% similarity)
-
-// 2. Get full workflow
-{
-  "method": "tools/call",
-  "params": {
-    "name": "select_workflow",
-    "arguments": {"workflow_id": "quick-fix-kickoff"}
-  }
-}
-
-// Response: Complete markdown workflow with 11 steps
+### Example 1: "I need to fix a bug"
+```
+1. Ask: "fix a critical bug in production"
+2. Get: Quick Fix Kickoff workflow (46% similarity)
+3. Follow: 11-step systematic bug fixing process
 ```
 
-### Example 2: Product Planning
-```json
-// 1. Search for planning workflows  
-{
-  "method": "tools/call",
-  "params": {
-    "name": "get_available_workflows",
-    "arguments": {"task_description": "plan a new product feature"}
-  }
-}
-
-// Response: Product Development from Scratch (51% similarity)
-
-// 2. Start guided execution
-{
-  "method": "tools/call", 
-  "params": {
-    "name": "get_next_step",
-    "arguments": {"workflow_id": "product-development", "current_step": 0}
-  }
-}
+### Example 2: "I'm planning a new feature"
+```
+1. Ask: "plan a new product feature"
+2. Get: Product Development from Scratch (51% similarity)  
+3. Follow: Complete feature planning workflow
 ```
 
-## 🚀 Deploy to Vercel
-
-### 1. Build Embeddings
-```bash
-npm run build:embeddings
+### Example 3: "I need technical documentation"
 ```
-
-### 2. Deploy
-```bash
-vercel --prod
-```
-
-### 3. Configure Environment Variables in Vercel
-Add `OPENAI_API_KEY` in Vercel dashboard.
-
-### 4. Test Production
-```bash
-npx @modelcontextprotocol/inspector@latest https://your-app.vercel.app/api/mcp
+1. Ask: "create technical requirements"
+2. Get: TRD Creation workflow
+3. Follow: Step-by-step technical documentation process
 ```
 
 ## 🔌 Cursor Integration
@@ -178,72 +123,69 @@ Add to your Cursor MCP configuration:
 {
   "mcpServers": {
     "aiAgentsPlaybook": {
-      "url": "https://your-app.vercel.app/api/mcp"
+      "url": "http://localhost:3000/api/mcp"
     }
   }
 }
 ```
 
-## 📂 Project Structure
+Then restart Cursor and you'll have access to all workflows directly in your coding environment!
 
-```
-agents-playbook/
-├── scripts/
-│   └── build-embeddings.ts         # Generate OpenAI embeddings
-├── src/
-│   ├── app/api/mcp/route.ts        # MCP endpoint  
-│   ├── lib/semantic-search.ts      # Semantic search utilities
-│   └── data/workflow-embeddings.json # Generated embeddings
-├── playbook/                       # Source workflow files
-│   ├── planning/                   # 7 planning workflows
-│   ├── kickoff/                    # 3 kickoff workflows
-│   ├── qa/                         # 1 QA workflow
-│   ├── instructions/               # 2 instruction files
-│   └── templates/                  # 2 template files
-├── package.json
-└── README.md
+## 📚 AI Development Workflows
+
+This MCP server is built on the **[AI Agents Playbook](playbook/prompt-playbook.md)** - a comprehensive collection of proven development workflows.
+
+### 📁 Copy Playbook to Your Project
+
+You can copy the entire `playbook/` folder to your own project for direct use:
+
+```bash
+# Copy the whole playbook
+cp -r playbook/ /path/to/your/project/
 ```
 
-## 🔧 Technical Details
+**Benefits of local copy:**
+- ✅ Use workflows without MCP server
+- ✅ Customize prompts for your team
+- ✅ Offline access to all workflows
+- ✅ Version control with your project
 
-### Semantic Search
-- **Model**: OpenAI `text-embedding-3-small`
-- **Similarity**: Cosine similarity with 0.4 threshold
-- **Content**: Title + description + first 1000 chars of each workflow
-- **Cache**: Embeddings stored in JSON for fast runtime search
+### 🎯 Browse All Workflows
 
-### Workflow Processing
-- **Source**: Real markdown files from `playbook/`
-- **Parsing**: Gray-matter for frontmatter + content extraction
-- **Steps**: Intelligent parsing of workflow sections and numbered steps
-- **Metadata**: Auto-extracted complexity, keywords, use cases
+**[→ View Complete Playbook](playbook/prompt-playbook.md)**
+
+Contains decision guides, complexity assessments, and workflow flows to help you pick the right prompt for any development task.
+
+## 🔧 How It Works
+
+- **Semantic Search**: Uses OpenAI embeddings to understand what you're asking for
+- **Real Workflows**: Returns actual markdown files used by development teams
+- **Smart Matching**: Finds workflows based on meaning, not just keywords
+- **Guided Execution**: Breaks down complex processes into manageable steps
 
 ## 🐛 Troubleshooting
 
-### No workflows found
-- Lower similarity threshold (currently 0.4)
-- Try broader search terms
-- Rebuild embeddings: `npm run build:embeddings`
+### "No workflows found"
+- Try broader terms like "planning", "development", "bug fix"
+- Make sure embeddings are generated: `npm run build:embeddings`
 
-### OpenAI API errors
-- Check `OPENAI_API_KEY` in `.env`
-- Verify API key has embeddings access
-- Check API quota/limits
+### "OpenAI API errors"  
+- Check your `OPENAI_API_KEY` in `.env` file
+- Verify your OpenAI account has API access
 
-### MCP connection issues
-- Ensure dev server is running: `npm run dev`
-- Check URL: `http://localhost:3001/api/mcp`
+### "Can't connect to MCP server"
+- Make sure server is running: `npm run dev`
+- Check URL: `http://localhost:3000/api/mcp`
 - Try MCP Inspector for debugging
 
-## 🎯 Success Metrics
+## 💬 Feedback & Contributing
 
-✅ **15 real workflows** loaded from markdown files  
-✅ **Semantic search** with OpenAI embeddings  
-✅ **46-51% similarity** scores for relevant matches  
-✅ **Full MD content** returned from source files  
-✅ **Guided execution** through workflow steps  
-✅ **Production ready** for Vercel deployment
+This is an **early beta** - we're actively improving based on user feedback!
+
+- Found a workflow that should be included? Let us know!
+- Having trouble with search results? Tell us what you're looking for!
+- Want to contribute workflows? Check out the `playbook/` directory structure
 
 ---
 
-**🚀 Ready for deployment and Cursor integration!**
+**🚀 AI Agents Playbook** - Making development workflows accessible through AI

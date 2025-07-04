@@ -38,7 +38,7 @@ export class WorkflowParser {
     const workflows: ParsedWorkflow[] = [];
     
     try {
-      // Parse prompt-playbook.md for workflow metadata
+      // Parse playbook/prompt-playbook.md for workflow metadata
       const mainPlaybook = await this.parseMainPlaybook();
       
       // Parse individual prompt files
@@ -72,13 +72,13 @@ export class WorkflowParser {
   }
 
   /**
-   * Parse prompt-playbook.md to extract workflow metadata
+   * Parse playbook/prompt-playbook.md to extract workflow metadata
    */
   private async parseMainPlaybook(): Promise<any> {
     const playbookPath = path.join(this.agentsPlaybookPath, 'prompt-playbook.md');
     
     if (!fs.existsSync(playbookPath)) {
-      console.warn('[Parser] prompt-playbook.md not found');
+      console.warn('[Parser] playbook/prompt-playbook.md not found');
       return {};
     }
 
