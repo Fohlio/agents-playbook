@@ -89,6 +89,8 @@ agents-playbook/
 
 Coming soon:
 - **MCP tool** for AI agent integrations
+- **Specialized prompts** for different tech stacks (React, Django, Next.js, FastAPI)
+- **Industry-specific templates** for SaaS, marketplaces, mobile apps
 - **n8n prompt templates** for workflow automation
 - **Automated testing workflows** in cloud browsers
 - **Integrations** with other no-code platforms
