@@ -1,106 +1,249 @@
-# 🤖 AI Agents Playbook
+# 🤖 AI Workflow MCP Server
 
-**A collection of specialized prompts for AI agents in software development**
+**Model Context Protocol server providing intelligent workflow recommendations using OpenAI semantic search across 15 real development workflows.**
 
-This repository contains ready-to-use prompts that help AI agents (Claude, ChatGPT, etc.) effectively perform software development tasks — from product planning to code implementation.
+## 🎯 What It Does
 
-## 🚀 Quick Setup in Your Project
+This MCP server uses **OpenAI embeddings** to provide semantic search across real markdown workflows:
 
-### 1. Install the Playbook
+1. **🧠 Semantic Search** - Find workflows using natural language (not just keywords)
+2. **📄 Real MD Content** - Returns actual workflow files from `playbook/` directory  
+3. **🎯 Step Navigation** - Guided execution through workflow steps
+
+## 🚀 Quick Setup
+
+### 1. Install Dependencies
 ```bash
-# Copy all files to your project
-cp -r agents-playbook/ your-project/docs/agents-playbook/
+npm install
 ```
 
-### 2. Initialize with AI
-1. Add **@project-initialization-kickoff-prompt.md** to your AI chat
-2. Ask for project initialization
+### 2. Configure OpenAI API Key
+Create `.env` file:
+```bash
+OPENAI_API_KEY=your_openai_api_key_here
+```
 
-### 3. Setup Tools
-- Add **MCP Playwright** and **Context7** to your AI
-- Add to `.cursor/rules`: 
-  ```
-  Use @prompt-playbook.md to select the proper flow if not guided
-  ```
+### 3. Generate Workflow Embeddings
+```bash
+npm run build:embeddings
+```
+This processes all **15 workflows** from `playbook/` and creates semantic search embeddings.
 
-## 🎯 What You Get
+### 4. Start Development Server
+```bash
+npm run dev
+```
 
-- **11 specialized prompts** for different development stages
-- **Ready-to-use templates** (BRD, TRD)
-- **Step-by-step workflows** for automation
-- **Tool integrations** (GitHub, Context7, Playwright)
+**MCP Server**: http://localhost:3001/api/mcp  
+**MCP Inspector**: http://127.0.0.1:6274
 
-## 🔄 Development Stages
+## 🧪 Test with MCP Inspector
 
-Our prompts follow a structured 4-stage development flow:
+```bash
+# Start MCP Inspector (with authentication disabled)
+DANGEROUSLY_OMIT_AUTH=true npx @modelcontextprotocol/inspector@latest http://localhost:3001/api/mcp
+```
 
-1. **📋 BRD Stage** - Business requirements and research
-2. **📐 TRD Stage** - Technical planning and architecture
-3. **🚀 Kickoff Stage** - Implementation and development
-4. **🧪 QA Stage** - Testing, validation, and quality assurance
+1. Open http://127.0.0.1:6274 in browser
+2. Select "Streamable HTTP" transport  
+3. URL: `http://localhost:3001/api/mcp`
+4. Click "Connect"
 
-## 📚 Main Flows
+## 🛠️ MCP Tools
 
-| Scenario | Start With |
-|----------|------------|
-| 🆕 **New project** | [Project Initialization](kickoff/project-initialization-kickoff-prompt.md) |
-| 💡 **Product idea** | [Product Development](planning/product-development-prompt.md) → [QA Validation](qa/qa-validation-prompt.md) |
-| ⚡ **Feature/bug** | [Quick Fix](kickoff/quick-fix-kickoff-prompt.md) → [QA Validation](qa/qa-validation-prompt.md) |
-| 🏗️ **Major feature** | [TRD Creation](planning/trd-creation-prompt.md) → [Development Kickoff](kickoff/development-kickoff-prompt.md) → [QA Validation](qa/qa-validation-prompt.md) |
+### 1. `get_available_workflows`
+**Semantic search** using OpenAI embeddings to find relevant workflows.
 
-## 🏗️ Repository Structure
+**Input**: `task_description` (string)  
+**Output**: Workflows ranked by similarity score
+
+**Examples:**
+- `"fix a bug"` → Quick Fix Kickoff (46% similarity)
+- `"product development"` → Product Development from Scratch (51% similarity)
+- `"create technical spec"` → TRD Creation workflow
+
+### 2. `select_workflow`
+Returns **complete markdown content** from original workflow files.
+
+**Input**: `workflow_id` (string)  
+**Output**: Full workflow with instructions, context, and examples
+**Source**: Real MD files from `playbook/` directory
+
+### 3. `get_next_step`
+Navigate through workflow with guided step-by-step execution.
+
+**Input**: `workflow_id`, `current_step` (0-based)  
+**Output**: Current step details and progress tracking
+
+## 📁 Available Workflows (15 Total)
+
+### 📋 Planning Workflows (7)
+- **product-development** - Product Development from Scratch (AI-Ready)
+- **trd-creation** - TRD From Scratch (AI-Ready)  
+- **brd-to-trd-translation** - BRD to TRD Translation
+- **existing-feature-analysis** - Existing Feature → "As-Is" TRD
+- **feature-migration** - Feature Migration Planner
+- **brd-creation-with-research** - BRD with External Research
+- **code-refactoring** - Code Refactor → Scalable Architecture
+
+### 🚀 Kickoff Workflows (3)
+- **quick-fix-kickoff** - Quick Fix / Mini Feature Kickoff
+- **development-kickoff** - Development Kickoff  
+- **project-initialization-kickoff** - Project Initialization Kickoff
+
+### 🧪 QA Workflows (1)
+- **qa-validation** - QA Validation & Testing
+
+### 📚 Instructions & Templates (4)
+- **context-engineering-rules** - Context Engineering Rules
+- **task-breakdown-helper** - Task Breakdown & Planning Helper
+- **brd-template** - BRD Template (AI Edition)
+- **trd-template** - TRD Template
+
+## 🧪 Usage Examples
+
+### Example 1: Bug Fix
+```json
+// 1. Search for bug fix workflows
+{
+  "method": "tools/call",
+  "params": {
+    "name": "get_available_workflows", 
+    "arguments": {"task_description": "fix a critical bug"}
+  }
+}
+
+// Response: Quick Fix Kickoff (46% similarity)
+
+// 2. Get full workflow
+{
+  "method": "tools/call",
+  "params": {
+    "name": "select_workflow",
+    "arguments": {"workflow_id": "quick-fix-kickoff"}
+  }
+}
+
+// Response: Complete markdown workflow with 11 steps
+```
+
+### Example 2: Product Planning
+```json
+// 1. Search for planning workflows  
+{
+  "method": "tools/call",
+  "params": {
+    "name": "get_available_workflows",
+    "arguments": {"task_description": "plan a new product feature"}
+  }
+}
+
+// Response: Product Development from Scratch (51% similarity)
+
+// 2. Start guided execution
+{
+  "method": "tools/call", 
+  "params": {
+    "name": "get_next_step",
+    "arguments": {"workflow_id": "product-development", "current_step": 0}
+  }
+}
+```
+
+## 🚀 Deploy to Vercel
+
+### 1. Build Embeddings
+```bash
+npm run build:embeddings
+```
+
+### 2. Deploy
+```bash
+vercel --prod
+```
+
+### 3. Configure Environment Variables in Vercel
+Add `OPENAI_API_KEY` in Vercel dashboard.
+
+### 4. Test Production
+```bash
+npx @modelcontextprotocol/inspector@latest https://your-app.vercel.app/api/mcp
+```
+
+## 🔌 Cursor Integration
+
+Add to your Cursor MCP configuration:
+
+```json
+{
+  "mcpServers": {
+    "ai-workflow-server": {
+      "url": "https://your-app.vercel.app/api/mcp"
+    }
+  }
+}
+```
+
+## 📂 Project Structure
 
 ```
 agents-playbook/
-├── prompt-playbook.md           # 📋 Main navigator
-├── planning/                    # 📋 Planning prompts
-├── kickoff/                     # 🚀 Implementation prompts
-├── qa/                          # 🧪 Quality assurance prompts
-├── templates/                   # 📝 Document templates
-└── n8n/                         # 🔄 n8n automation
+├── scripts/
+│   └── build-embeddings.ts         # Generate OpenAI embeddings
+├── src/
+│   ├── app/api/mcp/route.ts        # MCP endpoint  
+│   ├── lib/semantic-search.ts      # Semantic search utilities
+│   └── data/workflow-embeddings.json # Generated embeddings
+├── playbook/                       # Source workflow files
+│   ├── planning/                   # 7 planning workflows
+│   ├── kickoff/                    # 3 kickoff workflows
+│   ├── qa/                         # 1 QA workflow
+│   ├── instructions/               # 2 instruction files
+│   └── templates/                  # 2 template files
+├── package.json
+└── README.md
 ```
 
-## 🛠️ Usage Options
+## 🔧 Technical Details
 
-### Option 1: IDE Integration (Recommended)
-1. Copy to `docs/agents-playbook/`
-2. Use `@prompt-playbook.md` in AI chat
-3. Follow guided workflows
+### Semantic Search
+- **Model**: OpenAI `text-embedding-3-small`
+- **Similarity**: Cosine similarity with 0.4 threshold
+- **Content**: Title + description + first 1000 chars of each workflow
+- **Cache**: Embeddings stored in JSON for fast runtime search
 
-### Option 2: Direct Copy-Paste
-1. Open needed prompt from folders
-2. Copy to your AI agent
-3. Follow instructions
+### Workflow Processing
+- **Source**: Real markdown files from `playbook/`
+- **Parsing**: Gray-matter for frontmatter + content extraction
+- **Steps**: Intelligent parsing of workflow sections and numbered steps
+- **Metadata**: Auto-extracted complexity, keywords, use cases
 
-## 📊 Complexity Guide
+## 🐛 Troubleshooting
 
-| 🟢 Simple | 🟡 Standard | 🔴 Complex |
-|-----------|-------------|------------|
-| Quick Fix | TRD Creation | Product Development |
-| QA Validation | Development Kickoff | Feature Migration |
-| | BRD Creation | Code Refactoring |
+### No workflows found
+- Lower similarity threshold (currently 0.4)
+- Try broader search terms
+- Rebuild embeddings: `npm run build:embeddings`
 
-## 📝 Templates
+### OpenAI API errors
+- Check `OPENAI_API_KEY` in `.env`
+- Verify API key has embeddings access
+- Check API quota/limits
 
-- **[BRD Template](templates/brd-template.md)** — Business Requirements
-- **[TRD Template](templates/trd-template.md)** — Technical Requirements
+### MCP connection issues
+- Ensure dev server is running: `npm run dev`
+- Check URL: `http://localhost:3001/api/mcp`
+- Try MCP Inspector for debugging
 
-## 🚧 Roadmap
+## 🎯 Success Metrics
 
-Coming soon:
-- **MCP tool** for AI agent integrations
-- **Specialized prompts** for different tech stacks (React, Django, Next.js, FastAPI)
-- **Industry-specific templates** for SaaS, marketplaces, mobile apps
-- **n8n prompt templates** for workflow automation
-- **Automated testing workflows** in cloud browsers
-- **Integrations** with other no-code platforms
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-Feel free to use, modify, and distribute these prompts in your projects!
+✅ **15 real workflows** loaded from markdown files  
+✅ **Semantic search** with OpenAI embeddings  
+✅ **46-51% similarity** scores for relevant matches  
+✅ **Full MD content** returned from source files  
+✅ **Guided execution** through workflow steps  
+✅ **Production ready** for Vercel deployment
 
 ---
 
-**💡 Start here:** [prompt-playbook.md](prompt-playbook.md) — main navigator for all prompts and scenarios. 
+**🚀 Ready for deployment and Cursor integration!**
