@@ -34,19 +34,19 @@ This processes all **15 workflows** from `playbook/` and creates semantic search
 npm run dev
 ```
 
-**MCP Server**: http://localhost:3001/api/mcp  
+**MCP Server**: http://localhost:3000/api/mcp  
 **MCP Inspector**: http://127.0.0.1:6274
 
 ## 🧪 Test with MCP Inspector
 
 ```bash
 # Start MCP Inspector (with authentication disabled)
-DANGEROUSLY_OMIT_AUTH=true npx @modelcontextprotocol/inspector@latest http://localhost:3001/api/mcp
+DANGEROUSLY_OMIT_AUTH=true npx @modelcontextprotocol/inspector@latest http://localhost:3000/api/mcp
 ```
 
 1. Open http://127.0.0.1:6274 in browser
 2. Select "Streamable HTTP" transport  
-3. URL: `http://localhost:3001/api/mcp`
+3. URL: `http://localhost:3000/api/mcp`
 4. Click "Connect"
 
 ## 🛠️ MCP Tools
@@ -177,7 +177,7 @@ Add to your Cursor MCP configuration:
 ```json
 {
   "mcpServers": {
-    "ai-workflow-server": {
+    "aiAgentsPlaybook": {
       "url": "https://your-app.vercel.app/api/mcp"
     }
   }
