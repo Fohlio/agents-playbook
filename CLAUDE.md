@@ -8,7 +8,7 @@ This is a **prompts collection repository** for AI agents in software developmen
 ## Key Files & Structure
 
 ### 📋 Navigation
-- **`prompt-playbook.md`** - MAIN NAVIGATOR - always start here to find the right prompt
+- **`playbook/prompt-playbook.md`** - MAIN NAVIGATOR - always start here to find the right prompt
 - **`README.md`** - Public documentation for users
 
 ### 🤖 Core Prompts by Stage
@@ -44,7 +44,7 @@ This is a **prompts collection repository** for AI agents in software developmen
 ## AI Agent Guidelines
 
 ### When User Asks for Help
-1. **Always check `prompt-playbook.md` first** - it has the decision matrix
+1. **Always check `playbook/prompt-playbook.md` first** - it has the decision matrix
 2. **Identify what the user has** (idea, BRD, TRD, bug, etc.)
 3. **Recommend the appropriate prompt** from the playbook
 4. **Include QA stage** in the workflow recommendation

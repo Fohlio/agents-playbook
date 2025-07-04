@@ -229,7 +229,7 @@ To improve context for future AI agents:
 
 ## 🚀 Quick Start
 1. **MANDATORY**: Read [docs/project-navigation.md](docs/project-navigation.md) first
-2. **Select Workflow**: Use [prompt-playbook.md](prompt-playbook.md) to choose the right prompt
+2. **Select Workflow**: Use [prompt-playbook.md](../prompt-playbook.md) to choose the right prompt
 3. **Gather Context**: Reference examples and patterns from navigation guide
 4. **Implement**: Follow established patterns and validation requirements
 5. **Validate**: Ensure all quality gates pass
@@ -257,7 +257,7 @@ To improve context for future AI agents:
 1. **Low Confidence?** → Re-read [docs/project-navigation.md](docs/project-navigation.md)
 2. **No Examples?** → Check [docs/examples/] or create new pattern
 3. **Validation Failing?** → Review project standards in navigation guide
-4. **Unclear Workflow?** → Consult [prompt-playbook.md](prompt-playbook.md)
+4. **Unclear Workflow?** → Consult [prompt-playbook.md](../prompt-playbook.md)
 
 ---
 **Remember**: Context engineering ensures consistent, high-quality implementations. The navigation guide is your foundation for success.
