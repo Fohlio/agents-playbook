@@ -122,8 +122,8 @@ Add to your Cursor MCP configuration:
 ```json
 {
   "mcpServers": {
-    "aiAgentsPlaybook": {
-      "url": "http://localhost:3000/api/mcp"
+    "agents-playbook": {
+      "url": "https://agents-playbook.vercel.app/api/mcp"
     }
   }
 }

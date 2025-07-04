@@ -6,7 +6,7 @@
 **Complexity**: Standard (6/10)  
 **Platform**: Vercel + TypeScript + Next.js  
 **Status**: ✅ **COMPLETED**
-**Deployment**: https://your-domain.vercel.app/api/mcp
+**Deployment**: https://agents-playbook.vercel.app/api/mcp
 
 ## 🔍 Confidence Level Assessment (Final)
 | Section | Confidence (1-10) | Context Sources | Notes |
@@ -163,8 +163,8 @@ Create an MCP server that provides AI models with workflow recommendations based
 ```json
 {
   "mcpServers": {
-    "aiAgentsPlaybook": {
-      "url": "https://your-domain.vercel.app/api/mcp"
+    "agents-playbook": {
+      "url": "https://agents-playbook.vercel.app/api/mcp"
     }
   }
 }

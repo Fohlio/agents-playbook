@@ -14,8 +14,7 @@ export default function SetupSection() {
       gradient: "from-blue-500 to-purple-500",
       codeBlock: `"mcpServers": {
   "agents-playbook": {
-    "command": "npx",
-    "args": ["@modelcontextprotocol/server-fetch", "https://agents-playbook.vercel.app/api/mcp"]
+    "url": "https://agents-playbook.vercel.app/api/mcp"
   }
 }`
     },

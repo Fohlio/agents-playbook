@@ -8,8 +8,7 @@ export default function AutoAddButton() {
   const mcpConfig = `{
   "mcpServers": {
     "agents-playbook": {
-      "command": "npx",
-      "args": ["@modelcontextprotocol/server-fetch", "https://agents-playbook.vercel.app/api/mcp"]
+      "url": "https://agents-playbook.vercel.app/api/mcp"
     }
   }
 }`;
