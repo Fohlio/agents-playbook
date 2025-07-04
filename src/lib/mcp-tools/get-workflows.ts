@@ -9,7 +9,8 @@ export async function getWorkflowsHandler({ task_description }: { task_descripti
   try {
     console.log(`[MCP] Semantic search for: ${task_description}`);
     
-    const results = await searchWorkflowsBySemantic(task_description, 5, 0.4);
+    // Lower threshold for better matching (0.25 instead of 0.4)
+    const results = await searchWorkflowsBySemantic(task_description, 5, 0.25);
     
     if (results.length === 0) {
       return {

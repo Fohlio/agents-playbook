@@ -106,9 +106,17 @@ export async function searchWorkflowsBySemantic(
     
     // Calculate similarities
     const results: WorkflowSearchResult[] = [];
+    const allResults: Array<{id: string, title: string, similarity: number}> = [];
     
     for (const workflow of workflows) {
       const similarity = cosineSimilarity(queryEmbedding, workflow.embedding);
+      
+      // Track all results for debugging
+      allResults.push({
+        id: workflow.id,
+        title: workflow.title,
+        similarity: similarity
+      });
       
       if (similarity >= threshold) {
         results.push({
@@ -118,6 +126,14 @@ export async function searchWorkflowsBySemantic(
         });
       }
     }
+    
+    // Log top 5 results for debugging
+    const topResults = allResults
+      .sort((a, b) => b.similarity - a.similarity)
+      .slice(0, 5);
+    console.log(`[SemanticSearch] Top 5 results for "${query}":`, 
+      topResults.map(r => `${r.id}: ${Math.round(r.similarity * 100)}%`).join(', '));
+    console.log(`[SemanticSearch] Using threshold: ${threshold}, Found ${results.length} results above threshold`);
     
     // Sort by similarity (highest first) and limit results
     return results
