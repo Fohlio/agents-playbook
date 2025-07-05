@@ -1,67 +1,22 @@
-# Step • Trace Bug Root Cause
+# Trace Bug Root Cause
 
-## Purpose
+## Goal
 Identify the exact source of the reported issue through systematic analysis and investigation.
 
-## Prerequisites
-**Required MCP Servers**: 
-- None (uses standard coding agent tools)
-
-**Required Context**:
+## Context Required
 - Bug symptoms and reproduction steps
 - Error logs or stack traces (if available)
 
-**Optional Context**:
-- Existing test suite
-- Performance monitoring data
-- User impact reports
-- Similar previous issues
-
-## Validation Logic
-```javascript
-canExecute() {
-  return hasContext('bug_symptoms') &&
-         hasContext('reproduction_steps');
-}
-```
-
-## Process
-1. **Reproduce the issue** - Follow reported steps exactly to confirm the problem
-2. **Analyze error messages and logs** - Examine stack traces, error logs, and system logs
-3. **Trace code execution flow** - Map user action to code execution path
-4. **Identify failure point** - Pinpoint where the system deviates from expected behavior
-5. **Analyze contributing factors** - Examine data, environment, and configuration factors
-6. **Validate root cause hypothesis** - Test the identified cause with additional scenarios
-7. **Document findings** - Create clear root cause analysis with evidence
-
-## Inputs
-- Bug report with symptoms and reproduction steps
-- Error messages and stack traces
-- System logs and monitoring data
-- Codebase access for investigation
-- Test environment for reproduction
-
-## Outputs
-- Root cause analysis document
-- Exact location in code where issue occurs
-- Contributing factors and conditions
-- Impact assessment and severity analysis
-- Reproduction test case (if not provided)
-- Fix complexity and effort estimate
-- Recommendations for prevention
-
-## Success Criteria
-- Root cause clearly identified with concrete evidence
-- Issue can be reproduced consistently
-- Code location pinpointed to specific functions/lines
-- Impact and scope fully understood
-- Fix approach determined and validated
-- Prevention measures identified
-
-## Skip Conditions
+## Skip When
 - Issue already has documented and verified root cause
 - Problem is intermittent and cannot be reproduced
 - Requires access to production systems not available
+
+## Complexity Assessment
+- **Task Complexity**: Medium-High - requires debugging skills and systematic investigation
+
+## Task Understanding Assessment
+If task unclear - ask clarifying questions with multiple choice options
 
 ## Investigation Techniques
 
@@ -125,14 +80,14 @@ canExecute() {
 - Thread safety violations
 - Async operation problems
 
-## Documentation Format
-- **Issue Summary**: Brief description of the problem
-- **Reproduction Steps**: Exact steps to reproduce the issue
-- **Root Cause**: Detailed explanation of what's causing the problem
-- **Evidence**: Screenshots, logs, and data supporting the analysis
-- **Impact Assessment**: Who and what is affected
-- **Fix Recommendations**: Suggested solutions and alternatives
-- **Prevention Measures**: How to prevent similar issues
+## Key Tasks
+1. **Reproduce the issue** - follow reported steps exactly to confirm the problem
+2. **Analyze error messages and logs** - examine stack traces, error logs, and system logs
+3. **Trace code execution flow** - map user action to code execution path
+4. **Identify failure point** - pinpoint where the system deviates from expected behavior
+5. **Analyze contributing factors** - examine data, environment, and configuration factors
+6. **Validate root cause hypothesis** - test the identified cause with additional scenarios
+7. **Document findings** - create clear root cause analysis with evidence
 
 ## Testing and Validation
 - Create minimal reproduction case
@@ -141,9 +96,19 @@ canExecute() {
 - Ensure fix doesn't introduce new issues
 - Test edge cases and related functionality
 
-## Notes
-- Be systematic and methodical in your investigation
-- Document all findings, even those that don't lead to the root cause
-- Don't stop at the first plausible explanation - verify it thoroughly
-- Consider multiple contributing factors, not just a single cause
-- Balance investigation time with issue urgency and impact 
+## Success Criteria
+- Root cause clearly identified with concrete evidence
+- Issue can be reproduced consistently
+- Code location pinpointed to specific functions/lines
+- Impact and scope fully understood
+- Fix approach determined and validated
+- Prevention measures identified
+
+## Key Outputs
+- Root cause analysis document
+- Exact location in code where issue occurs
+- Contributing factors and conditions
+- Impact assessment and severity analysis
+- Reproduction test case (if not provided)
+- Fix complexity and effort estimate
+- Recommendations for prevention 

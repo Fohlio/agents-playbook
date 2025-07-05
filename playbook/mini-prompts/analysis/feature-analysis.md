@@ -1,70 +1,23 @@
-# Step • Feature Analysis
+# Feature Analysis
 
-## Purpose
+## Goal
 Analyze existing feature functionality, architecture, and implementation to understand current state and identify opportunities for improvement or modification.
 
-## Prerequisites
-**Required MCP Servers**: 
-- None (uses standard coding agent tools)
-
-**Required Context**:
+## Context Required
 - Feature scope and boundaries definition
 - Access to relevant codebase
 
-**Optional Context**:
-- User documentation and requirements
-- Performance metrics and monitoring data
-- User feedback and usage analytics
-- Related features and dependencies
-
-## Validation Logic
-```javascript
-canExecute() {
-  return hasContext('feature_scope') &&
-         hasContext('codebase_access');
-}
-```
-
-## Process
-1. **Map feature boundaries** - Identify all components and code involved in the feature
-2. **Analyze user flows** - Understand how users interact with the feature
-3. **Examine code architecture** - Review implementation patterns and structure
-4. **Identify data flow** - Trace how data moves through the feature
-5. **Assess dependencies** - Map internal and external dependencies
-6. **Evaluate performance** - Analyze current performance characteristics
-7. **Document findings** - Create comprehensive feature analysis report
-
-## Inputs
-- Feature definition and scope
-- Codebase with relevant feature implementation
-- User documentation and specifications
-- Performance monitoring data (if available)
-- User feedback and analytics data (if available)
-
-## Outputs
-- Feature architecture diagram
-- Component interaction map
-- Data flow documentation
-- Dependency analysis
-- Performance assessment
-- Code quality evaluation
-- User experience analysis
-- Improvement recommendations
-
-## Success Criteria
-- Complete understanding of feature functionality
-- All components and dependencies identified
-- Data flow thoroughly mapped
-- Performance characteristics documented
-- Code quality and maintainability assessed
-- User experience patterns understood
-- Clear recommendations for improvements
-
-## Skip Conditions
+## Skip When
 - Feature is very simple with obvious implementation
 - Analysis was completed in previous session
 - Feature doesn't exist yet (new feature development)
 - Analysis scope is limited to bug fix only
+
+## Complexity Assessment
+- **Task Complexity**: High - requires deep feature analysis and architecture understanding
+
+## Task Understanding Assessment
+If task unclear - ask clarifying questions with multiple choice options
 
 ## Analysis Dimensions
 
@@ -133,47 +86,14 @@ canExecute() {
 - Review caching effectiveness
 - Examine scalability characteristics
 
-## Documentation Structure
-
-### Executive Summary
-- Feature purpose and business value
-- Key findings and recommendations
-- Major issues or opportunities identified
-
-### Feature Overview
-- Functional description and capabilities
-- User roles and use cases
-- Business rules and constraints
-
-### Technical Architecture
-- System components and interactions
-- Data models and relationships
-- Integration points and dependencies
-- Technology stack and frameworks
-
-### Implementation Details
-- Code organization and structure
-- Key algorithms and business logic
-- Error handling and validation
-- Security and access control
-
-### Performance Characteristics
-- Response time and throughput metrics
-- Resource usage patterns
-- Scalability limitations
-- Optimization opportunities
-
-### Quality Assessment
-- Code maintainability and readability
-- Test coverage and quality
-- Documentation completeness
-- Security considerations
-
-### Recommendations
-- Immediate improvements needed
-- Long-term enhancement opportunities
-- Risk mitigation strategies
-- Migration or refactoring suggestions
+## Key Analysis Tasks
+1. **Map feature boundaries** - identify all components and code involved in the feature
+2. **Analyze user flows** - understand how users interact with the feature
+3. **Examine code architecture** - review implementation patterns and structure
+4. **Identify data flow** - trace how data moves through the feature
+5. **Assess dependencies** - map internal and external dependencies
+6. **Evaluate performance** - analyze current performance characteristics
+7. **Document findings** - create comprehensive feature analysis report
 
 ## Common Analysis Patterns
 
@@ -199,11 +119,23 @@ canExecute() {
 - Prioritize user experience and usability
 - Review accessibility and responsive design
 - Analyze user feedback and usage patterns
-- Identify improvement opportunities
+- Identify user interface improvements
 
-## Notes
-- Take a holistic view - consider functional, technical, and user perspectives
-- Document assumptions and areas that need further investigation
-- Consider both current state and future requirements
-- Balance depth of analysis with available time and project needs
-- Use tools and automation where possible to gather comprehensive data 
+## Success Criteria
+- Complete understanding of feature functionality
+- All components and dependencies identified
+- Data flow thoroughly mapped
+- Performance characteristics documented
+- Code quality and maintainability assessed
+- User experience patterns understood
+- Clear recommendations for improvements
+
+## Key Outputs
+- Feature architecture diagram
+- Component interaction map
+- Data flow documentation
+- Dependency analysis
+- Performance assessment
+- Code quality evaluation
+- User experience analysis
+- Improvement recommendations 

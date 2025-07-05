@@ -1,97 +1,53 @@
-# Step • Validate Requirements
+# Validate Requirements
 
-## Purpose
+## Goal
 Verify that the implemented solution meets all specified requirements and acceptance criteria through systematic validation.
 
-## Prerequisites
-**Required MCP Servers**: 
-- None (uses standard coding agent tools)
-
-**Required Context**:
+## Context Required
 - Original requirements and acceptance criteria
 - Completed implementation
 
-**Optional Context**:
-- Test execution results
-- User feedback
-- Performance monitoring data
-- Stakeholder expectations
-
-## Validation Logic
-```javascript
-canExecute() {
-  return hasContext('original_requirements') &&
-         hasContext('completed_implementation');
-}
-```
-
-## Process
-1. **Review original requirements** - Re-examine initial requirements and acceptance criteria
-2. **Map implementation to requirements** - Verify each requirement has been addressed
-3. **Validate functional requirements** - Confirm all specified functionality works correctly
-4. **Validate non-functional requirements** - Check performance, security, and usability requirements
-5. **Test acceptance criteria** - Verify all acceptance criteria are met
-6. **Gather stakeholder feedback** - Get validation from business stakeholders
-7. **Document validation results** - Create comprehensive validation report
-
-## Inputs
-- Original requirements document and user stories
-- Acceptance criteria and success metrics
-- Completed implementation
-- Test execution results
-- User feedback and stakeholder input
-
-## Outputs
-- Requirements validation matrix
-- Acceptance criteria verification report
-- Gap analysis for any missing functionality
-- Stakeholder sign-off documentation
-- Recommendations for any improvements needed
-- Final validation summary and approval status
-
-## Success Criteria
-- All functional requirements verified as implemented
-- Non-functional requirements met within acceptable ranges
-- Acceptance criteria fully satisfied
-- Stakeholder approval obtained
-- Any gaps or issues clearly documented
-- Clear approval or recommendations for next steps
-
-## Skip Conditions
+## Skip When
 - Requirements were very simple and obviously met
 - Implementation is partial or incomplete
 - Stakeholders not available for validation
 - Emergency deployment where formal validation is deferred
 
+## Complexity Assessment
+- **Task Complexity**: Medium - requires requirements analysis and validation skills
+
+## Task Understanding Assessment
+If task unclear - ask clarifying questions with multiple choice options
+
 ## Validation Categories
 
 ### Functional Requirement Validation
-- **Feature Completeness**: All specified features implemented
-- **Business Logic**: Rules and workflows work as specified
-- **User Interface**: UI meets design and usability requirements
-- **Data Processing**: Input/output handling meets specifications
-- **Integration**: External connections work as required
+- **Feature Completeness** - all specified features implemented
+- **Business Logic** - rules and workflows work as specified
+- **User Interface** - UI meets design and usability requirements
+- **Data Processing** - input/output handling meets specifications
+- **Integration** - external connections work as required
 
 ### Non-Functional Requirement Validation
-- **Performance**: Response times and throughput meet targets
-- **Security**: Authentication, authorization, and data protection adequate
-- **Usability**: User experience meets expectations
-- **Reliability**: System stability and error handling appropriate
-- **Scalability**: System can handle expected load and growth
+- **Performance** - response times and throughput meet targets
+- **Security** - authentication, authorization, and data protection adequate
+- **Usability** - user experience meets expectations
+- **Reliability** - system stability and error handling appropriate
+- **Scalability** - system can handle expected load and growth
 
 ### Acceptance Criteria Validation
-- **Definition of Done**: All completion criteria satisfied
-- **User Stories**: Each story's acceptance criteria met
-- **Business Value**: Solution delivers expected business benefits
-- **Quality Standards**: Code quality and maintainability acceptable
-- **Deployment Readiness**: Solution ready for production use
+- **Definition of Done** - all completion criteria satisfied
+- **User Stories** - each story's acceptance criteria met
+- **Business Value** - solution delivers expected business benefits
+- **Quality Standards** - code quality and maintainability acceptable
+- **Deployment Readiness** - solution ready for production use
 
 ### Compliance Validation
-- **Regulatory Requirements**: Industry or legal compliance met
-- **Company Standards**: Internal policies and standards followed
-- **Architecture Guidelines**: Design principles and patterns followed
-- **Security Policies**: Security requirements and best practices implemented
-- **Documentation Standards**: Required documentation complete
+- **Regulatory Requirements** - industry or legal compliance met
+- **Company Standards** - internal policies and standards followed
+- **Architecture Guidelines** - design principles and patterns followed
+- **Security Policies** - security requirements and best practices implemented
+- **Documentation Standards** - required documentation complete
 
 ## Validation Techniques
 
@@ -119,13 +75,14 @@ canExecute() {
 - Validate against original business needs
 - Obtain formal sign-off or approval
 
-## Validation Matrix Template
-
-| Requirement ID | Description | Implementation Status | Test Status | Stakeholder Approval | Notes |
-|---|---|---|---|---|---|
-| REQ-001 | User login functionality | Complete | Passed | Approved | |
-| REQ-002 | Data export feature | Complete | Passed | Pending | Minor UI feedback |
-| REQ-003 | Performance <2sec | Partial | Failed | Not tested | Needs optimization |
+## Key Tasks
+1. **Review original requirements** - re-examine initial requirements and acceptance criteria
+2. **Map implementation to requirements** - verify each requirement has been addressed
+3. **Validate functional requirements** - confirm all specified functionality works correctly
+4. **Validate non-functional requirements** - check performance, security, and usability requirements
+5. **Test acceptance criteria** - verify all acceptance criteria are met
+6. **Gather stakeholder feedback** - get validation from business stakeholders
+7. **Document validation results** - create comprehensive validation report
 
 ## Common Validation Scenarios
 
@@ -153,24 +110,6 @@ canExecute() {
 - Check accessibility and responsive design
 - Gather feedback on user experience
 
-## Documentation Requirements
-
-### Validation Report Structure
-- **Executive Summary**: Overall validation status and key findings
-- **Requirement Analysis**: Detailed requirement-by-requirement validation
-- **Gap Analysis**: Any missing or incomplete functionality
-- **Test Results Summary**: Reference to detailed test results
-- **Stakeholder Feedback**: Input from business users and stakeholders
-- **Recommendations**: Next steps and improvement suggestions
-- **Sign-off**: Formal approval or conditions for approval
-
-### Evidence Documentation
-- Screenshots of implemented features
-- Test execution results and reports
-- Performance measurement data
-- User feedback and comments
-- Stakeholder approval communications
-
 ## Validation Criteria
 
 ### Must-Have Requirements
@@ -194,18 +133,18 @@ canExecute() {
 - Enhanced user experience
 - Additional integrations
 
-## Common Validation Issues
-- Requirements implemented differently than expected
-- Performance not meeting specified targets
-- User interface not matching design expectations
-- Integration issues with external systems
-- Security or compliance gaps
-- Missing error handling or edge cases
+## Success Criteria
+- All functional requirements verified as implemented
+- Non-functional requirements met within acceptable ranges
+- Acceptance criteria fully satisfied
+- Stakeholder approval obtained
+- Any gaps or issues clearly documented
+- Clear approval or recommendations for next steps
 
-## Notes
-- Involve actual stakeholders in validation process
-- Don't assume requirements are met without explicit validation
-- Document any requirement changes or clarifications discovered
-- Balance perfectionism with practical acceptance criteria
-- Get formal sign-off before considering validation complete
-- Plan for iterative improvement based on validation feedback 
+## Key Outputs
+- Requirements validation matrix
+- Acceptance criteria verification report
+- Gap analysis for any missing functionality
+- Stakeholder sign-off documentation
+- Recommendations for any improvements needed
+- Final validation summary and approval status 

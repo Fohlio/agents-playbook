@@ -1,99 +1,53 @@
-# Step • Execute Tests
+# Execute Tests
 
-## Purpose
+## Goal
 Execute the planned test cases to validate implementation meets requirements and identify any issues before deployment.
 
-## Prerequisites
-**Required MCP Servers**: 
-- None (uses standard coding agent tools)
-
-**Required Context**:
+## Context Required
 - Test plan with defined test cases
 - Implementation ready for testing
 
-**Optional Context**:
-- Test environment access
-- Test data and fixtures
-- Automated testing tools
-- Performance monitoring tools
-
-## Validation Logic
-```javascript
-canExecute() {
-  return hasContext('test_plan') &&
-         hasContext('implementation_ready');
-}
-```
-
-## Process
-1. **Set up test environment** - Prepare environment with test data and configuration
-2. **Execute functional tests** - Run core functionality test cases
-3. **Execute edge case tests** - Test boundary conditions and error scenarios
-4. **Execute integration tests** - Verify component interactions work correctly
-5. **Execute performance tests** - Validate performance requirements (if applicable)
-6. **Document test results** - Record all test outcomes with evidence
-7. **Analyze failures** - Investigate and document any test failures
-
-## Inputs
-- Comprehensive test plan with test cases
-- Implementation ready for testing
-- Test environment and test data
-- Testing tools and frameworks
-- Performance and monitoring tools (if applicable)
-
-## Outputs
-- Test execution results and reports
-- Pass/fail status for all test cases
-- Screenshots and evidence for failed tests
-- Performance test results (if applicable)
-- Bug reports for any issues found
-- Test coverage analysis
-- Overall test summary and recommendations
-
-## Success Criteria
-- All critical test cases executed successfully
-- Test failures documented with clear reproduction steps
-- Performance requirements validated (if applicable)
-- Integration points working correctly
-- Edge cases and error scenarios handled properly
-- Complete test results documented
-- Clear go/no-go recommendation provided
-
-## Skip Conditions
+## Skip When
 - No test plan available or test cases undefined
 - Implementation not ready for testing
 - Test environment not accessible
 - Emergency deployment where testing is deferred
 
+## Complexity Assessment
+- **Task Complexity**: Medium - requires testing skills and systematic execution
+
+## Task Understanding Assessment
+If task unclear - ask clarifying questions with multiple choice options
+
 ## Test Execution Categories
 
 ### Functional Test Execution
-- **Core Feature Tests**: Primary functionality validation
-- **User Workflow Tests**: Complete user journey testing
-- **Business Logic Tests**: Rules and validation testing
-- **API Endpoint Tests**: Input/output validation
-- **Data Processing Tests**: Data transformation and storage
+- **Core Feature Tests** - primary functionality validation
+- **User Workflow Tests** - complete user journey testing
+- **Business Logic Tests** - rules and validation testing
+- **API Endpoint Tests** - input/output validation
+- **Data Processing Tests** - data transformation and storage
 
 ### Non-Functional Test Execution
-- **Performance Tests**: Response time and throughput testing
-- **Load Tests**: System behavior under expected load
-- **Security Tests**: Vulnerability and access control testing
-- **Usability Tests**: User experience validation
-- **Compatibility Tests**: Different environments and configurations
+- **Performance Tests** - response time and throughput testing
+- **Load Tests** - system behavior under expected load
+- **Security Tests** - vulnerability and access control testing
+- **Usability Tests** - user experience validation
+- **Compatibility Tests** - different environments and configurations
 
 ### Integration Test Execution
-- **Component Integration**: Module interaction testing
-- **External API Integration**: Third-party service testing
-- **Database Integration**: Data persistence validation
-- **User Interface Integration**: Frontend-backend communication
-- **System Integration**: End-to-end workflow testing
+- **Component Integration** - module interaction testing
+- **External API Integration** - third-party service testing
+- **Database Integration** - data persistence validation
+- **User Interface Integration** - frontend-backend communication
+- **System Integration** - end-to-end workflow testing
 
 ### Regression Test Execution
-- **Existing Feature Tests**: Ensure no functionality broken
-- **Previous Bug Tests**: Verify previously fixed issues remain fixed
-- **Core Functionality Tests**: Critical system features still work
-- **Integration Points**: Key integration still functioning
-- **Performance Baseline**: Performance hasn't degraded
+- **Existing Feature Tests** - ensure no functionality broken
+- **Previous Bug Tests** - verify previously fixed issues remain fixed
+- **Core Functionality Tests** - critical system features still work
+- **Integration Points** - key integration still functioning
+- **Performance Baseline** - performance hasn't degraded
 
 ## Test Execution Best Practices
 
@@ -125,33 +79,14 @@ canExecute() {
 - Suggest potential root causes when possible
 - Track issue resolution and re-test results
 
-## Test Result Documentation
-
-### Test Case Results
-- **Test Case ID**: Reference to original test case
-- **Execution Date**: When the test was performed
-- **Tester**: Who executed the test
-- **Result**: Pass, Fail, Blocked, Not Executed
-- **Notes**: Additional observations or comments
-- **Evidence**: Screenshots, logs, or other proof
-
-### Issue Reports
-- **Issue ID**: Unique identifier for tracking
-- **Severity**: Critical, High, Medium, Low
-- **Priority**: Must fix, Should fix, Could fix
-- **Description**: Clear problem description
-- **Steps to Reproduce**: Exact steps to recreate issue
-- **Expected vs Actual**: What should happen vs what actually happened
-- **Environment**: Where the issue was found
-- **Evidence**: Screenshots, logs, or error messages
-
-### Test Summary Report
-- **Overall Results**: Pass/fail counts and percentages
-- **Critical Issues**: High-priority problems found
-- **Performance Results**: Response times and throughput
-- **Coverage Analysis**: What was tested vs what was planned
-- **Risk Assessment**: Remaining risks and mitigation recommendations
-- **Go/No-Go Recommendation**: Ready for deployment decision
+## Key Tasks
+1. **Set up test environment** - prepare environment with test data and configuration
+2. **Execute functional tests** - run core functionality test cases
+3. **Execute edge case tests** - test boundary conditions and error scenarios
+4. **Execute integration tests** - verify component interactions work correctly
+5. **Execute performance tests** - validate performance requirements (if applicable)
+6. **Document test results** - record all test outcomes with evidence
+7. **Analyze failures** - investigate and document any test failures
 
 ## Automated vs Manual Testing
 
@@ -195,10 +130,20 @@ canExecute() {
 - Stress testing under peak conditions
 - Endurance testing over extended periods
 
-## Notes
-- Execute tests systematically and document everything
-- Don't skip failed tests - investigate and document thoroughly
-- Balance automated and manual testing based on context
-- Focus on critical path and high-risk areas if time is limited
-- Communicate results clearly to stakeholders and development team
-- Plan for re-testing after bug fixes 
+## Success Criteria
+- All critical test cases executed successfully
+- Test failures documented with clear reproduction steps
+- Performance requirements validated (if applicable)
+- Integration points working correctly
+- Edge cases and error scenarios handled properly
+- Complete test results documented
+- Clear go/no-go recommendation provided
+
+## Key Outputs
+- Test execution results and reports
+- Pass/fail status for all test cases
+- Screenshots and evidence for failed tests
+- Performance test results (if applicable)
+- Bug reports for any issues found
+- Test coverage analysis
+- Overall test summary and recommendations 

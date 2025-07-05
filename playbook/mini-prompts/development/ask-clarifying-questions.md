@@ -1,111 +1,45 @@
-# Step • Ask Clarifying Questions
+# Ask Clarifying Questions
 
-## Purpose
-Gather detailed requirements, clarify ambiguities, and establish clear understanding of the task scope and constraints.
+## Goal
+Gather missing requirements and clarify ambiguities before implementation.
 
-## Prerequisites
-**Required MCP Servers**: 
-- None (uses standard coding agent tools)
-
-**Required Context**:
+## Context Required
 - Task description or problem statement
 
-**Optional Context**:
-- Existing documentation
-- Stakeholder contact information
-- Previous related work
+## Skip When
+- Requirements already comprehensive and clear
+- Emergency situation requiring immediate action
+- Trivial, well-understood task
 
-## Validation Logic
-```javascript
-canExecute() {
-  return hasContext('task_description') ||
-         hasContext('problem_statement');
-}
-```
+## Complexity Assessment
+- **Task Complexity**: Low - primarily involves questioning and requirements clarification
 
-## Process
-1. **Analyze the initial request** - Break down the task description into key components
-2. **Identify missing information** - List what information is needed to proceed
-3. **Ask targeted questions** - Create specific, actionable questions
-4. **Clarify scope and boundaries** - Define what's included and excluded
-5. **Confirm technical constraints** - Understand limitations, preferences, and requirements
-6. **Document the clarified requirements** - Create clear, comprehensive requirements
+## Task Understanding Assessment
+If task unclear - ask clarifying questions with multiple choice options
 
-## Inputs
-- Initial task description
-- Problem statement or feature request
-- Any existing context or documentation
+## Focus Areas
+- **Scope boundaries** - what's in/out of scope
+- **Technical constraints** - platform, performance, security requirements  
+- **Success criteria** - how to validate completion
+- **Dependencies** - external systems, data, approvals needed
 
-## Outputs
-- Comprehensive requirements document
-- Clarified scope and boundaries
-- Technical constraints and preferences
-- Success criteria and acceptance criteria
-- Risk assessment (for complex tasks)
-- Next steps and dependencies
+## Question Format
+**Always provide multiple choice options or specific examples** to help stakeholders choose rather than having to think from scratch.
 
-## Success Criteria
-- All ambiguities in the original request resolved
-- Clear understanding of what needs to be built/fixed
-- Scope boundaries clearly defined
-- Technical constraints documented
-- Success criteria established
-- Stakeholder alignment confirmed (if applicable)
+Example:
+- "What's the target user group? A) End users B) Administrators C) Both D) Other: ___"
+- "What's the priority? A) Critical (same day) B) High (this week) C) Medium (this month) D) Low (when possible)"
 
-## Skip Conditions
-- Requirements are already crystal clear and comprehensive
-- Emergency situation where clarification time is not available
-- Task is trivial and well-understood
+## Key Questions by Type
 
-## Question Categories to Cover
+**Bug fixes:** reproduction steps, expected vs actual behavior, impact/urgency, current workarounds
 
-### Functional Requirements
-- What specific functionality needs to be implemented?
-- What are the expected inputs and outputs?
-- Are there any edge cases or special scenarios to consider?
+**New features:** target users, problem being solved, user flow, similar existing features  
 
-### Non-Functional Requirements
-- Are there performance requirements?
-- What about security considerations?
-- Any scalability or reliability requirements?
+**Refactoring:** specific pain points, performance issues, desired end state, constraints
 
-### Technical Constraints
-- What technology stack should be used?
-- Are there any existing systems that need integration?
-- Any architectural constraints or preferences?
-
-### Scope and Timeline
-- What's the expected timeline?
-- Are there any dependencies on other work?
-- What's the minimum viable solution vs. ideal solution?
-
-### Success Criteria
-- How will we know when this is complete?
-- What are the acceptance criteria?
-- Who will validate the final result?
-
-## Example Questions
-
-### For Bug Fixes
-- Can you provide steps to reproduce the issue?
-- What's the expected behavior vs. actual behavior?
-- What's the impact and urgency of this fix?
-- Are there any workarounds currently in place?
-
-### For New Features
-- Who is the target user for this feature?
-- What problem does this solve for them?
-- Are there any similar existing features to reference?
-- What's the expected user flow?
-
-### For Code Refactoring
-- What specific pain points need addressing?
-- Are there performance issues to resolve?
-- What's the desired end state architecture?
-- Are there any constraints on the refactoring approach?
-
-## Notes
-- Focus on understanding the "why" behind the request, not just the "what"
-- Don't assume anything - ask for clarification even on seemingly obvious points
-- Document all assumptions and get them confirmed
-- Consider future maintainability and extensibility in your questions 
+## Output
+- Clarified requirements document with stakeholder choices
+- Defined scope and boundaries
+- Technical constraints and dependencies
+- Success criteria and validation approach 

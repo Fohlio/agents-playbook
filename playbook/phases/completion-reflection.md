@@ -1,82 +1,39 @@
 # Phase • Completion & Reflection
 
-## Purpose
-Finalize the project with proper documentation, knowledge capture, and reflection on lessons learned for continuous improvement.
+## Goal
+Finalize project deliverables, document outcomes, and reflect on process for future improvement.
 
-## Steps Sequence
-1. **document-technical-decisions** - Document key technical decisions and rationale for future reference
-2. **create-project-summary** - Create comprehensive project summary with outcomes and metrics
-3. **update-knowledge-base** - Update team knowledge base with lessons learned and best practices
-4. **stakeholder-communication** - Communicate project completion and outcomes to stakeholders
-5. **retrospective-analysis** - Conduct project retrospective to identify improvements for future projects
-6. **cleanup-resources** - Clean up temporary resources, environments, and access permissions [conditional: if temporary resources used]
-7. **schedule-follow-up** - Schedule follow-up reviews and maintenance tasks [conditional: if ongoing maintenance required]
+## Step Sequence
+1. **finalize-deliverables** - ensure all outputs are complete and documented
+2. **validate-success-criteria** - verify all requirements and goals achieved
+3. **document-outcomes** - record results, decisions, and lessons learned
+4. **stakeholder-handoff** [if stakeholder approval required]
+5. **process-reflection** - identify improvements for future projects
 
-## Phase Prerequisites
-- **Context**: Completed and deployed solution
-- **MCP Servers**: None required
-- **Optional**: Project tracking tools, documentation systems, stakeholder contact information
+## Context Required
+- Completed implementation and testing
+- Original requirements and success criteria
+- Project documentation and decisions
 
-## Phase Success Criteria
-- All project deliverables documented and archived
-- Stakeholders informed of project completion
-- Technical decisions documented for future reference
-- Lessons learned captured and shared
-- Knowledge base updated with new insights
-- Temporary resources cleaned up
-- Follow-up activities scheduled (if applicable)
-- Project formally closed in tracking systems
+## Skip When
+- Simple changes not requiring formal closure
+- Emergency fixes with deferred documentation
+- Iterative work continuing in next session
 
-## Skip Conditions
-- Emergency/hotfix where formal closure is deferred
-- Ongoing project with no clear completion point
-- Simple tasks that don't warrant formal closure process
-
-## Validation Logic
-```javascript
-canExecutePhase() {
-  return hasContext('deployed_solution') &&
-         projectIsComplete() &&
-         requiresFormalClosure();
-}
-
-shouldSkipPhase() {
-  return isEmergencyFix() ||
-         isOngoingProject() ||
-         isTrivialTask() ||
-         hasContext('already_closed');
-}
-
-requiresFormalClosure() {
-  return isSignificantProject() ||
-         hasStakeholders() ||
-         hasLessonsLearned() ||
-         hasReusableComponents();
-}
-```
+## Success Criteria
+- All deliverables completed and documented
+- Success criteria validated and confirmed
+- Stakeholder acceptance obtained (if required)
+- Lessons learned documented for future reference
+- Process improvements identified
 
 ## Expected Duration
-**Simple**: 30 minutes - 1 hour  
-**Standard**: 2-4 hours  
-**Complex**: 1 day
+**Simple:** 15-30 min | **Standard:** 30-60 min | **Complex:** 1-2 hours
 
-## Outputs
-- Technical decision log with rationale
-- Project completion report with metrics and outcomes
-- Updated knowledge base articles
-- Stakeholder communication summary
-- Retrospective findings and action items
-- Resource cleanup verification
-- Follow-up schedule and responsibilities
-- Project archive with all artifacts
-- Lessons learned document
-- Best practices recommendations
-
-## Notes
-- Don't skip this phase for significant projects - documentation pays dividends later
-- Capture lessons learned while they're fresh in memory
-- Share insights with the broader team to improve future projects
-- Ensure all temporary access and resources are properly cleaned up
-- Schedule meaningful follow-up activities, not just token check-ins
-- Consider creating reusable templates or components for future use
-- Celebrate project success and acknowledge team contributions 
+## Key Outputs
+- Final deliverables package
+- Success criteria validation report
+- Project outcome documentation
+- Lessons learned and improvement recommendations
+- Stakeholder sign-off (if applicable)
+- Process reflection and insights 

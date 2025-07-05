@@ -1,65 +1,117 @@
-# Step • Manage Secrets and Credentials
+# Manage Secrets
 
-## Purpose
+## Goal
 Securely manage, store, and distribute sensitive information including passwords, API keys, certificates, and other credentials across applications and infrastructure.
 
-## Prerequisites
-**Required MCP Servers**: 
-- None (uses standard security tools)
-
-**Required Context**:
+## Context Required
 - Application or system requiring credentials
 - Security requirements and compliance needs
 
-**Optional Context**:
-- Existing secrets management system
-- Compliance frameworks (SOC2, HIPAA, PCI DSS)
-- Team access requirements
-- Audit and rotation policies
+## Skip When
+- Comprehensive secrets management already implemented
+- No sensitive credentials or secrets to manage
+- Secrets management handled by dedicated security team
+- Only public or non-sensitive configuration data
 
-## Validation Logic
-```javascript
-canExecute() {
-  return hasContext('application_system') &&
-         hasContext('security_requirements') &&
-         hasSecretsToManage() &&
-         hasSecurityAccess();
-}
+## Complexity Assessment
+- **Task Complexity**: High - requires security expertise and secrets management knowledge
 
-hasSecretsToManage() {
-  return hasPasswords() ||
-         hasAPIKeys() ||
-         hasCertificates() ||
-         hasConnectionStrings() ||
-         hasEncryptionKeys();
-}
-```
+## Task Understanding Assessment
+If task unclear - ask clarifying questions with multiple choice options
 
-## Process
-1. **Inventory existing secrets** - Identify all credentials, keys, and sensitive data
-2. **Choose secrets management solution** - Select appropriate secrets management platform
-3. **Migrate secrets to secure storage** - Move credentials from insecure locations
-4. **Implement access controls** - Configure role-based access and permissions
-5. **Set up secret rotation** - Implement automatic or scheduled credential rotation
-6. **Configure application integration** - Update applications to retrieve secrets securely
-7. **Implement audit logging** - Enable logging for all secret access and modifications
-8. **Document procedures** - Create documentation for secret management processes
+## Types of Secrets
 
-## Inputs
-- Inventory of current secrets and credentials
-- Security and compliance requirements
-- Application architecture and deployment methods
-- Team structure and access requirements
-- Existing security infrastructure and tools
+### Credentials
+- **Database passwords** - connection credentials for databases
+- **Service account passwords** - system and service user credentials
+- **Admin passwords** - administrative access credentials
+- **User passwords** - application user authentication data
 
-## Outputs
-- Secure secrets management system implemented
-- All secrets migrated from insecure storage
-- Role-based access controls configured
-- Secret rotation policies and procedures
-- Applications configured to use secure secret retrieval
-- Audit logging and monitoring enabled
-- Documentation for secret management procedures
+### API Keys and Tokens
+- **Third-party API keys** - external service authentication keys
+- **OAuth tokens** - authorization tokens for API access
+- **JWT signing keys** - keys for token generation and validation
+- **Webhook tokens** - secure tokens for webhook validation
+
+### Certificates and Keys
+- **SSL/TLS certificates** - web server and application certificates
+- **Private keys** - encryption and signing private keys
+- **SSH keys** - server access and deployment keys
+- **Code signing certificates** - application and binary signing certificates
+
+### Connection Strings
+- **Database connections** - complete database connection information
+- **Message queue connections** - messaging system credentials
+- **Cache connections** - Redis, Memcached connection details
+- **Storage connections** - object storage access credentials
+
+## Secrets Management Solutions
+
+### Cloud-Native Solutions
+- **AWS Secrets Manager** - AWS native secrets management service
+- **Azure Key Vault** - Microsoft Azure secrets and key management
+- **Google Secret Manager** - Google Cloud Platform secrets management
+- **AWS Parameter Store** - simple configuration and secrets storage
+
+### Third-Party Solutions
+- **HashiCorp Vault** - enterprise-grade secrets management platform
+- **CyberArk** - enterprise privileged access management
+- **1Password Business** - team-based password and secrets management
+
+### Open Source Options
+- **HashiCorp Vault (OSS)** - open source version of Vault
+- **Bitwarden** - open source password management
+- **KeePass** - local password database management
+- **Pass** - Unix password manager using GPG
+
+## Secret Storage Best Practices
+
+### Storage Security
+- **Encryption at rest** - all secrets encrypted when stored
+- **Encryption in transit** - secure communication protocols
+- **Access logging** - track all secret access and modifications
+- **Regular backups** - secure backup and recovery procedures
+
+### Access Control
+- **Least privilege** - minimum necessary access to secrets
+- **Role-based access** - access based on job functions and responsibilities
+- **Multi-factor authentication** - additional security for administrative access
+
+### Secret Rotation
+- **Automatic rotation** - scheduled rotation for supported services
+- **Manual rotation** - process for rotating non-automated secrets
+- **Zero-downtime rotation** - rotation without service interruption
+- **Rollback procedures** - ability to revert to previous secrets if needed
+
+## Key Tasks
+1. **Inventory existing secrets** - identify all credentials, keys, and sensitive data
+2. **Choose secrets management solution** - select appropriate secrets management platform
+3. **Migrate secrets to secure storage** - move credentials from insecure locations
+4. **Implement access controls** - configure role-based access and permissions
+5. **Set up secret rotation** - implement automatic or scheduled credential rotation
+6. **Configure application integration** - update applications to retrieve secrets securely
+7. **Implement audit logging** - enable logging for all secret access and modifications
+8. **Document procedures** - create documentation for secret management processes
+
+## Application Integration
+
+### Development Environment
+- **Local development** - secure secret access for developers
+- **Development databases** - non-production credentials
+- **Testing environments** - isolated secrets for testing
+- **CI/CD integration** - secure secret injection in build pipelines
+
+### Production Environment
+- **Runtime secret retrieval** - applications fetch secrets at startup or runtime
+- **Secure caching** - temporary secure storage of retrieved secrets
+- **Error handling** - graceful handling of secret retrieval failures
+- **Performance optimization** - efficient secret retrieval without impact
+
+### Container Integration
+- **Init containers** - retrieve secrets before application startup
+- **Sidecar containers** - dedicated containers for secret management
+- **Volume mounts** - secure mounting of secrets as files
+- **Environment injection** - secure injection of secrets as environment variables
 
 ## Success Criteria
 - No secrets stored in code, configuration files, or environment variables
@@ -70,158 +122,11 @@ hasSecretsToManage() {
 - Applications successfully retrieve secrets without hardcoding
 - Compliance requirements met for secret handling
 
-## Skip Conditions
-- Comprehensive secrets management already implemented
-- No sensitive credentials or secrets to manage
-- Secrets management handled by dedicated security team
-- Only public or non-sensitive configuration data
-
-## Types of Secrets
-
-### Credentials
-- **Database passwords**: Connection credentials for databases
-- **Service account passwords**: System and service user credentials
-- **Admin passwords**: Administrative access credentials
-- **User passwords**: Application user authentication data
-
-### API Keys and Tokens
-- **Third-party API keys**: External service authentication keys
-- **OAuth tokens**: Authorization tokens for API access
-- **JWT signing keys**: Keys for token generation and validation
-- **Webhook tokens**: Secure tokens for webhook validation
-
-### Certificates and Keys
-- **SSL/TLS certificates**: Web server and application certificates
-- **Private keys**: Encryption and signing private keys
-- **SSH keys**: Server access and deployment keys
-- **Code signing certificates**: Application and binary signing certificates
-
-### Connection Strings
-- **Database connections**: Complete database connection information
-- **Message queue connections**: Messaging system credentials
-- **Cache connections**: Redis, Memcached connection details
-- **Storage connections**: Object storage access credentials
-
-## Secrets Management Solutions
-
-### Cloud-Native Solutions
-- **AWS Secrets Manager**: AWS native secrets management service
-- **Azure Key Vault**: Microsoft Azure secrets and key management
-- **Google Secret Manager**: Google Cloud Platform secrets management
-- **AWS Parameter Store**: Simple configuration and secrets storage
-
-### Third-Party Solutions
-- **HashiCorp Vault**: Enterprise-grade secrets management platform
-- **CyberArk**: Enterprise privileged access management
-- **Azure Key Vault**: Microsoft's cloud key management service
-- **1Password Business**: Team-based password and secrets management
-
-### Open Source Options
-- **HashiCorp Vault (OSS)**: Open source version of Vault
-- **Bitwarden**: Open source password management
-- **KeePass**: Local password database management
-- **Pass**: Unix password manager using GPG
-
-## Secret Storage Best Practices
-
-### Storage Security
-- **Encryption at rest**: All secrets encrypted when stored
-- **Encryption in transit**: Secure communication protocols
-- **Access logging**: Track all secret access and modifications
-- **Regular backups**: Secure backup and recovery procedures
-
-### Access Control
-- **Least privilege**: Minimum necessary access to secrets
-- **Role-based access**: Access based on job functions and responsibilities
-- **Time-limited access**: Temporary access for specific tasks
-- **Multi-factor authentication**: Additional security for administrative access
-
-### Secret Rotation
-- **Automatic rotation**: Scheduled rotation for supported services
-- **Manual rotation**: Process for rotating non-automated secrets
-- **Zero-downtime rotation**: Rotation without service interruption
-- **Rollback procedures**: Ability to revert to previous secrets if needed
-
-## Application Integration
-
-### Development Environment
-- **Local development**: Secure secret access for developers
-- **Development databases**: Non-production credentials
-- **Testing environments**: Isolated secrets for testing
-- **CI/CD integration**: Secure secret injection in build pipelines
-
-### Production Environment
-- **Runtime secret retrieval**: Applications fetch secrets at startup or runtime
-- **Secure caching**: Temporary secure storage of retrieved secrets
-- **Error handling**: Graceful handling of secret retrieval failures
-- **Performance optimization**: Efficient secret retrieval without impact
-
-### Container Integration
-- **Init containers**: Retrieve secrets before application startup
-- **Sidecar containers**: Dedicated containers for secret management
-- **Volume mounts**: Secure mounting of secrets as files
-- **Environment injection**: Secure injection of secrets as environment variables
-
-## Secret Rotation Strategies
-
-### Automatic Rotation
-- **Database credentials**: Automatic rotation with database provider APIs
-- **API keys**: Automated rotation through service provider APIs
-- **Certificates**: Automatic renewal and deployment of SSL certificates
-- **System passwords**: Scheduled rotation of service account passwords
-
-### Manual Rotation
-- **Third-party services**: Manual rotation for unsupported services
-- **Legacy systems**: Manual processes for older systems
-- **Emergency rotation**: Rapid rotation in case of compromise
-- **Compliance-driven rotation**: Rotation based on policy requirements
-
-## Audit and Compliance
-
-### Audit Logging
-- **Access logs**: Who accessed which secrets when
-- **Modification logs**: Changes to secrets and configurations
-- **Failed access attempts**: Security monitoring and alerting
-- **Administrative actions**: Management and configuration changes
-
-### Compliance Requirements
-- **Data retention**: Log retention policies for compliance
-- **Access reviews**: Regular review of secret access permissions
-- **Segregation of duties**: Separation of secret management responsibilities
-- **Evidence collection**: Documentation for compliance audits
-
-## Emergency Procedures
-
-### Compromise Response
-- **Immediate rotation**: Quick rotation of compromised secrets
-- **Access revocation**: Immediate removal of compromised access
-- **Impact assessment**: Determine scope of potential compromise
-- **Incident documentation**: Record details for security analysis
-
-### Disaster Recovery
-- **Backup restoration**: Recovery of secrets from secure backups
-- **Service continuity**: Maintaining service during secret system outages
-- **Communication procedures**: Coordinating recovery efforts
-- **Testing procedures**: Regular testing of emergency procedures
-
-## Team Training and Procedures
-
-### Developer Training
-- **Secure coding practices**: Never hardcode secrets in applications
-- **Secret retrieval**: Proper methods for accessing secrets
-- **Local development**: Secure practices for development environments
-- **Incident reporting**: Procedures for reporting potential compromises
-
-### Operations Training
-- **Secret management procedures**: Day-to-day management tasks
-- **Rotation procedures**: Manual and automated rotation processes
-- **Monitoring and alerting**: Recognizing and responding to issues
-- **Emergency procedures**: Response to security incidents
-
-## Notes
-- Never store secrets in code repositories or configuration files
-- Use different secrets for different environments (dev/test/prod)
-- Implement the principle of least privilege for secret access
-- Regularly audit and review secret access permissions
-- Test secret rotation and recovery procedures regularly
-- Keep secrets management system itself highly secure and available 
+## Key Outputs
+- Secure secrets management system implemented
+- All secrets migrated from insecure storage
+- Role-based access controls configured
+- Secret rotation policies and procedures
+- Applications configured to use secure secret retrieval
+- Audit logging and monitoring enabled
+- Documentation for secret management procedures 

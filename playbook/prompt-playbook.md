@@ -31,7 +31,7 @@ Use the **AI-powered semantic search** MCP server to find workflows instantly:
 - **gather-requirements** - Requirements collection and stakeholder analysis
 - **document-decisions** - Decision documentation and architectural rationale
 - **stakeholder-approval** - Stakeholder review, sign-off, and approval processes
-- **create-trd** - Technical Requirements Document creation with TRD integration [[memory:2316971]]
+- **create-trd** - Technical Requirements Document creation with TRD integration 
 
 #### 🔍 Analysis Phase  
 - **feature-analysis** - Feature scope, impact, and complexity analysis
@@ -71,7 +71,7 @@ Use the **AI-powered semantic search** MCP server to find workflows instantly:
 **Complete feature development from requirements to deployment**
 - **Phases**: Planning → Analysis → Design → Implementation → Testing → Deployment → Reflection
 - **Smart Features**: Auto-skips architecture analysis for simple features
-- **TRD Integration**: Creates comprehensive technical documentation [[memory:2316971]]
+- **TRD Integration**: Creates comprehensive technical documentation
 - **Best For**: New features, enhancements, complex development tasks
 
 ### Product Development  
@@ -222,7 +222,7 @@ Legacy System → code-refactoring → feature-development → infrastructure-se
 - ✅ Stakeholder approval obtained (where required)
 
 ### Workflow-Specific Success Metrics
-- **Feature Development**: TRD created [[memory:2316971]], feature deployed, requirements validated
+- **Feature Development**: TRD created, feature deployed, requirements validated
 - **Product Development**: Market launch successful, user adoption metrics positive
 - **Quick Fix**: Issue resolved, no side effects, minimal disruption
 - **Infrastructure**: Environment stable, monitoring active, security configured

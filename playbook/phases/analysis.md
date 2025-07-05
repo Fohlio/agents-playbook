@@ -1,71 +1,39 @@
 # Phase • Analysis
 
-## Purpose
-Systematically analyze the problem space, existing systems, and technical landscape to understand current state and identify the optimal solution approach.
+## Goal
+Analyze problem space, existing systems, and technical landscape to understand current state and identify optimal solution approach.
 
-## Steps Sequence
-1. **trace-bug-root-cause** - Identify exact source of reported issues [conditional: if bug fixing]
-2. **feature-analysis** - Analyze existing feature functionality and architecture [conditional: if working with existing features]
-3. **code-analysis** - Deep dive into codebase structure and patterns [conditional: if code changes required]
-4. **architecture-analysis** - Analyze system architecture and dependencies [conditional: if system design changes]
-5. **performance-analysis** - Assess performance implications and bottlenecks [conditional: if performance concerns]
-6. **security-analysis** - Review security implications and requirements [conditional: if security-sensitive]
-7. **dependency-analysis** - Analyze external dependencies and compatibility [conditional: if external dependencies involved]
+## Step Sequence
+1. **trace-bug-root-cause** [if bug fixing]
+2. **feature-analysis** [if working with existing features]
+3. **code-analysis** [if code changes required]
+4. **architecture-analysis** [if system design changes]
+5. **performance-analysis** [if performance concerns]
+6. **security-analysis** [if security-sensitive]
+7. **dependency-analysis** [if external dependencies]
 
-## Phase Prerequisites
-- **Context**: Requirements from Planning phase
-- **MCP Servers**: 
-  - `context7` (for library/dependency research)
-  - `playwright` (for web application analysis)
-- **Optional**: Access to existing codebase, monitoring data, documentation
+## Context Required
+- Requirements from Planning phase
+- Access to codebase/system (or new project confirmation)
 
-## Phase Success Criteria
-- Current state fully understood and documented
-- Problem scope clearly defined with evidence
-- Technical constraints and limitations identified
-- Solution approach outlined with pros/cons
-- Risk assessment completed
+## Skip When
+- Problem is trivial and well-understood
+- Emergency fix with no analysis time
+- Detailed analysis completed in previous session
+- Greenfield project with simple requirements
+
+## Success Criteria
+- Current state documented and problem scope defined
+- Technical constraints and risks identified
+- Solution approach outlined with tradeoffs
 - Performance and security implications understood
 
-## Skip Conditions
-- Problem is trivial and well-understood
-- Emergency fix where analysis time is not available
-- Analysis was completed in a previous session
-- No existing system to analyze (greenfield project with simple requirements)
-
-## Validation Logic
-```javascript
-canExecutePhase() {
-  return hasContext('requirements') &&
-         (hasContext('codebase_access') || 
-          hasContext('system_access') ||
-          isNewProject());
-}
-
-shouldSkipPhase() {
-  return hasContext('detailed_analysis') ||
-         isEmergencyFix() ||
-         isTrivialTask();
-}
-```
-
 ## Expected Duration
-**Simple**: 30-60 minutes  
-**Standard**: 1-3 hours  
-**Complex**: 4-8 hours
+**Simple:** 30-60 min | **Standard:** 1-3 hours | **Complex:** 4-8 hours
 
-## Outputs
+## Key Outputs
 - Current state analysis report
-- Problem root cause identification (if applicable)
-- Architecture overview and patterns
-- Technical constraint documentation
-- Performance baseline (if applicable)
-- Security assessment (if applicable)
-- Recommended solution approach
+- Problem root cause (if applicable)
+- Architecture overview and constraints
 - Risk assessment with mitigation strategies
-
-## Notes
-- Critical phase for complex projects - thorough analysis prevents costly mistakes
-- Can be time-consuming but saves significant rework later
-- Skip only for simple, well-understood tasks or emergencies
-- Consider breaking into multiple sessions for very complex systems 
+- Recommended solution approach 

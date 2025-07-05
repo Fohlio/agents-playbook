@@ -1,113 +1,67 @@
-# Step • Code Analysis
+# Code Analysis
 
-## Purpose
+## Goal
 Deep dive into codebase structure, patterns, and quality to understand implementation details and identify improvement opportunities.
 
-## Prerequisites
-**Required MCP Servers**: 
-- None (uses standard coding agent tools)
-
-**Required Context**:
+## Context Required
 - Access to relevant codebase
 - Scope of code to analyze (specific modules, functions, or areas)
 
-**Optional Context**:
-- Code style guidelines and standards
-- Performance requirements
-- Security requirements
-- Testing frameworks and practices
-
-## Validation Logic
-```javascript
-canExecute() {
-  return hasContext('codebase_access') &&
-         hasContext('analysis_scope');
-}
-```
-
-## Process
-1. **Survey code structure** - Get high-level overview of codebase organization
-2. **Analyze design patterns** - Identify patterns, anti-patterns, and architectural decisions
-3. **Review code quality** - Assess readability, maintainability, and adherence to standards
-4. **Examine performance characteristics** - Look for potential bottlenecks and optimizations
-5. **Assess security practices** - Review security implementations and potential vulnerabilities
-6. **Evaluate testing coverage** - Analyze test quality and coverage
-7. **Document findings** - Create comprehensive code analysis report
-
-## Inputs
-- Codebase or specific code modules to analyze
-- Code style guidelines and standards (if available)
-- Performance and security requirements
-- Existing documentation and comments
-- Test suites and coverage reports
-
-## Outputs
-- Code structure and organization analysis
-- Design pattern identification and assessment
-- Code quality metrics and recommendations
-- Performance bottleneck identification
-- Security vulnerability assessment
-- Testing coverage and quality analysis
-- Technical debt assessment
-- Refactoring recommendations
-
-## Success Criteria
-- Comprehensive understanding of code structure and patterns
-- Code quality thoroughly assessed with specific recommendations
-- Performance and security issues identified
-- Testing gaps and opportunities documented
-- Technical debt quantified and prioritized
-- Clear action plan for improvements
-
-## Skip Conditions
+## Skip When
 - Code is very simple and doesn't warrant deep analysis
 - Analysis was completed in previous session
 - Only configuration or documentation changes needed
-- Emergency fix where analysis time is not available
+- Emergency fix where analysis is not required
+
+## Complexity Assessment
+- **Task Complexity**: High - requires deep code analysis and architecture understanding
+
+## Task Understanding Assessment
+If task unclear - ask clarifying questions with multiple choice options
 
 ## Analysis Categories
 
 ### Structural Analysis
-- **Code Organization**: How files, modules, and packages are structured
-- **Separation of Concerns**: How different responsibilities are separated
-- **Dependency Management**: How modules depend on each other
-- **Layer Architecture**: How different layers (UI, business, data) are organized
-- **Interface Design**: How components interact with each other
+- **Code Organization** - how files, modules, and packages are structured
+- **Separation of Concerns** - how different responsibilities are separated
+- **Dependency Management** - how modules depend on each other
+- **Layer Architecture** - how different layers (UI, business, data) are organized
+- **Interface Design** - how components interact with each other
 
 ### Design Pattern Analysis
-- **Architectural Patterns**: MVC, MVP, Clean Architecture, etc.
-- **Design Patterns**: Factory, Observer, Strategy, Repository, etc.
-- **Anti-patterns**: God objects, spaghetti code, copy-paste programming
-- **Code Smells**: Long methods, large classes, duplicate code
-- **SOLID Principles**: Single responsibility, open/closed, etc.
+- **Architectural Patterns** - MVC, MVP, Clean Architecture, etc.
+- **Design Patterns** - factory, observer, strategy, repository, etc.
+- **Anti-patterns** - god objects, spaghetti code, copy-paste programming
+- **Code Smells** - long methods, large classes, duplicate code
+- **SOLID Principles** - single responsibility, open/closed, etc.
 
 ### Quality Analysis
-- **Readability**: Clear naming, appropriate comments, consistent style
-- **Maintainability**: Ease of making changes and adding features
-- **Complexity**: Cyclomatic complexity, nesting levels, method length
-- **Coupling**: How tightly components are connected
-- **Cohesion**: How focused and related code within modules is
+- **Readability** - clear naming, appropriate comments, consistent style
+- **Maintainability** - ease of making changes and adding features
+- **Complexity** - cyclomatic complexity, nesting levels, method length
+- **Coupling** - how tightly components are connected
+- **Cohesion** - how focused and related code within modules is
 
 ### Performance Analysis
-- **Algorithm Efficiency**: Big O complexity of key algorithms
-- **Resource Usage**: Memory allocation, CPU intensive operations
-- **I/O Operations**: Database queries, file operations, network calls
-- **Caching Strategies**: What is cached and how effectively
-- **Scalability Patterns**: How code handles increased load
+- **Algorithm Efficiency** - Big O complexity of key algorithms
+- **Resource Usage** - memory allocation, CPU intensive operations
+- **I/O Operations** - database queries, file operations, network calls
+- **Caching Strategies** - what is cached and how effectively
+- **Scalability Patterns** - how code handles increased load
 
 ### Security Analysis
-- **Input Validation**: How user input is validated and sanitized
-- **Authentication/Authorization**: How security is implemented
-- **Data Protection**: How sensitive data is handled and stored
-- **Error Handling**: How errors are handled without exposing information
-- **Dependency Vulnerabilities**: Known vulnerabilities in dependencies
+- **Input Validation** - how user input is validated and sanitized
+- **Authentication/Authorization** - how security is implemented
+- **Data Protection** - how sensitive data is handled and stored
+- **Error Handling** - how errors are handled without exposing information
+- **Dependency Vulnerabilities** - known vulnerabilities in dependencies
 
 ### Testing Analysis
-- **Test Coverage**: What percentage of code is covered by tests
-- **Test Quality**: How well tests verify functionality
-- **Test Types**: Unit, integration, end-to-end test distribution
-- **Test Maintainability**: How easy tests are to understand and update
-- **Testing Patterns**: How testing is organized and structured
+- **Test Coverage** - what percentage of code is covered by tests
+- **Test Quality** - how well tests verify functionality
+- **Test Types** - unit, integration, end-to-end test distribution
+- **Test Maintainability** - how easy tests are to understand and update
+- **Testing Patterns** - how testing is organized and structured
 
 ## Analysis Techniques
 
@@ -139,28 +93,14 @@ canExecute() {
 - Review code evolution trends
 - Assess technical debt accumulation
 
-## Quality Metrics
-
-### Complexity Metrics
-- Cyclomatic complexity per method/function
-- Lines of code per file/class/method
-- Nesting depth and branching factor
-- Number of parameters per method
-- Class coupling and cohesion metrics
-
-### Maintainability Metrics
-- Code duplication percentage
-- Comment density and quality
-- Naming consistency and clarity
-- Method and class size distribution
-- Technical debt ratio
-
-### Test Metrics
-- Code coverage percentage
-- Test case pass/fail rates
-- Test execution time
-- Test maintainability index
-- Bug escape rate
+## Key Analysis Tasks
+1. **Survey code structure** - get high-level overview of codebase organization
+2. **Analyze design patterns** - identify patterns, anti-patterns, and architectural decisions
+3. **Review code quality** - assess readability, maintainability, and adherence to standards
+4. **Examine performance characteristics** - look for potential bottlenecks and optimizations
+5. **Assess security practices** - review security implementations and potential vulnerabilities
+6. **Evaluate testing coverage** - analyze test quality and coverage
+7. **Document findings** - create comprehensive code analysis report
 
 ## Common Code Issues
 
@@ -191,6 +131,41 @@ canExecute() {
 - Cross-site scripting (XSS) risks
 - Insecure data storage
 - Missing authentication checks
+
+## Success Criteria
+- Comprehensive understanding of code structure and patterns
+- Code quality thoroughly assessed with specific recommendations
+- Performance and security issues identified
+- Testing gaps and opportunities documented
+- Technical debt quantified and prioritized
+- Clear action plan for improvements
+
+## Key Outputs
+- Code structure and organization analysis
+- Design pattern identification and assessment
+- Code quality metrics and recommendations
+- Performance bottleneck identification
+- Security vulnerability assessment
+- Testing coverage and quality analysis
+- Technical debt assessment
+- Refactoring recommendations
+
+## Inputs
+- Codebase or specific code modules to analyze
+- Code style guidelines and standards (if available)
+- Performance and security requirements
+- Existing documentation and comments
+- Test suites and coverage reports
+
+## Outputs
+- Code structure and organization analysis
+- Design pattern identification and assessment
+- Code quality metrics and recommendations
+- Performance bottleneck identification
+- Security vulnerability assessment
+- Testing coverage and quality analysis
+- Technical debt assessment
+- Refactoring recommendations
 
 ## Documentation Format
 - **Executive Summary**: Key findings and recommendations

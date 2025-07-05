@@ -1,179 +1,70 @@
-# Step • Create Test Plan
+# Create Test Plan
 
-## Purpose
-Develop comprehensive test strategy and test cases to ensure implementation meets requirements and quality standards.
+## Goal
+Create comprehensive test strategy covering functional, non-functional, and regression testing requirements.
 
-## Prerequisites
-**Required MCP Servers**: 
-- None (uses standard coding agent tools)
+## Context Required
+- Requirements document or specifications
+- System architecture and components
+- Available testing tools and environment
 
-**Required Context**:
-- Requirements and acceptance criteria
-- Implementation details or design specifications
+## Skip When
+- Test plan already exists and covers scope
+- Simple changes not requiring formal testing
+- Emergency fixes with deferred testing
 
-**Optional Context**:
-- Existing test suites
-- Testing frameworks and tools
-- Performance requirements
-- Security requirements
+## Complexity Assessment
+- **Task Complexity**: Medium-High - requires testing strategy and planning skills
 
-## Validation Logic
-```javascript
-canExecute() {
-  return hasContext('requirements') &&
-         (hasContext('implementation') || hasContext('design_specifications'));
-}
-```
-
-## Process
-1. **Analyze requirements for testability** - Break down requirements into testable scenarios
-2. **Design test strategy** - Define testing approach and coverage goals
-3. **Create test cases** - Develop detailed test scenarios for functional requirements
-4. **Plan edge case testing** - Identify boundary conditions and error scenarios
-5. **Design integration tests** - Plan testing of component interactions
-6. **Plan performance testing** - Define performance test scenarios (if applicable)
-7. **Document test plan** - Create comprehensive test documentation
-
-## Inputs
-- Requirements document and acceptance criteria
-- Implementation details or design specifications
-- Existing test framework and tools
-- Performance and security requirements
-- User stories and use cases
-
-## Outputs
-- Comprehensive test plan document
-- Detailed test cases with steps and expected results
-- Edge case and error scenario test cases
-- Integration test scenarios
-- Performance test plan (if applicable)
-- Test data requirements
-- Test environment specifications
-
-## Success Criteria
-- All functional requirements covered by test cases
-- Edge cases and error scenarios identified and planned
-- Test cases are clear, specific, and executable
-- Integration points thoroughly tested
-- Performance requirements addressed (if applicable)
-- Test plan approved by stakeholders
-- Test environment and data requirements defined
-
-## Skip Conditions
-- Simple configuration changes with no functional impact
-- Documentation-only changes
-- Emergency hotfix where testing plan is deferred
-- Testing strategy already exists and is comprehensive
-
-## Test Planning Categories
-
-### Functional Testing
-- **Happy Path Tests**: Normal usage scenarios with valid inputs
-- **Business Logic Tests**: Core functionality and business rules
-- **User Interface Tests**: UI interactions and user experience
-- **API Tests**: Endpoint functionality and contract validation
-- **Data Validation Tests**: Input validation and data processing
-
-### Non-Functional Testing
-- **Performance Tests**: Load, stress, and scalability testing
-- **Security Tests**: Authentication, authorization, and vulnerability testing
-- **Usability Tests**: User experience and accessibility testing
-- **Compatibility Tests**: Browser, device, and environment compatibility
-- **Reliability Tests**: System stability and error recovery
-
-### Integration Testing
-- **Component Integration**: Testing interactions between modules
-- **System Integration**: Testing with external systems and APIs
-- **Database Integration**: Data persistence and retrieval testing
-- **User Interface Integration**: Frontend-backend integration
-- **Third-Party Integration**: External service and library testing
-
-### Edge Case Testing
-- **Boundary Value Tests**: Testing limits and edge conditions
-- **Error Handling Tests**: Invalid inputs and error scenarios
-- **Concurrency Tests**: Multiple user and parallel processing scenarios
-- **Resource Limitation Tests**: Low memory, disk space, network issues
-- **Data Edge Cases**: Empty, null, very large, or malformed data
-
-## Test Case Structure
-- **Test Case ID**: Unique identifier for tracking
-- **Test Description**: Clear description of what is being tested
-- **Preconditions**: Setup required before test execution
-- **Test Steps**: Detailed steps to execute the test
-- **Expected Results**: What should happen if implementation is correct
-- **Test Data**: Specific data required for test execution
-- **Priority**: Critical, high, medium, low priority classification
+## Task Understanding Assessment
+If task unclear - ask clarifying questions with multiple choice options
 
 ## Test Strategy Framework
 
-### Test Pyramid Approach
-- **Unit Tests**: Individual component and function testing
-- **Integration Tests**: Component interaction testing
-- **End-to-End Tests**: Complete user workflow testing
-- **Manual Tests**: Exploratory and usability testing
+### Test Types
+- **Unit Tests** - individual components, business logic, edge cases
+- **Integration Tests** - component interactions, API contracts, data flow
+- **System Tests** - end-to-end workflows, user scenarios, acceptance criteria
+- **Performance Tests** - load, stress, scalability, response times
+- **Security Tests** - authentication, authorization, data protection, vulnerabilities
+- **Regression Tests** - existing functionality, backward compatibility
 
-### Risk-Based Testing
-- **High-Risk Areas**: Critical functionality and frequent change areas
-- **Medium-Risk Areas**: Important but stable functionality
-- **Low-Risk Areas**: Simple or rarely used functionality
-- **Risk Mitigation**: Extra testing for high-risk areas
+### Test Levels
+- **Component Level** - isolated unit testing, mocking dependencies
+- **Integration Level** - service interactions, database integration
+- **System Level** - complete workflows, user acceptance testing
+- **Acceptance Level** - business criteria, stakeholder validation
 
-### Continuous Testing
-- **Automated Tests**: Tests that can run automatically in CI/CD
-- **Regression Tests**: Ensure existing functionality remains intact
-- **Smoke Tests**: Basic functionality verification after deployment
-- **Acceptance Tests**: Final validation before release
+## Test Planning Elements
 
-## Test Environment Planning
-- **Test Data Requirements**: What data is needed for testing
-- **Environment Configuration**: Hardware, software, and network setup
-- **Test Tool Requirements**: Testing frameworks and tools needed
-- **Access Requirements**: Permissions and credentials needed
-- **Environment Isolation**: Separation from production and development
+### Test Scope
+- **In Scope** - features, components, integrations to test
+- **Out of Scope** - explicitly excluded areas
+- **Test Environment** - development, staging, production-like setup
+- **Test Data** - realistic datasets, edge cases, boundary conditions
 
-## Common Test Scenarios
+### Test Execution
+- **Manual Testing** - exploratory, user experience, complex scenarios
+- **Automated Testing** - regression, performance, CI/CD integration
+- **Test Schedule** - phases, milestones, dependencies
+- **Entry/Exit Criteria** - when to start/stop testing phases
 
-### User Authentication Tests
-- Valid login with correct credentials
-- Invalid login attempts with wrong credentials
-- Password reset functionality
-- Session timeout and re-authentication
-- User role and permission validation
+### Risk Assessment
+- **High Risk Areas** - critical functionality, complex integrations
+- **Medium Risk Areas** - standard features, known patterns
+- **Low Risk Areas** - simple changes, well-tested components
 
-### Data Validation Tests
-- Required field validation
-- Data type and format validation
-- Business rule validation
-- Duplicate data handling
-- Data sanitization and security
+## Key Outputs
+- Comprehensive test plan document
+- Test case specifications and scripts
+- Test environment requirements
+- Test data preparation strategy
+- Risk assessment and mitigation
+- Resource allocation and timeline
 
-### Error Handling Tests
-- Network connectivity issues
-- Database connection failures
-- Invalid API responses
-- System overload scenarios
-- Graceful degradation testing
-
-### Performance Tests
-- Response time under normal load
-- System behavior under peak load
-- Memory and resource usage
-- Database query performance
-- Concurrent user handling
-
-## Documentation Format
-- **Test Plan Overview**: Scope, objectives, and strategy
-- **Test Environment**: Setup and configuration requirements
-- **Test Cases**: Detailed test scenarios and procedures
-- **Test Schedule**: Timeline and milestones
-- **Roles and Responsibilities**: Who does what during testing
-- **Risk Assessment**: Potential issues and mitigation strategies
-- **Success Criteria**: Definition of acceptable test results
-
-## Notes
-- Balance thorough testing with project timeline and resources
-- Focus testing effort on high-risk and high-impact areas
-- Design tests to be maintainable and reusable
-- Consider automation opportunities from the beginning
-- Get stakeholder input on critical test scenarios
-- Plan for both positive and negative test cases 
+## Success Criteria
+- All requirements covered by test cases
+- Test environment prepared and validated
+- Test data available and realistic
+- Automation framework setup (if applicable)
+- Team trained on test procedures 
