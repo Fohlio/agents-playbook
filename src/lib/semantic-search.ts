@@ -1,198 +1,228 @@
-import OpenAI from 'openai';
 import fs from 'fs';
 import path from 'path';
+import OpenAI from 'openai';
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
-
-export interface WorkflowEmbedding {
+interface WorkflowEmbedding {
   id: string;
   title: string;
   description: string;
-  complexity: string;
   category: string;
-  keywords: string[];
-  file_path: string;
-  content_preview: string;
+  tags: string[];
+  complexity: string;
+  searchableText: string;
   embedding: number[];
-  use_case: string;
-  output: string;
 }
 
-export interface WorkflowSearchResult extends Omit<WorkflowEmbedding, 'embedding'> {
-  similarity_score: number;
-  match_score: number; // For compatibility with existing code
+interface SearchResult {
+  id: string;
+  title: string;
+  description: string;
+  category: string;
+  tags: string[];
+  complexity: string;
+  similarity: number;
 }
 
-let cachedWorkflows: WorkflowEmbedding[] | null = null;
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY
+});
 
-/**
- * Load workflow embeddings from JSON file
- */
-export function loadWorkflowEmbeddings(): WorkflowEmbedding[] {
-  if (cachedWorkflows) return cachedWorkflows;
-  
-  try {
-    const embeddingsPath = path.join(process.cwd(), 'src', 'data', 'workflow-embeddings.json');
-    const data = fs.readFileSync(embeddingsPath, 'utf-8');
-    cachedWorkflows = JSON.parse(data);
-    console.log(`[SemanticSearch] Loaded ${cachedWorkflows?.length || 0} workflow embeddings`);
-    return cachedWorkflows || [];
-  } catch (error) {
-    console.error('[SemanticSearch] Failed to load embeddings:', error);
-    return [];
+const EMBEDDINGS_FILE = './src/data/workflow-embeddings.json';
+
+export class SemanticSearch {
+  private embeddings: WorkflowEmbedding[] = [];
+  private loaded = false;
+
+  /**
+   * Load embeddings from cache file
+   */
+  private async loadEmbeddings(): Promise<void> {
+    if (this.loaded) return;
+
+    if (!fs.existsSync(EMBEDDINGS_FILE)) {
+      console.warn('[SemanticSearch] Embeddings file not found. Run "npm run build:embeddings" first.');
+      return;
+    }
+
+    try {
+      const embeddingsData = fs.readFileSync(EMBEDDINGS_FILE, 'utf-8');
+      this.embeddings = JSON.parse(embeddingsData);
+      this.loaded = true;
+      console.log(`[SemanticSearch] Loaded ${this.embeddings.length} workflow embeddings`);
+    } catch (error) {
+      console.error('[SemanticSearch] Error loading embeddings:', error);
+    }
   }
-}
 
-/**
- * Calculate cosine similarity between two vectors
- */
-export function cosineSimilarity(a: number[], b: number[]): number {
-  if (a.length !== b.length) return 0;
-  
-  let dotProduct = 0;
-  let normA = 0;
-  let normB = 0;
-  
-  for (let i = 0; i < a.length; i++) {
-    dotProduct += a[i] * b[i];
-    normA += a[i] * a[i];
-    normB += b[i] * b[i];
-  }
-  
-  if (normA === 0 || normB === 0) return 0;
-  
-  return dotProduct / (Math.sqrt(normA) * Math.sqrt(normB));
-}
+  /**
+   * Search workflows using semantic similarity
+   */
+  async searchWorkflows(query: string, limit: number = 5): Promise<SearchResult[]> {
+    await this.loadEmbeddings();
 
-/**
- * Generate embedding for a search query
- */
-export async function generateQueryEmbedding(query: string): Promise<number[]> {
-  try {
-    const response = await openai.embeddings.create({
-      model: "text-embedding-3-small",
-      input: query,
-    });
-    
-    return response.data[0].embedding;
-  } catch (error) {
-    console.error('[SemanticSearch] Failed to generate query embedding:', error);
-    throw error;
-  }
-}
-
-/**
- * Search workflows using semantic similarity
- */
-export async function searchWorkflowsBySemantic(
-  query: string, 
-  limit: number = 5,
-  threshold: number = 0.7
-): Promise<WorkflowSearchResult[]> {
-  try {
-    console.log(`[SemanticSearch] Searching for: "${query}"`);
-    
-    // Load workflows
-    const workflows = loadWorkflowEmbeddings();
-    if (workflows.length === 0) {
-      console.warn('[SemanticSearch] No workflows loaded, falling back to empty results');
+    if (this.embeddings.length === 0) {
+      console.warn('[SemanticSearch] No embeddings available for search');
       return [];
     }
+
+    if (!process.env.OPENAI_API_KEY) {
+      console.warn('[SemanticSearch] OpenAI API key not available, falling back to text search');
+      return this.fallbackTextSearch(query, limit);
+    }
+
+    try {
+      // Generate embedding for search query
+      console.log(`[SemanticSearch] Generating query embedding for: "${query}"`);
+      const queryEmbeddingResponse = await openai.embeddings.create({
+        model: 'text-embedding-3-small',
+        input: query.toLowerCase(),
+        encoding_format: 'float'
+      });
+
+      const queryEmbedding = queryEmbeddingResponse.data[0].embedding;
+
+      // Calculate similarities with all workflow embeddings
+      const similarities = this.embeddings.map(workflow => {
+        const similarity = this.cosineSimilarity(queryEmbedding, workflow.embedding);
+        
+        return {
+          id: workflow.id,
+          title: workflow.title,
+          description: workflow.description,
+          category: workflow.category,
+          tags: workflow.tags,
+          complexity: workflow.complexity,
+          similarity
+        };
+      });
+
+      // Sort by similarity and return top results
+      const results = similarities
+        .sort((a, b) => b.similarity - a.similarity)
+        .slice(0, limit);
+
+      console.log(`[SemanticSearch] Found ${results.length} results with similarities:`, 
+        results.map(r => `${r.id}: ${Math.round(r.similarity * 100)}%`));
+
+      return results;
+
+    } catch (error) {
+      console.error('[SemanticSearch] Error in semantic search:', error);
+      // Fallback to text search
+      return this.fallbackTextSearch(query, limit);
+    }
+  }
+
+  /**
+   * Fallback text-based search when semantic search fails
+   */
+  private fallbackTextSearch(query: string, limit: number): SearchResult[] {
+    console.log('[SemanticSearch] Using fallback text search');
     
-    // Generate query embedding
-    const queryEmbedding = await generateQueryEmbedding(query);
+    const searchTerms = query.toLowerCase().split(' ');
     
-    // Calculate similarities
-    const results: WorkflowSearchResult[] = [];
-    const allResults: Array<{id: string, title: string, similarity: number}> = [];
-    
-    for (const workflow of workflows) {
-      const similarity = cosineSimilarity(queryEmbedding, workflow.embedding);
+    const scored = this.embeddings.map(workflow => {
+      let score = 0;
+      const searchableText = `${workflow.title} ${workflow.description} ${workflow.category} ${workflow.tags.join(' ')}`.toLowerCase();
       
-      // Track all results for debugging
-      allResults.push({
+      searchTerms.forEach(term => {
+        if (searchableText.includes(term)) {
+          score += 1;
+          // Boost score for title matches
+          if (workflow.title.toLowerCase().includes(term)) {
+            score += 2;
+          }
+          // Boost score for category matches
+          if (workflow.category.toLowerCase().includes(term)) {
+            score += 1.5;
+          }
+        }
+      });
+
+      // Normalize score to 0-1 range for consistency
+      const normalizedSimilarity = Math.min(score / searchTerms.length, 1);
+
+      return {
         id: workflow.id,
         title: workflow.title,
-        similarity: similarity
-      });
-      
-      if (similarity >= threshold) {
-        results.push({
-          ...workflow,
-          similarity_score: similarity,
-          match_score: Math.round(similarity * 100), // Convert to percentage for compatibility
-        });
-      }
-    }
-    
-    // Log top 5 results for debugging
-    const topResults = allResults
+        description: workflow.description,
+        category: workflow.category,
+        tags: workflow.tags,
+        complexity: workflow.complexity,
+        similarity: normalizedSimilarity
+      };
+    });
+
+    return scored
+      .filter(item => item.similarity > 0)
       .sort((a, b) => b.similarity - a.similarity)
-      .slice(0, 5);
-    console.log(`[SemanticSearch] Top 5 results for "${query}":`, 
-      topResults.map(r => `${r.id}: ${Math.round(r.similarity * 100)}%`).join(', '));
-    console.log(`[SemanticSearch] Using threshold: ${threshold}, Found ${results.length} results above threshold`);
-    
-    // Sort by similarity (highest first) and limit results
-    return results
-      .sort((a, b) => b.similarity_score - a.similarity_score)
       .slice(0, limit);
-      
-  } catch (error) {
-    console.error('[SemanticSearch] Search failed:', error);
-    throw error;
+  }
+
+  /**
+   * Calculate cosine similarity between two vectors
+   */
+  private cosineSimilarity(vecA: number[], vecB: number[]): number {
+    if (vecA.length !== vecB.length) {
+      throw new Error('Vectors must have the same length');
+    }
+
+    let dotProduct = 0;
+    let normA = 0;
+    let normB = 0;
+
+    for (let i = 0; i < vecA.length; i++) {
+      dotProduct += vecA[i] * vecB[i];
+      normA += vecA[i] * vecA[i];
+      normB += vecB[i] * vecB[i];
+    }
+
+    normA = Math.sqrt(normA);
+    normB = Math.sqrt(normB);
+
+    if (normA === 0 || normB === 0) {
+      return 0;
+    }
+
+    return dotProduct / (normA * normB);
+  }
+
+  /**
+   * Get all available workflow categories
+   */
+  async getAvailableCategories(): Promise<string[]> {
+    await this.loadEmbeddings();
+    const categories = [...new Set(this.embeddings.map(w => w.category))];
+    return categories.sort();
+  }
+
+  /**
+   * Get workflows by category
+   */
+  async getWorkflowsByCategory(category: string): Promise<SearchResult[]> {
+    await this.loadEmbeddings();
+    
+    return this.embeddings
+      .filter(w => w.category.toLowerCase() === category.toLowerCase())
+      .map(w => ({
+        id: w.id,
+        title: w.title,
+        description: w.description,
+        category: w.category,
+        tags: w.tags,
+        complexity: w.complexity,
+        similarity: 1.0 // Perfect match for category filter
+      }));
+  }
+
+  /**
+   * Clear embeddings cache (useful for testing)
+   */
+  clearCache(): void {
+    this.embeddings = [];
+    this.loaded = false;
   }
 }
 
-/**
- * Get full workflow content from file
- */
-export function getFullWorkflowContent(workflow: WorkflowEmbedding): string {
-  try {
-    const filePath = path.join(process.cwd(), workflow.file_path);
-    return fs.readFileSync(filePath, 'utf-8');
-  } catch (error) {
-    console.error(`[SemanticSearch] Failed to read workflow file ${workflow.file_path}:`, error);
-    return workflow.content_preview;
-  }
-}
-
-/**
- * Parse workflow steps from content (simple implementation)
- */
-export function parseWorkflowSteps(content: string): Array<{step: number, title: string, content: string}> {
-  const steps: Array<{step: number, title: string, content: string}> = [];
-  
-  // Look for numbered sections or workflow sections
-  const workflowMatch = content.match(/## Workflow\s*\n([\s\S]+?)(?:\n##|$)/i);
-  const workflowContent = workflowMatch ? workflowMatch[1] : content;
-  
-  // Try to find numbered steps
-  const stepMatches = workflowContent.match(/(\d+)\.\s*\*\*(.+?)\*\*[:\s]*(.+?)(?=\n\d+\.|$)/gs);
-  
-  if (stepMatches) {
-    stepMatches.forEach((stepMatch, index) => {
-      const match = stepMatch.match(/(\d+)\.\s*\*\*(.+?)\*\*[:\s]*([\s\S]+)/);
-      if (match) {
-        steps.push({
-          step: parseInt(match[1]),
-          title: match[2].trim(),
-          content: match[3].trim()
-        });
-      }
-    });
-  }
-  
-  // Fallback: create generic steps if no specific workflow found
-  if (steps.length === 0) {
-    steps.push({
-      step: 1,
-      title: "Follow the Prompt",
-      content: "Use this workflow prompt as guidance for your task. Adapt the instructions to your specific needs."
-    });
-  }
-  
-  return steps;
-} 
+// Export singleton instance
+export const semanticSearch = new SemanticSearch(); 

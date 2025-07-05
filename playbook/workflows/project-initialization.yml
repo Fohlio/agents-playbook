@@ -1,0 +1,119 @@
+name: "Project Initialization Workflow"
+description: "Set up new project context, navigation, and AI agent documentation from scratch"
+version: "1.0"
+category: "setup"
+tags: ["initialization", "setup", "project-start", "navigation", "context"]
+
+metadata:
+  complexity: "medium"
+  skillLevel: "intermediate"
+
+phases:
+  - phase: "analysis"
+    description: "Project structure and codebase analysis"
+    required: true
+    steps:
+      - id: "create-project-navigation"
+        miniPrompt: "business/create-project-navigation"
+        required: true
+        prerequisites:
+          requiredContext: ["project_codebase"]
+          optionalContext: ["existing_documentation", "team_preferences"]
+
+  - phase: "planning-clarification"
+    description: "Project requirements and technology planning"
+    required: true
+    steps:
+      - id: "gather-requirements"
+        miniPrompt: "business/gather-requirements"
+        required: false
+        prerequisites:
+          requiredContext: ["project_navigation"]
+          optionalContext: ["project_vision", "technology_preferences"]
+          skipConditions: ["navigation_provides_sufficient_context"]
+        dependencies: ["create-project-navigation"]
+        
+      - id: "ask-clarifying-questions"
+        miniPrompt: "development/ask-clarifying-questions"
+        required: false
+        prerequisites:
+          requiredContext: ["project_navigation"]
+          optionalContext: ["team_structure", "timeline_constraints"]
+          skipConditions: ["clear_project_context", "simple_setup"]
+        dependencies: ["create-project-navigation"]
+
+  - phase: "design-architecture"
+    description: "Technology stack validation and architecture review"
+    required: false
+    steps:
+      - id: "architecture-analysis"
+        miniPrompt: "analysis/architecture-analysis"
+        required: false
+        prerequisites:
+          requiredContext: ["project_navigation", "technology_stack"]
+          optionalContext: ["existing_architecture_docs"]
+          skipConditions: ["architecture_already_documented", "simple_project"]
+        dependencies: ["create-project-navigation"]
+
+  - phase: "completion-reflection"
+    description: "Documentation validation and knowledge capture"
+    required: true
+    steps:
+      - id: "validate-requirements"
+        miniPrompt: "qa/validate-requirements"
+        required: true
+        prerequisites:
+          requiredContext: ["project_navigation", "AGENTS_MD"]
+          optionalContext: ["project_documentation"]
+        dependencies: ["create-project-navigation"]
+
+# Workflow-level configurations
+skipConditions:
+  - condition: "project_already_exists"
+    message: "Project structure and tooling already configured"
+  - condition: "template_based_setup"
+    message: "Using existing project template, minimal setup required"
+
+validationRules:
+  - rule: "technology_stack_validation"
+    phases: ["design-architecture"]
+    dependencies: ["planning-clarification"]
+    message: "Technology choices must align with project requirements and team expertise"
+  - rule: "security_configuration_required"
+    phases: ["implementation"]
+    dependencies: ["design-architecture"]
+    message: "Security configuration and best practices must be implemented"
+
+notifications:
+  - trigger: "phase_completion"
+    phases: ["design-architecture", "implementation"]
+    message: "Major setup phase completed"
+  - trigger: "workflow_completion"
+    message: "Project initialization completed successfully"
+
+# Smart execution settings
+execution:
+  allowSkipping: true
+  requireExplicitApproval: false
+  parallelExecution: false
+  automaticProgressTracking: true
+  
+# Integration settings
+integrations:
+  development:
+    - github
+    - gitlab
+    - azure-devops
+  infrastructure:
+    - aws
+    - azure
+    - gcp
+    - vercel
+    - netlify
+  cicd:
+    - github-actions
+    - gitlab-ci
+    - jenkins
+  monitoring:
+    - datadog
+    - sentry 
