@@ -27,16 +27,8 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY
 });
 
-// Use absolute path for production compatibility
-// Try public/ first for Vercel deployment, then fallback to src/data/
-function getEmbeddingsPath(): string {
-  const publicPath = path.join(process.cwd(), 'public', 'workflow-embeddings.json');
-  const localPath = path.join(process.cwd(), 'src', 'data', 'workflow-embeddings.json');
-  
-  return fs.existsSync(publicPath) ? publicPath : localPath;
-}
-
-const EMBEDDINGS_FILE = getEmbeddingsPath();
+// Always use public/workflow-embeddings.json for consistency
+const EMBEDDINGS_FILE = path.join(process.cwd(), 'public', 'workflow-embeddings.json');
 
 export class SemanticSearch {
   private embeddings: WorkflowEmbedding[] = [];

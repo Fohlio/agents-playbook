@@ -8,17 +8,8 @@ export class MiniPromptLoader {
   private cache: Map<string, MiniPrompt> = new Map();
 
   constructor(miniPromptsPath?: string) {
-    // Use absolute path for production compatibility
-    // Try public/ first for Vercel deployment, then fallback to playbook/
-    if (!miniPromptsPath) {
-      const publicPath = path.join(process.cwd(), 'public', 'playbook', 'mini-prompts');
-      const localPath = path.join(process.cwd(), 'playbook', 'mini-prompts');
-      
-      this.miniPromptsPath = fs.existsSync(publicPath) ? publicPath : localPath;
-    } else {
-      this.miniPromptsPath = miniPromptsPath;
-    }
-    
+    // Always use public/playbook/mini-prompts for consistency
+    this.miniPromptsPath = miniPromptsPath || path.join(process.cwd(), 'public', 'playbook', 'mini-prompts');
     console.log(`[MiniPromptLoader] Using mini-prompts path: ${this.miniPromptsPath}`);
   }
 

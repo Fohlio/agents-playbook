@@ -21,17 +21,8 @@ export class WorkflowLoader {
   private metadataCache: Map<string, WorkflowMetadata> = new Map();
 
   constructor(workflowsPath?: string) {
-    // Use absolute path for production compatibility
-    // Try public/ first for Vercel deployment, then fallback to playbook/
-    if (!workflowsPath) {
-      const publicPath = path.join(process.cwd(), 'public', 'playbook', 'workflows');
-      const localPath = path.join(process.cwd(), 'playbook', 'workflows');
-      
-      this.workflowsPath = fs.existsSync(publicPath) ? publicPath : localPath;
-    } else {
-      this.workflowsPath = workflowsPath;
-    }
-    
+    // Always use public/playbook/workflows for consistency
+    this.workflowsPath = workflowsPath || path.join(process.cwd(), 'public', 'playbook', 'workflows');
     console.log(`[WorkflowLoader] Using workflows path: ${this.workflowsPath}`);
   }
 

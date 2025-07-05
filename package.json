@@ -4,12 +4,11 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
-    "prebuild": "npm run copy:static && npm run build:embeddings",
+    "prebuild": "npm run build:embeddings",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
     "build:embeddings": "tsx scripts/build-embeddings.ts",
-    "copy:static": "mkdir -p public/playbook && cp -r playbook/* public/playbook/ && cp src/data/workflow-embeddings.json public/workflow-embeddings.json 2>/dev/null || echo 'Some files may not exist yet'",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:integration": "jest tests/integration"

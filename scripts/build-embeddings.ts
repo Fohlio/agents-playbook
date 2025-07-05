@@ -23,8 +23,8 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY
 });
 
-const WORKFLOWS_DIR = './playbook/workflows';
-const OUTPUT_FILE = './src/data/workflow-embeddings.json';
+const WORKFLOWS_DIR = './public/playbook/workflows';
+const OUTPUT_FILE = './public/workflow-embeddings.json';
 
 async function buildEmbeddings() {
   console.log('🚀 Building workflow embeddings...');
