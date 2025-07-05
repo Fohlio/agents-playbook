@@ -1,0 +1,94 @@
+name: "BRD to TRD Translation Workflow"
+description: "Convert Business Requirements Document to Technical Requirements Document with implementation details"
+version: "1.0"
+category: "documentation"
+tags: ["brd", "trd", "translation", "technical-specification"]
+
+metadata:
+  complexity: "medium"
+  skillLevel: "intermediate"
+
+phases:
+  - phase: "analysis"
+    description: "Business requirements analysis and technical mapping"
+    required: true
+    steps:
+      - id: "feature-analysis"
+        miniPrompt: "analysis/feature-analysis"
+        required: true
+        prerequisites:
+          requiredContext: ["brd_document"]
+          optionalContext: ["existing_codebase", "technical_constraints"]
+        
+      - id: "architecture-analysis"
+        miniPrompt: "analysis/architecture-analysis"
+        required: false
+        prerequisites:
+          requiredContext: ["business_requirements", "system_architecture"]
+          optionalContext: ["performance_requirements"]
+          skipConditions: ["simple_business_logic", "no_architecture_changes"]
+
+  - phase: "design-architecture"
+    description: "Technical solution design and specification"
+    required: true
+    steps:
+      - id: "design-architecture"
+        miniPrompt: "development/design-architecture"
+        required: true
+        prerequisites:
+          requiredContext: ["feature_analysis", "business_requirements"]
+          optionalContext: ["architecture_analysis", "existing_patterns"]
+        dependencies: ["feature-analysis"]
+
+  - phase: "completion-reflection"
+    description: "Technical documentation creation"
+    required: true
+    steps:
+      - id: "document-decisions"
+        miniPrompt: "business/document-decisions"
+        required: true
+        prerequisites:
+          requiredContext: ["technical_design", "implementation_plan"]
+          optionalContext: ["architectural_decisions", "technology_choices"]
+        dependencies: ["design-architecture"]
+
+# Workflow-level configurations
+skipConditions:
+  - condition: "brd_missing"
+    message: "Business Requirements Document is not available or incomplete"
+  - condition: "technical_complexity_low"
+    message: "Business requirements don't require detailed technical specification"
+
+validationRules:
+  - rule: "brd_completeness_required"
+    phases: ["analysis"]
+    message: "Complete BRD is required before technical translation"
+  - rule: "technical_feasibility_validation"
+    phases: ["design-architecture"]
+    dependencies: ["analysis"]
+    message: "Technical feasibility must be validated against business requirements"
+
+notifications:
+  - trigger: "phase_completion"
+    phases: ["design-architecture"]
+    message: "Technical design completed, ready for documentation"
+  - trigger: "workflow_completion"
+    message: "BRD to TRD translation completed successfully"
+
+# Smart execution settings
+execution:
+  allowSkipping: true
+  requireExplicitApproval: false
+  parallelExecution: false
+  automaticProgressTracking: true
+  
+# Integration settings
+integrations:
+  documentation:
+    - confluence
+    - notion
+    - github-wiki
+  projectManagement:
+    - jira
+    - azure-devops
+    - linear 

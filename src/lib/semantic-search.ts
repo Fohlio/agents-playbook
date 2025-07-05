@@ -27,7 +27,16 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY
 });
 
-const EMBEDDINGS_FILE = './src/data/workflow-embeddings.json';
+// Use absolute path for production compatibility
+// Try public/ first for Vercel deployment, then fallback to src/data/
+function getEmbeddingsPath(): string {
+  const publicPath = path.join(process.cwd(), 'public', 'workflow-embeddings.json');
+  const localPath = path.join(process.cwd(), 'src', 'data', 'workflow-embeddings.json');
+  
+  return fs.existsSync(publicPath) ? publicPath : localPath;
+}
+
+const EMBEDDINGS_FILE = getEmbeddingsPath();
 
 export class SemanticSearch {
   private embeddings: WorkflowEmbedding[] = [];
@@ -39,8 +48,32 @@ export class SemanticSearch {
   private async loadEmbeddings(): Promise<void> {
     if (this.loaded) return;
 
+    console.log(`[SemanticSearch] Attempting to load embeddings from: ${EMBEDDINGS_FILE}`);
+
     if (!fs.existsSync(EMBEDDINGS_FILE)) {
       console.warn('[SemanticSearch] Embeddings file not found. Run "npm run build:embeddings" first.');
+      console.log(`[SemanticSearch] Current working directory: ${process.cwd()}`);
+      console.log(`[SemanticSearch] Looking for file at: ${EMBEDDINGS_FILE}`);
+      
+      // Try alternative paths for production
+      const altPaths = [
+        path.join(process.cwd(), 'workflow-embeddings.json'),
+        path.join(process.cwd(), 'public', 'workflow-embeddings.json'),
+        path.join(process.cwd(), '.next', 'static', 'workflow-embeddings.json')
+      ];
+      
+      for (const altPath of altPaths) {
+        if (fs.existsSync(altPath)) {
+          console.log(`[SemanticSearch] Found embeddings at alternative path: ${altPath}`);
+          const embeddingsData = fs.readFileSync(altPath, 'utf-8');
+          this.embeddings = JSON.parse(embeddingsData);
+          this.loaded = true;
+          console.log(`[SemanticSearch] Loaded ${this.embeddings.length} workflow embeddings`);
+          return;
+        }
+      }
+      
+      console.log(`[SemanticSearch] Checked alternative paths:`, altPaths);
       return;
     }
 

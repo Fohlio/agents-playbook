@@ -1,0 +1,105 @@
+name: "BRD Creation Workflow"
+description: "Create comprehensive Business Requirements Document with research and stakeholder input"
+version: "1.0"
+category: "documentation"
+tags: ["brd", "documentation", "business-requirements", "research"]
+
+metadata:
+  complexity: "medium"
+  skillLevel: "intermediate"
+
+phases:
+  - phase: "planning-clarification"
+    description: "Requirements gathering and scope definition"
+    required: true
+    steps:
+      - id: "gather-requirements"
+        miniPrompt: "business/gather-requirements"
+        required: true
+        prerequisites:
+          requiredContext: []
+          optionalContext: ["product_vision", "market_research"]
+        
+      - id: "ask-clarifying-questions"
+        miniPrompt: "development/ask-clarifying-questions"
+        required: true
+        prerequisites:
+          requiredContext: ["requirements"]
+          optionalContext: ["stakeholder_contact_info"]
+        dependencies: ["gather-requirements"]
+
+  - phase: "analysis"
+    description: "Business analysis and research"
+    required: true
+    steps:
+      - id: "feature-analysis"
+        miniPrompt: "analysis/feature-analysis"
+        required: true
+        prerequisites:
+          requiredContext: ["clarified_requirements"]
+          optionalContext: ["competitive_analysis", "user_research"]
+        dependencies: ["ask-clarifying-questions"]
+
+  - phase: "completion-reflection"
+    description: "Documentation creation and validation"
+    required: true
+    steps:
+      - id: "document-decisions"
+        miniPrompt: "business/document-decisions"
+        required: true
+        prerequisites:
+          requiredContext: ["business_analysis", "requirements_specification"]
+          optionalContext: ["research_findings", "stakeholder_input"]
+        dependencies: ["feature-analysis"]
+        
+      - id: "stakeholder-approval"
+        miniPrompt: "business/stakeholder-approval"
+        required: true
+        prerequisites:
+          requiredContext: ["completed_brd", "documentation"]
+          optionalContext: ["business_case", "roi_analysis"]
+        dependencies: ["document-decisions"]
+
+# Workflow-level configurations
+skipConditions:
+  - condition: "brd_already_exists"
+    message: "Business requirements documentation already exists and is current"
+  - condition: "stakeholders_unavailable"
+    message: "Key stakeholders are not available for requirements gathering"
+
+validationRules:
+  - rule: "stakeholder_involvement_required"
+    phases: ["planning-clarification"]
+    message: "Stakeholder input is essential for accurate business requirements"
+  - rule: "business_value_validation"
+    phases: ["completion-reflection"]
+    dependencies: ["analysis"]
+    message: "Business value and justification must be documented"
+
+notifications:
+  - trigger: "phase_completion"
+    phases: ["analysis"]
+    message: "Business analysis completed, ready for documentation"
+  - trigger: "workflow_completion"
+    message: "BRD creation workflow completed successfully"
+
+# Smart execution settings
+execution:
+  allowSkipping: true
+  requireExplicitApproval: true
+  parallelExecution: false
+  automaticProgressTracking: true
+  
+# Integration settings
+integrations:
+  documentation:
+    - confluence
+    - notion
+    - sharepoint
+  projectManagement:
+    - jira
+    - asana
+    - monday
+  research:
+    - survey-tools
+    - analytics-platforms 

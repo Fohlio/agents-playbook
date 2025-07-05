@@ -1,0 +1,99 @@
+name: "Quick Fix Workflow"
+description: "Fast resolution for bugs, hotfixes, and small feature requests with minimal overhead"
+version: "1.0"
+category: "development"
+tags: ["quick-fix", "hotfix", "bug", "urgent", "minimal"]
+
+metadata:
+  complexity: "low"
+  skillLevel: "basic"
+
+phases:
+  - phase: "planning-clarification"
+    description: "Quick problem analysis and scope definition"
+    required: true
+    steps:
+      - id: "ask-clarifying-questions"
+        miniPrompt: "development/ask-clarifying-questions"
+        required: true
+        prerequisites:
+          requiredContext: ["issue_description"]
+          optionalContext: ["error_logs", "reproduction_steps"]
+
+  - phase: "analysis"
+    description: "Root cause analysis for the issue"
+    required: false
+    steps:
+      - id: "trace-bug-root-cause"
+        miniPrompt: "analysis/trace-bug-root-cause"
+        required: false
+        prerequisites:
+          requiredContext: ["bug_symptoms", "reproduction_steps"]
+          optionalContext: ["error_logs", "system_logs"]
+          skipConditions: ["obvious_fix", "simple_feature_request"]
+
+  - phase: "implementation"
+    description: "Quick fix implementation"
+    required: true
+    steps:
+      - id: "implement-feature"
+        miniPrompt: "development/implement-feature"
+        required: true
+        prerequisites:
+          requiredContext: ["problem_analysis", "solution_approach"]
+          optionalContext: ["existing_code_context"]
+        dependencies: ["ask-clarifying-questions"]
+
+  - phase: "testing-validation"
+    description: "Quick validation and testing"
+    required: false
+    steps:
+      - id: "execute-tests"
+        miniPrompt: "qa/execute-tests"
+        required: false
+        prerequisites:
+          requiredContext: ["implemented_fix"]
+          optionalContext: ["test_cases", "reproduction_environment"]
+          skipConditions: ["trivial_change", "emergency_hotfix"]
+        dependencies: ["implement-feature"]
+
+# Workflow-level configurations
+skipConditions:
+  - condition: "complex_architecture_change"
+    message: "Issue requires complex architectural changes, use feature-development workflow instead"
+  - condition: "multiple_stakeholder_approval"
+    message: "Change requires extensive approval process, not suitable for quick fix"
+
+validationRules:
+  - rule: "minimal_scope_required"
+    phases: ["planning-clarification"]
+    message: "Quick fixes must have minimal scope and impact"
+  - rule: "low_risk_validation"
+    phases: ["implementation"]
+    dependencies: ["planning-clarification"]
+    message: "Changes must be low-risk and easily reversible"
+
+notifications:
+  - trigger: "workflow_completion"
+    message: "Quick fix completed successfully"
+  - trigger: "scope_expansion"
+    message: "Scope expanding beyond quick fix, consider switching workflows"
+
+# Smart execution settings
+execution:
+  allowSkipping: true
+  requireExplicitApproval: false
+  parallelExecution: false
+  automaticProgressTracking: true
+  
+# Integration settings
+integrations:
+  development:
+    - github
+    - gitlab
+  monitoring:
+    - sentry
+    - bugsnag
+  communication:
+    - slack
+    - teams 

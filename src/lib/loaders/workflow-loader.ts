@@ -20,8 +20,19 @@ export class WorkflowLoader {
   private cache: Map<string, WorkflowConfig> = new Map();
   private metadataCache: Map<string, WorkflowMetadata> = new Map();
 
-  constructor(workflowsPath: string = './playbook/workflows') {
-    this.workflowsPath = workflowsPath;
+  constructor(workflowsPath?: string) {
+    // Use absolute path for production compatibility
+    // Try public/ first for Vercel deployment, then fallback to playbook/
+    if (!workflowsPath) {
+      const publicPath = path.join(process.cwd(), 'public', 'playbook', 'workflows');
+      const localPath = path.join(process.cwd(), 'playbook', 'workflows');
+      
+      this.workflowsPath = fs.existsSync(publicPath) ? publicPath : localPath;
+    } else {
+      this.workflowsPath = workflowsPath;
+    }
+    
+    console.log(`[WorkflowLoader] Using workflows path: ${this.workflowsPath}`);
   }
 
   /**
@@ -98,11 +109,15 @@ export class WorkflowLoader {
   private async buildMetadataCache(): Promise<void> {
     if (!fs.existsSync(this.workflowsPath)) {
       console.warn(`[WorkflowLoader] Workflows directory not found: ${this.workflowsPath}`);
+      console.log(`[WorkflowLoader] Current working directory: ${process.cwd()}`);
+      console.log(`[WorkflowLoader] Available directories:`, fs.readdirSync(process.cwd()));
       return;
     }
 
     const files = fs.readdirSync(this.workflowsPath)
       .filter(file => file.endsWith('.yml') || file.endsWith('.yaml'));
+
+    console.log(`[WorkflowLoader] Found ${files.length} workflow files:`, files);
 
     for (const file of files) {
       const workflowId = path.basename(file, path.extname(file));
@@ -142,6 +157,9 @@ export class WorkflowLoader {
       const altPath = path.join(this.workflowsPath, `${workflowId}.yaml`);
       if (!fs.existsSync(altPath)) {
         console.warn(`[WorkflowLoader] Workflow file not found: ${workflowId}`);
+        console.log(`[WorkflowLoader] Tried paths:`, filePath, altPath);
+        console.log(`[WorkflowLoader] Directory contents:`, 
+          fs.existsSync(this.workflowsPath) ? fs.readdirSync(this.workflowsPath) : 'Directory does not exist');
         return null;
       }
     }
@@ -161,6 +179,7 @@ export class WorkflowLoader {
         estimated_duration: workflowData.metadata?.estimatedDuration || 'Unknown'
       };
 
+      console.log(`[WorkflowLoader] Successfully loaded workflow: ${workflowId}`);
       return workflowConfig;
     } catch (error) {
       console.error(`[WorkflowLoader] Error loading workflow ${workflowId}:`, error);
