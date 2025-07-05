@@ -42,6 +42,7 @@ export interface MiniPrompt {
   outputs: string[];
   success_criteria: string[];
   skip_conditions: string[];
+  fullContent: string; // Complete markdown content of the mini-prompt
 }
 
 export interface PhaseDefinition {

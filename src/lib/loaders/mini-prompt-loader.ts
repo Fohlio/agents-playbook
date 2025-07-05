@@ -7,8 +7,19 @@ export class MiniPromptLoader {
   private miniPromptsPath: string;
   private cache: Map<string, MiniPrompt> = new Map();
 
-  constructor(miniPromptsPath: string = './playbook/mini-prompts') {
-    this.miniPromptsPath = miniPromptsPath;
+  constructor(miniPromptsPath?: string) {
+    // Use absolute path for production compatibility
+    // Try public/ first for Vercel deployment, then fallback to playbook/
+    if (!miniPromptsPath) {
+      const publicPath = path.join(process.cwd(), 'public', 'playbook', 'mini-prompts');
+      const localPath = path.join(process.cwd(), 'playbook', 'mini-prompts');
+      
+      this.miniPromptsPath = fs.existsSync(publicPath) ? publicPath : localPath;
+    } else {
+      this.miniPromptsPath = miniPromptsPath;
+    }
+    
+    console.log(`[MiniPromptLoader] Using mini-prompts path: ${this.miniPromptsPath}`);
   }
 
   /**
@@ -105,7 +116,8 @@ export class MiniPromptLoader {
       inputs,
       outputs,
       success_criteria,
-      skip_conditions
+      skip_conditions,
+      fullContent: fileContent // Store complete markdown content
     };
   }
 
@@ -290,6 +302,17 @@ export class MiniPromptLoader {
    * Create default mini-prompt for missing steps
    */
   private createDefaultMiniPrompt(stepId: string): MiniPrompt {
+    const defaultContent = `# ${stepId.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
+
+## Goal
+Execute ${stepId} step
+
+## Process
+1. Execute ${stepId} step
+
+## Success Criteria
+- ${stepId} completed successfully`;
+
     return {
       title: stepId.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
       purpose: `Execute ${stepId} step`,
@@ -302,7 +325,8 @@ export class MiniPromptLoader {
       inputs: ['Previous step outputs'],
       outputs: [`${stepId} results`],
       success_criteria: [`${stepId} completed successfully`],
-      skip_conditions: []
+      skip_conditions: [],
+      fullContent: defaultContent
     };
   }
 

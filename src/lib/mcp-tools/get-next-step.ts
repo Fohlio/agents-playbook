@@ -88,11 +88,33 @@ export async function getNextStepHandler({ workflow_id, current_step }: { workfl
     const { currentPhase, currentStep, skippedSteps } = nextStepResponse;
     const miniPrompt = currentStep.miniPrompt;
 
-    // Build step content
+    // Build step content with full mini-prompt
     let stepContent = `## ${workflowConfig.name}\n\n`;
     stepContent += `### 📋 Phase: ${currentPhase.name} (Step ${currentPhase.stepInPhase}/${currentPhase.totalInPhase})\n\n`;
-    stepContent += `#### 🎯 ${miniPrompt.title}\n\n`;
-    stepContent += `**Purpose:** ${miniPrompt.purpose}\n\n`;
+    
+    // Add validation status first if there are issues
+    const validation = currentStep.validation;
+    if (!validation.canExecute) {
+      stepContent += `⚠️ **Step Issues:**\n`;
+      validation.skipReasons.forEach(reason => {
+        stepContent += `- ${reason}\n`;
+      });
+      stepContent += `\nThis step will be automatically skipped. Proceeding to next step...\n\n`;
+    }
+
+    // Add the complete mini-prompt content
+    stepContent += `---\n\n`;
+    stepContent += `## 📋 Mini-Prompt Instructions\n\n`;
+    stepContent += miniPrompt.fullContent;
+    stepContent += `\n\n---\n\n`;
+
+    // Add workflow context
+    stepContent += `## 🔄 Workflow Context\n\n`;
+    stepContent += `**Progress:** ${currentStep.progress}\n`;
+    
+    if (currentStep.note) {
+      stepContent += `**Note:** ${currentStep.note}\n`;
+    }
 
     // Add prerequisites info
     if (miniPrompt.prerequisites.mcp_servers.length > 0) {
@@ -102,57 +124,16 @@ export async function getNextStepHandler({ workflow_id, current_step }: { workfl
       stepContent += `**Required Context:** ${miniPrompt.prerequisites.context.join(', ')}\n`;
     }
 
-    // Add validation status
-    const validation = currentStep.validation;
-    if (!validation.canExecute) {
-      stepContent += `\n⚠️ **Step Issues:**\n`;
-      validation.skipReasons.forEach(reason => {
-        stepContent += `- ${reason}\n`;
-      });
-      stepContent += `\nThis step will be automatically skipped. Proceeding to next step...\n`;
-    }
-
-    // Add process steps
-    if (miniPrompt.process.length > 0) {
-      stepContent += `\n**Process:**\n`;
-      miniPrompt.process.forEach((step, index) => {
-        stepContent += `${index + 1}. ${step}\n`;
-      });
-    }
-
-    // Add inputs and outputs
-    if (miniPrompt.inputs.length > 0) {
-      stepContent += `\n**Inputs:** ${miniPrompt.inputs.join(', ')}\n`;
-    }
-    if (miniPrompt.outputs.length > 0) {
-      stepContent += `\n**Expected Outputs:** ${miniPrompt.outputs.join(', ')}\n`;
-    }
-
-    // Add success criteria
-    if (miniPrompt.success_criteria.length > 0) {
-      stepContent += `\n**Success Criteria:**\n`;
-      miniPrompt.success_criteria.forEach(criteria => {
-        stepContent += `- ${criteria}\n`;
-      });
-    }
-
-    // Add progress info
-    stepContent += `\n**Progress:** ${currentStep.progress}`;
-    
-    if (currentStep.note) {
-      stepContent += `\n\n💡 **Note:** ${currentStep.note}`;
-    }
-
     // Add skipped steps summary if any
     if (skippedSteps.length > 0) {
-      stepContent += `\n\n**⚠️ Skipped Steps (${skippedSteps.length}):**\n`;
+      stepContent += `\n**⚠️ Recent Skipped Steps (${skippedSteps.length} total):**\n`;
       skippedSteps.slice(-3).forEach(skip => { // Show last 3 skipped steps
         stepContent += `- ${skip.step_title}: ${skip.reason}\n`;
       });
     }
 
     // Add continuation instruction
-    stepContent += `\n\n**Next:** Complete this step and use \`get_next_step\` with current_step=${currentStep.stepNumber} to continue.`;
+    stepContent += `\n**Next:** Complete this step and use \`get_next_step\` with current_step=${currentStep.stepNumber} to continue.`;
 
     return {
       content: [{ 

@@ -3,6 +3,8 @@
 ## Goal
 Identify the exact source of the reported issue through systematic analysis and investigation.
 
+**📁 Document Location**: Create root cause analysis reports in `docs/planning/` directory.
+
 ## Context Required
 - Bug symptoms and reproduction steps
 - Error logs or stack traces (if available)

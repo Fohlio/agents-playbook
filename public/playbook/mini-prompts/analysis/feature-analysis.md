@@ -3,6 +3,8 @@
 ## Goal
 Analyze existing feature functionality, architecture, and implementation to understand current state and identify opportunities for improvement or modification.
 
+**📁 Document Location**: Create feature analysis reports in `docs/planning/` directory.
+
 ## Context Required
 - Feature scope and boundaries definition
 - Access to relevant codebase

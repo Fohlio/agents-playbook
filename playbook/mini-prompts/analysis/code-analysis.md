@@ -3,6 +3,8 @@
 ## Goal
 Deep dive into codebase structure, patterns, and quality to understand implementation details and identify improvement opportunities.
 
+**📁 Document Location**: Create code analysis reports in `docs/planning/` directory.
+
 ## Context Required
 - Access to relevant codebase
 - Scope of code to analyze (specific modules, functions, or areas)

@@ -3,6 +3,8 @@
 ## Goal
 Create comprehensive project navigation and context documentation that serves as a reference for all future development work.
 
+**📁 Document Location**: Create AGENTS.MD and navigation documents in `docs/planning/` directory.
+
 ## Context Required
 - Project codebase access
 - Project root directory

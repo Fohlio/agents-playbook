@@ -3,6 +3,8 @@
 ## Goal
 Capture and document key technical and business decisions made during the project for future reference and knowledge preservation.
 
+**📁 Document Location**: Create decision documents in `docs/planning/` directory.
+
 ## Context Required
 - Completed project phase or major decisions made
 - Decision outcomes and rationale

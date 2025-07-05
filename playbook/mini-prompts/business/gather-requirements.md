@@ -3,6 +3,8 @@
 ## Goal
 Collect comprehensive business requirements from stakeholders to ensure solution meets business needs and objectives.
 
+**📁 Document Location**: Create all requirements documents in `docs/planning/` directory.
+
 ## Context Required
 - Project/feature scope definition
 - Stakeholder identification

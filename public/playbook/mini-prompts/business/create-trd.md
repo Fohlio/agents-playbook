@@ -3,6 +3,8 @@
 ## Goal
 Create Technical Requirements Document translating business requirements into technical specifications.
 
+**📁 Document Location**: Create TRD document in `docs/planning/` directory.
+
 ## Context Required
 - Business requirements or BRD document
 - Feature/system scope definition

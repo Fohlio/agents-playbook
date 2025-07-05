@@ -3,6 +3,8 @@
 ## Goal
 Analyze system architecture, component relationships, and design patterns to understand structure and identify improvements.
 
+**📁 Document Location**: Create architecture analysis reports in `docs/planning/` directory.
+
 ## Context Required
 - System/feature scope for analysis
 - Codebase access and documentation
