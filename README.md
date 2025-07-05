@@ -1,191 +1,144 @@
 # 🤖 AI Agents Playbook MCP Server
 
-**Early Beta** - Model Context Protocol server providing intelligent workflow recommendations using semantic search across real development workflows.
+**MCP Server** for AI agents with ready-to-use development workflows.
 
-## 🎯 What It Does
+## 🎯 What is this
 
-This MCP server helps you find the right development workflow for your task using **AI-powered semantic search**:
+**Multi-agent system** - one agent with different roles, tasks, and tools:
 
-1. **🧠 Smart Search** - Describe your task in natural language, get relevant workflows
-2. **📄 Real Workflows** - Access proven development workflows used by experienced teams  
-3. **🎯 Step-by-Step** - Get guided execution through each workflow
+- **🧠 AI Search** - describe your task, get the right workflow
+- **🔧 9 Workflows** - ready processes for all development stages  
+- **⚡ Smart Execution** - automatically skips unnecessary steps
+- **📋 25+ Mini-Prompts** - specialized prompts organized by development phases
 
-**Status**: Early testing phase - feedback welcome!
+## 🚀 Installation
 
-## 🚀 Quick Setup
-
-### 1. Install Dependencies
 ```bash
+# 1. Clone repository
+git clone https://github.com/your-repo/agents-playbook
+cd agents-playbook
+
+# 2. Install dependencies
 npm install
-```
 
-### 2. Configure OpenAI API Key
-Create `.env` file:
-```bash
-OPENAI_API_KEY=your_openai_api_key_here
-```
+# 3. Add OpenAI API key to .env
+OPENAI_API_KEY=your_key_here
 
-### 3. Generate Workflow Search Index
-```bash
+# 4. Generate search index
 npm run build:embeddings
-```
 
-### 4. Start the Server
-```bash
+# 5. Start server
 npm run dev
 ```
 
-**MCP Server**: http://localhost:3000/api/mcp  
-**MCP Inspector**: http://127.0.0.1:6274
+**MCP Server**: http://localhost:3000/api/mcp
 
-## 🧪 Test with MCP Inspector
+## 🧪 Testing
 
 ```bash
-# Start MCP Inspector (with authentication disabled)
+# MCP Inspector for testing
 DANGEROUSLY_OMIT_AUTH=true npx @modelcontextprotocol/inspector@latest http://localhost:3000/api/mcp
-```
 
-1. Open http://127.0.0.1:6274 in browser
-2. Select "Streamable HTTP" transport  
-3. URL: `http://localhost:3000/api/mcp`
-4. Click "Connect"
+# Run tests (47 tests)
+npm run test:integration
+```
 
 ## 🛠️ Available Tools
 
-### 1. `get_available_workflows`
-**Find workflows** that match your task description.
+### `get_available_workflows`
+Search workflows with AI semantic search.
 
 **Example**: 
-- Input: `"fix a critical bug"`
-- Output: Quick Fix Kickoff workflow (46% match)
+- Input: `"fix critical bug"`
+- Output: `quick-fix` workflow (🎯 89% match)
 
-### 2. `select_workflow`
-**Get complete workflow** with all steps and details.
+### `select_workflow`  
+Get complete workflow with execution plan.
 
-**Example**:
-- Input: `"quick-fix-kickoff"`
-- Output: Full 11-step bug fix workflow
+### `get_next_step`
+Step-by-step navigation with smart validation.
 
-### 3. `get_next_step`
-**Navigate step-by-step** through your chosen workflow.
+## 📁 Workflows (9 total)
 
-**Example**:
-- Input: Workflow ID + current step
-- Output: Next step with progress tracking
+### 🚀 Development (4)
+- **feature-development** - Complete feature development lifecycle
+- **product-development** - From idea to product launch
+- **quick-fix** - Fast bug fixes and hotfixes
+- **code-refactoring** - Code architecture improvements
 
-## 📁 Available Workflows (11 Total)
+### 📋 Documentation (3)
+- **trd-creation** - Technical Requirements Document creation
+- **brd-creation** - Business Requirements with research  
+- **brd-to-trd-translation** - Business → Technical specification translation
 
-### 📋 Planning Workflows (7)
-- **product-development** - Product Development from Scratch
-- **trd-creation** - Technical Requirements Document Creation  
-- **brd-to-trd-translation** - Business to Technical Requirements
-- **existing-feature-analysis** - Analyze Existing Features
-- **feature-migration** - Feature Migration Planning
-- **brd-creation-with-research** - Business Requirements with Research
-- **code-refactoring** - Code Refactoring to Scalable Architecture
+### 🏗️ Setup & Operations (2)
+- **project-initialization** - New project setup
+- **infrastructure-setup** - Infrastructure deployment
 
-### 🚀 Kickoff Workflows (3)
-- **quick-fix-kickoff** - Quick Bug Fix / Mini Feature
-- **development-kickoff** - Development Project Kickoff  
-- **project-initialization-kickoff** - New Project Setup
+## 🎯 Usage Examples
 
-### 🧪 QA Workflows (1)
-- **qa-validation** - Quality Assurance & Testing
-
-## 🧪 Usage Examples
-
-### Example 1: "I need to fix a bug"
 ```
-1. Ask: "fix a critical bug in production"
-2. Get: Quick Fix Kickoff workflow (46% similarity)
-3. Follow: 11-step systematic bug fixing process
+1. Search: "create new feature"
+2. Result: feature-development workflow (🎯 92% match)  
+3. Execute: 14 steps with TRD integration and smart skipping
 ```
 
-### Example 2: "I'm planning a new feature"
 ```
-1. Ask: "plan a new product feature"
-2. Get: Product Development from Scratch (51% similarity)  
-3. Follow: Complete feature planning workflow
-```
-
-### Example 3: "I need technical documentation"
-```
-1. Ask: "create technical requirements"
-2. Get: TRD Creation workflow
-3. Follow: Step-by-step technical documentation process
+1. Search: "technical documentation"  
+2. Result: trd-creation workflow (🎯 94% match)
+3. Execute: 7 steps of TRD creation with validation
 ```
 
 ## 🔌 Cursor Integration
-
-Add to your Cursor MCP configuration:
 
 ```json
 {
   "mcpServers": {
     "agents-playbook": {
-      "url": "https://agents-playbook.vercel.app/api/mcp"
+      "url": "http://localhost:3000/api/mcp"
     }
   }
 }
 ```
 
-Then restart Cursor and you'll have access to all workflows directly in your coding environment!
-
-## 📚 AI Development Workflows
-
-This MCP server is built on the **[AI Agents Playbook](playbook/prompt-playbook.md)** - a comprehensive collection of proven development workflows.
-
-### 📁 Copy Playbook to Your Project
-
-You can copy the entire `playbook/` folder to your own project for direct use:
+## 📚 Local Usage
 
 ```bash
-# Copy the whole playbook
+# Copy entire playbook to your project
 cp -r playbook/ /path/to/your/project/
 ```
 
-**Benefits of local copy:**
-- ✅ Use workflows without MCP server
-- ✅ Customize prompts for your team
-- ✅ Offline access to all workflows
-- ✅ Version control with your project
+**Benefits:**
+- ✅ Works without MCP server
+- ✅ Customize for your team
+- ✅ Offline access
+- ✅ Version control with project
 
-### 🎯 Browse All Workflows
+## 🧠 How it works
 
-**[→ View Complete Playbook](playbook/prompt-playbook.md)**
-
-Contains decision guides, complexity assessments, and workflow flows to help you pick the right prompt for any development task.
-
-## 🔧 How It Works
-
-- **Semantic Search**: Uses OpenAI embeddings to understand what you're asking for
-- **Real Workflows**: Returns actual markdown files used by development teams
-- **Smart Matching**: Finds workflows based on meaning, not just keywords
-- **Guided Execution**: Breaks down complex processes into manageable steps
+- **Semantic Search** - OpenAI embeddings understand task context
+- **YAML Workflows** - structured processes with phases and steps
+- **Mini-Prompts** - reusable specialized prompts
+- **Smart Validation** - checks prerequisites and skips steps automatically
 
 ## 🐛 Troubleshooting
 
 ### "No workflows found"
-- Try broader terms like "planning", "development", "bug fix"
-- Make sure embeddings are generated: `npm run build:embeddings`
+- Use simple terms: "bug", "feature", "documentation"
+- Check: `npm run build:embeddings`
 
 ### "OpenAI API errors"  
-- Check your `OPENAI_API_KEY` in `.env` file
-- Verify your OpenAI account has API access
+- Check `OPENAI_API_KEY` in `.env`
+- System falls back to text search if OpenAI unavailable
 
 ### "Can't connect to MCP server"
 - Make sure server is running: `npm run dev`
-- Check URL: `http://localhost:3000/api/mcp`
-- Try MCP Inspector for debugging
+- URL: `http://localhost:3000/api/mcp`
 
-## 💬 Feedback & Contributing
-
-This is an **early beta** - we're actively improving based on user feedback!
-
-- Found a workflow that should be included? Let us know!
-- Having trouble with search results? Tell us what you're looking for!
-- Want to contribute workflows? Check out the `playbook/` directory structure
+### "Steps are being skipped"
+- This is normal behavior! System skips steps without required context
+- Check logs to understand skip reasons
 
 ---
 
-**🚀 AI Agents Playbook** - Making development workflows accessible through AI
+**🚀 AI Agents Playbook** - Smart workflows for modern development

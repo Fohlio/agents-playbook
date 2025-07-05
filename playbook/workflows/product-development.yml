@@ -1,0 +1,203 @@
+name: "Product Development Workflow"
+description: "Comprehensive product development from idea to launch including planning, development, and validation"
+version: "1.0"
+category: "development"
+tags: ["product", "development", "planning", "full-cycle", "launch"]
+
+metadata:
+  complexity: "high"
+  skillLevel: "advanced"
+
+phases:
+  - phase: "planning-clarification"
+    description: "Product planning and requirements definition"
+    required: true
+    steps:
+      - id: "gather-requirements"
+        miniPrompt: "business/gather-requirements"
+        required: true
+        prerequisites:
+          requiredContext: []
+          optionalContext: ["market_research", "user_feedback", "competitive_analysis"]
+        
+      - id: "ask-clarifying-questions"
+        miniPrompt: "development/ask-clarifying-questions"
+        required: true
+        prerequisites:
+          requiredContext: ["requirements"]
+          optionalContext: ["stakeholder_contact_info", "user_personas"]
+        dependencies: ["gather-requirements"]
+
+  - phase: "analysis"
+    description: "Market and technical analysis"
+    required: true
+    steps:
+      - id: "feature-analysis"
+        miniPrompt: "analysis/feature-analysis"
+        required: true
+        prerequisites:
+          requiredContext: ["clarified_requirements", "product_vision"]
+          optionalContext: ["market_research", "user_research"]
+        dependencies: ["ask-clarifying-questions"]
+        
+      - id: "architecture-analysis"
+        miniPrompt: "analysis/architecture-analysis"
+        required: true
+        prerequisites:
+          requiredContext: ["feature_analysis", "technical_requirements"]
+          optionalContext: ["scalability_requirements", "performance_targets"]
+        dependencies: ["feature-analysis"]
+
+  - phase: "design-architecture"
+    description: "Product and technical design"
+    required: true
+    steps:
+      - id: "design-architecture"
+        miniPrompt: "development/design-architecture"
+        required: true
+        prerequisites:
+          requiredContext: ["feature_analysis", "architecture_analysis"]
+          optionalContext: ["design_guidelines", "technical_constraints"]
+        dependencies: ["architecture-analysis"]
+
+  - phase: "implementation"
+    description: "Product development and implementation"
+    required: true
+    steps:
+      - id: "implement-feature"
+        miniPrompt: "development/implement-feature"
+        required: true
+        prerequisites:
+          requiredContext: ["design_specifications", "technical_architecture"]
+          optionalContext: ["development_environment", "coding_standards"]
+        dependencies: ["design-architecture"]
+
+  - phase: "testing-validation"
+    description: "Quality assurance and user validation"
+    required: true
+    steps:
+      - id: "create-test-plan"
+        miniPrompt: "qa/create-test-plan"
+        required: true
+        prerequisites:
+          requiredContext: ["implemented_features", "product_requirements"]
+          optionalContext: ["user_scenarios", "acceptance_criteria"]
+        dependencies: ["implement-feature"]
+        
+      - id: "execute-tests"
+        miniPrompt: "qa/execute-tests"
+        required: true
+        prerequisites:
+          requiredContext: ["test_plan", "implemented_features"]
+          optionalContext: ["test_automation", "user_testing_results"]
+        dependencies: ["create-test-plan"]
+        
+      - id: "validate-requirements"
+        miniPrompt: "qa/validate-requirements"
+        required: true
+        prerequisites:
+          requiredContext: ["tested_product", "original_requirements"]
+          optionalContext: ["user_feedback", "stakeholder_input"]
+        dependencies: ["execute-tests"]
+
+  - phase: "deployment-operations"
+    description: "Product launch and operational setup"
+    required: true
+    steps:
+      - id: "deploy-application"
+        miniPrompt: "operations/deploy-application"
+        required: true
+        prerequisites:
+          requiredContext: ["validated_product", "deployment_environment"]
+          optionalContext: ["deployment_pipeline", "rollback_procedures"]
+        dependencies: ["validate-requirements"]
+        
+      - id: "monitor-system-health"
+        miniPrompt: "operations/monitor-system-health"
+        required: true
+        prerequisites:
+          requiredContext: ["deployed_product"]
+          optionalContext: ["monitoring_tools", "alert_configuration"]
+        dependencies: ["deploy-application"]
+
+  - phase: "completion-reflection"
+    description: "Launch validation and knowledge capture"
+    required: true
+    steps:
+      - id: "create-trd"
+        miniPrompt: "business/create-trd"
+        required: true
+        prerequisites:
+          requiredContext: ["completed_product", "design_specifications"]
+          optionalContext: ["architecture_analysis", "technical_decisions"]
+        dependencies: ["monitor-system-health"]
+        
+      - id: "document-decisions"
+        miniPrompt: "business/document-decisions"
+        required: true
+        prerequisites:
+          requiredContext: ["completed_product", "launch_results"]
+          optionalContext: ["lessons_learned", "performance_metrics"]
+        dependencies: ["create-trd"]
+        
+      - id: "stakeholder-approval"
+        miniPrompt: "business/stakeholder-approval"
+        required: true
+        prerequisites:
+          requiredContext: ["product_launch", "documentation"]
+          optionalContext: ["success_metrics", "user_adoption_data"]
+        dependencies: ["document-decisions"]
+
+# Workflow-level configurations
+skipConditions:
+  - condition: "product_already_launched"
+    message: "Product has already been successfully launched"
+  - condition: "insufficient_resources"
+    message: "Insufficient team or budget resources for full product development"
+
+validationRules:
+  - rule: "market_validation_required"
+    phases: ["analysis"]
+    message: "Market research and validation required before development"
+  - rule: "user_testing_required"
+    phases: ["testing-validation"]
+    dependencies: ["implementation"]
+    message: "User testing must be completed before launch"
+  - rule: "performance_validation_required"
+    phases: ["deployment-operations"]
+    dependencies: ["testing-validation"]
+    message: "Performance testing required before production deployment"
+
+notifications:
+  - trigger: "phase_completion"
+    phases: ["analysis", "implementation", "testing-validation"]
+    message: "Major phase completed, ready for next milestone"
+  - trigger: "workflow_completion"
+    message: "Product development workflow completed successfully"
+
+# Smart execution settings
+execution:
+  allowSkipping: true
+  requireExplicitApproval: true
+  parallelExecution: false
+  automaticProgressTracking: true
+  
+# Integration settings
+integrations:
+  projectManagement:
+    - jira
+    - asana
+    - monday
+    - linear
+  development:
+    - github
+    - gitlab
+    - azure-devops
+  analytics:
+    - google-analytics
+    - mixpanel
+    - amplitude
+  monitoring:
+    - datadog
+    - new-relic
+    - sentry 
