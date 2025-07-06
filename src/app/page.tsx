@@ -117,7 +117,6 @@ npm run dev
         <FeaturesSection />
         <SetupSection />
       </main>
-      <Footer />
     </div>
   );
 }
