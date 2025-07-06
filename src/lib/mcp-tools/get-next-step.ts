@@ -3,11 +3,12 @@ import { WorkflowLoader } from '../loaders/workflow-loader';
 import { SmartWorkflowEngine } from '../execution/smart-workflow-engine';
 import { DefaultMCPRegistry } from '../validation/workflow-validator';
 import { MiniPromptLoader } from '../loaders/mini-prompt-loader';
-import { ExecutionContext } from '../types/workflow-types';
+import { ExecutionContext, StandardContext } from '../types/workflow-types';
 
 export const getNextStepToolSchema = {
   workflow_id: z.string().describe('ID of the workflow'),
-  current_step: z.number().int().min(0).describe('Current step number (0-based)')
+  current_step: z.number().int().min(0).describe('Current step number (0-based)'),
+  available_context: z.array(z.string()).optional().describe('Available context keys that the AI already has')
 };
 
 // Create shared instances
@@ -17,9 +18,17 @@ const miniPromptLoader = new MiniPromptLoader();
 // Simple in-memory session storage (in production, this should be persistent)
 const executionSessions = new Map<string, ExecutionContext>();
 
-export async function getNextStepHandler({ workflow_id, current_step }: { workflow_id: string; current_step: number }) {
+export async function getNextStepHandler({ 
+  workflow_id, 
+  current_step, 
+  available_context = [] 
+}: { 
+  workflow_id: string; 
+  current_step: number; 
+  available_context?: string[] 
+}) {
   try {
-    console.log(`[MCP] Getting next step for ${workflow_id}, current: ${current_step}`);
+    console.log(`[MCP] Getting next step for ${workflow_id}, current: ${current_step}, available_context: ${available_context.join(', ')}`);
     
     // Load the workflow configuration
     const workflowConfig = await workflowLoader.loadWorkflowConfig(workflow_id);
@@ -102,10 +111,30 @@ export async function getNextStepHandler({ workflow_id, current_step }: { workfl
       stepContent += `\nThis step will be automatically skipped. Proceeding to next step...\n\n`;
     }
 
-    // Add the complete mini-prompt content
+    // Add context information section
+    if (available_context.length > 0) {
+      stepContent += `## 📋 Available Context\n\n`;
+      stepContent += `**You already have the following context available:**\n`;
+      available_context.forEach(context => {
+        stepContent += `- **${context}** - Use existing ${context} from your project\n`;
+      });
+      stepContent += `\n*Note: When instructions mention creating or gathering the above context, reference your existing documents instead.*\n\n`;
+    }
+
+    // Add the complete mini-prompt content with context modification
     stepContent += `---\n\n`;
     stepContent += `## 📋 Mini-Prompt Instructions\n\n`;
-    stepContent += miniPrompt.fullContent;
+    
+    // Modify mini-prompt content based on available context
+    let modifiedContent = miniPrompt.fullContent;
+    
+    if (available_context.length > 0) {
+      // Add context-aware instructions at the top
+      const contextSection = `> **📋 Context Note:** You have access to existing context: ${available_context.join(', ')}. When the instructions below mention creating or gathering these items, reference your existing documents instead.\n\n`;
+      modifiedContent = contextSection + modifiedContent;
+    }
+    
+    stepContent += modifiedContent;
     stepContent += `\n\n---\n\n`;
 
     // Add workflow context

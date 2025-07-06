@@ -2,6 +2,7 @@ import { describe, test, expect, beforeAll } from '@jest/globals';
 import { selectWorkflowHandler } from '../../src/lib/mcp-tools/select-workflow';
 import { getNextStepHandler } from '../../src/lib/mcp-tools/get-next-step';
 import { WorkflowLoader } from '../../src/lib/loaders/workflow-loader';
+import { StandardContext } from '../../src/lib/types/workflow-types';
 
 // Test configuration
 const TEST_TIMEOUT = 30000;
@@ -174,6 +175,101 @@ describe('Workflow Steps Integration Tests', () => {
       
       console.log(`   🚀 Project initialization workflow properly configured`);
     }, TEST_TIMEOUT);
+
+    // New tests for context system in workflow steps
+    test('feature-development workflow with available context', async () => {
+      const workflow = 'feature-development';
+      console.log(`\n🔍 Testing context system for ${workflow}`);
+      
+      // Test step with no context
+      const step0 = await getNextStepHandler({ 
+        workflow_id: workflow, 
+        current_step: 0,
+        available_context: []
+      });
+      
+      if (!step0.content[0].text.includes('100% complete')) {
+        expect(step0.content[0].text).not.toContain('Available Context');
+        console.log(`   ✅ Step 0 (no context): Properly handled`);
+      }
+      
+      // Test step with context
+      const step1 = await getNextStepHandler({ 
+        workflow_id: workflow, 
+        current_step: 1,
+        available_context: [StandardContext.REQUIREMENTS]
+      });
+      
+      if (!step1.content[0].text.includes('100% complete')) {
+        expect(step1.content[0].text).toContain('Available Context');
+        expect(step1.content[0].text).toContain('requirements');
+        console.log(`   ✅ Step 1 (with context): Context properly utilized`);
+      }
+      
+      // Test step with multiple contexts
+      const step2 = await getNextStepHandler({ 
+        workflow_id: workflow, 
+        current_step: 2,
+        available_context: [
+          StandardContext.REQUIREMENTS,
+          StandardContext.CLARIFIED_REQUIREMENTS,
+          StandardContext.TRD
+        ]
+      });
+      
+      if (!step2.content[0].text.includes('100% complete')) {
+        expect(step2.content[0].text).toContain('Available Context');
+        expect(step2.content[0].text).toContain('requirements');
+        expect(step2.content[0].text).toContain('clarified_requirements');
+        console.log(`   ✅ Step 2 (multiple contexts): All contexts properly handled`);
+      }
+    }, TEST_TIMEOUT);
+
+    test('trd-creation workflow with business requirements context', async () => {
+      const workflow = 'trd-creation';
+      console.log(`\n🔍 Testing TRD creation with business context`);
+      
+      // Test with business requirements context
+      const step0 = await getNextStepHandler({ 
+        workflow_id: workflow, 
+        current_step: 0,
+        available_context: [StandardContext.BUSINESS_REQUIREMENTS]
+      });
+      
+      if (!step0.content[0].text.includes('100% complete')) {
+        expect(step0.content[0].text).toContain('Available Context');
+        expect(step0.content[0].text).toContain('business_requirements');
+        expect(step0.content[0].text).toContain('Context Note');
+        console.log(`   ✅ TRD creation: Business requirements context properly integrated`);
+      }
+    }, TEST_TIMEOUT);
+
+    test('context modification in mini-prompts', async () => {
+      const workflow = 'feature-development';
+      console.log(`\n🔍 Testing mini-prompt context modification`);
+      
+      // Test step with context - should modify mini-prompt content
+      const result = await getNextStepHandler({ 
+        workflow_id: workflow, 
+        current_step: 1,
+        available_context: [StandardContext.REQUIREMENTS, StandardContext.TRD]
+      });
+      
+      if (!result.content[0].text.includes('100% complete')) {
+        const stepText = result.content[0].text;
+        
+        // Should contain context section
+        expect(stepText).toContain('Available Context');
+        expect(stepText).toContain('requirements');
+        expect(stepText).toContain('trd');
+        
+        // Should contain context note in mini-prompt
+        expect(stepText).toContain('Context Note');
+        expect(stepText).toContain('reference your existing documents');
+        
+        console.log(`   ✅ Mini-prompt properly modified with context information`);
+      }
+    }, TEST_TIMEOUT);
   });
 
   describe('Edge cases and error handling', () => {
@@ -255,6 +351,118 @@ describe('Workflow Steps Integration Tests', () => {
         
         expect(result.content[0].text).toMatch(/(complete|100%)/);
         console.log(`   ✅ ${workflow}: Reaches completion correctly`);
+      }
+    }, TEST_TIMEOUT);
+  });
+
+  describe('Context Flow Through Workflow Steps', () => {
+    test('should handle context progression through feature-development workflow', async () => {
+      const workflow = 'feature-development';
+      console.log(`\n🔄 Testing context progression in ${workflow}`);
+      
+      // Simulate workflow progression with context building
+      const contexts = {
+        step0: [],
+        step1: [StandardContext.REQUIREMENTS],
+        step2: [StandardContext.REQUIREMENTS, StandardContext.CLARIFIED_REQUIREMENTS],
+        step3: [StandardContext.REQUIREMENTS, StandardContext.CLARIFIED_REQUIREMENTS, StandardContext.FEATURE_ANALYSIS],
+        step4: [StandardContext.REQUIREMENTS, StandardContext.CLARIFIED_REQUIREMENTS, StandardContext.FEATURE_ANALYSIS, StandardContext.DESIGN_SPECIFICATIONS]
+      };
+      
+      // Test each step with appropriate context
+      for (const [stepKey, stepContexts] of Object.entries(contexts)) {
+        const stepNumber = parseInt(stepKey.replace('step', ''));
+        
+        const result = await getNextStepHandler({ 
+          workflow_id: workflow, 
+          current_step: stepNumber,
+          available_context: stepContexts
+        });
+        
+        if (!result.content[0].text.includes('100% complete')) {
+          // Verify context handling
+          if (stepContexts.length > 0) {
+            expect(result.content[0].text).toContain('Available Context');
+            console.log(`   ✅ Step ${stepNumber}: ${stepContexts.length} contexts properly handled`);
+          } else {
+            expect(result.content[0].text).not.toContain('Available Context');
+            console.log(`   ✅ Step ${stepNumber}: No context required`);
+          }
+        } else {
+          console.log(`   ✅ Step ${stepNumber}: Workflow completed`);
+          break;
+        }
+      }
+    }, TEST_TIMEOUT);
+
+    test('should handle context progression through trd-creation workflow', async () => {
+      const workflow = 'trd-creation';
+      console.log(`\n🔄 Testing context progression in ${workflow}`);
+      
+      // Test different context scenarios for TRD creation
+      const contextScenarios = [
+        { step: 0, contexts: [], label: 'no context' },
+        { step: 0, contexts: [StandardContext.BUSINESS_REQUIREMENTS], label: 'business requirements' },
+        { step: 1, contexts: [StandardContext.REQUIREMENTS], label: 'requirements' },
+        { step: 2, contexts: [StandardContext.CLARIFIED_REQUIREMENTS], label: 'clarified requirements' },
+        { step: 3, contexts: [StandardContext.FEATURE_ANALYSIS, StandardContext.DESIGN_SPECIFICATIONS], label: 'analysis + design' }
+      ];
+      
+      for (const scenario of contextScenarios) {
+        const result = await getNextStepHandler({ 
+          workflow_id: workflow, 
+          current_step: scenario.step,
+          available_context: scenario.contexts
+        });
+        
+        if (!result.content[0].text.includes('100% complete')) {
+          if (scenario.contexts.length > 0) {
+            expect(result.content[0].text).toContain('Available Context');
+            console.log(`   ✅ Step ${scenario.step} (${scenario.label}): Context properly integrated`);
+          } else {
+            expect(result.content[0].text).not.toContain('Available Context');
+            console.log(`   ✅ Step ${scenario.step} (${scenario.label}): No context shown`);
+          }
+        } else {
+          console.log(`   ✅ Step ${scenario.step} (${scenario.label}): Workflow completed`);
+        }
+      }
+    }, TEST_TIMEOUT);
+
+    test('should handle context with all workflow types', async () => {
+      const workflows = [
+        'quick-fix',
+        'feature-development',
+        'trd-creation',
+        'brd-creation',
+        'project-initialization'
+      ];
+      
+      const testContexts = [
+        StandardContext.REQUIREMENTS,
+        StandardContext.TRD,
+        StandardContext.DESIGN_SPECIFICATIONS
+      ];
+      
+      for (const workflowId of workflows) {
+        console.log(`\n🔄 Testing context handling for ${workflowId}`);
+        
+        // Test first step with contexts
+        const result = await getNextStepHandler({ 
+          workflow_id: workflowId, 
+          current_step: 0,
+          available_context: testContexts
+        });
+        
+        expect(result.content).toBeDefined();
+        
+        if (!result.content[0].text.includes('100% complete')) {
+          expect(result.content[0].text).toContain('Available Context');
+          expect(result.content[0].text).toContain('requirements');
+          console.log(`   ✅ ${workflowId}: Context system working`);
+        } else {
+          console.log(`   ✅ ${workflowId}: Workflow completed immediately`);
+        }
       }
     }, TEST_TIMEOUT);
   });

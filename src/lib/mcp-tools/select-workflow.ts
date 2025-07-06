@@ -71,6 +71,24 @@ export async function selectWorkflowHandler({ workflow_id }: { workflow_id: stri
       return `📋 **${phase.name}**: ${phaseStatus}`;
     }).join('\n');
 
+    // Add detailed step breakdown with context requirements
+    const stepBreakdown = executionPlan.phases.map(phase => {
+      const stepDetails = phase.steps.map((step, index) => {
+        const status = step.will_execute ? '✅' : '⚠️';
+        const reason = step.skip_reason ? ` (${step.skip_reason})` : '';
+        const requiredContext = step.validation.missingContext.length > 0 
+          ? `\n    📋 **Required Context:** ${step.validation.missingContext.join(', ')}`
+          : '';
+        const optionalContext = step.validation.hasOptionalContext.length > 0 
+          ? `\n    📋 **Optional Context:** ${step.validation.hasOptionalContext.join(', ')}`
+          : '';
+        
+        return `  ${index + 1}. ${status} **${step.title}**${reason}${requiredContext}${optionalContext}`;
+      }).join('\n');
+      
+      return `**${phase.name}:**\n${stepDetails}`;
+    }).join('\n\n');
+
     const skippedDetails = executionPlan.skipped_steps.length > 0 
       ? `\n\n**⚠️ Skipped Steps (${executionPlan.skipped_steps.length}):**\n${
           executionPlan.skipped_steps.map(skip => `• ${skip.step_title}: ${skip.reason}`).join('\n')
@@ -78,13 +96,13 @@ export async function selectWorkflowHandler({ workflow_id }: { workflow_id: stri
       : '';
 
     const nextStepsInfo = executionPlan.executable_steps > 0
-      ? `\n\n**🚀 Ready to Start:**\nUse \`get_next_step\` with workflow_id="${workflow_id}" and current_step=0 to begin execution.`
-      : `\n\n**❌ Cannot Execute:**\nThis workflow has no executable steps with the current configuration. Please check prerequisites or try a different workflow.`;
+      ? `\n\n**🚀 Ready to Start:**\nUse \`get_next_step\` with workflow_id="${workflow_id}" and current_step=0 to begin execution.\n\n**💡 Context Tip:** If you already have some context (like requirements, TRD, etc.), pass them in the \`available_context\` parameter to get tailored instructions.`
+      : `\n\n**❌ Cannot Execute:**\nThis workflow has no executable steps with the current configuration. Please check prerequisites or try a different workflow.\n\n**💡 Context Tip:** If you already have some context (like requirements, TRD, etc.), pass them in the \`available_context\` parameter to get tailored instructions.`;
 
     return {
       content: [{ 
         type: "text" as const, 
-        text: `## 📋 ${workflowConfig.name}\n\n**Description:** ${workflowConfig.description}\n\n**Execution Strategy:** ${workflowConfig.execution_strategy === 'smart_skip' ? 'Smart Skip (Auto-skip missing prerequisites)' : 'Linear (All steps required)'}\n\n**📊 Execution Plan:**\n- **Total Steps:** ${executionPlan.total_steps}\n- **Executable Steps:** ${executionPlan.executable_steps}\n- **Execution Rate:** ${executionPlan.execution_rate}%\n- **Estimated Duration:** ${workflowConfig.estimated_duration}\n\n**📋 Phases Overview:**\n${phasesSummary}${skippedDetails}${nextStepsInfo}`
+        text: `## 📋 ${workflowConfig.name}\n\n**Description:** ${workflowConfig.description}\n\n**Execution Strategy:** ${workflowConfig.execution_strategy === 'smart_skip' ? 'Smart Skip (Auto-skip missing prerequisites)' : 'Linear (All steps required)'}\n\n**📊 Execution Plan:**\n- **Total Steps:** ${executionPlan.total_steps}\n- **Executable Steps:** ${executionPlan.executable_steps}\n- **Execution Rate:** ${executionPlan.execution_rate}%\n- **Estimated Duration:** ${workflowConfig.estimated_duration}\n\n**📋 Phases Overview:**\n${phasesSummary}\n\n**📝 Detailed Step Breakdown:**\n${stepBreakdown}${skippedDetails}${nextStepsInfo}`
       }],
     };
   } catch (error) {

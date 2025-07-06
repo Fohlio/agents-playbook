@@ -2,6 +2,7 @@ import { describe, test, expect, beforeAll } from '@jest/globals';
 import { getWorkflowsHandler } from '../../src/lib/mcp-tools/get-workflows';
 import { selectWorkflowHandler } from '../../src/lib/mcp-tools/select-workflow';
 import { getNextStepHandler } from '../../src/lib/mcp-tools/get-next-step';
+import { StandardContext } from '../../src/lib/types/workflow-types';
 
 // Test configuration
 const TEST_TIMEOUT = 30000; // 30 seconds for embeddings operations
@@ -106,6 +107,32 @@ describe('MCP Tools Integration Tests', () => {
       expect(result.content).toBeDefined();
       expect(result.content[0].text).toContain('not found');
     }, TEST_TIMEOUT);
+
+    // New tests for context requirements display
+    test('should show context requirements and tips in select_workflow', async () => {
+      const result = await selectWorkflowHandler({ 
+        workflow_id: 'feature-development' 
+      });
+
+      expect(result.content).toBeDefined();
+      const workflowText = result.content[0].text;
+      
+      expect(workflowText).toContain('Detailed Step Breakdown');
+      expect(workflowText).toContain('Context Tip');
+      expect(workflowText).toContain('available_context');
+    }, TEST_TIMEOUT);
+
+    test('should show Required Context for steps that need it', async () => {
+      const result = await selectWorkflowHandler({ 
+        workflow_id: 'feature-development' 
+      });
+
+      expect(result.content).toBeDefined();
+      const workflowText = result.content[0].text;
+      
+      expect(workflowText).toContain('Required Context');
+      expect(workflowText).toContain('requirements');
+    }, TEST_TIMEOUT);
   });
 
   describe('getNextStepHandler', () => {
@@ -149,6 +176,58 @@ describe('MCP Tools Integration Tests', () => {
 
       expect(result.content).toBeDefined();
       expect(result.content[0].text).toContain('not found');
+    }, TEST_TIMEOUT);
+
+    // New tests for available_context parameter
+    test('should handle get_next_step with available_context parameter', async () => {
+      const result = await getNextStepHandler({ 
+        workflow_id: 'feature-development',
+        current_step: 1,
+        available_context: [StandardContext.REQUIREMENTS]
+      });
+
+      expect(result.content).toBeDefined();
+      const stepText = result.content[0].text;
+      
+      if (!stepText.includes('100% complete')) {
+        expect(stepText).toContain('Available Context');
+        expect(stepText).toContain('requirements');
+      }
+    }, TEST_TIMEOUT);
+
+    test('should handle get_next_step with multiple available contexts', async () => {
+      const result = await getNextStepHandler({ 
+        workflow_id: 'feature-development',
+        current_step: 2,
+        available_context: [
+          StandardContext.REQUIREMENTS,
+          StandardContext.CLARIFIED_REQUIREMENTS,
+          StandardContext.TRD
+        ]
+      });
+
+      expect(result.content).toBeDefined();
+      const stepText = result.content[0].text;
+      
+      if (!stepText.includes('100% complete')) {
+        expect(stepText).toContain('Available Context');
+        expect(stepText).toContain('requirements');
+        expect(stepText).toContain('clarified_requirements');
+        expect(stepText).toContain('trd');
+      }
+    }, TEST_TIMEOUT);
+
+    test('should handle empty available_context array', async () => {
+      const result = await getNextStepHandler({ 
+        workflow_id: 'feature-development',
+        current_step: 0,
+        available_context: []
+      });
+
+      expect(result.content).toBeDefined();
+      expect(result.content[0].text).toMatch(/(Step|complete)/);
+      // Should not show context section when empty
+      expect(result.content[0].text).not.toContain('Available Context');
     }, TEST_TIMEOUT);
   });
 

@@ -34,13 +34,13 @@ const handler = createMcpHandler(
       },
     );
 
-    // Tool 3: Get next step - parses steps from MD content
+    // Tool 3: Get next step - parses steps from MD content with context support
     server.tool(
       'get_next_step',
       'Get the next step in a workflow progression with guided execution',
       getNextStepToolSchema,
-      async ({ workflow_id, current_step }) => {
-        return await getNextStepHandler({ workflow_id, current_step });
+      async ({ workflow_id, current_step, available_context }) => {
+        return await getNextStepHandler({ workflow_id, current_step, available_context });
       },
     );
   },
