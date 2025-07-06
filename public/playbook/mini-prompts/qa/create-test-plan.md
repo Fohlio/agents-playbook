@@ -3,6 +3,8 @@
 ## Goal
 Create comprehensive test strategy covering functional, non-functional, and regression testing requirements.
 
+**📁 Document Location**: Create test plan documents in `docs/planning/` directory.
+
 ## Context Required
 - Requirements document or specifications
 - System architecture and components

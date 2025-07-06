@@ -3,6 +3,8 @@
 ## Goal
 Establish automated continuous integration and continuous deployment pipelines to streamline development workflows, improve code quality, and enable reliable deployments.
 
+**📁 Document Location**: Create CI/CD pipeline documentation in `docs/planning/` directory.
+
 ## Context Required
 - Source code repository and project structure
 - Target deployment environments

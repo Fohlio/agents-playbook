@@ -3,6 +3,8 @@
 ## Goal
 Set up, configure, and manage infrastructure components including servers, networks, storage, and cloud resources for optimal performance and security.
 
+**📁 Document Location**: Create infrastructure configuration documents in `docs/planning/` directory.
+
 ## Context Required
 - Infrastructure requirements and specifications
 - Target environment (cloud, on-premise, hybrid)

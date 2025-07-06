@@ -3,6 +3,8 @@
 ## Goal
 Execute the planned test cases to validate implementation meets requirements and identify any issues before deployment.
 
+**📁 Document Location**: Create test execution reports in `docs/planning/` directory.
+
 ## Context Required
 - Test plan with defined test cases
 - Implementation ready for testing

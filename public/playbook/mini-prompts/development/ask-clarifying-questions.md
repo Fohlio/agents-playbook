@@ -3,6 +3,8 @@
 ## Goal
 Gather missing requirements and clarify ambiguities before implementation.
 
+**📁 Document Location**: Create clarified requirements documents in `docs/planning/` directory.
+
 ## Context Required
 - Task description or problem statement
 

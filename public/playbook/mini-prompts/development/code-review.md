@@ -3,6 +3,8 @@
 ## Goal
 Review implemented code for quality, security, performance, and adherence to standards before considering the implementation complete.
 
+**📁 Document Location**: Create code review reports in `docs/planning/` directory.
+
 ## Context Required
 - Completed implementation
 - Original requirements and design specifications

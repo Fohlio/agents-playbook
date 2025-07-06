@@ -3,6 +3,8 @@
 ## Goal
 Create comprehensive solution architecture based on requirements, including component design, data flow, and integration patterns.
 
+**📁 Document Location**: Create architecture design documents in `docs/planning/` directory.
+
 ## Context Required
 - Clarified requirements from planning phase
 - Technical constraints and preferences

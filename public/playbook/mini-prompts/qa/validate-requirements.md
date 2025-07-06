@@ -3,6 +3,8 @@
 ## Goal
 Verify that the implemented solution meets all specified requirements and acceptance criteria through systematic validation.
 
+**📁 Document Location**: Create requirements validation reports in `docs/planning/` directory.
+
 ## Context Required
 - Original requirements and acceptance criteria
 - Completed implementation
