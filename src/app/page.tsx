@@ -17,13 +17,13 @@ export default function Home() {
             <h2 className="text-3xl font-bold text-gray-900 mb-8">What is this?</h2>
             <div className="text-lg text-gray-700 space-y-4">
               <p>
-                <strong>MCP Server</strong> for AI agents with 9 ready-to-use development workflows.
+                <strong>Structured Workflow Engine</strong> with 9 context-engineered development workflows that bring order to chaos.
               </p>
               <p>
-                <strong>Multi-agent system</strong> - one agent with different roles, tasks, and tools.
+                <strong>Context Engineering Framework</strong> - designed to help both high-tier and low-tier AI models follow consistent, structured processes.
               </p>
               <p>
-                Semantic search finds the right workflow, smart validation skips unnecessary steps.
+                Semantic search finds the right workflow, smart validation provides guardrails and structure for reliable execution.
               </p>
             </div>
           </div>
@@ -47,7 +47,7 @@ export default function Home() {
               </div>
               <div className="p-4">
                 <div className="text-2xl font-bold text-orange-600">🎯</div>
-                <div className="text-sm text-gray-600">AI Search</div>
+                <div className="text-sm text-gray-600">Context Engineering</div>
               </div>
             </div>
           </div>

@@ -1,15 +1,15 @@
-# 🤖 AI Agents Playbook MCP Server
+# 🎯 Structured Workflow Engine MCP Server
 
-**MCP Server** for AI agents with ready-to-use development workflows.
+**Context Engineering Framework** with ready-to-use development workflows that bring structure to chaos.
 
 ## 🎯 What is this
 
-**Multi-agent system** - one agent with different roles, tasks, and tools:
+**Structured Workflow System** - designed to help both high-tier and low-tier AI models follow consistent processes:
 
-- **🧠 AI Search** - describe your task, get the right workflow
-- **🔧 9 Workflows** - ready processes for all development stages  
-- **⚡ Smart Execution** - automatically skips unnecessary steps
-- **📋 25+ Mini-Prompts** - specialized prompts organized by development phases
+- **🧠 Context Engineering** - workflows engineered for reliable AI execution across model tiers
+- **🔧 9 Workflows** - battle-tested processes that provide structure and guardrails  
+- **⚡ Smart Validation** - automatically validates prerequisites and skips irrelevant steps
+- **📋 25+ Mini-Prompts** - context-engineered prompts organized by development phases
 
 ## 🚀 Installation
 
@@ -116,10 +116,11 @@ cp -r playbook/ /path/to/your/project/
 
 ## 🧠 How it works
 
-- **Semantic Search** - OpenAI embeddings understand task context
-- **YAML Workflows** - structured processes with phases and steps
-- **Mini-Prompts** - reusable specialized prompts
-- **Smart Validation** - checks prerequisites and skips steps automatically
+- **Context Engineering** - workflows designed with clear context boundaries and validation
+- **Semantic Search** - OpenAI embeddings understand task context for workflow selection
+- **YAML Workflows** - structured processes with phases, steps, and guardrails
+- **Mini-Prompts** - context-engineered reusable prompts that work across model tiers
+- **Smart Validation** - prevents execution without required context, provides structure for low-tier models
 
 ## 🐛 Troubleshooting
 
@@ -141,4 +142,4 @@ cp -r playbook/ /path/to/your/project/
 
 ---
 
-**🚀 AI Agents Playbook** - Smart workflows for modern development
+**🎯 Structured Workflow Engine** - Context engineering framework that brings order to chaos in AI-driven development
