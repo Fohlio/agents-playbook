@@ -7,6 +7,13 @@ Execute technical implementation based on design specifications with high code q
 - Design specifications or architecture plan
 - Requirements document with acceptance criteria
 
+## Context Gathering
+If you don't have the required context, gather it by:
+- **Design specs**: Ask user for technical design, architecture decisions, or implementation approach
+- **Requirements**: Request feature requirements, acceptance criteria, or user stories
+- **Codebase access**: Explore project structure to understand existing patterns and conventions
+- **Environment setup**: Verify development environment, dependencies, and build tools are ready
+
 ## Skip When
 - No implementation work required (analysis/docs only)
 - Implementation completed in previous session

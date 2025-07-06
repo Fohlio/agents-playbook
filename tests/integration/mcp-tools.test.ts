@@ -108,30 +108,38 @@ describe('MCP Tools Integration Tests', () => {
       expect(result.content[0].text).toContain('not found');
     }, TEST_TIMEOUT);
 
-    // New tests for context requirements display
-    test('should show context requirements and tips in select_workflow', async () => {
+    // New tests for improved context requirements display
+    test('should show context requirements instead of skip predictions', async () => {
       const result = await selectWorkflowHandler({ 
-        workflow_id: 'feature-development' 
+        workflow_id: 'quick-fix' 
       });
 
       expect(result.content).toBeDefined();
       const workflowText = result.content[0].text;
       
+      // Should show step breakdown and context gathering tips
       expect(workflowText).toContain('Detailed Step Breakdown');
-      expect(workflowText).toContain('Context Tip');
-      expect(workflowText).toContain('available_context');
+      expect(workflowText).toContain('Context Gathering');
+      expect(workflowText).toContain('get_next_step');
+      
+      // Should NOT show execution predictions or skip warnings
+      expect(workflowText).not.toContain('All steps will be skipped');
+      expect(workflowText).not.toContain('Execution Rate: 25%');
     }, TEST_TIMEOUT);
 
-    test('should show Required Context for steps that need it', async () => {
+    test('should show helpful context descriptions for required context', async () => {
       const result = await selectWorkflowHandler({ 
-        workflow_id: 'feature-development' 
+        workflow_id: 'quick-fix' 
       });
 
       expect(result.content).toBeDefined();
       const workflowText = result.content[0].text;
       
-      expect(workflowText).toContain('Required Context');
-      expect(workflowText).toContain('requirements');
+      // Should show workflow overview and context gathering guidance
+      expect(workflowText).toContain('Workflow Overview');
+      expect(workflowText).toContain('Context Gathering');
+      expect(workflowText).toContain('trace-bug-root-cause');
+      expect(workflowText).toContain('ask-clarifying-questions');
     }, TEST_TIMEOUT);
   });
 
@@ -231,6 +239,22 @@ describe('MCP Tools Integration Tests', () => {
       // Should not show context section when empty
       expect(result.content[0].text).not.toContain('Available Context');
     }, TEST_TIMEOUT);
+
+    test('should include context gathering guidance in mini-prompts', async () => {
+      const result = await getNextStepHandler({ 
+        workflow_id: 'quick-fix',
+        current_step: 0
+      });
+
+      expect(result.content).toBeDefined();
+      const stepText = result.content[0].text;
+      
+      if (!stepText.includes('100% complete')) {
+        // Should include context gathering guidance
+        expect(stepText).toContain('Context Gathering');
+        expect(stepText).toContain('gather it by:');
+      }
+    }, TEST_TIMEOUT);
   });
 
   describe('All workflows comprehensive test', () => {
@@ -291,14 +315,14 @@ describe('MCP Tools Integration Tests', () => {
     test('should validate workflow execution steps', async () => {
       // Test a workflow that has smart validation
       const workflowResult = await selectWorkflowHandler({ workflow_id: 'feature-development' });
-      expect(workflowResult.content[0].text).toContain('Execution Plan');
+      expect(workflowResult.content[0].text).toContain('Workflow Overview');
       
       // Test that we can get the first executable step
       const firstStepResult = await getNextStepHandler({ 
         workflow_id: 'feature-development',
         current_step: 0
       });
-      expect(firstStepResult.content[0].text).toMatch(/(Executable|complete)/);
+      expect(firstStepResult.content[0].text).toMatch(/(Step|complete)/);
     }, TEST_TIMEOUT);
 
     test('should skip non-executable steps intelligently', async () => {

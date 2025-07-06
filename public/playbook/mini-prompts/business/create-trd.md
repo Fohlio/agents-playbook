@@ -9,6 +9,13 @@ Create Technical Requirements Document translating business requirements into te
 - Business requirements or BRD document
 - Feature/system scope definition
 
+## Context Gathering
+If you don't have the required context, gather it by:
+- **Business requirements**: Ask user for BRD, feature requirements, or business objectives
+- **System scope**: Understand which system components or features are involved
+- **Technical constraints**: Identify platform, performance, security, or integration requirements
+- **Stakeholders**: Determine who needs to review and approve the technical design
+
 ## Skip When
 - Technical requirements already documented
 - Emergency implementation (deferred TRD)

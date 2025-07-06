@@ -8,6 +8,13 @@ Gather missing requirements and clarify ambiguities before implementation.
 ## Context Required
 - Task description or problem statement
 
+## Context Gathering
+If you don't have the required context, gather it by:
+- **Task description**: Ask the user to describe what they want to accomplish
+- **Problem statement**: Request details about the issue they're facing
+- **Scope boundaries**: Ask about what's included/excluded from the work
+- **Priority level**: Understand urgency and importance
+
 ## Skip When
 - Requirements already comprehensive and clear
 - Emergency situation requiring immediate action

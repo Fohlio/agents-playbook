@@ -81,7 +81,7 @@ describe('Context System Integration Tests', () => {
   });
 
   describe('Context Requirements Display Tests', () => {
-    test('should show required context in select_workflow for feature-development', async () => {
+    test('should show workflow overview and context guidance for feature-development', async () => {
       const result = await selectWorkflowHandler({ 
         workflow_id: 'feature-development' 
       });
@@ -90,12 +90,12 @@ describe('Context System Integration Tests', () => {
       const workflowText = result.content[0].text;
       
       expect(workflowText).toContain('Detailed Step Breakdown');
-      expect(workflowText).toContain('Required Context');
-      expect(workflowText).toContain('requirements');
-      expect(workflowText).toContain('Context Tip');
+      expect(workflowText).toContain('Context Gathering');
+      expect(workflowText).toContain('gather-requirements');
+      expect(workflowText).toContain('ask-clarifying-questions');
     }, TEST_TIMEOUT);
 
-    test('should show required context in select_workflow for trd-creation', async () => {
+    test('should show workflow overview and context guidance for trd-creation', async () => {
       const result = await selectWorkflowHandler({ 
         workflow_id: 'trd-creation' 
       });
@@ -104,11 +104,11 @@ describe('Context System Integration Tests', () => {
       const workflowText = result.content[0].text;
       
       expect(workflowText).toContain('Detailed Step Breakdown');
-      expect(workflowText).toContain('Required Context');
-      expect(workflowText).toContain('Context Tip');
+      expect(workflowText).toContain('Context Gathering');
+      expect(workflowText).toContain('create-trd');
     }, TEST_TIMEOUT);
 
-    test('should show context requirements for all workflow steps', async () => {
+    test('should show workflow overview for all major workflows', async () => {
       const workflows = ['feature-development', 'trd-creation', 'brd-creation'];
       
       for (const workflowId of workflows) {
@@ -116,9 +116,9 @@ describe('Context System Integration Tests', () => {
         const workflowText = result.content[0].text;
         
         expect(workflowText).toContain('Detailed Step Breakdown');
-        expect(workflowText).toContain('Context Tip');
+        expect(workflowText).toContain('Context Gathering');
         
-        console.log(`✅ Context requirements shown for ${workflowId}`);
+        console.log(`✅ Workflow overview shown for ${workflowId}`);
       }
     }, TEST_TIMEOUT);
   });
@@ -353,9 +353,9 @@ describe('Context System Integration Tests', () => {
     test.each(allWorkflowIds)('should handle context system for workflow: %s', async (workflowId) => {
       console.log(`\n🔄 Testing context system for ${workflowId}`);
       
-      // Test select_workflow shows context requirements
+      // Test select_workflow shows workflow overview and context guidance
       const selectResult = await selectWorkflowHandler({ workflow_id: workflowId });
-      expect(selectResult.content[0].text).toContain('Context Tip');
+      expect(selectResult.content[0].text).toContain('Context Gathering');
       
       // Test get_next_step with various contexts
       const contexts = [

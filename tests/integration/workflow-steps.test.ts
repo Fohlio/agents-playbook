@@ -144,10 +144,9 @@ describe('Workflow Steps Integration Tests', () => {
       const workflowDetails = await selectWorkflowHandler({ workflow_id: workflow });
       const workflowText = workflowDetails.content[0].text;
       
-      // Should show execution plan
-      expect(workflowText).toContain('Execution Plan');
+      // Should show workflow overview
+      expect(workflowText).toContain('Workflow Overview');
       expect(workflowText).toContain('Total Steps');
-      expect(workflowText).toContain('Executable Steps');
       
       // Test first few steps
       for (let i = 0; i < 3; i++) {

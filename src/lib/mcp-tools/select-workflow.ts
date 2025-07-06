@@ -1,9 +1,5 @@
 import { z } from 'zod';
 import { WorkflowLoader } from '../loaders/workflow-loader';
-import { SmartWorkflowEngine } from '../execution/smart-workflow-engine';
-import { DefaultMCPRegistry } from '../validation/workflow-validator';
-import { MiniPromptLoader } from '../loaders/mini-prompt-loader';
-import { ExecutionContext } from '../types/workflow-types';
 
 export const selectWorkflowToolSchema = {
   workflow_id: z.string().describe('ID of the workflow to select and analyze')
@@ -11,7 +7,29 @@ export const selectWorkflowToolSchema = {
 
 // Create shared instances
 const workflowLoader = new WorkflowLoader();
-const miniPromptLoader = new MiniPromptLoader();
+
+// Helper function to get context descriptions
+function getContextDescription(contextKey: string): string {
+  const descriptions: Record<string, string> = {
+    'bug_symptoms': 'Description of the bug behavior and symptoms',
+    'reproduction_steps': 'Steps to reproduce the issue',
+    'error_logs': 'Error messages and log files',
+    'system_logs': 'System or application logs',
+    'problem_analysis': 'Analysis of the problem and its scope',
+    'solution_approach': 'Proposed solution strategy',
+    'implemented_fix': 'Completed fix implementation',
+    'test_cases': 'Test scenarios and cases',
+    'reproduction_environment': 'Environment setup for testing',
+    'existing_code_context': 'Related code files and context',
+    'issue_description': 'Description of the issue or task',
+    'requirements': 'Project or feature requirements',
+    'technical_specs': 'Technical specifications and constraints',
+    'user_stories': 'User stories and acceptance criteria',
+    'architecture_design': 'System architecture and design',
+    'implementation_plan': 'Development implementation plan'
+  };
+  return descriptions[contextKey] || contextKey;
+}
 
 export async function selectWorkflowHandler({ workflow_id }: { workflow_id: string }) {
   try {
@@ -29,80 +47,48 @@ export async function selectWorkflowHandler({ workflow_id }: { workflow_id: stri
       };
     }
 
-    // Create execution context (assuming no MCP servers are available for now)
-    const executionContext: ExecutionContext = {
-      available_mcp_servers: [], // Will be populated based on actual environment
-      context_data: new Map(),
-      workflow_id: workflow_id,
-      current_phase: '',
-      completed_steps: [],
-      skipped_steps: []
-    };
-
-    // Create MCP registry (assuming no additional servers available)
-    const mcpRegistry = new DefaultMCPRegistry(['base']);
-
-    // Create smart workflow engine
-    const smartEngine = new SmartWorkflowEngine(
-      executionContext,
-      mcpRegistry,
-      miniPromptLoader
-    );
-
-    // Generate execution plan
-    const executionPlan = await smartEngine.planWorkflow(workflowConfig);
-
-    // Format the response
-    const phasesSummary = executionPlan.phases.map(phase => {
-      const skippedInPhase = phase.skipped_steps.length;
-      const executableInPhase = phase.executable_steps;
-      const totalInPhase = phase.total_steps;
-      const phaseRate = totalInPhase > 0 ? Math.round((executableInPhase / totalInPhase) * 100) : 0;
-      
-      let phaseStatus = '';
-      if (skippedInPhase === 0) {
-        phaseStatus = '✅ All steps executable';
-      } else if (executableInPhase === 0) {
-        phaseStatus = '⚠️ All steps will be skipped';
-      } else {
-        phaseStatus = `⚡ ${executableInPhase}/${totalInPhase} steps executable (${phaseRate}%)`;
-      }
-      
-      return `📋 **${phase.name}**: ${phaseStatus}`;
+    // Count total steps for summary
+    const totalSteps = workflowConfig.phases.reduce((sum, phase) => sum + phase.steps.length, 0);
+    
+    // Create phases overview without execution predictions
+    const phasesSummary = workflowConfig.phases.map(phase => {
+      return `📋 **${phase.name}**: ${phase.steps.length} step${phase.steps.length > 1 ? 's' : ''}`;
     }).join('\n');
 
-    // Add detailed step breakdown with context requirements
-    const stepBreakdown = executionPlan.phases.map(phase => {
+    // Create detailed step breakdown with context requirements
+    const stepBreakdown = workflowConfig.phases.map(phase => {
       const stepDetails = phase.steps.map((step, index) => {
-        const status = step.will_execute ? '✅' : '⚠️';
-        const reason = step.skip_reason ? ` (${step.skip_reason})` : '';
-        const requiredContext = step.validation.missingContext.length > 0 
-          ? `\n    📋 **Required Context:** ${step.validation.missingContext.join(', ')}`
-          : '';
-        const optionalContext = step.validation.hasOptionalContext.length > 0 
-          ? `\n    📋 **Optional Context:** ${step.validation.hasOptionalContext.join(', ')}`
-          : '';
+        // Access the actual YAML structure
+        const stepPrereqs = step.prerequisites as any;
+        const requiredContext = stepPrereqs?.requiredContext || [];
+        const optionalContext = stepPrereqs?.optionalContext || [];
         
-        return `  ${index + 1}. ${status} **${step.title}**${reason}${requiredContext}${optionalContext}`;
+        let contextInfo = '';
+        if (requiredContext.length > 0) {
+          const contextDescriptions = requiredContext.map((ctx: string) => 
+            `${ctx} (${getContextDescription(ctx)})`
+          ).join(', ');
+          contextInfo += `\n    📋 **Required:** ${contextDescriptions}`;
+        }
+        if (optionalContext.length > 0) {
+          const contextDescriptions = optionalContext.map((ctx: string) => 
+            `${ctx} (${getContextDescription(ctx)})`
+          ).join(', ');
+          contextInfo += `\n    💡 **Optional:** ${contextDescriptions}`;
+        }
+        
+        return `  ${index + 1}. **${step.id}**${contextInfo}`;
       }).join('\n');
       
       return `**${phase.name}:**\n${stepDetails}`;
     }).join('\n\n');
 
-    const skippedDetails = executionPlan.skipped_steps.length > 0 
-      ? `\n\n**⚠️ Skipped Steps (${executionPlan.skipped_steps.length}):**\n${
-          executionPlan.skipped_steps.map(skip => `• ${skip.step_title}: ${skip.reason}`).join('\n')
-        }`
-      : '';
-
-    const nextStepsInfo = executionPlan.executable_steps > 0
-      ? `\n\n**🚀 Ready to Start:**\nUse \`get_next_step\` with workflow_id="${workflow_id}" and current_step=0 to begin execution.\n\n**💡 Context Tip:** If you already have some context (like requirements, TRD, etc.), pass them in the \`available_context\` parameter to get tailored instructions.`
-      : `\n\n**❌ Cannot Execute:**\nThis workflow has no executable steps with the current configuration. Please check prerequisites or try a different workflow.\n\n**💡 Context Tip:** If you already have some context (like requirements, TRD, etc.), pass them in the \`available_context\` parameter to get tailored instructions.`;
+    const nextStepsInfo = `\n\n**🚀 Ready to Start:**\nUse \`get_next_step\` with workflow_id="${workflow_id}" and current_step=0 to begin execution.\n\n**💡 Context Gathering:** Each step will guide you on how to gather the required context. Steps may auto-skip if context is missing or not needed.`;
 
     return {
       content: [{ 
         type: "text" as const, 
-        text: `## 📋 ${workflowConfig.name}\n\n**Description:** ${workflowConfig.description}\n\n**Execution Strategy:** ${workflowConfig.execution_strategy === 'smart_skip' ? 'Smart Skip (Auto-skip missing prerequisites)' : 'Linear (All steps required)'}\n\n**📊 Execution Plan:**\n- **Total Steps:** ${executionPlan.total_steps}\n- **Executable Steps:** ${executionPlan.executable_steps}\n- **Execution Rate:** ${executionPlan.execution_rate}%\n- **Estimated Duration:** ${workflowConfig.estimated_duration}\n\n**📋 Phases Overview:**\n${phasesSummary}\n\n**📝 Detailed Step Breakdown:**\n${stepBreakdown}${skippedDetails}${nextStepsInfo}`
+        text: `## 📋 ${workflowConfig.name}\n\n**Description:** ${workflowConfig.description}\n\n**Execution Strategy:** Smart Skip (Auto-skip missing prerequisites)\n\n**📊 Workflow Overview:**\n- **Total Steps:** ${totalSteps}\n- **Estimated Duration:** ${workflowConfig.estimated_duration || 'Unknown'}\n\n**📋 Phases Overview:**\n${phasesSummary}\n\n**📝 Detailed Step Breakdown:**\n${stepBreakdown}${nextStepsInfo}`
       }],
     };
   } catch (error) {

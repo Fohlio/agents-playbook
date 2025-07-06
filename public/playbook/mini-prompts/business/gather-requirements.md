@@ -9,6 +9,13 @@ Collect comprehensive business requirements from stakeholders to ensure solution
 - Project/feature scope definition
 - Stakeholder identification
 
+## Context Gathering
+If you don't have the required context, gather it by:
+- **Project scope**: Ask user to describe the project, feature, or system being developed
+- **Stakeholder identification**: Identify who uses, manages, or is affected by the system
+- **Business objectives**: Understand the goals this project should achieve
+- **Current state**: Learn about existing systems, processes, or solutions in place
+
 ## Skip When
 - Requirements already well-documented and validated
 - Very limited project scope with obvious requirements

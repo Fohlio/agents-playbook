@@ -9,6 +9,14 @@ Identify the exact source of the reported issue through systematic analysis and 
 - Bug symptoms and reproduction steps
 - Error logs or stack traces (if available)
 
+## Context Gathering
+If you don't have the required context, gather it by:
+- **Bug symptoms**: Ask user to describe what they observe vs. what they expect
+- **Reproduction steps**: Request exact steps to reproduce the issue
+- **Error logs**: Look for error messages in console, logs, or crash reports
+- **Environment details**: Get OS, browser, version, and configuration info
+- **Recent changes**: Ask about recent deployments, updates, or modifications
+
 ## Skip When
 - Issue already has documented and verified root cause
 - Problem is intermittent and cannot be reproduced

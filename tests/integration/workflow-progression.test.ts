@@ -166,9 +166,8 @@ describe('Workflow Progression Tests', () => {
       expect(workflowResult.content).toBeDefined();
       const workflowText = workflowResult.content[0].text;
       
-      // Should show execution plan
-      expect(workflowText).toContain('Execution Plan');
-      expect(workflowText).toContain('executable');
+      // Should show workflow overview
+      expect(workflowText).toContain('Workflow Overview');
       expect(workflowText).toContain('Total Steps');
       
       // Should show phases

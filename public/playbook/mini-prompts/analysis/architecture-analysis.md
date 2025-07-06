@@ -9,6 +9,13 @@ Analyze system architecture, component relationships, and design patterns to und
 - System/feature scope for analysis
 - Codebase access and documentation
 
+## Context Gathering
+If you don't have the required context, gather it by:
+- **System scope**: Ask user which system components or layers to analyze
+- **Codebase access**: Use file system tools to explore project structure and architecture
+- **Documentation**: Look for existing architecture docs, diagrams, or design documents
+- **Analysis focus**: Understand whether focusing on scalability, performance, maintainability, or security
+
 ## Skip When
 - Very simple system with obvious architecture
 - Architecture analysis completed in previous session
