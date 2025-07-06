@@ -114,29 +114,6 @@ npm run dev
           </div>
         </section>
 
-        {/* Usage Example */}
-        <section className="py-16 bg-white">
-          <div className="max-w-4xl mx-auto px-4 text-center">
-            <h2 className="text-3xl font-bold text-gray-900 mb-8">How to use</h2>
-            <div className="text-left bg-gray-50 p-6 rounded-lg">
-              <div className="space-y-4">
-                <div>
-                  <span className="text-blue-600 font-semibold">1. Search:</span>
-                  <span className="ml-2">"fix critical production bug"</span>
-                </div>
-                <div>
-                  <span className="text-green-600 font-semibold">2. Result:</span>
-                  <span className="ml-2">quick-fix workflow (🎯 89% match)</span>
-                </div>
-                <div>
-                  <span className="text-purple-600 font-semibold">3. Execute:</span>
-                  <span className="ml-2">4 steps with smart skipping</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
         <FeaturesSection />
         <SetupSection />
       </main>
