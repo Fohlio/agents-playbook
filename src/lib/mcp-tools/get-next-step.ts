@@ -56,6 +56,24 @@ export async function getNextStepHandler({
       executionSessions.set(workflow_id, executionContext);
     }
 
+    // Update completed steps based on current_step parameter
+    // This represents the steps that the AI/Cursor has already completed
+    const completedStepsCount = Math.max(0, current_step);
+    
+    // Generate completed step IDs based on current_step
+    executionContext.completed_steps = [];
+    for (let i = 0; i < completedStepsCount; i++) {
+      executionContext.completed_steps.push(`step_${i}`);
+    }
+
+    // Update execution context with available context
+    if (available_context && available_context.length > 0) {
+      console.log(`[MCP] Updating context with available items: ${available_context.join(', ')}`);
+      for (const contextItem of available_context) {
+        executionContext.context_data.set(contextItem, `Available: ${contextItem}`);
+      }
+    }
+
     // Create MCP registry with available servers
     const mcpRegistry = new DefaultMCPRegistry(executionContext.available_mcp_servers);
 
@@ -66,12 +84,22 @@ export async function getNextStepHandler({
       miniPromptLoader
     );
 
+    // Get execution plan to understand limits
+    const executionPlan = await smartEngine.planWorkflow(workflowConfig);
+    
+    // Limit completed steps to not exceed executable steps
+    const maxCompletedSteps = Math.min(completedStepsCount, executionPlan.executable_steps);
+    executionContext.completed_steps = [];
+    for (let i = 0; i < maxCompletedSteps; i++) {
+      executionContext.completed_steps.push(`step_${i}`);
+    }
+
     // Get the next step using smart engine
     const nextStepResponse = await smartEngine.getNextStep(workflowConfig, current_step);
 
     if (!nextStepResponse) {
       // Workflow is complete
-      const executionSummary = smartEngine.getExecutionSummary();
+      const executionSummary = smartEngine.getExecutionSummary(workflowConfig);
       
       // Clean up session
       executionSessions.delete(workflow_id);
@@ -85,10 +113,13 @@ export async function getNextStepHandler({
     }
 
     if (nextStepResponse.isComplete) {
+      // Workflow is complete - return proper completion message
+      const executionSummary = smartEngine.getExecutionSummary(workflowConfig);
+      
       return {
         content: [{ 
           type: "text" as const, 
-          text: nextStepResponse.currentStep.progress
+          text: `🎉 **Workflow Complete: ${workflowConfig.name}**\n\n✅ **Summary:**\n- Completed Steps: ${executionSummary.completed}\n- Skipped Steps: ${executionSummary.skipped}\n- Completion Rate: ${Math.round(executionSummary.completionRate * 100)}%\n\n**🚀 What's Next?**\nUse \`get_available_workflows\` to find related workflows or start a new one.`
         }],
       };
     }

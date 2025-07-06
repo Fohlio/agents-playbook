@@ -287,12 +287,16 @@ export class WorkflowValidator {
    * Update execution context after step completion
    */
   updateContextAfterStep(stepId: string, outputs: Record<string, any>): void {
-    // Mark step as completed
-    this.context.completed_steps.push(stepId);
+    // Mark step as completed (avoid duplicates)
+    if (!this.context.completed_steps.includes(stepId)) {
+      this.context.completed_steps.push(stepId);
+      console.log(`[WorkflowValidator] Step completed: ${stepId}`);
+    }
     
     // Add step outputs to context
     for (const [key, value] of Object.entries(outputs)) {
       this.context.context_data.set(key, value);
+      console.log(`[WorkflowValidator] Added context: ${key} = ${value}`);
     }
   }
 }

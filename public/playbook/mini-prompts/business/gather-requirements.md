@@ -20,6 +20,32 @@ Collect comprehensive business requirements from stakeholders to ensure solution
 ## Task Understanding Assessment
 If task unclear - ask clarifying questions with multiple choice options
 
+## Context Assessment
+
+**Before proceeding with requirements gathering, let's check what documentation already exists:**
+
+### Existing Documentation
+- **Do you already have requirements documentation?**
+  A) Complete requirements document exists B) Partial/draft requirements available C) Only high-level notes/ideas D) Starting completely from scratch
+
+- **What existing project documents are available?**
+  A) Business requirements document B) Technical specifications C) User stories/epics D) Meeting notes/emails E) No existing documentation
+
+- **Are there related documents I should reference?**
+  A) Similar project requirements B) System architecture docs C) API documentation D) User research/feedback E) No related documents
+
+### Document Generation Support
+- **How would you like me to help with requirements?**
+  A) Create complete requirements from your description B) Structure and organize existing notes C) Generate template for you to complete D) Review and improve existing requirements
+
+- **What level of detail do you need?**
+  A) High-level feature overview B) Detailed functional specifications C) Complete technical requirements D) MVP scope definition
+
+- **Should I generate missing supporting documents?**
+  A) Yes, create any needed supporting docs B) Focus only on core requirements C) I'll provide additional context as needed
+
+**If documents don't exist, I can help generate them based on your input. If they exist but need improvement, I can help structure and enhance them.**
+
 ## Requirement Categories
 
 ### Functional Requirements

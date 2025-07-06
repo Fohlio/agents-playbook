@@ -150,12 +150,14 @@ describe('MCP Tools Integration Tests', () => {
     test('should return next step for feature-development workflow', async () => {
       const result = await getNextStepHandler({ 
         workflow_id: 'feature-development',
-        current_step: 1
+        current_step: 1,
+        available_context: ['requirements'] // Provide required context
       });
 
       expect(result.content).toBeDefined();
-      // Should either show step or completion status
-      expect(result.content[0].text).toMatch(/(Step|complete)/);
+      // Should either show step or completion status, but NOT 100% complete
+      expect(result.content[0].text).toMatch(/(Step|complete|Phase)/);
+      expect(result.content[0].text).not.toContain('100% complete');
     }, TEST_TIMEOUT);
 
     test('should handle completion state for workflow', async () => {
@@ -165,7 +167,7 @@ describe('MCP Tools Integration Tests', () => {
       });
 
       expect(result.content).toBeDefined();
-      expect(result.content[0].text).toContain('complete');
+      expect(result.content[0].text).toContain('Complete');
     }, TEST_TIMEOUT);
 
     test('should handle invalid workflow ID in get_next_step', async () => {

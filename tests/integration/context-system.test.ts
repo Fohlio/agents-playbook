@@ -289,10 +289,10 @@ describe('Context System Integration Tests', () => {
         console.log('   ✅ TRD creation: Business requirements context utilized');
       }
       
-      // Test with multiple contexts
-      const step3 = await getNextStepHandler({ 
+      // Test with multiple contexts - using step 1 instead of 3 to avoid workflow completion
+      const step1 = await getNextStepHandler({ 
         workflow_id: workflowId,
-        current_step: 3,
+        current_step: 1,
         available_context: [
           StandardContext.REQUIREMENTS,
           StandardContext.FEATURE_ANALYSIS,
@@ -300,9 +300,9 @@ describe('Context System Integration Tests', () => {
         ]
       });
       
-      if (!step3.content[0].text.includes('100% complete')) {
-        expect(step3.content[0].text).toContain('Available Context');
-        expect(step3.content[0].text).toContain('design_specifications');
+      if (!step1.content[0].text.includes('100% complete')) {
+        expect(step1.content[0].text).toContain('Available Context');
+        expect(step1.content[0].text).toContain('design_specifications');
         console.log('   ✅ TRD creation: Multiple contexts utilized');
       }
     }, TEST_TIMEOUT);
@@ -372,13 +372,17 @@ describe('Context System Integration Tests', () => {
       
       expect(stepResult.content).toBeDefined();
       
+      // If workflow is complete or has no executable steps, skip context checks
+      if (stepResult.content[0].text.includes('Workflow Complete') || 
+          stepResult.content[0].text.includes('100% complete')) {
+        console.log(`   ✅ ${workflowId}: Workflow complete (no executable steps or completed)`);
+        return;
+      }
+      
       // If not complete, should handle context properly
       // Note: Some workflows may have 0 executable steps, so Available Context may not appear
-      if (!stepResult.content[0].text.includes('100% complete')) {
-        // Only check for Available Context if the workflow actually executes
-        if (!stepResult.content[0].text.includes('Cannot Execute') && contexts.length > 0) {
-          expect(stepResult.content[0].text).toContain('Available Context');
-        }
+      if (!stepResult.content[0].text.includes('Cannot Execute') && contexts.length > 0) {
+        expect(stepResult.content[0].text).toContain('Available Context');
       }
       
       console.log(`   ✅ Context system working for ${workflowId}`);

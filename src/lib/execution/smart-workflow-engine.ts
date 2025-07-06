@@ -153,21 +153,24 @@ export class SmartWorkflowEngine {
   /**
    * Get current execution summary
    */
-  getExecutionSummary(): {
+  getExecutionSummary(workflow?: WorkflowConfig): {
     completed: number;
     skipped: number;
     remaining: number;
     completionRate: number;
   } {
-    const plan = this.validator.planWorkflowExecution(
-      {} as WorkflowConfig // This should be the current workflow
-    );
+    let executableSteps = 1; // Default to 1 to avoid division by zero
+    
+    if (workflow) {
+      const plan = this.validator.planWorkflowExecution(workflow);
+      executableSteps = plan.executable_steps;
+    }
     
     return {
       completed: this.context.completed_steps.length,
       skipped: this.context.skipped_steps.length,
-      remaining: plan.executable_steps - this.context.completed_steps.length,
-      completionRate: this.context.completed_steps.length / plan.executable_steps
+      remaining: Math.max(0, executableSteps - this.context.completed_steps.length),
+      completionRate: this.context.completed_steps.length / executableSteps
     };
   }
 

@@ -17,8 +17,8 @@ phases:
         miniPrompt: "development/ask-clarifying-questions"
         required: true
         prerequisites:
-          requiredContext: ["issue_description"]
-          optionalContext: ["error_logs", "reproduction_steps"]
+          requiredContext: []
+          optionalContext: ["issue_description", "error_logs", "reproduction_steps"]
 
   - phase: "analysis"
     description: "Root cause analysis for the issue"
