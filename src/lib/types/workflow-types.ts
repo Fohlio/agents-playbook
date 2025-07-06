@@ -1,6 +1,61 @@
 // Types for the new three-level smart workflow architecture
 // Workflow → Phases → Steps with smart validation and skipping
 
+// Standard context types based on analysis of all workflow files
+export enum StandardContext {
+  // Requirements and Planning
+  REQUIREMENTS = "requirements",
+  CLARIFIED_REQUIREMENTS = "clarified_requirements",
+  BUSINESS_REQUIREMENTS = "business_requirements",
+  PRODUCT_VISION = "product_vision",
+  PROJECT_VISION = "project_vision",
+  
+  // Analysis
+  FEATURE_ANALYSIS = "feature_analysis",
+  ARCHITECTURE_ANALYSIS = "architecture_analysis",
+  CODE_ANALYSIS = "code_analysis",
+  TECHNICAL_REQUIREMENTS = "technical_requirements",
+  BUSINESS_ANALYSIS = "business_analysis",
+  
+  // Design
+  DESIGN_SPECIFICATIONS = "design_specifications",
+  TECHNICAL_ARCHITECTURE = "technical_architecture",
+  IMPLEMENTATION_PLAN = "implementation_plan",
+  REFACTORING_DESIGN = "refactoring_design",
+  
+  // Implementation
+  IMPLEMENTED_FEATURE = "implemented_feature",
+  IMPLEMENTED_FEATURES = "implemented_features",
+  REFACTORED_CODE = "refactored_code",
+  COMPLETED_FEATURE = "completed_feature",
+  
+  // Testing
+  TEST_PLAN = "test_plan",
+  TESTED_FEATURE = "tested_feature",
+  VALIDATED_PRODUCT = "validated_product",
+  
+  // Documentation
+  TRD = "trd",
+  BRD_DOCUMENT = "brd_document",
+  COMPLETED_TRD = "completed_trd",
+  DOCUMENTATION = "documentation",
+  
+  // Project Context
+  PROJECT_CODEBASE = "project_codebase",
+  EXISTING_CODEBASE = "existing_codebase",
+  SYSTEM_ARCHITECTURE = "system_architecture",
+  PROJECT_NAVIGATION = "project_navigation",
+  
+  // Deployment
+  DEPLOYED_APPLICATION = "deployed_application",
+  DEPLOYMENT_ENVIRONMENT = "deployment_environment",
+  
+  // Special cases
+  ISSUE_DESCRIPTION = "issue_description",
+  BUG_SYMPTOMS = "bug_symptoms",
+  INFRASTRUCTURE_REQUIREMENTS = "infrastructure_requirements"
+}
+
 export interface WorkflowConfig {
   name: string;
   description: string;
@@ -92,6 +147,24 @@ export interface WorkflowStep {
   skipIfMissing: string[];
 }
 
+// Context management types
+export interface ContextInfo {
+  key: string;
+  description: string;
+  category: 'requirements' | 'analysis' | 'design' | 'implementation' | 'testing' | 'documentation' | 'project' | 'deployment';
+  isOptional?: boolean;
+}
+
+export interface StepContextRequirements {
+  required: string[];
+  optional?: string[];
+}
+
+export interface WorkflowStepWithContext extends WorkflowStep {
+  contextRequirements: StepContextRequirements;
+  availableContext?: string[];
+}
+
 // Execution responses for MCP tools
 
 export interface GetNextStepResponse {
@@ -108,6 +181,8 @@ export interface GetNextStepResponse {
     validation: StepValidation;
     progress: string;
     note?: string;
+    contextRequirements?: StepContextRequirements;
+    availableContext?: string[];
   };
   skippedSteps: SkippedStep[];
   isComplete: boolean;
