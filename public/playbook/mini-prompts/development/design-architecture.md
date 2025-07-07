@@ -35,7 +35,8 @@ Craft a rock-solid solution architecture that meets all requirements—no fluff.
   - [ ] Threat model, data protection, compliance hits  
 
 ## 📤 Output
-**File:** `docs/planning/[feature-name]-architecture-design.md`
+1. Gather insights from the user directly
+2. Fill in **File:** `docs/planning/[feature-name]-architecture-design.md`
 
 Sections:
 1. **Executive Summary** – TL;DR of the solution  

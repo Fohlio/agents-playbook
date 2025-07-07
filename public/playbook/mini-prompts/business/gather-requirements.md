@@ -32,6 +32,8 @@ Extract crystal-clear business requirements and lock them down—no fluff.
   - [ ] Unique IDs, priority (MoSCoW), acceptance criteria, dependencies  
 
 ## 📤 Output
+1. Gather insights from the user directly
+2. Fill in **File:** `docs/planning/[feature-name]-requirements.md`
 **File:** `docs/planning/[feature-name]-requirements.md`  
 Sections (in order):
 1. **Executive Summary** – goals & scope  

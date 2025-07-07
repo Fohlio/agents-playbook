@@ -30,7 +30,8 @@ Ship the feature per specs with clean, secure, performant code—no fluff.
 Repository • Service • Factory • Middleware • Decorator • Observer
 
 ## 📤 Output
-**File:** `docs/planning/[feature-name]-implementation-plan.md`
+1. Gather insights from the user directly
+2. Fill in **File:** `docs/planning/[feature-name]-implementation-plan.md`
 
 Sections:
 1. **Summary** – feature scope & branch.  

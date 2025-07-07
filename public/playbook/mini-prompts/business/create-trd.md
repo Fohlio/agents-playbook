@@ -38,7 +38,9 @@ Turn business needs into a tech-ready TRD, ready for devs to pick up—no fluff.
 - **Dev Standards**  
   - [ ] Code style, testing, error handling patterns  
 
-## 📤 Outputs (to `docs/planning/[feature-name]-trd.md`)
+## 📤 Outputs
+1. Gather insights from the user directly
+2. Fill in **File:** `docs/planning/[feature-name]-trd.md`
 - complete doc covering all sections above and also:
 - Diagrams: architecture & data (PlantUML/Mermaid inline)  
 - endpoint table + examples  

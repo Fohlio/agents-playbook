@@ -46,7 +46,8 @@ Always give multiple-choice or concrete examples so stakeholders can click, not 
   - Desired end state?
 
 ## 📤 Output
-**File:** `docs/planning/[feature-name]-clarified-requirements.md`
+1. Gather insights from the user directly
+2. Fill in **File:** `docs/planning/[feature-name]-clarified-requirements.md`
 
 Sections:
 1. **Summary** – task/problem in plain English  

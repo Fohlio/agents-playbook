@@ -31,7 +31,10 @@ Map the project’s structure, patterns, and tech stack, then generate AGENTS.MD
 - **Stack Map**  
   - [ ] Front-end, back-end, data stores, DevOps, testing tools  
 
-## 📤 Outputs (to `docs/planning/project-navigation.md`), which includes:
+## 📤 Outputs
+1. Gather insights from the user directly
+2. Fill in **File:** `docs/planning/project-navigation.md`
+Structure:
   - directory tree + purpose  
   - patterns & conventions  
   - what to avoid  
