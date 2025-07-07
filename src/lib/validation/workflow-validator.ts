@@ -49,29 +49,19 @@ export class WorkflowValidator {
       step.prerequisites.optional || []
     );
 
-    // Check skip conditions
-    const skipCheck = this.checkSkipConditions(step.skipIfMissing || []);
-    if (skipCheck.shouldSkip) {
-      validation.skipReasons = skipCheck.reasons;
-    }
+    // Steps should always be executable unless MCP servers are missing
+    // Context missing is not a reason to skip automatically
+    validation.canExecute = validation.hasRequiredMCP;
 
-    // Determine if can execute
-    validation.canExecute = 
-      validation.hasRequiredMCP && 
-      validation.hasRequiredContext && 
-      !skipCheck.shouldSkip;
-
-    // Add skip reasons for missing prerequisites
+    // Add skip reasons for missing MCP servers only
     if (!validation.hasRequiredMCP) {
       validation.skipReasons.push(
         ...validation.missingMCP.map(mcp => `Missing MCP server: ${mcp}`)
       );
     }
-    if (!validation.hasRequiredContext) {
-      validation.skipReasons.push(
-        ...validation.missingContext.map(ctx => `Missing context: ${ctx}`)
-      );
-    }
+
+    // Note: Missing context is not a reason to skip steps automatically
+    // Steps should provide guidance on gathering missing context
 
     return validation;
   }
@@ -117,17 +107,17 @@ export class WorkflowValidator {
     };
 
     for (const stepConfig of phaseConfig.steps) {
-      // Create mock WorkflowStep for validation
-      const mockStep: WorkflowStep = {
-        id: stepConfig.id,
-        miniPrompt: {} as MiniPrompt, // Will be loaded separately
-        phase: phaseConfig.name,
-        stepNumber: 0, // Will be set later
-        totalSteps: 0, // Will be set later
-        validation: {} as StepValidation, // Will be set below
-        prerequisites: stepConfig.prerequisites,
-        skipIfMissing: stepConfig.skip_if_missing || []
-      };
+              // Create mock WorkflowStep for validation
+        const mockStep: WorkflowStep = {
+          id: stepConfig.id,
+          miniPrompt: {} as MiniPrompt, // Will be loaded separately
+          phase: phaseConfig.name,
+          stepNumber: 0, // Will be set later
+          totalSteps: 0, // Will be set later
+          validation: {} as StepValidation, // Will be set below
+          prerequisites: stepConfig.prerequisites,
+          skipConditions: stepConfig.skip_conditions || []
+        };
 
       const validation = this.validateStep(mockStep);
       
@@ -181,7 +171,7 @@ export class WorkflowValidator {
           totalSteps: this.getTotalExecutableSteps(workflow),
           validation: {} as StepValidation,
           prerequisites: stepConfig.prerequisites,
-          skipIfMissing: stepConfig.skip_if_missing || []
+          skipConditions: stepConfig.skip_conditions || []
         };
 
         const validation = this.validateStep(workflowStep);
@@ -244,20 +234,21 @@ export class WorkflowValidator {
   }
 
   /**
-   * Check skip conditions
+   * Check skip conditions - these are positive conditions that suggest skipping
+   * when present (not when missing)
    */
-  private checkSkipConditions(skipIfMissing: string[]): {
-    shouldSkip: boolean;
+  checkSkipSuggestions(skipConditions: string[]): {
+    canSkip: boolean;
     reasons: string[];
   } {
-    const missing = skipIfMissing.filter(item => 
-      !this.context.context_data.has(item) && 
-      !this.mcpRegistry.isAvailable(item)
+    const presentConditions = skipConditions.filter(condition => 
+      this.context.context_data.has(condition) || 
+      this.mcpRegistry.isAvailable(condition)
     );
 
     return {
-      shouldSkip: missing.length > 0,
-      reasons: missing.map(item => `Missing: ${item}`)
+      canSkip: presentConditions.length > 0,
+      reasons: presentConditions.map(condition => `${condition} is already available`)
     };
   }
 

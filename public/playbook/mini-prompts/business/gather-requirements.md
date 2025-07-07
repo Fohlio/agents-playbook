@@ -3,6 +3,19 @@
 ## 🎯 Goal
 Extract crystal-clear business requirements and lock them down—no fluff.
 
+## 📋 Context Assessment
+Before gathering requirements, assess the existing documentation and project context:
+
+### Existing Documentation
+- **Current State:** Check for existing BRD, user stories, technical specs, or project notes
+- **Documentation Quality:** Evaluate completeness and currency of available documents
+- **Gap Analysis:** Identify missing information that needs to be gathered
+
+### Document Generation Support
+- **Requirements Format:** Determine appropriate format for requirements documentation
+- **Stakeholder Alignment:** Ensure requirements documentation meets team needs
+- **Integration Points:** Consider how requirements documentation fits into overall project documentation
+
 ## 📥 Context (ask if missing)
 1. **Project Scope** – what’s being built?
 2. **Stakeholders** – who uses / owns / supports this?
@@ -33,7 +46,8 @@ Extract crystal-clear business requirements and lock them down—no fluff.
 
 ## 📤 Output
 1. Gather insights from the user directly
-2. Fill in **File:** `docs/planning/[feature-name]-requirements.md`
+2. Generate comprehensive requirements documentation
+3. Fill in **File:** `docs/planning/[feature-name]-requirements.md`
 **File:** `docs/planning/[feature-name]-requirements.md`  
 Sections (in order):
 1. **Executive Summary** – goals & scope  

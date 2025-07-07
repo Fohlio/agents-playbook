@@ -151,6 +151,16 @@ export class SmartWorkflowEngine {
   }
 
   /**
+   * Get skip suggestions based on skip conditions
+   */
+  getSkipSuggestions(skipConditions: string[], context: ExecutionContext): {
+    canSkip: boolean;
+    reasons: string[];
+  } {
+    return this.validator.checkSkipSuggestions(skipConditions);
+  }
+
+  /**
    * Get current execution summary
    */
   getExecutionSummary(workflow?: WorkflowConfig): {
@@ -200,7 +210,7 @@ export class SmartWorkflowEngine {
         totalSteps: 0,
         validation: {} as any,
         prerequisites: stepConfig.prerequisites,
-        skipIfMissing: stepConfig.skip_if_missing || []
+                  skipConditions: stepConfig.skip_conditions || []
       };
 
       const validation = this.validator.validateStep(mockStep);

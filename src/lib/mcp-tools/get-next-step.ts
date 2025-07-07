@@ -139,7 +139,30 @@ export async function getNextStepHandler({
       validation.skipReasons.forEach(reason => {
         stepContent += `- ${reason}\n`;
       });
-      stepContent += `\nThis step will be automatically skipped. Proceeding to next step...\n\n`;
+      stepContent += `\nThis step cannot be executed due to missing MCP servers. Please install required servers first.\n\n`;
+    }
+
+    // Add skip suggestions if applicable
+    if (currentStep.miniPrompt.skip_conditions && currentStep.miniPrompt.skip_conditions.length > 0) {
+      const skipSuggestions = smartEngine.getSkipSuggestions(currentStep.miniPrompt.skip_conditions, executionContext);
+      if (skipSuggestions.canSkip) {
+        stepContent += `💡 **Skip Suggestion:**\n`;
+        stepContent += `This step can be skipped because:\n`;
+        skipSuggestions.reasons.forEach((reason: string) => {
+          stepContent += `- ${reason}\n`;
+        });
+        stepContent += `\n*You can proceed to the next step if you agree with this suggestion.*\n\n`;
+      }
+    }
+
+    // Add context guidance if missing required context
+    if (validation.missingContext.length > 0) {
+      stepContent += `📋 **Required Context:**\n`;
+      stepContent += `This step requires the following context to be gathered:\n`;
+      validation.missingContext.forEach((ctx: string) => {
+        stepContent += `- **${ctx}**: Please gather or create this context before proceeding\n`;
+      });
+      stepContent += `\n*Note: Missing context doesn't prevent execution - the step will guide you on gathering it.*\n\n`;
     }
 
     // Add context information section
@@ -157,7 +180,7 @@ export async function getNextStepHandler({
     stepContent += `## 📋 Mini-Prompt Instructions\n\n`;
     
     // Add general instructions about waiting for user answers
-    stepContent += `**🔄 General Instructions:**\n⚠️ **IMPORTANT:** For steps requiring user input, analysis, or answers:\n1. **First**: Try to find answers yourself using available tools, context, codebase search, and documentation\n2. **Then**: Present your findings to the user for validation and confirmation\n3. **Wait**: Do not proceed to the next step until the user validates your findings or provides corrections\n\n`;
+    stepContent += `**🔄 General Instructions:**\n⚠️ **IMPORTANT:** For steps requiring user input, analysis, or answers:\n1. **First**: Try to find answers yourself using available tools, context, codebase search, and documentation\n2. **Then**: Present your findings to the user for validation and confirmation\n3. **Wait**: Do not proceed to the next step until the user validates your findings or provides corrections\n\n**📋 Context Gathering:**\nIf this step requires specific context that you don't have, gather it by:\n- Using codebase search to find relevant files and information\n- Reading existing documentation and project files\n- Analyzing the current project structure and setup\n- Asking targeted questions when automated gathering isn't sufficient\n\n`;
     
     // Modify mini-prompt content based on available context
     let modifiedContent = miniPrompt.fullContent;

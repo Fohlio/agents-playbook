@@ -78,7 +78,7 @@ export interface StepConfig {
   required?: boolean;
   context?: string; // optional context override
   prerequisites: StepPrerequisites;
-  skip_if_missing?: string[]; // conditions for auto-skipping
+  skip_conditions?: string[]; // conditions that suggest skipping when present
 }
 
 export interface StepPrerequisites {
@@ -144,7 +144,7 @@ export interface WorkflowStep {
   totalSteps: number;
   validation: StepValidation;
   prerequisites: StepPrerequisites;
-  skipIfMissing: string[];
+  skipConditions: string[];
 }
 
 // Context management types

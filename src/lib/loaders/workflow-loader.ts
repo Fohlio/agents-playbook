@@ -208,7 +208,7 @@ export class WorkflowLoader {
           context: yamlStep.prerequisites?.requiredContext || [],
           optional: yamlStep.prerequisites?.optionalContext || []
         },
-        skip_if_missing: yamlStep.prerequisites?.skipConditions || []
+        skip_conditions: yamlStep.prerequisites?.skipConditions || []
       };
 
       return stepConfig;

@@ -33,7 +33,7 @@ Map the project’s structure, patterns, and tech stack, then generate AGENTS.MD
 
 ## 📤 Outputs
 1. Gather insights from the user directly
-2. Fill in **File:** `docs/planning/project-navigation.md`
+2. Fill in **File:** `docs/project-navigation.md`
 Structure:
   - directory tree + purpose  
   - patterns & conventions  
