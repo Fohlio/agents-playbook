@@ -88,7 +88,7 @@ export async function selectWorkflowHandler({ workflow_id }: { workflow_id: stri
     return {
       content: [{ 
         type: "text" as const, 
-        text: `## 📋 ${workflowConfig.name}\n\n**Description:** ${workflowConfig.description}\n\n**Execution Strategy:** Smart Skip (Auto-skip missing prerequisites)\n\n**📊 Workflow Overview:**\n- **Total Steps:** ${totalSteps}\n- **Estimated Duration:** ${workflowConfig.estimated_duration || 'Unknown'}\n\n**📋 Phases Overview:**\n${phasesSummary}\n\n**📝 Detailed Step Breakdown:**\n${stepBreakdown}${nextStepsInfo}`
+        text: `## 📋 ${workflowConfig.name}\n\n**Description:** ${workflowConfig.description}\n\n**Execution Strategy:** Smart Skip (Auto-skip missing prerequisites)\n\n**🔄 General Instructions:**\n⚠️ **IMPORTANT:** For steps requiring user input, analysis, or answers:\n1. **First**: Try to find answers yourself using available tools, context, codebase search, and documentation\n2. **Then**: Present your findings to the user for validation and confirmation\n3. **Wait**: Do not proceed to the next step until the user validates your findings or provides corrections\n\n**📊 Workflow Overview:**\n- **Total Steps:** ${totalSteps}\n- **Estimated Duration:** ${workflowConfig.estimated_duration || 'Unknown'}\n\n**📋 Phases Overview:**\n${phasesSummary}\n\n**📝 Detailed Step Breakdown:**\n${stepBreakdown}${nextStepsInfo}`
       }],
     };
   } catch (error) {
