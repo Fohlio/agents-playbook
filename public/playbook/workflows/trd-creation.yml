@@ -25,7 +25,7 @@ phases:
         required: true
         prerequisites:
           requiredContext: ["requirements"]
-          optionalContext: ["stakeholder_contact_info", "business_context"]
+          optionalContext: ["business_context"]
         dependencies: ["gather-requirements"]
 
   - phase: "analysis"
@@ -71,15 +71,6 @@ phases:
           requiredContext: ["design_specifications", "technical_analysis"]
           optionalContext: ["architectural_decisions", "trade_off_analysis"]
         dependencies: ["design-architecture"]
-        
-      - id: "stakeholder-approval"
-        miniPrompt: "business/stakeholder-approval"
-        required: false
-        prerequisites:
-          requiredContext: ["completed_trd", "documentation"]
-          optionalContext: ["stakeholder_feedback"]
-          skipConditions: ["internal_project", "no_formal_approval_needed"]
-        dependencies: ["document-decisions"]
 
 # Workflow-level configurations
 skipConditions:

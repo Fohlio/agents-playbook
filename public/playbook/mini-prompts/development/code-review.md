@@ -1,120 +1,63 @@
-# Code Review
+# Code Review Prompt (v2)
 
-## Goal
-Review implemented code for quality, security, performance, and adherence to standards before considering the implementation complete.
+## 🎯 Goal
+Audit the finished code for quality, security, performance, and standards, then hand back a crisp report—no fluff.
 
-**📁 Document Location**: Create code review reports in `docs/planning/` directory.
+## 📥 Context (ask if missing)
+1. **Code Branch / PR** – where’s the diff?
+2. **Requirements / Specs** – doc or ticket link.
+3. **Known Constraints** – perf targets, security mandates, style guide, etc.
+4. **Deadline** – when do devs need feedback?
 
-## Context Required
-- Completed implementation
-- Original requirements and design specifications
+## 🚦 Skip if
+- Only trivial config tweaks **or** review already done.
 
-## Skip When
-- Trivial changes with no impact on functionality
-- Emergency hotfix where review delay is not acceptable
-- Code was reviewed in previous session
-- Simple configuration changes only
+## 🔍 Checklist
+- **Functional**  
+  - [ ] Implements all requirements & edge cases  
 
-## Complexity Assessment
-- **Task Complexity**: Medium - requires code analysis and quality assessment skills
+- **Quality**  
+  - [ ] Readable, DRY, follows style guide  
+  - [ ] No dead code / duplication  
 
-## Task Understanding Assessment
-If task unclear - ask clarifying questions with multiple choice options
+- **Security**  
+  - [ ] Input validation / sanitization  
+  - [ ] Secrets handled via env/secret manager  
+  - [ ] AuthN/Z correct  
 
-## Review Categories
+- **Performance**  
+  - [ ] No obvious bottlenecks or N+1 queries  
+  - [ ] Memory & CPU use sane  
 
-### Functional Correctness
-- Does the code implement all required features?
-- Are all acceptance criteria met?
-- Do the implemented functions work as designed?
-- Are edge cases properly handled?
+- **Error Handling**  
+  - [ ] Graceful exceptions, helpful logs  
 
-### Code Quality
-- Is the code readable and well-organized?
-- Are functions and variables named clearly?
-- Is the code properly commented?
-- Are coding standards followed?
-- Is there unnecessary code duplication?
+- **Testing**  
+  - [ ] Adequate unit / integration coverage  
+  - [ ] Tests pass and are maintainable  
 
-### Security Review
-- Are all inputs validated and sanitized?
-- Is sensitive data handled securely?
-- Are authentication and authorization implemented correctly?
-- Are there any potential security vulnerabilities?
-- Are secrets and credentials properly managed?
+## 📤 Output
+**File:** `docs/planning/[feature-name]-code-review.md`
 
-### Performance Analysis
-- Are there any obvious performance bottlenecks?
-- Are database queries optimized?
-- Is memory usage reasonable?
-- Are expensive operations cached where appropriate?
-- Will the code scale with increased load?
+Structure:
+1. **Summary** – 🚦 Approved / Approved-with-changes / Needs-rework  
+2. **Issue Table**  
 
-### Error Handling
-- Are all error scenarios handled appropriately?
-- Are error messages helpful and informative?
-- Is logging implemented for debugging purposes?
-- Are exceptions handled gracefully?
-- Is there proper cleanup in error scenarios?
+| Severity | File/Line | Issue | Recommendation |
+|----------|-----------|-------|----------------|
+| Critical | `auth.go:42` | SQL injection risk | Use prepared stmt |
 
-### Testing Quality
-- Is test coverage adequate for the new code?
-- Do tests cover both positive and negative scenarios?
-- Are tests maintainable and reliable?
-- Do integration tests verify component interactions?
+3. **Security Findings** – bullets  
+4. **Performance Notes** – bullets  
+5. **Quality & Style** – highlights + nitpicks  
+6. **Test Coverage** – % plus missing cases  
+7. **Next Steps** – who fixes what by when  
 
-## Review Severity Levels
-
-### Critical Issues
-- Security vulnerabilities
-- Data corruption risks
-- System stability threats
-- Functional failures in core features
-
-### Major Issues
-- Performance problems
-- Poor error handling
-- Significant code quality issues
-- Missing important functionality
-
-### Minor Issues
-- Code style violations
-- Documentation gaps
-- Minor optimization opportunities
-- Naming convention inconsistencies
-
-## Review Process
-1. **Review code structure and organization** - check overall architecture and organization
-2. **Verify requirements fulfillment** - ensure all requirements are implemented correctly
-3. **Check code quality and standards** - review for coding standards compliance
-4. **Analyze security implications** - look for security vulnerabilities and best practices
-5. **Review performance considerations** - identify potential performance issues
-6. **Validate error handling** - ensure proper error handling and edge cases
-7. **Check testing coverage** - review test quality and coverage
-8. **Document findings and recommendations** - create actionable feedback
-
-## Key Review Areas
-- **Architecture & Design** - follows established architecture and design patterns
-- **Code Quality** - readable, well-structured, properly commented
-- **Security** - input validation, authentication, data protection
-- **Performance** - no bottlenecks, optimized queries, efficient algorithms
-- **Error Handling** - comprehensive error scenarios, proper exception handling
-- **Testing** - adequate coverage, edge cases, maintainable tests
-
-## Success Criteria
-- All critical and major issues identified and documented
-- Code meets established quality standards
-- Security best practices followed
-- Performance requirements addressed
-- Error handling is comprehensive
-- Code is maintainable and readable
-- Documentation is adequate and accurate
-
-## Key Outputs
-- Code review report with findings
-- List of issues categorized by severity (critical, major, minor)
-- Recommended improvements and optimizations
-- Security assessment results
-- Performance analysis summary
-- Code quality metrics and recommendations
-- Approval status (approved, approved with changes, needs rework) 
+## ➡️ Response Flow
+```mermaid
+flowchart LR
+    U[User] -->|PR ready| A[Review Engine]
+    A --> B{Need more context?}
+    B -- Yes --> C[Ask for branch / specs]
+    B -- No --> D[Run review]
+    D --> E[Write code_review.md]

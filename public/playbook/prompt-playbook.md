@@ -30,7 +30,6 @@ Use the **AI-powered semantic search** MCP server to find workflows instantly:
 #### 📋 Business Phase
 - **gather-requirements** - Requirements collection and stakeholder analysis
 - **document-decisions** - Decision documentation and architectural rationale
-- **stakeholder-approval** - Stakeholder review, sign-off, and approval processes
 - **create-trd** - Technical Requirements Document creation with TRD integration 
 
 #### 🔍 Analysis Phase  

@@ -1,72 +1,54 @@
-# Create Test Plan
+# Create Test Plan Prompt (v2)
 
-## Goal
-Create comprehensive test strategy covering functional, non-functional, and regression testing requirements.
+## 🎯 Goal
+Define a full-stack test strategy—functional, non-functional, regression—so nothing slips to prod.
 
-**📁 Document Location**: Create test plan documents in `docs/planning/` directory.
+## 📥 Context (ask if missing)
+1. **Requirements / Specs** – link or path.
+2. **Architecture Map** – components & integrations.
+3. **Tools / Env** – CI, frameworks, staging env, data masks.
+4. **Timeline / Release Date** – when QA gates slam shut.
 
-## Context Required
-- Requirements document or specifications
-- System architecture and components
-- Available testing tools and environment
+## 🚦 Skip if
+- A current test plan covers this scope (<30 days) or change is trivial/emergency.
 
-## Skip When
-- Test plan already exists and covers scope
-- Simple changes not requiring formal testing
-- Emergency fixes with deferred testing
+## 🔍 Checklist
+- **Scope**  
+  - [ ] Features in/out, env details, test data plan  
 
-## Complexity Assessment
-- **Task Complexity**: Medium-High - requires testing strategy and planning skills
+- **Test Types & Levels**  
+  - [ ] Unit ↔ Component ↔ Integration ↔ System ↔ Acceptance  
+  - [ ] Perf, Security, Regression tagged  
 
-## Task Understanding Assessment
-If task unclear - ask clarifying questions with multiple choice options
+- **Execution**  
+  - [ ] Manual vs Automated split  
+  - [ ] CI/CD hooks, schedule & milestones  
+  - [ ] Entry / Exit criteria for each phase  
 
-## Test Strategy Framework
+- **Risk & Mitigation**  
+  - [ ] High, Med, Low areas flagged  
+  - [ ] Mitigation / contingency steps  
 
-### Test Types
-- **Unit Tests** - individual components, business logic, edge cases
-- **Integration Tests** - component interactions, API contracts, data flow
-- **System Tests** - end-to-end workflows, user scenarios, acceptance criteria
-- **Performance Tests** - load, stress, scalability, response times
-- **Security Tests** - authentication, authorization, data protection, vulnerabilities
-- **Regression Tests** - existing functionality, backward compatibility
+- **Resources**  
+  - [ ] People, tools, infra, data seeding  
 
-### Test Levels
-- **Component Level** - isolated unit testing, mocking dependencies
-- **Integration Level** - service interactions, database integration
-- **System Level** - complete workflows, user acceptance testing
-- **Acceptance Level** - business criteria, stakeholder validation
+## 📤 Output
+**File:** `docs/planning/[feature-name]-test-plan.md`
 
-## Test Planning Elements
+Sections:
+1. **Executive Summary** – what, why, timeline  
+2. **Test Scope** – in / out, env, data  
+3. **Strategy Matrix** – table mapping test types ↔ levels  
+4. **Execution Plan** – who, what, when, automation hooks  
+5. **Risk Assessment** – ranked list + mitigations  
+6. **Resources & Tools** – allocations & licenses  
+7. **Entry / Exit Criteria** – per phase  
+8. **Revision Log** – date, author, change summary  
 
-### Test Scope
-- **In Scope** - features, components, integrations to test
-- **Out of Scope** - explicitly excluded areas
-- **Test Environment** - development, staging, production-like setup
-- **Test Data** - realistic datasets, edge cases, boundary conditions
-
-### Test Execution
-- **Manual Testing** - exploratory, user experience, complex scenarios
-- **Automated Testing** - regression, performance, CI/CD integration
-- **Test Schedule** - phases, milestones, dependencies
-- **Entry/Exit Criteria** - when to start/stop testing phases
-
-### Risk Assessment
-- **High Risk Areas** - critical functionality, complex integrations
-- **Medium Risk Areas** - standard features, known patterns
-- **Low Risk Areas** - simple changes, well-tested components
-
-## Key Outputs
-- Comprehensive test plan document
-- Test case specifications and scripts
-- Test environment requirements
-- Test data preparation strategy
-- Risk assessment and mitigation
-- Resource allocation and timeline
-
-## Success Criteria
-- All requirements covered by test cases
-- Test environment prepared and validated
-- Test data available and realistic
-- Automation framework setup (if applicable)
-- Team trained on test procedures 
+## ➡️ Response Flow
+```mermaid
+flowchart LR
+    U[User] -->|needs QA| A[Test-Plan Engine]
+    A --> B{Need more context?}
+    B -- Yes --> C[Ask for specs / env / tools]
+    B -- No --> D[Draft test_plan.md]

@@ -1,93 +1,59 @@
-# Design Architecture
+# Design Architecture Prompt 
 
-## Goal
-Create comprehensive solution architecture based on requirements, including component design, data flow, and integration patterns.
+## 🎯 Goal
+Craft a rock-solid solution architecture that meets all requirements—no fluff.
 
-**📁 Document Location**: Create architecture design documents in `docs/planning/` directory.
+## 📥 Context (ask if missing)
+1. **Clarified Requirements** – link or file path.
+2. **Tech Constraints / Preferences** – languages, clouds, budgets, etc.
+3. **Non-Func Targets** – perf, scale, security SLAs.
+4. **Existing Systems** – what stays, what gets replaced?
 
-## Context Required
-- Clarified requirements from planning phase
-- Technical constraints and preferences
+## 🚦 Skip if
+- Architecture already designed (<30 days) **or** change is trivial/bug-fix.
 
-## Skip When
-- Simple bug fix with no architectural impact
-- Very trivial changes that don't affect system design
-- Architecture was designed in previous session
-- Using existing, well-established patterns with no modifications
+## 🔍 Checklist
+- **Components**  
+  - [ ] Front-end, back-end, DB, integrations, background jobs  
 
-## Complexity Assessment
-- **Task Complexity**: High - requires architectural thinking and system design skills
+- **Cross-Cutting**  
+  - [ ] AuthN/Z, logging, monitoring, resilience, caching  
 
-## Task Understanding Assessment
-If task unclear - ask clarifying questions with multiple choice options
+- **Data**  
+  - [ ] Schema, relationships, migrations, validation  
 
-## Architecture Components
+- **Integration**  
+  - [ ] API style (REST/GraphQL), events, queues, third-party hooks  
 
-### System Components
-- **Frontend components** (if UI changes)
-- **Backend services and APIs**
-- **Database and data storage**
-- **External integrations**
-- **Background processing** (if needed)
+- **Design Principles**  
+  - [ ] SRP, loose-coupling, high cohesion, DRY, KISS  
 
-### Cross-Cutting Concerns
-- **Authentication and authorization**
-- **Logging and monitoring**
-- **Error handling and resilience**
-- **Caching strategies**
-- **Performance optimization**
+- **Scalability & Perf**  
+  - [ ] Horizontal scaling plan, bottleneck analysis  
 
-### Data Architecture
-- **Database schema design**
-- **Data relationships and constraints**
-- **Data migration strategies** (if applicable)
-- **Data validation and integrity**
+- **Security**  
+  - [ ] Threat model, data protection, compliance hits  
 
-### Integration Patterns
-- **API design patterns** (REST, GraphQL, etc.)
-- **Event-driven architecture** (if applicable)
-- **Message queues and async processing**
-- **External system integration**
+## 📤 Output
+**File:** `docs/planning/[feature-name]-architecture-design.md`
 
-## Design Principles
-- **Single Responsibility** - each component has a clear, focused purpose
-- **Loose Coupling** - components are independent with well-defined interfaces
-- **High Cohesion** - related functionality is grouped together
-- **Separation of Concerns** - different aspects (UI, business logic, data) are separated
-- **DRY (Don't Repeat Yourself)** - avoid code and logic duplication
-- **KISS (Keep It Simple)** - choose the simplest solution that meets requirements
+Sections:
+1. **Executive Summary** – TL;DR of the solution  
+2. **System Diagram (C4 or UML)** – high-level + zoom-in views  
+3. **Component Matrix** – responsibilities & interfaces  
+4. **Data Flow** – CRUD + event paths  
+5. **API Contracts** – endpoints, payloads, auth (if relevant)  
+6. **Database Design** – schema snippet / rationale (if relevant)  
+7. **Security Plan** – auth, encryption, threat mitigations  
+8. **Scalability & Perf** – capacity targets, scaling strategy  
+9. **Tech Stack** – chosen tech + why  
+10. **Decision Log** – trade-offs & rejected options  
 
-## Key Design Tasks
-1. **Analyze requirements for architectural implications** - identify components and interactions needed
-2. **Design system components** - define major components and their responsibilities
-3. **Design data flow and storage** - plan how data moves through the system
-4. **Design API interfaces** - define contracts between components (if applicable)
-5. **Consider scalability and performance** - plan for growth and performance requirements
-6. **Design security architecture** - plan authentication, authorization, and data protection
-7. **Create architectural diagrams** - visual representation of the solution
-8. **Document design decisions** - rationale for architectural choices
-
-## Documentation Format
-- Use standard diagramming conventions (UML, C4, etc.)
-- Include both high-level and detailed views
-- Document assumptions and constraints
-- Explain trade-offs and alternative approaches considered
-- Include technology choices and rationale
-
-## Success Criteria
-- All requirements can be fulfilled by the proposed architecture
-- Architecture follows established patterns and best practices
-- Scalability and performance considerations addressed
-- Security requirements incorporated into design
-- Component interfaces clearly defined
-- Architecture is maintainable and extensible
-
-## Key Outputs
-- High-level architecture diagram
-- Component responsibility matrix
-- Data flow diagrams
-- API interface specifications (if applicable)
-- Database schema design (if applicable)
-- Security architecture plan
-- Technology stack recommendations
-- Design decision log with rationale 
+## ➡️ Response Flow
+```mermaid
+flowchart LR
+    U[User] -->|reqs ready| A[Architecture Engine]
+    A --> B{Need more context?}
+    B -- Yes --> C[Ask for constraints / prefs]
+    B -- No --> D[Design & document]
+    D --> E[Write architecture_design.md]

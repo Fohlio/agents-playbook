@@ -1,54 +1,64 @@
-# Ask Clarifying Questions
+# Ask Clarifying Questions Prompt (v2)
 
-## Goal
-Gather missing requirements and clarify ambiguities before implementation.
+## 🎯 Goal
+Fill the info gaps and nail down requirements before any code gets written—no fluff.
 
-**📁 Document Location**: Create clarified requirements documents in `docs/planning/` directory.
+## 📥 Context (ask if missing)
+1. **Task / Problem** – what are we trying to do or fix?
+2. **Scope Boundaries** – what’s in vs. out?
+3. **Urgency** – critical / high / medium / low?
+4. **Constraints** – tech, security, performance, budget?
 
-## Context Required
-- Task description or problem statement
+## 🚦 Skip if
+- Requirements are already crystal-clear **or** it’s an emergency fire-drill.
 
-## Context Gathering
-If you don't have the required context, gather it by:
-- **Task description**: Ask the user to describe what they want to accomplish
-- **Problem statement**: Request details about the issue they're facing
-- **Scope boundaries**: Ask about what's included/excluded from the work
-- **Priority level**: Understand urgency and importance
+## 🔍 Checklist
+- **Scope**  
+  - [ ] Included vs. excluded functionality  
+- **Constraints**  
+  - [ ] Platform, perf, security, budget  
+- **Success**  
+  - [ ] How will we know it’s done?  
+- **Dependencies**  
+  - [ ] External systems, data, approvals  
 
-## Skip When
-- Requirements already comprehensive and clear
-- Emergency situation requiring immediate action
-- Trivial, well-understood task
+## 💬 Question Style
+Always give multiple-choice or concrete examples so stakeholders can click, not think.
 
-## Complexity Assessment
-- **Task Complexity**: Low - primarily involves questioning and requirements clarification
+> **Target users?**  
+> A) End-users B) Admins C) Both D) Other: ____  
+>
+> **Priority?**  
+> A) 🔥 Critical (today) B) High (this week) C) Medium (this month) D) Low
 
-## Task Understanding Assessment
-If task unclear - ask clarifying questions with multiple choice options
+### Quick Templates
+- **Bug Fix**  
+  - Steps to reproduce?  
+  - Expected vs. actual?  
+  - Workarounds?  
+- **New Feature**  
+  - User persona?  
+  - Problem it solves?  
+  - Flow happy-path?  
+- **Refactor**  
+  - Pain points?  
+  - Perf hits?  
+  - Desired end state?
 
-## Focus Areas
-- **Scope boundaries** - what's in/out of scope
-- **Technical constraints** - platform, performance, security requirements  
-- **Success criteria** - how to validate completion
-- **Dependencies** - external systems, data, approvals needed
+## 📤 Output
+**File:** `docs/planning/[feature-name]-clarified-requirements.md`
 
-## Question Format
-**Always provide multiple choice options or specific examples** to help stakeholders choose rather than having to think from scratch.
+Sections:
+1. **Summary** – task/problem in plain English  
+2. **Stakeholder Answers** – captured multiple-choice selections  
+3. **Final Scope** – what’s in / out  
+4. **Constraints & Dependencies** – bullets  
+5. **Success Criteria** – clear acceptance tests  
 
-Example:
-- "What's the target user group? A) End users B) Administrators C) Both D) Other: ___"
-- "What's the priority? A) Critical (same day) B) High (this week) C) Medium (this month) D) Low (when possible)"
-
-## Key Questions by Type
-
-**Bug fixes:** reproduction steps, expected vs actual behavior, impact/urgency, current workarounds
-
-**New features:** target users, problem being solved, user flow, similar existing features  
-
-**Refactoring:** specific pain points, performance issues, desired end state, constraints
-
-## Output
-- Clarified requirements document with stakeholder choices
-- Defined scope and boundaries
-- Technical constraints and dependencies
-- Success criteria and validation approach 
+## ➡️ Response Flow
+```mermaid
+flowchart LR
+    U[User] -->|initial ask| A[Clarifier]
+    A --> B{Need more info?}
+    B -- Yes --> C[Send MCQs]
+    B -- No --> D[Write clarified-requirements.md]

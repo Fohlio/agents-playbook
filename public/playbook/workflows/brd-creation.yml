@@ -51,29 +51,15 @@ phases:
           requiredContext: ["business_analysis", "requirements_specification"]
           optionalContext: ["research_findings", "stakeholder_input"]
         dependencies: ["feature-analysis"]
-        
-      - id: "stakeholder-approval"
-        miniPrompt: "business/stakeholder-approval"
-        required: true
-        prerequisites:
-          requiredContext: ["completed_brd", "documentation"]
-          optionalContext: ["business_case", "roi_analysis"]
-        dependencies: ["document-decisions"]
 
 # Workflow-level configurations
 skipConditions:
   - condition: "brd_already_exists"
     message: "Business requirements documentation already exists and is current"
-  - condition: "stakeholders_unavailable"
-    message: "Key stakeholders are not available for requirements gathering"
 
 validationRules:
-  - rule: "stakeholder_involvement_required"
-    phases: ["planning-clarification"]
-    message: "Stakeholder input is essential for accurate business requirements"
   - rule: "business_value_validation"
     phases: ["completion-reflection"]
-    dependencies: ["analysis"]
     message: "Business value and justification must be documented"
 
 notifications:

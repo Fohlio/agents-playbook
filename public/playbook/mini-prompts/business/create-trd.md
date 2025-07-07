@@ -1,59 +1,54 @@
-# Create TRD
+# Create Technical Requirements Document (TRD) Prompt 
 
-## Goal
-Create Technical Requirements Document translating business requirements into technical specifications.
+## 🎯 Goal
+Turn business needs into a tech-ready TRD, ready for devs to pick up—no fluff.
 
-**📁 Document Location**: Create TRD document in `docs/planning/` directory.
+## 📥 Context (ask if missing)
+1. **Business Requirements / BRD** – link or paste.
+2. **Scope** – which features / systems are in play?
+3. **Tech Constraints** – platform, compliance, perf targets, etc.
+4. **Stakeholders** – who signs off on the tech design?
 
-## Context Required
-- Business requirements or BRD document
-- Feature/system scope definition
+## 🚦 Skip if
+- A current TRD exists (<30 days) or scope is trivial/temporary.
 
-## Context Gathering
-If you don't have the required context, gather it by:
-- **Business requirements**: Ask user for BRD, feature requirements, or business objectives
-- **System scope**: Understand which system components or features are involved
-- **Technical constraints**: Identify platform, performance, security, or integration requirements
-- **Stakeholders**: Determine who needs to review and approve the technical design
+## 🔍 Checklist
+- **Overview**  
+  - [ ] Objectives + timeline  
+  - [ ] High-level architecture & stack  
 
-## Skip When
-- Technical requirements already documented
-- Emergency implementation (deferred TRD)
-- Trivial scope with obvious tech specs
+- **Functional**  
+  - [ ] Feature list, workflows, UI notes  
 
-## Complexity Assessment
-- **Task Complexity**: High - requires technical documentation and specification skills
+- **NFR**  
+  - [ ] Perf, scalability, security, reliability targets  
 
-## Task Understanding Assessment
-If task unclear - ask clarifying questions with multiple choice options
+- **Data**  
+  - [ ] Models, storage, validation rules  
 
-## TRD Structure
+- **API**  
+  - [ ] Endpoints, payloads, auth, rate limits  
 
-### Core Sections
-1. **Executive Summary** - objectives, approach, key decisions, timeline
-2. **System Overview** - architecture diagram, tech stack, environments, dependencies
-3. **Functional Requirements** - features, UI specs, business logic, workflows
-4. **Non-Functional Requirements** - performance, scalability, security, reliability
-5. **Data Requirements** - models, database design, validation, storage
-6. **API Specifications** - endpoints, formats, auth, errors, limits
-7. **Integration Requirements** - external APIs, sync, queues, webhooks, SSO
-8. **Infrastructure Requirements** - servers, network, deployment, monitoring, backup
+- **Integration**  
+  - [ ] External services, queues, webhooks, SSO  
 
-### Implementation Focus
-- **Development Standards** - code organization, patterns, testing
-- **Architecture Patterns** - design patterns, error handling, config
-- **Technical Constraints** - languages, frameworks, platforms, compliance
-- **Performance Constraints** - response times, capacity, throughput
+- **Infra**  
+  - [ ] Environments, deploy, monitoring, backup  
 
-## Key Outputs
-- Complete TRD document with all 8 sections
-- Technical specifications ready for implementation
-- API contracts and data models defined
-- Infrastructure and deployment requirements
-- Implementation guidelines and constraints
+- **Dev Standards**  
+  - [ ] Code style, testing, error handling patterns  
 
-## Quality Checks
-- All business requirements translated to technical specs
-- Architecture clearly defined and documented
-- Technical constraints and guidelines established
-- Stakeholder technical review completed 
+## 📤 Outputs (to `docs/planning/[feature-name]-trd.md`)
+- complete doc covering all sections above and also:
+- Diagrams: architecture & data (PlantUML/Mermaid inline)  
+- endpoint table + examples  
+- env matrix, sizing, tooling  
+
+## ➡️ Response Flow
+```mermaid
+flowchart LR
+    U[User] -->|BRD / scope| A[TRD Engine]
+    A --> B{Need more context?}
+    B -- Yes --> C[Ask for BRD / constraints]
+    B -- No --> D[Draft TRD]
+    D --> E[Generate docs]

@@ -1,58 +1,50 @@
-# Implement Feature
+# Implement Feature Prompt (v2)
 
-## Goal
-Execute technical implementation based on design specifications with high code quality.
+## 🎯 Goal
+Ship the feature per specs with clean, secure, performant code—no fluff.
 
-## Context Required
-- Design specifications or architecture plan
-- Requirements document with acceptance criteria
+## 📥 Context (ask if missing)
+1. **Design Spec** – link/file for architecture & diagrams.  
+2. **Requirements** – user stories + acceptance criteria.  
+3. **Repo Access** – branch / directory path.  
+4. **Dev Environment** – setup quirks, build tools, secrets manager?
 
-## Context Gathering
-If you don't have the required context, gather it by:
-- **Design specs**: Ask user for technical design, architecture decisions, or implementation approach
-- **Requirements**: Request feature requirements, acceptance criteria, or user stories
-- **Codebase access**: Explore project structure to understand existing patterns and conventions
-- **Environment setup**: Verify development environment, dependencies, and build tools are ready
+## 🚦 Skip if
+- Implementation already merged **or** change is trivial/config-only.
 
-## Skip When
-- No implementation work required (analysis/docs only)
-- Implementation completed in previous session
-- Only configuration changes needed
+## 🔍 Checklist
+1. **Core Logic** – business rules first.  
+2. **Data Layer** – models, migrations, validation.  
+3. **API** – endpoints, request/response schema.  
+4. **Integrations** – external services, queues, webhooks.  
+5. **UI** – components, state mgmt, a11y.  
+6. **Cross-Cutting** – logging, monitoring, error handling, auth.  
 
-## Complexity Assessment
-- **Task Complexity**: Medium-High - requires technical implementation and coding expertise
+### Quality Gates
+- [ ] Follows style guide & naming conventions.  
+- [ ] Inputs validated, secrets via env/manager.  
+- [ ] No hard-coded limits; efficient queries.  
+- [ ] Unit + integration tests pass (≥ 90 % coverage for new code).  
 
-## Task Understanding Assessment
-If task unclear - ask clarifying questions with multiple choice options
+## 🛠️ Common Patterns
+Repository • Service • Factory • Middleware • Decorator • Observer
 
-## Implementation Priority Order
-1. **Core business logic** - essential functionality first
-2. **Data layer** - database access, models, validation
-3. **API layer** - endpoints, request/response handling
-4. **Integration layer** - external system connections
-5. **UI layer** - user interface components
-6. **Cross-cutting concerns** - logging, monitoring, error handling
+## 📤 Output
+**File:** `docs/planning/[feature-name]-implementation-plan.md`
 
-## Key Implementation Practices
-- **Code Quality** - follow project standards, meaningful names, comments for complex logic
-- **Security** - validate inputs, sanitize data, secure auth/authz, no hardcoded secrets
-- **Performance** - efficient algorithms, caching, optimized queries, resource monitoring
-- **Maintainability** - modular code, separation of concerns, testable design, documentation
+Sections:
+1. **Summary** – feature scope & branch.  
+2. **Done Checklist** – items from the 🔍 Checklist with ✅ / ❌.  
+3. **Security Notes** – validation, authZ, secret handling.  
+4. **Performance Notes** – known bottlenecks or caching.  
+5. **Test Coverage** – % + key scenarios covered.  
+6. **Next Steps** – remaining todos + owner.  
 
-## Common Patterns
-- Repository (data access), Service (business logic), Factory (object creation)
-- Observer (events), Middleware (request processing), Decorator (feature enhancement)
-
-## Testing Focus
-- Unit tests for critical business logic
-- Integration tests for external connections
-- Error scenario and edge case testing
-- Security measure validation
-
-## Output
-- Working implementation meeting all specifications
-- Clean, documented code following project standards
-- Proper error handling and logging
-- Security measures implemented
-- Integration points functional
-- Basic test coverage 
+## ➡️ Response Flow
+```mermaid
+flowchart LR
+    U[User] -->|specs ready| A[Implementation Engine]
+    A --> B{Need more context?}
+    B -- Yes --> C[Ask for spec / env]
+    B -- No --> D[Code + tests]
+    D --> E[Write implementation_plan.md]

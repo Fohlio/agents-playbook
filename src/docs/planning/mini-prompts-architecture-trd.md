@@ -69,7 +69,6 @@ Monolithic workflow files without smart validation or context awareness.
 │   └── validate-requirements.md
 ├── business/
 │   ├── gather-requirements.md
-│   ├── stakeholder-approval.md
 │   └── document-decisions.md
 ├── operations/
 │   ├── deploy-with-monitoring.md
@@ -611,7 +610,7 @@ Smart skipping saved time on 3 irrelevant/impossible steps
   - [ ] **Development**: ask-clarifying-questions, design-architecture, implement-feature, code-review
   - [ ] **Analysis**: trace-bug-root-cause, feature-analysis, code-analysis, architecture-analysis, performance-analysis, security-review
   - [ ] **QA**: create-test-plan, execute-tests, validate-requirements
-  - [ ] **Business**: gather-requirements, stakeholder-approval, document-decisions
+  - [ ] **Business**: gather-requirements, document-decisions
   - [ ] **Operations**: deploy-with-monitoring, setup-alerts, rollback-plan
   - [ ] **Migration**: assess-migration-scope, create-migration-plan, data-migration, validate-migration
 

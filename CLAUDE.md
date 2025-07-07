@@ -30,7 +30,6 @@ This is a **production-ready workflow automation repository** for AI agents in s
 **Business Phase** (`business/`)
 - `gather-requirements.md` - Requirements collection and analysis
 - `document-decisions.md` - Decision documentation and rationale
-- `stakeholder-approval.md` - Stakeholder review and sign-off
 
 **Analysis Phase** (`analysis/`)
 - `feature-analysis.md` - Feature scope and impact analysis

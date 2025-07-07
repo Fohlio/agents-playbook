@@ -25,7 +25,7 @@ phases:
         required: true
         prerequisites:
           requiredContext: ["requirements"]
-          optionalContext: ["stakeholder_contact_info", "user_personas"]
+          optionalContext: ["user_personas"]
         dependencies: ["gather-requirements"]
 
   - phase: "analysis"
@@ -97,7 +97,7 @@ phases:
         required: true
         prerequisites:
           requiredContext: ["tested_product", "original_requirements"]
-          optionalContext: ["user_feedback", "stakeholder_input"]
+          optionalContext: ["user_feedback"]
         dependencies: ["execute-tests"]
 
   - phase: "deployment-operations"
@@ -139,15 +139,7 @@ phases:
           requiredContext: ["completed_product", "launch_results"]
           optionalContext: ["lessons_learned", "performance_metrics"]
         dependencies: ["create-trd"]
-        
-      - id: "stakeholder-approval"
-        miniPrompt: "business/stakeholder-approval"
-        required: true
-        prerequisites:
-          requiredContext: ["product_launch", "documentation"]
-          optionalContext: ["success_metrics", "user_adoption_data"]
-        dependencies: ["document-decisions"]
-
+     
 # Workflow-level configurations
 skipConditions:
   - condition: "product_already_launched"

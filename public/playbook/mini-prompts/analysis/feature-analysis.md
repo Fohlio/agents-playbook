@@ -1,75 +1,48 @@
-# Feature Analysis
+# Feature Analysis Prompt (v2)
 
-## Goal
-Analyze existing feature functionality, architecture, and implementation to understand current state and identify opportunities for improvement or modification.
+## 🎯 Goal
+Dissect an existing feature, reveal weak spots, and suggest upgrades—no fluff.
 
-**📁 Document Location**: Create feature analysis reports in `docs/planning/` directory.
+## 📥 Context (ask if missing)
+1. **Feature** – name or scope boundaries.
+2. **Repo Access** – code paths / git URL.
+3. **Focus** – choose: performance / architecture / UX / tech-debt.
+4. **Known Pains** – bugs, slow paths, UX complaints.
 
-## Context Required
-- Feature scope and boundaries definition
-- Access to relevant codebase
+## 🚦 Skip if
+- Feature is trivial **and** unchanged, or you already have a fresh analysis (<30 days).
 
-## Context Gathering
-If you don't have the required context, gather it by:
-- **Feature scope**: Ask user which specific feature or functionality to analyze
-- **Codebase access**: Use file system tools to locate feature-related code
-- **Feature boundaries**: Identify what components/modules are part of the feature
-- **Analysis goals**: Understand if focusing on performance, architecture, user experience, or technical debt
+## 🔍 Checklist
+- **Function**  
+  - [ ] Core use cases & user flows  
+  - [ ] Business rules & validation  
+  - [ ] Data inputs → transforms → outputs  
+  - [ ] Integration touchpoints  
 
-## Skip When
-- Feature is very simple with obvious implementation
-- Analysis was completed in previous session
-- Feature doesn't exist yet (new feature development)
-- Analysis scope is limited to bug fix only
+- **Tech**  
+  - [ ] Component structure & patterns  
+  - [ ] Code quality & organization  
+  - [ ] Performance hotspots (CPU, I/O, DB)  
+  - [ ] Security: authN/Z, data protection  
+  - [ ] Error / edge-case handling  
 
-## Complexity Assessment
-- **Task Complexity**: High - requires deep feature analysis and architecture understanding
+- **UX**  
+  - [ ] Usability & interface sanity  
+  - [ ] Accessibility flags (WCAG, etc.)  
+  - [ ] Perceived speed / responsiveness  
+  - [ ] Clarity of error messages  
 
-## Analysis Dimensions
+## 📤 Outputs (in `docs/analysis/[feature-name].md`), which includes:
+- what it does, user flows, data paths
+- diagram + component breakdown
+- strengths, weaknesses, perf/security findings
+- prioritized list w/ file & line refs
+- quick wins, larger refactors, effort estimates
 
-### Functional Analysis
-- **Core Functionality** - what the feature does and key use cases
-- **User Flows** - how users interact with the feature
-- **Business Logic** - rules, validation, and processing logic
-- **Data Flow** - inputs, transformations, and outputs
-- **Integration Points** - how it connects with other system components
-
-### Technical Analysis
-- **Architecture** - component structure and design patterns
-- **Implementation Quality** - code organization, patterns, and practices
-- **Performance** - speed, efficiency, and resource usage
-- **Security** - authentication, authorization, and data protection
-- **Error Handling** - exception management and edge case handling
-
-### User Experience Analysis
-- **Usability** - ease of use and user interface design
-- **Accessibility** - compliance with accessibility standards
-- **Performance Perception** - loading times and responsiveness
-- **Error Messages** - clarity and helpfulness of error communication
-
-## Analysis Process
-1. **Map Feature Scope** - identify all components and touchpoints
-2. **Document Current State** - how the feature works today
-3. **Identify Patterns** - architectural and implementation patterns used
-4. **Assess Quality** - evaluate performance, security, and maintainability
-5. **Find Opportunities** - areas for improvement or optimization
-
-## Key Deliverables
-- **Feature Overview** - comprehensive description of current functionality
-- **Architecture Diagram** - visual representation of feature components
-- **Quality Assessment** - strengths, weaknesses, and improvement areas
-- **Technical Debt** - specific issues and recommendations
-- **Enhancement Opportunities** - potential improvements and their impact
-
-## Analysis Tools
-- Code exploration and documentation tools
-- Performance monitoring and profiling
-- Security scanning and vulnerability assessment
-- User experience testing and analytics
-- Architecture visualization tools
-
-## Success Criteria
-- Complete understanding of feature scope and implementation
-- Clear documentation of current architecture and data flows
-- Identified opportunities for improvement with priority and effort estimates
-- Actionable recommendations aligned with business and technical goals
+## ➡️ Response Flow
+```mermaid
+flowchart LR
+    U[User] -->|request| A[Feature Analysis Engine]
+    A --> B{Need more input?}
+    B -- Yes --> C[Ask for scope / repo]
+    B -- No --> D[Run analysis & generate reports]
