@@ -16,7 +16,7 @@ export default function FeaturesSection() {
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
         </svg>
       ),
-      title: "11 Workflows",
+      title: "6 Workflows",
       description: "Curated collection of proven AI agent workflows covering every development scenario and use case.",
       gradient: "from-purple-500 to-pink-500"
     },
@@ -27,7 +27,7 @@ export default function FeaturesSection() {
         </svg>
       ),
       title: "MCP Compatible",
-      description: "Seamlessly integrates with Claude Desktop and other MCP-enabled tools for effortless workflow automation.",
+      description: "Seamlessly integrates with Claude Desktop, Cursor, and other MCP-enabled tools for effortless workflow automation.",
       gradient: "from-green-500 to-emerald-500"
     }
   ];
@@ -100,7 +100,7 @@ export default function FeaturesSection() {
               Ready to explore AI workflows?
             </h3>
             <p className="text-slate-600">
-              Install the MCP server in Claude Desktop and start using intelligent workflow recommendations right away.
+              Install the MCP server in Claude Desktop or Cursor and start using intelligent workflow recommendations right away.
             </p>
           </div>
         </div>

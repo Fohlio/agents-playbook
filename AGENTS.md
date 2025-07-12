@@ -10,7 +10,9 @@ This is a **production-ready workflow automation repository** for AI agents in s
 ### 📋 Navigation & Discovery
 - **`playbook/prompt-playbook.md`** - MAIN NAVIGATOR - complete workflow guide and decision matrix
 - **`README.md`** - Public documentation and MCP server setup guide
-- **MCP Server** - http://localhost:3000/api/mcp - AI-powered workflow discovery
+- **MCP Server** - AI-powered workflow discovery
+  - **Production**: https://agents-playbook.vercel.app/api/mcp
+  - **Local Dev**: http://localhost:3000/api/mcp
 
 ### 🎯 Core Architecture
 
@@ -62,6 +64,8 @@ npm run dev
 
 # Test with MCP Inspector
 DANGEROUSLY_OMIT_AUTH=true npx @modelcontextprotocol/inspector@latest http://localhost:3000/api/mcp
+# OR for production testing:
+# DANGEROUSLY_OMIT_AUTH=true npx @modelcontextprotocol/inspector@latest https://agents-playbook.vercel.app/api/mcp
 ```
 
 **MCP Tools Available:**

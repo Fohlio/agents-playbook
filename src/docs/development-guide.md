@@ -39,7 +39,9 @@ This processes **15 workflows** and creates semantic search index.
 npm run dev
 ```
 
-✅ **MCP Server**: http://localhost:3000/api/mcp  
+✅ **MCP Server**: 
+- **Production**: https://agents-playbook.vercel.app/api/mcp
+- **Local Dev**: http://localhost:3000/api/mcp  
 ✅ **Ready for testing!**
 
 ## 🧪 Testing with MCP Inspector
@@ -47,12 +49,16 @@ npm run dev
 ### Start MCP Inspector
 ```bash
 DANGEROUSLY_OMIT_AUTH=true npx @modelcontextprotocol/inspector@latest http://localhost:3000/api/mcp
+# OR for production testing:
+# DANGEROUSLY_OMIT_AUTH=true npx @modelcontextprotocol/inspector@latest https://agents-playbook.vercel.app/api/mcp
 ```
 
 ### Connect to Server
 1. **Open browser**: http://127.0.0.1:6274
 2. **Select transport**: "Streamable HTTP"  
-3. **Enter URL**: `http://localhost:3000/api/mcp`
+3. **Enter URL**: 
+   - **Production**: `https://agents-playbook.vercel.app/api/mcp`
+   - **Local Dev**: `http://localhost:3000/api/mcp`
 4. **Click**: "Connect"
 
 ### Test All 3 Tools
@@ -209,6 +215,8 @@ curl https://api.openai.com/v1/models \
 1. **Check dev server running**:
    ```bash
    curl http://localhost:3000/api/mcp
+# OR production:
+# curl https://agents-playbook.vercel.app/api/mcp
    ```
 
 2. **Check for port conflicts**:

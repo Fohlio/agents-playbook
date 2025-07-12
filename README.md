@@ -7,9 +7,9 @@
 **Structured Workflow System** - designed to help both high-tier and low-tier AI models follow consistent processes:
 
 - **🧠 Context Engineering** - workflows engineered for reliable AI execution across model tiers
-- **🔧 9 Workflows** - battle-tested processes that provide structure and guardrails  
+- **🔧 6 Workflows** - battle-tested processes that provide structure and guardrails  
 - **⚡ Smart Validation** - automatically validates prerequisites and skips irrelevant steps
-- **📋 25+ Mini-Prompts** - context-engineered prompts organized by development phases
+- **📋 12 Mini-Prompts** - context-engineered prompts organized by development phases
 
 ## 🚀 Installation
 
@@ -31,7 +31,9 @@ npm run build:embeddings
 npm run dev
 ```
 
-**MCP Server**: http://localhost:3000/api/mcp
+**MCP Server**: 
+- **Local Development**: http://localhost:3000/api/mcp
+- **Production**: https://agents-playbook.vercel.app/api/mcp
 
 ## 🧪 Testing
 
@@ -39,7 +41,7 @@ npm run dev
 # MCP Inspector for testing
 DANGEROUSLY_OMIT_AUTH=true npx @modelcontextprotocol/inspector@latest http://localhost:3000/api/mcp
 
-# Run tests (47 tests)
+# Run tests (86 tests)
 npm run test:integration
 ```
 
@@ -58,7 +60,7 @@ Get complete workflow with execution plan.
 ### `get_next_step`
 Step-by-step navigation with smart validation.
 
-## 📁 Workflows (9 total)
+## 📁 Workflows (6 total)
 
 ### 🚀 Development (4)
 - **feature-development** - Complete feature development lifecycle
@@ -66,14 +68,9 @@ Step-by-step navigation with smart validation.
 - **quick-fix** - Fast bug fixes and hotfixes
 - **code-refactoring** - Code architecture improvements
 
-### 📋 Documentation (3)
-- **trd-creation** - Technical Requirements Document creation
-- **brd-creation** - Business Requirements with research  
-- **brd-to-trd-translation** - Business → Technical specification translation
-
-### 🏗️ Setup & Operations (2)
+### 📋 Setup & Planning (2)
 - **project-initialization** - New project setup
-- **infrastructure-setup** - Infrastructure deployment
+- **trd-creation** - Technical Requirements Document creation
 
 ## 🎯 Usage Examples
 
@@ -89,15 +86,98 @@ Step-by-step navigation with smart validation.
 3. Execute: 7 steps of TRD creation with validation
 ```
 
-## 🔌 Cursor Integration
+## 🔌 MCP Integration
+
+### 🤖 Claude Desktop
+```json
+{
+  "mcpServers": {
+    "agents-playbook": {
+      "url": "https://agents-playbook.vercel.app/api/mcp"
+    }
+  }
+}
+```
+
+### 🎯 Cursor
+Add to your Cursor settings or create a MCP configuration:
 
 ```json
 {
   "mcpServers": {
     "agents-playbook": {
-      "url": "http://localhost:3000/api/mcp"
+      "url": "https://agents-playbook.vercel.app/api/mcp",
+      "description": "AI Agent Workflow Engine with semantic search"
     }
   }
+}
+```
+
+**For Cursor users:**
+1. Open Cursor Settings
+2. Navigate to "Extensions" or "Integrations"
+3. Add MCP Server configuration
+4. Restart Cursor
+
+### 📁 Direct File Usage (Any IDE)
+Copy playbook files directly to your project:
+
+```bash
+# Copy entire playbook to your project
+cp -r public/playbook/ /path/to/your/project/
+
+# For Cursor: create a .cursorrules file
+echo "Use workflows from playbook/ directory for structured development" > .cursorrules
+```
+
+## 🎯 Cursor Integration Examples
+
+### 1. Workflow Discovery in Cursor
+```javascript
+// Create a simple workflow helper for Cursor
+async function findWorkflow(task) {
+  const response = await fetch('https://agents-playbook.vercel.app/api/workflows', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ query: task })
+  });
+  
+  const { workflows } = await response.json();
+  return workflows[0]; // Get best match
+}
+
+// Usage in Cursor:
+const workflow = await findWorkflow('create new feature');
+console.log(`Recommended: ${workflow.id} (${workflow.match}% match)`);
+```
+
+### 2. Step-by-Step Navigation
+```javascript
+// Get workflow steps
+async function getWorkflowSteps(workflowId) {
+  const response = await fetch(`https://agents-playbook.vercel.app/api/workflows/${workflowId}`);
+  const workflow = await response.json();
+  return workflow.phases.flatMap(phase => phase.steps);
+}
+
+// Usage:
+const steps = await getWorkflowSteps('feature-development');
+steps.forEach((step, i) => console.log(`${i+1}. ${step.action}`));
+```
+
+### 3. Mini-Prompts in Cursor
+```javascript
+// Access mini-prompts directly
+const miniPrompts = {
+  'implement-feature': 'https://agents-playbook.vercel.app/api/mini-prompts/development/implement-feature',
+  'code-review': 'https://agents-playbook.vercel.app/api/mini-prompts/development/code-review',
+  'ask-questions': 'https://agents-playbook.vercel.app/api/mini-prompts/development/ask-clarifying-questions'
+};
+
+// Get specific prompt
+async function getPrompt(promptId) {
+  const response = await fetch(miniPrompts[promptId]);
+  return await response.text();
 }
 ```
 
@@ -105,14 +185,18 @@ Step-by-step navigation with smart validation.
 
 ```bash
 # Copy entire playbook to your project
-cp -r playbook/ /path/to/your/project/
+cp -r public/playbook/ /path/to/your/project/
+
+# For Cursor: create a .cursorrules file
+echo "Use workflows from playbook/ directory for structured development" > .cursorrules
 ```
 
 **Benefits:**
 - ✅ Works without MCP server
-- ✅ Customize for your team
+- ✅ Customize for your team  
 - ✅ Offline access
 - ✅ Version control with project
+- ✅ Cursor can reference workflows directly
 
 ## 🧠 How it works
 

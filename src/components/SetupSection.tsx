@@ -4,35 +4,49 @@ export default function SetupSection() {
   const steps = [
     {
       number: "1",
-      title: "Add to Claude Desktop",
-      description: "Configure the MCP server in your Claude Desktop settings",
+      title: "Add MCP Server",
+      description: "Configure the MCP server in your IDE settings",
       icon: (
         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4" />
         </svg>
       ),
       gradient: "from-blue-500 to-purple-500",
-      codeBlock: `"mcpServers": {
+      codeBlocks: {
+        claude: `"mcpServers": {
   "agents-playbook": {
     "url": "https://agents-playbook.vercel.app/api/mcp"
   }
+}`,
+        cursor: `{
+  "mcpServers": {
+    "agents-playbook": {
+      "url": "https://agents-playbook.vercel.app/api/mcp",
+      "description": "AI Agent Workflow Engine"
+    }
+  }
 }`
+      }
     },
     {
       number: "2", 
-      title: "Restart Claude Desktop",
+      title: "Restart IDE",
       description: "The server will be automatically available after restart",
       icon: (
         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
         </svg>
       ),
-      gradient: "from-purple-500 to-pink-500"
+      gradient: "from-purple-500 to-pink-500",
+      ides: [
+        { name: "Claude Desktop", action: "Restart Claude Desktop" },
+        { name: "Cursor", action: "Restart Cursor" }
+      ]
     },
     {
       number: "3",
       title: "Start Using", 
-      description: "Ask Claude for intelligent workflow recommendations",
+      description: "Ask your AI assistant for intelligent workflow recommendations",
       icon: (
         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
@@ -64,7 +78,7 @@ export default function SetupSection() {
             </span>
           </h2>
           <p className="text-xl text-slate-600 max-w-2xl mx-auto">
-            Get started in minutes with our streamlined installation process
+            Get started in minutes with Claude Desktop or Cursor
           </p>
         </div>
 
@@ -103,16 +117,51 @@ export default function SetupSection() {
                     {step.description}
                   </p>
 
-                  {/* Code block for step 1 */}
-                  {step.codeBlock && (
-                    <div className="bg-slate-900 rounded-2xl p-6 overflow-x-auto border border-slate-200">
-                      <pre className="text-slate-300 text-sm font-mono leading-relaxed">
-                        <code>{step.codeBlock}</code>
-                      </pre>
+                  {/* Code blocks for step 1 */}
+                  {step.codeBlocks && (
+                    <div className="space-y-4">
+                      <div className="bg-slate-900 rounded-2xl p-6 overflow-x-auto border border-slate-200">
+                        <div className="flex items-center space-x-2 mb-4">
+                          <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+                          <span className="text-slate-300 font-medium">Claude Desktop</span>
+                        </div>
+                        <pre className="text-slate-300 text-sm font-mono leading-relaxed">
+                          <code>{step.codeBlocks.claude}</code>
+                        </pre>
+                      </div>
+                      
+                      <div className="bg-slate-900 rounded-2xl p-6 overflow-x-auto border border-slate-200">
+                        <div className="flex items-center space-x-2 mb-4">
+                          <div className="w-3 h-3 bg-purple-500 rounded-full"></div>
+                          <span className="text-slate-300 font-medium">Cursor</span>
+                        </div>
+                        <pre className="text-slate-300 text-sm font-mono leading-relaxed">
+                          <code>{step.codeBlocks.cursor}</code>
+                        </pre>
+                      </div>
+                      
                       {/* Info note */}
-                      <div className="mt-4 px-4 py-3 bg-blue-50 border border-blue-200 rounded-lg text-sm text-blue-800">
+                      <div className="px-4 py-3 bg-blue-50 border border-blue-200 rounded-lg text-sm text-blue-800">
                         <p className="font-medium">💡 Use the "Quick Setup" button below for automatic copying</p>
                       </div>
+                    </div>
+                  )}
+
+                  {/* IDE list for step 2 */}
+                  {step.ides && (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      {step.ides.map((ide, ideIndex) => (
+                        <div 
+                          key={ideIndex}
+                          className="flex items-center space-x-3 p-4 bg-gradient-to-r from-slate-50 to-blue-50 rounded-xl border border-slate-200/50"
+                        >
+                          <div className="w-2 h-2 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full"></div>
+                          <div>
+                            <div className="font-medium text-slate-800">{ide.name}</div>
+                            <div className="text-sm text-slate-600">{ide.action}</div>
+                          </div>
+                        </div>
+                      ))}
                     </div>
                   )}
 

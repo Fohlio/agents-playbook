@@ -4,18 +4,29 @@ import { useState } from "react";
 
 export default function AutoAddButton() {
   const [copied, setCopied] = useState(false);
+  const [selectedIDE, setSelectedIDE] = useState<'claude' | 'cursor'>('claude');
 
-  const mcpConfig = `{
+  const mcpConfigs = {
+    claude: `{
   "mcpServers": {
     "agents-playbook": {
       "url": "https://agents-playbook.vercel.app/api/mcp"
     }
   }
-}`;
+}`,
+    cursor: `{
+  "mcpServers": {
+    "agents-playbook": {
+      "url": "https://agents-playbook.vercel.app/api/mcp",
+      "description": "AI Agent Workflow Engine with semantic search"
+    }
+  }
+}`
+  };
 
   const copyToClipboard = async () => {
     try {
-      await navigator.clipboard.writeText(mcpConfig);
+      await navigator.clipboard.writeText(mcpConfigs[selectedIDE]);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
@@ -23,21 +34,21 @@ export default function AutoAddButton() {
     }
   };
 
-  const openClaudeConfig = () => {
-    // Пытаемся открыть файл конфигурации Claude Desktop
-    const isWindows = navigator.platform.toLowerCase().includes('win');
-    const isMac = navigator.platform.toLowerCase().includes('mac');
-    
-    if (isMac) {
-      // На Mac открываем директорию с конфигурацией
-      window.open('file:///Users/' + (process.env.USER || 'username') + '/Library/Application Support/Claude/', '_blank');
-    } else if (isWindows) {
-      // На Windows
-      window.open('file:///' + (process.env.APPDATA || 'C:\\Users\\username\\AppData\\Roaming') + '\\Claude\\', '_blank');
-    } else {
-      // Просто копируем конфигурацию
-      copyToClipboard();
-    }
+  const setupSteps = {
+    claude: [
+      "Open Claude Desktop",
+      "Go to Settings",
+      "Find \"MCP Servers\" section",
+      "Paste the copied configuration",
+      "Restart Claude Desktop"
+    ],
+    cursor: [
+      "Open Cursor Settings",
+      "Navigate to \"Extensions\" or \"Integrations\"",
+      "Add MCP Server configuration",
+      "Paste the copied configuration",
+      "Restart Cursor"
+    ]
   };
 
   return (
@@ -50,8 +61,38 @@ export default function AutoAddButton() {
         </div>
         <h3 className="text-2xl font-bold text-slate-900 mb-3">Quick Setup</h3>
         <p className="text-slate-600">
-          Automatically add AI Agents Playbook to your Claude Desktop
+          Automatically add AI Agents Playbook to your IDE
         </p>
+      </div>
+
+      {/* IDE Selection Tabs */}
+      <div className="flex bg-slate-100 rounded-xl p-1 mb-6">
+        <button
+          onClick={() => setSelectedIDE('claude')}
+          className={`flex-1 py-3 px-4 rounded-lg font-medium transition-all duration-200 ${
+            selectedIDE === 'claude'
+              ? 'bg-white text-blue-600 shadow-sm'
+              : 'text-slate-600 hover:text-slate-800'
+          }`}
+        >
+          <div className="flex items-center justify-center space-x-2">
+            <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+            <span>Claude Desktop</span>
+          </div>
+        </button>
+        <button
+          onClick={() => setSelectedIDE('cursor')}
+          className={`flex-1 py-3 px-4 rounded-lg font-medium transition-all duration-200 ${
+            selectedIDE === 'cursor'
+              ? 'bg-white text-purple-600 shadow-sm'
+              : 'text-slate-600 hover:text-slate-800'
+          }`}
+        >
+          <div className="flex items-center justify-center space-x-2">
+            <div className="w-3 h-3 bg-purple-500 rounded-full"></div>
+            <span>Cursor</span>
+          </div>
+        </button>
       </div>
 
       <div className="space-y-4">
@@ -73,7 +114,7 @@ export default function AutoAddButton() {
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
                 </svg>
-                <span>Copy MCP Configuration</span>
+                <span>Copy {selectedIDE === 'claude' ? 'Claude' : 'Cursor'} Configuration</span>
               </>
             )}
           </div>
@@ -81,20 +122,31 @@ export default function AutoAddButton() {
 
         <div className="bg-slate-50 rounded-xl p-4">
           <div className="flex items-start space-x-3">
-            <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-              <span className="text-blue-600 text-sm font-bold">i</span>
+            <div className={`w-6 h-6 ${selectedIDE === 'claude' ? 'bg-blue-100' : 'bg-purple-100'} rounded-full flex items-center justify-center flex-shrink-0 mt-0.5`}>
+              <span className={`${selectedIDE === 'claude' ? 'text-blue-600' : 'text-purple-600'} text-sm font-bold`}>i</span>
             </div>
             <div className="text-sm text-slate-600">
               <p className="font-medium mb-1">After copying:</p>
               <ol className="list-decimal list-inside space-y-1 text-sm">
-                <li>Open Claude Desktop</li>
-                <li>Go to Settings</li>
-                <li>Find "MCP Servers" section</li>
-                <li>Paste the copied configuration</li>
-                <li>Restart Claude Desktop</li>
+                {setupSteps[selectedIDE].map((step, index) => (
+                  <li key={index}>{step}</li>
+                ))}
               </ol>
             </div>
           </div>
+        </div>
+
+        {/* Configuration Preview */}
+        <div className="bg-slate-900 rounded-xl p-4 overflow-x-auto">
+          <div className="flex items-center space-x-2 mb-3">
+            <div className={`w-3 h-3 ${selectedIDE === 'claude' ? 'bg-blue-500' : 'bg-purple-500'} rounded-full`}></div>
+            <span className="text-slate-300 font-medium text-sm">
+              {selectedIDE === 'claude' ? 'Claude Desktop' : 'Cursor'} Configuration
+            </span>
+          </div>
+          <pre className="text-slate-300 text-xs font-mono leading-relaxed">
+            <code>{mcpConfigs[selectedIDE]}</code>
+          </pre>
         </div>
       </div>
     </div>

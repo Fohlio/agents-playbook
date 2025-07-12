@@ -17,13 +17,13 @@ export default function Home() {
             <h2 className="text-3xl font-bold text-gray-900 mb-8">What is this?</h2>
             <div className="text-lg text-gray-700 space-y-4">
               <p>
-                <strong>Structured Workflow Engine</strong> with 9 context-engineered development workflows that bring order to chaos.
+                <strong>AI Agent Workflow Engine</strong> that transforms complex collaboration processes into structured, repeatable agent workflows.
               </p>
               <p>
-                <strong>Context Engineering Framework</strong> - designed to help both high-tier and low-tier AI models follow consistent, structured processes.
+                <strong>Context Engineering Framework</strong> - designed to help AI models follow consistent, validated processes with intelligent guardrails and semantic workflow discovery.
               </p>
               <p>
-                Semantic search finds the right workflow, smart validation provides guardrails and structure for reliable execution.
+                Turn manual coordination into automated intelligence. Semantic search finds the right workflow, smart validation provides structure for reliable execution.
               </p>
             </div>
           </div>
@@ -34,15 +34,15 @@ export default function Home() {
           <div className="max-w-4xl mx-auto px-4">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
               <div className="p-4">
-                <div className="text-2xl font-bold text-blue-600">9</div>
+                <div className="text-2xl font-bold text-blue-600">6</div>
                 <div className="text-sm text-gray-600">Workflows</div>
               </div>
               <div className="p-4">
-                <div className="text-2xl font-bold text-green-600">25+</div>
+                <div className="text-2xl font-bold text-green-600">12</div>
                 <div className="text-sm text-gray-600">Mini-Prompts</div>
               </div>
               <div className="p-4">
-                <div className="text-2xl font-bold text-purple-600">47</div>
+                <div className="text-2xl font-bold text-purple-600">86</div>
                 <div className="text-sm text-gray-600">Tests</div>
               </div>
               <div className="p-4">
@@ -56,25 +56,44 @@ export default function Home() {
         {/* Installation */}
         <section className="py-16 bg-white">
           <div className="max-w-4xl mx-auto px-4">
-            <h2 className="text-3xl font-bold text-gray-900 text-center mb-8">Installation</h2>
-            <div className="bg-gray-900 text-gray-100 p-6 rounded-lg">
-              <pre className="text-sm overflow-x-auto">{`# 1. Clone repository
-git clone https://github.com/your-repo/agents-playbook
-cd agents-playbook
-
-# 2. Install dependencies
-npm install
-
-# 3. Add OpenAI API key to .env
-OPENAI_API_KEY=your_key_here
-
-# 4. Generate search index
-npm run build:embeddings
-
-# 5. Start server
-npm run dev
-
-# MCP Server: http://localhost:3000/api/mcp`}</pre>
+            <h2 className="text-3xl font-bold text-gray-900 text-center mb-8">MCP Integration</h2>
+            <div className="grid md:grid-cols-2 gap-6 mb-8">
+              <div className="bg-gray-900 text-gray-100 p-6 rounded-lg">
+                <div className="flex items-center space-x-2 mb-4">
+                  <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+                  <h3 className="text-white font-semibold">Claude Desktop</h3>
+                </div>
+                <pre className="text-sm overflow-x-auto">{`{
+  "mcpServers": {
+    "agents-playbook": {
+      "url": "https://agents-playbook.vercel.app/api/mcp"
+    }
+  }
+}`}</pre>
+              </div>
+              
+              <div className="bg-gray-900 text-gray-100 p-6 rounded-lg">
+                <div className="flex items-center space-x-2 mb-4">
+                  <div className="w-3 h-3 bg-purple-500 rounded-full"></div>
+                  <h3 className="text-white font-semibold">Cursor</h3>
+                </div>
+                <pre className="text-sm overflow-x-auto">{`{
+  "mcpServers": {
+    "agents-playbook": {
+      "url": "https://agents-playbook.vercel.app/api/mcp",
+      "description": "AI Agent Workflow Engine"
+    }
+  }
+}`}</pre>
+              </div>
+            </div>
+            
+            <div className="text-center">
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <p className="text-blue-800">
+                  <strong>Transform collaboration into automation:</strong> Turn manual coordination processes into structured, intelligent agent workflows.
+                </p>
+              </div>
             </div>
           </div>
         </section>
@@ -83,7 +102,7 @@ npm run dev
         <section className="py-16 bg-gray-50">
           <div className="max-w-4xl mx-auto px-4">
             <h2 className="text-3xl font-bold text-gray-900 text-center mb-8">Workflows</h2>
-            <div className="grid md:grid-cols-3 gap-6">
+            <div className="grid md:grid-cols-2 gap-6">
               <div className="bg-white p-6 rounded-lg shadow-sm">
                 <h3 className="text-lg font-semibold text-gray-900 mb-3">🚀 Development</h3>
                 <ul className="text-sm text-gray-600 space-y-1">
@@ -95,19 +114,10 @@ npm run dev
               </div>
               
               <div className="bg-white p-6 rounded-lg shadow-sm">
-                <h3 className="text-lg font-semibold text-gray-900 mb-3">📋 Documentation</h3>
-                <ul className="text-sm text-gray-600 space-y-1">
-                  <li>• trd-creation</li>
-                  <li>• brd-creation</li>
-                  <li>• brd-to-trd-translation</li>
-                </ul>
-              </div>
-              
-              <div className="bg-white p-6 rounded-lg shadow-sm">
-                <h3 className="text-lg font-semibold text-gray-900 mb-3">🏗️ Setup & Ops</h3>
+                <h3 className="text-lg font-semibold text-gray-900 mb-3">📋 Setup & Planning</h3>
                 <ul className="text-sm text-gray-600 space-y-1">
                   <li>• project-initialization</li>
-                  <li>• infrastructure-setup</li>
+                  <li>• trd-creation</li>
                 </ul>
               </div>
             </div>

@@ -16,7 +16,7 @@ export default function HeroSection() {
         <div className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-500/10 to-purple-500/10 backdrop-blur-sm border border-blue-200/50 rounded-full text-blue-800 text-sm font-medium mb-8 hover:scale-105 transition-transform duration-300">
           <div className="w-2 h-2 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full mr-3 animate-pulse"></div>
           <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent font-semibold">
-            MCP Server • Early Beta
+            MCP Server • Claude Desktop • Cursor
           </span>
         </div>
         
@@ -44,14 +44,14 @@ export default function HeroSection() {
         <div className="bg-white/80 backdrop-blur-sm border border-slate-200 rounded-2xl p-8 max-w-2xl mx-auto mb-12 shadow-lg">
           <h3 className="text-xl font-semibold text-slate-800 mb-4">Ready to Use</h3>
           <p className="text-slate-600 leading-relaxed">
-            Install the MCP server in Claude Desktop and get access to 11 proven workflows for AI agent development.
+            Install the MCP server in Claude Desktop or Cursor and get access to 6 proven workflows for AI agent development.
           </p>
         </div>
         
         {/* Stats */}
         <div className="mt-20 grid grid-cols-1 md:grid-cols-3 gap-8 max-w-2xl mx-auto">
           <div className="text-center">
-            <div className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">11</div>
+            <div className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">6</div>
             <div className="text-slate-600 text-sm font-medium">Workflows</div>
           </div>
           <div className="text-center">
