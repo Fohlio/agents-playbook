@@ -130,56 +130,6 @@ cp -r public/playbook/ /path/to/your/project/
 echo "Use workflows from playbook/ directory for structured development" > .cursorrules
 ```
 
-## 🎯 Cursor Integration Examples
-
-### 1. Workflow Discovery in Cursor
-```javascript
-// Create a simple workflow helper for Cursor
-async function findWorkflow(task) {
-  const response = await fetch('https://agents-playbook.vercel.app/api/workflows', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ query: task })
-  });
-  
-  const { workflows } = await response.json();
-  return workflows[0]; // Get best match
-}
-
-// Usage in Cursor:
-const workflow = await findWorkflow('create new feature');
-console.log(`Recommended: ${workflow.id} (${workflow.match}% match)`);
-```
-
-### 2. Step-by-Step Navigation
-```javascript
-// Get workflow steps
-async function getWorkflowSteps(workflowId) {
-  const response = await fetch(`https://agents-playbook.vercel.app/api/workflows/${workflowId}`);
-  const workflow = await response.json();
-  return workflow.phases.flatMap(phase => phase.steps);
-}
-
-// Usage:
-const steps = await getWorkflowSteps('feature-development');
-steps.forEach((step, i) => console.log(`${i+1}. ${step.action}`));
-```
-
-### 3. Mini-Prompts in Cursor
-```javascript
-// Access mini-prompts directly
-const miniPrompts = {
-  'implement-feature': 'https://agents-playbook.vercel.app/api/mini-prompts/development/implement-feature',
-  'code-review': 'https://agents-playbook.vercel.app/api/mini-prompts/development/code-review',
-  'ask-questions': 'https://agents-playbook.vercel.app/api/mini-prompts/development/ask-clarifying-questions'
-};
-
-// Get specific prompt
-async function getPrompt(promptId) {
-  const response = await fetch(miniPrompts[promptId]);
-  return await response.text();
-}
-```
 
 ## 📚 Local Usage
 
