@@ -36,7 +36,7 @@ export class MiniPromptLoader {
    * Find mini-prompt file by step ID across all categories
    */
   private async findAndParseMiniPrompt(stepId: string): Promise<MiniPrompt> {
-    const categories = ['development', 'analysis', 'qa', 'business', 'operations', 'migration'];
+    const categories = ['development', 'analysis', 'qa', 'business', 'operations'];
     
     for (const category of categories) {
       const categoryPath = path.join(this.miniPromptsPath, category);
@@ -332,7 +332,7 @@ Execute ${stepId} step
    * Get all available mini-prompts by category
    */
   async getAvailableMiniPrompts(): Promise<Record<string, string[]>> {
-    const categories = ['development', 'analysis', 'qa', 'business', 'operations', 'migration'];
+    const categories = ['development', 'analysis', 'qa', 'business', 'operations'];
     const result: Record<string, string[]> = {};
 
     for (const category of categories) {

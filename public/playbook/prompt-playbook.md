@@ -45,24 +45,15 @@ Use the **AI-powered semantic search** MCP server to find workflows instantly:
 - **implement-feature** - Feature implementation guidance and best practices
 
 #### 🚀 Operations Phase
-- **configure-infrastructure** - Infrastructure setup and configuration management
 - **deploy-application** - Application deployment procedures and automation
-- **manage-secrets** - Security and secrets management best practices
 - **monitor-system-health** - System monitoring, alerting, and observability
-- **backup-recovery** - Data protection and disaster recovery procedures
-- **setup-cicd-pipeline** - Continuous integration and deployment automation
 
 #### 🧪 QA Phase
 - **create-test-plan** - Test planning, strategy, and coverage analysis
 - **execute-tests** - Test execution, automation, and validation
 - **validate-requirements** - Requirements validation and acceptance criteria
 
-#### 🔄 Migration Phase
-- **api-migration** - API version migration and compatibility management
-- **cloud-migration** - Cloud platform migration and infrastructure transition
-- **data-transformation** - Data format and structure migration
-- **database-migration** - Database schema and data migration procedures
-- **platform-migration** - Platform and technology stack migration
+
 
 ## 🚀 Workflow Details
 
@@ -74,11 +65,11 @@ Use the **AI-powered semantic search** MCP server to find workflows instantly:
 - **Best For**: New features, enhancements, complex development tasks
 
 ### Product Development  
-**Comprehensive product development from idea to market launch**
+**Comprehensive product development from idea to launch**
 - **Phases**: Planning → Analysis → Design → Implementation → Testing → Deployment → Reflection
-- **Advanced Features**: Market analysis, user validation, stakeholder approval
+- **Advanced Features**: Technical analysis, requirements validation, automated testing
 - **Complexity**: High - requires extensive planning and validation
-- **Best For**: New products, major feature releases, market launches
+- **Best For**: New products, major feature releases, product launches
 
 ### Quick Fix
 **Fast resolution for bugs, hotfixes, and urgent tasks**
@@ -101,19 +92,7 @@ Use the **AI-powered semantic search** MCP server to find workflows instantly:
 - **Smart Features**: Auto-skips architecture analysis for simple features
 - **Best For**: Feature planning, technical specification, development preparation
 
-### BRD Creation
-**Business Requirements Document with research and stakeholder input**
-- **Phases**: Planning → Analysis → Documentation
-- **Research**: Market analysis, competitive research, stakeholder input
-- **Validation**: Business value assessment and stakeholder approval
-- **Best For**: New initiatives, business planning, requirement gathering
 
-### BRD to TRD Translation
-**Convert business requirements to technical specifications**
-- **Phases**: Analysis → Design → Documentation
-- **Prerequisites**: Complete BRD document required
-- **Output**: Comprehensive TRD with technical feasibility assessment
-- **Best For**: Business → Technical handoffs, technical planning
 
 ### Project Initialization
 **Set up new project context and AI agent documentation**
@@ -122,12 +101,7 @@ Use the **AI-powered semantic search** MCP server to find workflows instantly:
 - **Smart Features**: Auto-skips steps when sufficient context exists
 - **Best For**: New codebases, AI agent setup, project onboarding
 
-### Infrastructure Setup
-**Complete infrastructure deployment with monitoring and security**
-- **Phases**: Planning → Analysis → Design → Implementation → Testing → Operations → Documentation
-- **Advanced**: CI/CD pipelines, secrets management, backup procedures
-- **Complexity**: High - comprehensive infrastructure management
-- **Best For**: New environments, infrastructure migrations, DevOps setup
+
 
 ## 🎯 Decision Guide
 
@@ -139,17 +113,15 @@ Use the **AI-powered semantic search** MCP server to find workflows instantly:
 | Technical spec | Working feature | **feature-development** |
 | Product idea | Market launch | **product-development** |
 | Legacy code | Modern architecture | **code-refactoring** |
-| Business requirements | Technical specification | **brd-to-trd-translation** |
 | New project | AI setup | **project-initialization** |
-| Infrastructure needs | Production environment | **infrastructure-setup** |
 
 ### By Complexity Level
 | Complexity | Timeframe | Workflows |
 |------------|-----------|-----------|
 | **Simple** | Hours to 1 day | quick-fix |
-| **Standard** | 1-5 days | trd-creation, brd-creation, project-initialization |
-| **Complex** | 1-4 weeks | feature-development, code-refactoring, brd-to-trd-translation |
-| **Advanced** | 1+ months | product-development, infrastructure-setup |
+| **Standard** | 1-5 days | trd-creation, project-initialization |
+| **Complex** | 1-4 weeks | feature-development, code-refactoring |
+| **Advanced** | 1+ months | product-development |
 
 ## 🧠 Smart Execution Features
 
@@ -162,7 +134,7 @@ Use the **AI-powered semantic search** MCP server to find workflows instantly:
 ### Skip Conditions Examples
 - **Architecture Analysis**: Skipped for simple features or when `no_architecture_impact` flag is set
 - **Testing**: Skipped for trivial changes in quick-fix when `emergency_hotfix` condition is met
-- **Stakeholder Approval**: Skipped for internal projects when `no_formal_approval_needed` is set
+- **Requirements Validation**: Skipped for internal projects when `no_formal_validation_needed` is set
 
 ## 🔄 Common Workflow Flows
 
@@ -178,7 +150,7 @@ Feature Idea → trd-creation → feature-development → [product-development f
 
 ### Product Development Flow
 ```
-Product Idea → brd-creation → product-development → infrastructure-setup
+Product Idea → product-development
 ```
 
 ### New Project Flow
@@ -188,7 +160,7 @@ New Codebase → project-initialization → [Choose development workflow]
 
 ### Migration Flow
 ```
-Legacy System → code-refactoring → feature-development → infrastructure-setup
+Legacy System → code-refactoring → feature-development
 ```
 
 ## 🚀 Getting Started
@@ -206,10 +178,10 @@ Legacy System → code-refactoring → feature-development → infrastructure-se
 - Customize for your team's needs
 
 ### 3. Direct Navigation
-- **Planning & Documentation**: trd-creation, brd-creation, brd-to-trd-translation
+- **Planning & Documentation**: trd-creation
 - **Development**: feature-development, quick-fix, code-refactoring
 - **Product & Launch**: product-development
-- **Setup & Operations**: project-initialization, infrastructure-setup
+- **Setup & Operations**: project-initialization
 
 ## 📊 Success Criteria
 
@@ -218,13 +190,13 @@ Legacy System → code-refactoring → feature-development → infrastructure-se
 - ✅ All tests pass and quality gates met
 - ✅ No regressions in existing functionality  
 - ✅ Documentation updated and current
-- ✅ Stakeholder approval obtained (where required)
+- ✅ Requirements validation completed (where required)
 
 ### Workflow-Specific Success Metrics
 - **Feature Development**: TRD created, feature deployed, requirements validated
-- **Product Development**: Market launch successful, user adoption metrics positive
+- **Product Development**: Product launch successful, technical requirements met
 - **Quick Fix**: Issue resolved, no side effects, minimal disruption
-- **Infrastructure**: Environment stable, monitoring active, security configured
+
 
 ---
 

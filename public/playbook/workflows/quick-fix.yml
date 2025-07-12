@@ -61,8 +61,8 @@ phases:
 skipConditions:
   - condition: "complex_architecture_change"
     message: "Issue requires complex architectural changes, use feature-development workflow instead"
-  - condition: "multiple_stakeholder_approval"
-    message: "Change requires extensive approval process, not suitable for quick fix"
+  - condition: "complex_approval_process"
+    message: "Change requires extensive validation process, not suitable for quick fix"
 
 validationRules:
   - rule: "minimal_scope_required"

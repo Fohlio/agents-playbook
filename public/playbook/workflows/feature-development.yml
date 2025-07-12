@@ -25,7 +25,7 @@ phases:
         required: true
         prerequisites:
           requiredContext: ["requirements"]
-          optionalContext: ["stakeholder_contact_info"]
+          optionalContext: []
         dependencies: ["gather-requirements"]
 
   - phase: "analysis"
@@ -138,7 +138,7 @@ phases:
         required: true
         prerequisites:
           requiredContext: ["deployed_feature", "original_requirements"]
-          optionalContext: ["stakeholder_feedback", "acceptance_criteria"]
+          optionalContext: ["acceptance_criteria"]
         dependencies: ["create-trd"]
         
       - id: "document-decisions"
@@ -153,13 +153,13 @@ phases:
 skipConditions:
   - condition: "feature_already_implemented"
     message: "Feature has already been implemented and deployed"
-  - condition: "requirements_not_approved"
-    message: "Feature requirements have not been approved by stakeholders"
+  - condition: "requirements_incomplete"
+    message: "Feature requirements are incomplete or unclear"
 
 validationRules:
-  - rule: "stakeholder_approval_required"
+  - rule: "requirements_validation_required"
     phases: ["planning-clarification"]
-    message: "Stakeholder approval required before proceeding to implementation"
+    message: "Requirements validation required before proceeding to implementation"
   - rule: "testing_required_before_deployment"
     phases: ["deployment-operations"]
     dependencies: ["testing-validation"]

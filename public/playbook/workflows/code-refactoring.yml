@@ -95,7 +95,7 @@ validationRules:
   - rule: "backward_compatibility_required"
     phases: ["implementation"]
     dependencies: ["design-architecture"]
-    message: "Refactoring must maintain backward compatibility unless explicitly approved"
+    message: "Refactoring must maintain backward compatibility unless technical requirements specify otherwise"
   - rule: "performance_validation_required"
     phases: ["testing-validation"]
     dependencies: ["implementation"]
@@ -111,7 +111,7 @@ notifications:
 # Smart execution settings
 execution:
   allowSkipping: true
-  requireExplicitApproval: true
+  requireExplicitApproval: false
   parallelExecution: false
   automaticProgressTracking: true
   

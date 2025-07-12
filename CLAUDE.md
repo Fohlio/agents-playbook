@@ -44,24 +44,15 @@ This is a **production-ready workflow automation repository** for AI agents in s
 - `implement-feature.md` - Feature implementation guidance
 
 **Operations Phase** (`operations/`)
-- `configure-infrastructure.md` - Infrastructure setup and configuration
 - `deploy-application.md` - Application deployment procedures
-- `manage-secrets.md` - Security and secrets management
 - `monitor-system-health.md` - System monitoring and alerting
-- `backup-recovery.md` - Data protection and disaster recovery
-- `setup-cicd-pipeline.md` - CI/CD automation
 
 **QA Phase** (`qa/`)
 - `create-test-plan.md` - Test planning and strategy
 - `execute-tests.md` - Test execution and validation
 - `validate-requirements.md` - Requirements validation and acceptance
 
-**Migration Phase** (`migration/`)
-- `api-migration.md` - API version migration
-- `cloud-migration.md` - Cloud platform migration
-- `data-transformation.md` - Data format migration
-- `database-migration.md` - Database schema migration
-- `platform-migration.md` - Technology platform migration
+
 
 ## AI Agent Guidelines
 

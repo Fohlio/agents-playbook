@@ -7,7 +7,7 @@ Fill the info gaps and nail down requirements before any code gets written—no 
 1. **Task / Problem** – what are we trying to do or fix?
 2. **Scope Boundaries** – what’s in vs. out?
 3. **Urgency** – critical / high / medium / low?
-4. **Constraints** – tech, security, performance, budget?
+4. **Constraints** – tech, security, performance?
 
 ## 🚦 Skip if
 - Requirements are already crystal-clear **or** it’s an emergency fire-drill.
@@ -16,14 +16,14 @@ Fill the info gaps and nail down requirements before any code gets written—no 
 - **Scope**  
   - [ ] Included vs. excluded functionality  
 - **Constraints**  
-  - [ ] Platform, perf, security, budget  
+  - [ ] Platform, perf, security  
 - **Success**  
   - [ ] How will we know it’s done?  
 - **Dependencies**  
   - [ ] External systems, data, approvals  
 
 ## 💬 Question Style
-Always give multiple-choice or concrete examples so stakeholders can click, not think.
+Always give multiple-choice or concrete examples for clear requirements.
 
 > **Target users?**  
 > A) End-users B) Admins C) Both D) Other: ____  
@@ -37,7 +37,7 @@ Always give multiple-choice or concrete examples so stakeholders can click, not 
   - Expected vs. actual?  
   - Workarounds?  
 - **New Feature**  
-  - User persona?  
+  - User types?  
   - Problem it solves?  
   - Flow happy-path?  
 - **Refactor**  
@@ -51,7 +51,7 @@ Always give multiple-choice or concrete examples so stakeholders can click, not 
 
 Sections:
 1. **Summary** – task/problem in plain English  
-2. **Stakeholder Answers** – captured multiple-choice selections  
+2. **Requirements Answers** – captured multiple-choice selections  
 3. **Final Scope** – what’s in / out  
 4. **Constraints & Dependencies** – bullets  
 5. **Success Criteria** – clear acceptance tests  

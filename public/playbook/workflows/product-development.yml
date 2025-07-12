@@ -18,14 +18,14 @@ phases:
         required: true
         prerequisites:
           requiredContext: []
-          optionalContext: ["market_research", "user_feedback", "competitive_analysis"]
+          optionalContext: ["existing_feature_analysis"]
         
       - id: "ask-clarifying-questions"
         miniPrompt: "development/ask-clarifying-questions"
         required: true
         prerequisites:
           requiredContext: ["requirements"]
-          optionalContext: ["user_personas"]
+          optionalContext: []
         dependencies: ["gather-requirements"]
 
   - phase: "analysis"
@@ -37,7 +37,7 @@ phases:
         required: true
         prerequisites:
           requiredContext: ["clarified_requirements", "product_vision"]
-          optionalContext: ["market_research", "user_research"]
+          optionalContext: ["existing_analysis"]
         dependencies: ["ask-clarifying-questions"]
         
       - id: "architecture-analysis"
@@ -81,7 +81,7 @@ phases:
         required: true
         prerequisites:
           requiredContext: ["implemented_features", "product_requirements"]
-          optionalContext: ["user_scenarios", "acceptance_criteria"]
+          optionalContext: ["acceptance_criteria"]
         dependencies: ["implement-feature"]
         
       - id: "execute-tests"
@@ -89,7 +89,7 @@ phases:
         required: true
         prerequisites:
           requiredContext: ["test_plan", "implemented_features"]
-          optionalContext: ["test_automation", "user_testing_results"]
+          optionalContext: ["test_automation"]
         dependencies: ["create-test-plan"]
         
       - id: "validate-requirements"
@@ -97,7 +97,7 @@ phases:
         required: true
         prerequisites:
           requiredContext: ["tested_product", "original_requirements"]
-          optionalContext: ["user_feedback"]
+          optionalContext: []
         dependencies: ["execute-tests"]
 
   - phase: "deployment-operations"
@@ -144,17 +144,17 @@ phases:
 skipConditions:
   - condition: "product_already_launched"
     message: "Product has already been successfully launched"
-  - condition: "insufficient_resources"
-    message: "Insufficient team or budget resources for full product development"
+  - condition: "insufficient_technical_requirements"
+    message: "Insufficient technical requirements for full product development"
 
 validationRules:
-  - rule: "market_validation_required"
+  - rule: "requirements_validation_required"
     phases: ["analysis"]
-    message: "Market research and validation required before development"
-  - rule: "user_testing_required"
+    message: "Requirements validation required before development"
+  - rule: "feature_testing_required"
     phases: ["testing-validation"]
     dependencies: ["implementation"]
-    message: "User testing must be completed before launch"
+    message: "Feature testing must be completed before launch"
   - rule: "performance_validation_required"
     phases: ["deployment-operations"]
     dependencies: ["testing-validation"]
@@ -170,7 +170,7 @@ notifications:
 # Smart execution settings
 execution:
   allowSkipping: true
-  requireExplicitApproval: true
+  requireExplicitApproval: false
   parallelExecution: false
   automaticProgressTracking: true
   

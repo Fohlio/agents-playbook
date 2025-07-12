@@ -259,11 +259,8 @@ describe('MCP Tools Integration Tests', () => {
 
   describe('All workflows comprehensive test', () => {
     const allWorkflowIds = [
-      'brd-creation',
-      'brd-to-trd-translation', 
       'code-refactoring',
       'feature-development',
-      'infrastructure-setup',
       'product-development',
       'project-initialization',
       'quick-fix',
@@ -293,9 +290,8 @@ describe('MCP Tools Integration Tests', () => {
       { query: 'new feature', expectedWorkflow: 'feature-development' },
       { query: 'technical documentation', expectedWorkflow: 'trd-creation' },
       { query: 'project setup', expectedWorkflow: 'project-initialization' },
-      { query: 'infrastructure deployment', expectedWorkflow: 'infrastructure-setup' },
       { query: 'code cleanup', expectedWorkflow: 'code-refactoring' },
-      { query: 'business requirements', expectedWorkflow: 'brd-creation' }
+      { query: 'product development', expectedWorkflow: 'product-development' }
     ];
 
     test.each(testQueries)('semantic search for "$query" should find $expectedWorkflow', async ({ query, expectedWorkflow }) => {

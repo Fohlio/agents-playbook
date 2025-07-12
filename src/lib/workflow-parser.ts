@@ -188,7 +188,7 @@ export class WorkflowParser {
     const commonKeywords = [
       'planning', 'development', 'kickoff', 'qa', 'testing', 'validation',
       'feature', 'bug', 'fix', 'implementation', 'architecture', 'refactoring',
-      'product', 'trd', 'brd', 'documentation', 'migration', 'research'
+      'product', 'trd', 'documentation', 'research'
     ];
     
     commonKeywords.forEach(keyword => {

@@ -7,28 +7,28 @@ Extract crystal-clear business requirements and lock them down—no fluff.
 Before gathering requirements, assess the existing documentation and project context:
 
 ### Existing Documentation
-- **Current State:** Check for existing BRD, user stories, technical specs, or project notes
+- **Current State:** Check for existing technical specs, user stories, or project notes
 - **Documentation Quality:** Evaluate completeness and currency of available documents
 - **Gap Analysis:** Identify missing information that needs to be gathered
 
 ### Document Generation Support
 - **Requirements Format:** Determine appropriate format for requirements documentation
-- **Stakeholder Alignment:** Ensure requirements documentation meets team needs
+- **Technical Alignment:** Ensure requirements documentation meets technical needs
 - **Integration Points:** Consider how requirements documentation fits into overall project documentation
 
 ## 📥 Context (ask if missing)
 1. **Project Scope** – what’s being built?
-2. **Stakeholders** – who uses / owns / supports this?
+2. **System Users** – what are the different user types?
 3. **Business Objectives** – why does this exist?
 4. **Current State** – legacy systems / processes?
-5. **Existing Docs** – BRD, user stories, notes? (Y/N)
+5. **Existing Docs** – technical specs, user stories, notes? (Y/N)
 
 ## 🚦 Skip if
 - A validated requirements doc exists (<30 days) or scope is trivial/emergency.
 
 ## 🔍 Checklist
-- **Stakeholder List**  
-  - [ ] End users, business owners, ops, compliance, integrations  
+- **System Users**  
+  - [ ] End users, system administrators, integrations  
 
 - **Functional**  
   - [ ] Core features & workflows  
@@ -39,7 +39,7 @@ Before gathering requirements, assess the existing documentation and project con
   - [ ] Performance, security, usability, reliability, scalability  
 
 - **Constraints**  
-  - [ ] Budget, timeline, resources, tech stack, regulations  
+  - [ ] Tech stack, performance, security, regulations  
 
 - **Doc Hygiene**  
   - [ ] Unique IDs, priority (MoSCoW), acceptance criteria, dependencies  
@@ -51,7 +51,7 @@ Before gathering requirements, assess the existing documentation and project con
 **File:** `docs/planning/[feature-name]-requirements.md`  
 Sections (in order):
 1. **Executive Summary** – goals & scope  
-2. **Stakeholder Analysis** – roles & interests  
+2. **System Users** – types & requirements  
 3. **Functional Requirements** – table w/ ID, desc, priority, AC  
 4. **Non-Functional Requirements** – same table style  
 5. **Business Constraints** – bullets  

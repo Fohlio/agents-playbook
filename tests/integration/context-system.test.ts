@@ -109,7 +109,7 @@ describe('Context System Integration Tests', () => {
     }, TEST_TIMEOUT);
 
     test('should show workflow overview for all major workflows', async () => {
-      const workflows = ['feature-development', 'trd-creation', 'brd-creation'];
+      const workflows = ['feature-development', 'trd-creation'];
       
       for (const workflowId of workflows) {
         const result = await selectWorkflowHandler({ workflow_id: workflowId });
@@ -339,11 +339,8 @@ describe('Context System Integration Tests', () => {
 
   describe('Context Integration with All Workflows', () => {
     const allWorkflowIds = [
-      'brd-creation',
-      'brd-to-trd-translation', 
       'code-refactoring',
       'feature-development',
-      'infrastructure-setup',
       'product-development',
       'project-initialization',
       'quick-fix',

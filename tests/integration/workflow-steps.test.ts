@@ -17,11 +17,8 @@ describe('Workflow Steps Integration Tests', () => {
 
   describe('All workflow steps progression', () => {
     const allWorkflowIds = [
-      'brd-creation',
-      'brd-to-trd-translation', 
       'code-refactoring',
       'feature-development',
-      'infrastructure-setup',
       'product-development',
       'project-initialization',
       'quick-fix',
@@ -438,7 +435,6 @@ describe('Workflow Steps Integration Tests', () => {
         'quick-fix',
         'feature-development',
         'trd-creation',
-        'brd-creation',
         'project-initialization'
       ];
       

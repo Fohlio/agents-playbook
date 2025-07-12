@@ -18,7 +18,7 @@ phases:
         required: true
         prerequisites:
           requiredContext: ["project_codebase"]
-          optionalContext: ["existing_documentation", "team_preferences"]
+          optionalContext: ["existing_documentation"]
 
   - phase: "planning-clarification"
     description: "Project requirements and technology planning"
@@ -38,7 +38,7 @@ phases:
         required: false
         prerequisites:
           requiredContext: ["project_navigation"]
-          optionalContext: ["team_structure", "timeline_constraints"]
+          optionalContext: []
           skipConditions: ["clear_project_context", "simple_setup"]
         dependencies: ["create-project-navigation"]
 
@@ -78,7 +78,7 @@ validationRules:
   - rule: "technology_stack_validation"
     phases: ["design-architecture"]
     dependencies: ["planning-clarification"]
-    message: "Technology choices must align with project requirements and team expertise"
+    message: "Technology choices must align with project requirements and technical constraints"
   - rule: "security_configuration_required"
     phases: ["implementation"]
     dependencies: ["design-architecture"]

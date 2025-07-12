@@ -7,19 +7,19 @@ Gather requirements, clarify scope, and establish clear understanding of the tas
 1. **ask-clarifying-questions** - Gather detailed requirements and constraints
 2. **research-new-libraries** - Research required technologies and libraries [conditional: if new libraries mentioned]
 3. **define-scope** - Establish clear boundaries and success criteria
-4. **stakeholder-alignment** - Confirm understanding with stakeholders [conditional: if stakeholders involved]
+4. **requirements-validation** - Validate requirements completeness and accuracy
 
 ## Phase Prerequisites
 - **Context**: Task description or problem statement
 - **MCP Servers**: None required for basic planning
-- **Optional**: Existing documentation, stakeholder contact info
+- **Optional**: Existing documentation, system specifications
 
 ## Phase Success Criteria
 - Clear, detailed requirements documented
 - Scope and boundaries defined
 - Technical approach outlined
 - All questions answered and ambiguities resolved
-- Stakeholder sign-off obtained (if applicable)
+- Requirements validation completed
 
 ## Skip Conditions
 - Requirements are already crystal clear

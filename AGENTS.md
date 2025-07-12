@@ -20,10 +20,7 @@ This is a **production-ready workflow automation repository** for AI agents in s
 - **quick-fix.yml** - Bug fixes and hotfixes (4 steps)
 - **code-refactoring.yml** - Code architecture improvements (8 steps)
 - **trd-creation.yml** - Technical Requirements Document creation (7 steps)
-- **brd-creation.yml** - Business Requirements with research (6 steps)
-- **brd-to-trd-translation.yml** - Business to technical translation (6 steps)
 - **project-initialization.yml** - New project setup (5 steps)
-- **infrastructure-setup.yml** - Infrastructure deployment (12 steps)
 
 #### 🧱 Mini-Prompts Library (`playbook/mini-prompts/`)
 
@@ -44,24 +41,15 @@ This is a **production-ready workflow automation repository** for AI agents in s
 - `implement-feature.md` - Feature implementation guidance
 
 **Operations Phase** (`operations/`)
-- `configure-infrastructure.md` - Infrastructure setup and configuration
 - `deploy-application.md` - Application deployment procedures
-- `manage-secrets.md` - Security and secrets management
 - `monitor-system-health.md` - System monitoring and alerting
-- `backup-recovery.md` - Data protection and disaster recovery
-- `setup-cicd-pipeline.md` - CI/CD automation
 
 **QA Phase** (`qa/`)
 - `create-test-plan.md` - Test planning and strategy
 - `execute-tests.md` - Test execution and validation
 - `validate-requirements.md` - Requirements validation and acceptance
 
-**Migration Phase** (`migration/`)
-- `api-migration.md` - API version migration
-- `cloud-migration.md` - Cloud platform migration
-- `data-transformation.md` - Data format migration
-- `database-migration.md` - Database schema migration
-- `platform-migration.md` - Technology platform migration
+
 
 ## AI Agent Guidelines
 
@@ -112,12 +100,12 @@ Critical Bug/Hotfix → quick-fix workflow
 #### Feature Development
 ```
 Feature Idea → trd-creation → feature-development (with TRD integration [[memory:2316971]])
-Business Requirements → brd-to-trd-translation → feature-development
+Existing Requirements → feature-development
 ```
 
 #### Product Development
 ```
-Product Idea → brd-creation → product-development → infrastructure-setup
+Product Idea → product-development
 ```
 
 #### New Projects
@@ -143,7 +131,7 @@ Legacy Code → code-refactoring → feature-development
 - "fix critical production bug" → quick-fix (🎯 89%)
 - "implement new feature" → feature-development (🎯 92%)
 - "create technical documentation" → trd-creation (🎯 94%)
-- "setup new infrastructure" → infrastructure-setup (🎯 91%)
+- "setup new project" → project-initialization (🎯 91%)
 
 ## Technical Integration
 

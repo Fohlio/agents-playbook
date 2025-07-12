@@ -9,7 +9,7 @@ Validate implementation meets requirements through comprehensive testing strateg
 3. **validate-requirements** - verify implementation meets acceptance criteria
 4. **performance-testing** [if performance requirements]
 5. **security-testing** [if security requirements]
-6. **user-acceptance-testing** [if user validation required]
+6. **acceptance-testing** [if acceptance validation required]
 
 ## Context Required
 - Completed implementation
@@ -27,7 +27,7 @@ Validate implementation meets requirements through comprehensive testing strateg
 - Critical test scenarios passing
 - Performance requirements met (if applicable)
 - Security requirements validated (if applicable)
-- User acceptance criteria satisfied
+- Acceptance criteria satisfied
 - No critical bugs or issues identified
 
 ## Expected Duration
@@ -38,6 +38,6 @@ Validate implementation meets requirements through comprehensive testing strateg
 - Validation of requirements compliance
 - Performance test results (if applicable)
 - Security test results (if applicable)
-- User acceptance validation (if applicable)
+- Acceptance validation (if applicable)
 - Issue identification and resolution
 - Quality assurance sign-off 
