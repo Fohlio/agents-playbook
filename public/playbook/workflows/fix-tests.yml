@@ -1,0 +1,76 @@
+name: "Fix Tests Workflow"
+description: "Systematic approach to diagnose and fix failing tests quickly and reliably"
+version: "1.0"
+category: "development"
+tags: ["tests", "fix", "debugging", "quality", "jest"]
+
+metadata:
+  complexity: "medium"
+  skillLevel: "intermediate"
+
+phases:
+  - phase: "analysis"
+    description: "Analyze test failures and identify root causes"
+    required: true
+    steps:
+      - id: "analyze-test-failures"
+        miniPrompt: "qa/analyze-test-failures"
+        required: true
+        prerequisites:
+          requiredContext: []
+          optionalContext: ["test_error_logs", "recent_changes", "failing_test_names"]
+
+      - id: "trace-bug-root-cause"
+        miniPrompt: "analysis/trace-bug-root-cause"
+        required: true
+        prerequisites:
+          requiredContext: ["test_failure_analysis"]
+          optionalContext: ["error_logs", "stack_traces", "test_environment_details"]
+        dependencies: ["analyze-test-failures"]
+
+  - phase: "implementation"
+    description: "Fix the identified test issues"
+    required: true
+    steps:
+      - id: "fix-test-issues"
+        miniPrompt: "qa/fix-test-issues"
+        required: true
+        prerequisites:
+          requiredContext: ["root_cause_analysis", "test_failure_types"]
+          optionalContext: ["existing_test_code", "test_configuration"]
+        dependencies: ["trace-bug-root-cause"]
+
+  - phase: "testing-validation"
+    description: "Validate that fixes resolve issues without breaking other tests"
+    required: true
+    steps:
+      - id: "execute-tests"
+        miniPrompt: "qa/execute-tests"
+        required: true
+        prerequisites:
+          requiredContext: ["implemented_fixes"]
+          optionalContext: ["test_environment", "test_data"]
+        dependencies: ["fix-test-issues"]
+
+workflow_context:
+  typical_duration: "1-3 hours"
+  common_scenarios:
+    - "Jest tests failing after dependency updates"
+    - "Flaky integration tests in CI/CD pipeline" 
+    - "Unit tests broken by code refactoring"
+    - "Test environment configuration issues"
+    - "Mock and stub problems in test setup"
+
+skip_conditions:
+  - condition: "simple_syntax_error"
+    description: "Skip root cause analysis for obvious syntax errors"
+    affects_steps: ["trace-bug-root-cause"]
+  - condition: "single_test_failure"
+    description: "Skip comprehensive analysis for isolated test failures"
+    affects_steps: ["analyze-test-failures"]
+
+success_criteria:
+  - "All previously failing tests now pass"
+  - "No new test failures introduced"
+  - "Test execution time remains reasonable"
+  - "Root cause documented for future reference" 
