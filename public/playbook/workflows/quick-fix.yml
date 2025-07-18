@@ -4,10 +4,6 @@ version: "1.0"
 category: "development"
 tags: ["quick-fix", "hotfix", "bug", "urgent", "minimal"]
 
-metadata:
-  complexity: "low"
-  skillLevel: "basic"
-
 phases:
   - phase: "planning-clarification"
     description: "Quick problem analysis and scope definition"
@@ -83,17 +79,4 @@ notifications:
 execution:
   allowSkipping: true
   requireExplicitApproval: false
-  parallelExecution: false
-  automaticProgressTracking: true
-  
-# Integration settings
-integrations:
-  development:
-    - github
-    - gitlab
-  monitoring:
-    - sentry
-    - bugsnag
-  communication:
-    - slack
-    - teams 
+  automaticProgressTracking: true 

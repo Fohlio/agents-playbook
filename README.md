@@ -60,14 +60,15 @@ Get complete workflow with execution plan.
 ### `get_next_step`
 Step-by-step navigation with smart validation.
 
-## 📁 Workflows (7 total)
+## 📁 Workflows (8 total)
 
-### 🚀 Development (5)
+### 🚀 Development (6)
 - **feature-development** - Complete feature development lifecycle
 - **product-development** - From idea to product launch
 - **quick-fix** - Fast bug fixes and hotfixes
 - **code-refactoring** - Code architecture improvements
 - **fix-tests** - Systematic test failure diagnosis and repair
+- **unit-test-coverage** - Comprehensive unit test coverage improvement
 
 ### 📋 Setup & Planning (2)
 - **project-initialization** - New project setup
@@ -79,6 +80,12 @@ Step-by-step navigation with smart validation.
 1. Search: "create new feature"
 2. Result: feature-development workflow (🎯 92% match)  
 3. Execute: 14 steps with TRD integration and smart skipping
+```
+
+```
+1. Search: "improve test coverage"  
+2. Result: unit-test-coverage workflow (🎯 94% match)
+3. Execute: 7 steps of systematic coverage improvement
 ```
 
 ```

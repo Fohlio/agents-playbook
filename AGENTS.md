@@ -22,6 +22,7 @@ This is a **production-ready workflow automation repository** for AI agents in s
 - **quick-fix.yml** - Bug fixes and hotfixes (4 steps)
 - **code-refactoring.yml** - Code architecture improvements (8 steps)
 - **fix-tests.yml** - Systematic test failure diagnosis and repair (5 steps)
+- **unit-test-coverage.yml** - Comprehensive unit test coverage improvement (7 steps)
 - **trd-creation.yml** - Technical Requirements Document creation (7 steps)
 - **project-initialization.yml** - New project setup (5 steps)
 
@@ -107,6 +108,9 @@ Critical Bug/Hotfix → quick-fix workflow
 Tests Failing → fix-tests workflow
 Flaky Tests → fix-tests workflow
 Circular Dependencies → fix-tests workflow (includes architectural fixes)
+Low Test Coverage → unit-test-coverage workflow
+Need Unit Tests → unit-test-coverage workflow
+Quality Gates → unit-test-coverage workflow
 ```
 
 #### Feature Development
@@ -128,6 +132,7 @@ New Codebase → project-initialization → [choose development workflow]
 #### Legacy Systems
 ```
 Legacy Code → code-refactoring → feature-development
+Legacy Code Without Tests → unit-test-coverage → code-refactoring
 ```
 
 ### Semantic Search Usage
@@ -144,6 +149,8 @@ Legacy Code → code-refactoring → feature-development
 - "tests failing" → fix-tests (🎯 91%)
 - "circular dependencies" → fix-tests (🎯 88%)
 - "implement new feature" → feature-development (🎯 92%)
+- "improve test coverage" → unit-test-coverage (🎯 94%)
+- "write unit tests" → unit-test-coverage (🎯 91%)
 - "create technical documentation" → trd-creation (🎯 94%)
 - "setup new project" → project-initialization (🎯 91%)
 
@@ -165,7 +172,7 @@ npm run dev
 - **Production Ready**: Comprehensive test coverage and validation
 - **Smart Validation**: Automatic step skipping based on context
 - **Error Handling**: Graceful fallbacks and error recovery
-- **Performance**: Fast semantic search with OpenAI embeddings
+- **Performance**: Fast semantic search with OpenAI embeddings (falls back to text search)
 
 ### Tool Integration Notes
 - **Context7** - For library documentation access
@@ -193,7 +200,7 @@ npm run dev
 - Workflow produces expected output with smart execution
 - Implementation meets requirements with proper validation
 - Documentation stays current and accurate
-- Test coverage remains comprehensive (47 tests passing)
+- Test coverage remains comprehensive (50+ tests passing)
 
 ## Emergency Situations
 For urgent bugs or critical issues:

@@ -4,10 +4,6 @@ version: "1.0"
 category: "development"
 tags: ["tests", "fix", "debugging", "quality", "jest"]
 
-metadata:
-  complexity: "medium"
-  skillLevel: "intermediate"
-
 phases:
   - phase: "analysis"
     description: "Analyze test failures and identify root causes"
@@ -62,7 +58,6 @@ phases:
         dependencies: ["fix-test-issues"]
 
 workflow_context:
-  typical_duration: "1-4 hours"
   steps_count: 5
   common_scenarios:
     - "Jest tests failing after dependency updates"

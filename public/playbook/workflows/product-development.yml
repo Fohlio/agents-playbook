@@ -4,10 +4,6 @@ version: "1.0"
 category: "development"
 tags: ["product", "development", "planning", "full-cycle", "launch"]
 
-metadata:
-  complexity: "high"
-  skillLevel: "advanced"
-
 phases:
   - phase: "planning-clarification"
     description: "Product planning and requirements definition"
@@ -92,13 +88,7 @@ phases:
           optionalContext: ["test_automation"]
         dependencies: ["create-test-plan"]
         
-      - id: "validate-requirements"
-        miniPrompt: "qa/validate-requirements"
-        required: true
-        prerequisites:
-          requiredContext: ["tested_product", "original_requirements"]
-          optionalContext: []
-        dependencies: ["execute-tests"]
+
 
   - phase: "deployment-operations"
     description: "Product launch and operational setup"
@@ -110,15 +100,9 @@ phases:
         prerequisites:
           requiredContext: ["validated_product", "deployment_environment"]
           optionalContext: ["deployment_pipeline", "rollback_procedures"]
-        dependencies: ["validate-requirements"]
+        dependencies: ["execute-tests"]
         
-      - id: "monitor-system-health"
-        miniPrompt: "operations/monitor-system-health"
-        required: true
-        prerequisites:
-          requiredContext: ["deployed_product"]
-          optionalContext: ["monitoring_tools", "alert_configuration"]
-        dependencies: ["deploy-application"]
+
 
   - phase: "completion-reflection"
     description: "Launch validation and knowledge capture"
@@ -130,15 +114,9 @@ phases:
         prerequisites:
           requiredContext: ["completed_product", "design_specifications"]
           optionalContext: ["architecture_analysis", "technical_decisions"]
-        dependencies: ["monitor-system-health"]
+        dependencies: ["deploy-application"]
         
-      - id: "document-decisions"
-        miniPrompt: "business/document-decisions"
-        required: true
-        prerequisites:
-          requiredContext: ["completed_product", "launch_results"]
-          optionalContext: ["lessons_learned", "performance_metrics"]
-        dependencies: ["create-trd"]
+
      
 # Workflow-level configurations
 skipConditions:
@@ -171,25 +149,4 @@ notifications:
 execution:
   allowSkipping: true
   requireExplicitApproval: false
-  parallelExecution: false
-  automaticProgressTracking: true
-  
-# Integration settings
-integrations:
-  projectManagement:
-    - jira
-    - asana
-    - monday
-    - linear
-  development:
-    - github
-    - gitlab
-    - azure-devops
-  analytics:
-    - google-analytics
-    - mixpanel
-    - amplitude
-  monitoring:
-    - datadog
-    - new-relic
-    - sentry 
+  automaticProgressTracking: true 

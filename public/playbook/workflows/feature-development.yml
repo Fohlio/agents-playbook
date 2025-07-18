@@ -4,10 +4,6 @@ version: "1.0"
 category: "development"
 tags: ["feature", "development", "full-cycle"]
 
-metadata:
-  complexity: "medium"
-  skillLevel: "intermediate"
-
 phases:
   - phase: "planning-clarification"
     description: "Requirements gathering and scope definition"
@@ -52,13 +48,21 @@ phases:
     description: "Solution design and architecture planning"
     required: true
     steps:
+      - id: "create-trd"
+        miniPrompt: "business/create-trd"
+        required: true
+        prerequisites:
+          requiredContext: ["feature_analysis", "clarified_requirements"]
+          optionalContext: ["architecture_analysis", "technical_decisions"]
+        dependencies: ["feature-analysis"]
+        
       - id: "design-architecture"
         miniPrompt: "development/design-architecture"
         required: true
         prerequisites:
           requiredContext: ["feature_analysis", "technical_requirements"]
           optionalContext: ["architecture_analysis", "existing_patterns"]
-        dependencies: ["feature-analysis"]
+        dependencies: ["create-trd"]
 
   - phase: "implementation"
     description: "Technical execution and coding"
@@ -101,7 +105,7 @@ phases:
         dependencies: ["implement-feature"]
 
   - phase: "deployment-operations"
-    description: "Production deployment and monitoring"
+    description: "Production deployment"
     required: true
     steps:
       - id: "deploy-application"
@@ -111,43 +115,6 @@ phases:
           requiredContext: ["tested_feature", "deployment_environment"]
           optionalContext: ["deployment_pipeline", "rollback_procedures"]
         dependencies: ["execute-tests", "code-review"]
-        
-      - id: "monitor-system-health"
-        miniPrompt: "operations/monitor-system-health"
-        required: false
-        prerequisites:
-          requiredContext: ["deployed_application"]
-          optionalContext: ["monitoring_tools", "alert_configuration"]
-          skipConditions: ["monitoring_already_configured", "non_production_deployment"]
-        dependencies: ["deploy-application"]
-
-  - phase: "completion-reflection"
-    description: "Project closure and knowledge capture"
-    required: true
-    steps:
-      - id: "create-trd"
-        miniPrompt: "business/create-trd"
-        required: true
-        prerequisites:
-          requiredContext: ["completed_feature", "design_specifications"]
-          optionalContext: ["architecture_analysis", "technical_decisions"]
-        dependencies: ["deploy-application"]
-        
-      - id: "validate-requirements"
-        miniPrompt: "qa/validate-requirements"
-        required: true
-        prerequisites:
-          requiredContext: ["deployed_feature", "original_requirements"]
-          optionalContext: ["acceptance_criteria"]
-        dependencies: ["create-trd"]
-        
-      - id: "document-decisions"
-        miniPrompt: "business/document-decisions"
-        required: false
-        prerequisites:
-          requiredContext: ["completed_feature"]
-          optionalContext: ["architectural_decisions", "lessons_learned"]
-          skipConditions: ["no_significant_decisions", "simple_feature"]
 
 # Workflow-level configurations
 skipConditions:
@@ -160,10 +127,7 @@ validationRules:
   - rule: "requirements_validation_required"
     phases: ["planning-clarification"]
     message: "Requirements validation required before proceeding to implementation"
-  - rule: "testing_required_before_deployment"
-    phases: ["deployment-operations"]
-    dependencies: ["testing-validation"]
-    message: "All testing must be completed before deployment"
+
 
 notifications:
   - trigger: "phase_completion"
@@ -176,20 +140,4 @@ notifications:
 execution:
   allowSkipping: true
   requireExplicitApproval: false
-  parallelExecution: false
-  automaticProgressTracking: true
-  
-# Integration settings
-integrations:
-  projectManagement:
-    - jira
-    - asana
-    - linear
-  versionControl:
-    - git
-    - github
-    - gitlab
-  cicd:
-    - github-actions
-    - gitlab-ci
-    - jenkins 
+  automaticProgressTracking: true 

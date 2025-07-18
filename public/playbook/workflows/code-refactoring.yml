@@ -4,10 +4,6 @@ version: "1.0"
 category: "development"
 tags: ["refactoring", "architecture", "performance", "maintainability", "technical-debt"]
 
-metadata:
-  complexity: "medium-high"
-  skillLevel: "intermediate"
-
 phases:
   - phase: "analysis"
     description: "Code analysis and refactoring planning"
@@ -72,18 +68,6 @@ phases:
           optionalContext: ["automated_tests", "performance_benchmarks"]
         dependencies: ["create-test-plan"]
 
-  - phase: "completion-reflection"
-    description: "Documentation and knowledge sharing"
-    required: true
-    steps:
-      - id: "document-decisions"
-        miniPrompt: "business/document-decisions"
-        required: true
-        prerequisites:
-          requiredContext: ["refactoring_results", "architectural_changes"]
-          optionalContext: ["performance_improvements", "lessons_learned"]
-        dependencies: ["execute-tests"]
-
 # Workflow-level configurations
 skipConditions:
   - condition: "new_greenfield_project"
@@ -112,22 +96,4 @@ notifications:
 execution:
   allowSkipping: true
   requireExplicitApproval: false
-  parallelExecution: false
-  automaticProgressTracking: true
-  
-# Integration settings
-integrations:
-  development:
-    - github
-    - gitlab
-    - sonarqube
-  testing:
-    - jest
-    - cypress
-    - selenium
-  monitoring:
-    - datadog
-    - new-relic
-  documentation:
-    - confluence
-    - notion 
+  automaticProgressTracking: true 

@@ -1,0 +1,130 @@
+name: "Unit Test Coverage Workflow"
+description: "Systematic approach to analyze and improve unit test coverage for existing codebase"
+version: "1.0"
+category: "development"
+tags: ["unit-tests", "coverage", "quality", "testing", "jest"]
+
+phases:
+  - phase: "analysis"
+    description: "Analyze existing codebase and current test coverage"
+    required: true
+    steps:
+      - id: "code-analysis"
+        miniPrompt: "analysis/code-analysis"
+        required: true
+        prerequisites:
+          requiredContext: []
+          optionalContext: ["existing_tests", "code_structure", "testing_framework"]
+
+      - id: "analyze-test-coverage"
+        miniPrompt: "qa/analyze-test-coverage"
+        required: true
+        prerequisites:
+          requiredContext: ["codebase_analysis"]
+          optionalContext: ["coverage_reports", "test_files", "build_configuration"]
+        dependencies: ["code-analysis"]
+
+  - phase: "planning-clarification"
+    description: "Define coverage goals and create testing strategy"
+    required: true
+    steps:
+      - id: "define-coverage-goals"
+        miniPrompt: "qa/define-coverage-goals"
+        required: true
+        prerequisites:
+          requiredContext: ["coverage_analysis", "code_structure"]
+          optionalContext: ["team_standards", "project_requirements"]
+        dependencies: ["analyze-test-coverage"]
+
+      - id: "create-unit-test-plan"
+        miniPrompt: "qa/create-unit-test-plan"
+        required: true
+        prerequisites:
+          requiredContext: ["coverage_goals", "code_analysis"]
+          optionalContext: ["testing_priorities", "resource_constraints"]
+        dependencies: ["define-coverage-goals"]
+
+  - phase: "implementation"
+    description: "Write unit tests to improve coverage"
+    required: true
+    steps:
+      - id: "write-unit-tests"
+        miniPrompt: "qa/write-unit-tests"
+        required: true
+        prerequisites:
+          requiredContext: ["test_plan", "target_functions"]
+          optionalContext: ["test_environment", "mocking_strategy", "existing_test_patterns"]
+        dependencies: ["create-unit-test-plan"]
+
+  - phase: "testing-validation"
+    description: "Execute and validate tests"
+    required: true
+    steps:
+      - id: "execute-tests"
+        miniPrompt: "qa/execute-tests"
+        required: true
+        prerequisites:
+          requiredContext: ["implemented_tests"]
+          optionalContext: ["test_environment", "ci_configuration"]
+        dependencies: ["write-unit-tests"]
+
+  - phase: "completion-reflection"
+    description: "Document test strategy and results"
+    required: true
+    steps:
+      - id: "document-test-strategy"
+        miniPrompt: "qa/document-test-strategy"
+        required: true
+        prerequisites:
+          requiredContext: ["completed_coverage_improvement", "test_implementation"]
+          optionalContext: ["coverage_metrics", "testing_patterns_used"]
+        dependencies: ["execute-tests"]
+
+workflow_context:
+  steps_count: 7
+  common_scenarios:
+    - "Legacy codebase with low test coverage"
+    - "New team member onboarding with testing requirements"
+    - "Code quality improvement initiatives"
+    - "Pre-refactoring safety net creation"
+    - "Compliance or quality gate requirements"
+
+skip_conditions:
+  - condition: "high_coverage_already"
+    description: "Skip if coverage is already above target threshold"
+    affects_steps: ["analyze-test-coverage", "define-coverage-goals"]
+  - condition: "critical_functions_only"
+    description: "Focus only on critical business logic"
+    affects_steps: ["write-unit-tests"]
+  - condition: "emergency_timeline"
+    description: "Skip documentation for urgent delivery"
+    affects_steps: ["document-test-strategy"]
+
+# Workflow-level configurations
+skipConditions:
+  - condition: "excellent_coverage_exists"
+    message: "Codebase already has excellent test coverage (>90%)"
+  - condition: "no_testable_code"
+    message: "No significant business logic identified for unit testing"
+
+validationRules:
+  - rule: "coverage_analysis_required"
+    phases: ["planning-clarification"]
+    dependencies: ["analysis"]
+    message: "Coverage analysis must be completed before planning"
+  - rule: "tests_must_pass"
+    phases: ["completion-reflection"]
+    dependencies: ["testing-validation"]
+    message: "All tests must pass before documenting strategy"
+
+notifications:
+  - trigger: "test_failures_detected"
+    message: "Some unit tests are failing - review required"
+  - trigger: "workflow_completion"
+    message: "Unit test coverage workflow completed successfully"
+
+# Smart execution settings
+execution:
+  allowSkipping: true
+  requireExplicitApproval: false
+  automaticProgressTracking: true 

@@ -4,10 +4,6 @@ version: "1.0"
 category: "setup"
 tags: ["initialization", "setup", "project-start", "navigation", "context"]
 
-metadata:
-  complexity: "medium"
-  skillLevel: "intermediate"
-
 phases:
   - phase: "analysis"
     description: "Project structure and codebase analysis"
@@ -55,18 +51,6 @@ phases:
           skipConditions: ["architecture_already_documented", "simple_project"]
         dependencies: ["create-project-navigation"]
 
-  - phase: "completion-reflection"
-    description: "Documentation validation and knowledge capture"
-    required: true
-    steps:
-      - id: "validate-requirements"
-        miniPrompt: "qa/validate-requirements"
-        required: true
-        prerequisites:
-          requiredContext: ["project_navigation", "AGENTS_MD"]
-          optionalContext: ["project_documentation"]
-        dependencies: ["create-project-navigation"]
-
 # Workflow-level configurations
 skipConditions:
   - condition: "project_already_exists"
@@ -95,25 +79,4 @@ notifications:
 execution:
   allowSkipping: true
   requireExplicitApproval: false
-  parallelExecution: false
-  automaticProgressTracking: true
-  
-# Integration settings
-integrations:
-  development:
-    - github
-    - gitlab
-    - azure-devops
-  infrastructure:
-    - aws
-    - azure
-    - gcp
-    - vercel
-    - netlify
-  cicd:
-    - github-actions
-    - gitlab-ci
-    - jenkins
-  monitoring:
-    - datadog
-    - sentry 
+  automaticProgressTracking: true 

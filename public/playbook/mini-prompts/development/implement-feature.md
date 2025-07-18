@@ -1,7 +1,7 @@
 # Implement Feature Prompt (v2)
 
 ## 🎯 Goal
-Ship the feature per specs with clean, secure, performant code—no fluff.
+Ship the feature per specs with clean, secure, performant code. **Consider alternative implementation approaches and choose the most appropriate one.**
 
 ## 📥 Context (ask if missing)
 1. **Design Spec** – link/file for architecture & diagrams.  
@@ -13,12 +13,18 @@ Ship the feature per specs with clean, secure, performant code—no fluff.
 - Implementation already merged **or** change is trivial/config-only.
 
 ## 🔍 Checklist
+- **Implementation Strategy**
+  - [ ] Use vertical slice approach: implement complete user scenarios end-to-end
+  - [ ] Prioritize working software over perfect layers
+  - [ ] Start with simplest valuable slice, then iterate
+
 1. **Core Logic** – business rules first.  
 2. **Data Layer** – models, migrations, validation.  
 3. **API** – endpoints, request/response schema.  
 4. **Integrations** – external services, queues, webhooks.  
 5. **UI** – components, state mgmt, a11y.  
 6. **Cross-Cutting** – logging, monitoring, error handling, auth.  
+7. **Libraries & Dependencies** – when working with libraries, use MCP tools like Context7 for fresh docs or check latest documentation.  
 
 ### Quality Gates
 - [ ] Follows style guide & naming conventions.  

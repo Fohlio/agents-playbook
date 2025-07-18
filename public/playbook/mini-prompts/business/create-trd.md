@@ -17,6 +17,11 @@ Turn business needs into a tech-ready TRD, ready for devs to pick up—no fluff.
   - [ ] Objectives + timeline  
   - [ ] High-level architecture & stack  
 
+- **Implementation Strategy**
+  - [ ] Break features into vertical slices (complete user scenarios)
+  - [ ] Define delivery order from simplest to most complex slice
+  - [ ] Ensure each slice delivers working end-to-end functionality
+
 - **Functional**  
   - [ ] Feature list, workflows, UI notes  
 

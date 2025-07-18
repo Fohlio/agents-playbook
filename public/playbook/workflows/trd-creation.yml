@@ -4,10 +4,6 @@ version: "1.0"
 category: "documentation"
 tags: ["trd", "documentation", "technical-requirements", "planning"]
 
-metadata:
-  complexity: "medium"
-  skillLevel: "intermediate"
-
 phases:
   - phase: "planning-clarification"
     description: "Requirements gathering and scope definition"
@@ -99,16 +95,4 @@ notifications:
 execution:
   allowSkipping: true
   requireExplicitApproval: false
-  parallelExecution: false
-  automaticProgressTracking: true
-  
-# Integration settings
-integrations:
-  documentation:
-    - confluence
-    - notion
-    - github-wiki
-  projectManagement:
-    - jira
-    - asana
-    - linear 
+  automaticProgressTracking: true 
