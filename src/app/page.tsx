@@ -34,7 +34,7 @@ export default function Home() {
           <div className="max-w-4xl mx-auto px-4">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
               <div className="p-4">
-                <div className="text-2xl font-bold text-blue-600">6</div>
+                <div className="text-2xl font-bold text-blue-600">7</div>
                 <div className="text-sm text-gray-600">Workflows</div>
               </div>
               <div className="p-4">
@@ -110,6 +110,7 @@ export default function Home() {
                   <li>• product-development</li>
                   <li>• quick-fix</li>
                   <li>• code-refactoring</li>
+                  <li>• fix-tests</li>
                 </ul>
               </div>
               

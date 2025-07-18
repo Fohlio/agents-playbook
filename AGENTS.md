@@ -21,6 +21,7 @@ This is a **production-ready workflow automation repository** for AI agents in s
 - **product-development.yml** - Product from idea to launch (15 steps) 
 - **quick-fix.yml** - Bug fixes and hotfixes (4 steps)
 - **code-refactoring.yml** - Code architecture improvements (8 steps)
+- **fix-tests.yml** - Systematic test failure diagnosis and repair (5 steps)
 - **trd-creation.yml** - Technical Requirements Document creation (7 steps)
 - **project-initialization.yml** - New project setup (5 steps)
 
@@ -101,6 +102,13 @@ DANGEROUSLY_OMIT_AUTH=true npx @modelcontextprotocol/inspector@latest http://loc
 Critical Bug/Hotfix → quick-fix workflow
 ```
 
+#### Test Issues
+```
+Tests Failing → fix-tests workflow
+Flaky Tests → fix-tests workflow
+Circular Dependencies → fix-tests workflow (includes architectural fixes)
+```
+
 #### Feature Development
 ```
 Feature Idea → trd-creation → feature-development (with TRD integration [[memory:2316971]])
@@ -133,6 +141,8 @@ Legacy Code → code-refactoring → feature-development
 
 #### Search Examples
 - "fix critical production bug" → quick-fix (🎯 89%)
+- "tests failing" → fix-tests (🎯 91%)
+- "circular dependencies" → fix-tests (🎯 88%)
 - "implement new feature" → feature-development (🎯 92%)
 - "create technical documentation" → trd-creation (🎯 94%)
 - "setup new project" → project-initialization (🎯 91%)

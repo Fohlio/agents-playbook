@@ -60,13 +60,14 @@ Get complete workflow with execution plan.
 ### `get_next_step`
 Step-by-step navigation with smart validation.
 
-## 📁 Workflows (6 total)
+## 📁 Workflows (7 total)
 
-### 🚀 Development (4)
+### 🚀 Development (5)
 - **feature-development** - Complete feature development lifecycle
 - **product-development** - From idea to product launch
 - **quick-fix** - Fast bug fixes and hotfixes
 - **code-refactoring** - Code architecture improvements
+- **fix-tests** - Systematic test failure diagnosis and repair
 
 ### 📋 Setup & Planning (2)
 - **project-initialization** - New project setup

@@ -16,9 +16,11 @@ Quickly categorize test failures, identify patterns, and prioritize fixes—no f
 - **Failure Types**
   - [ ] Syntax errors (missing imports, typos)
   - [ ] Logic errors (wrong assertions, business logic bugs)
+  - [ ] **Circular dependencies** (import cycles, architectural issues)
   - [ ] Environment issues (missing deps, wrong config)
   - [ ] Timing issues (async/await, race conditions)
   - [ ] Mock/stub problems (outdated mocks, missing setup)
+  - [ ] **Test isolation issues** (tests affecting each other)
 
 - **Failure Patterns**
   - [ ] Single test vs multiple tests

@@ -32,12 +32,21 @@ phases:
     description: "Fix the identified test issues"
     required: true
     steps:
+      - id: "fix-circular-dependencies"
+        miniPrompt: "development/fix-circular-dependencies"
+        required: false
+        prerequisites:
+          requiredContext: ["circular_dependency_detected"]
+          optionalContext: ["module_structure", "dependency_graph"]
+          skipConditions: ["no_circular_deps", "simple_test_fixes"]
+        dependencies: ["trace-bug-root-cause"]
+
       - id: "fix-test-issues"
         miniPrompt: "qa/fix-test-issues"
         required: true
         prerequisites:
           requiredContext: ["root_cause_analysis", "test_failure_types"]
-          optionalContext: ["existing_test_code", "test_configuration"]
+          optionalContext: ["existing_test_code", "test_configuration", "architectural_fixes"]
         dependencies: ["trace-bug-root-cause"]
 
   - phase: "testing-validation"
@@ -53,7 +62,8 @@ phases:
         dependencies: ["fix-test-issues"]
 
 workflow_context:
-  typical_duration: "1-3 hours"
+  typical_duration: "1-4 hours"
+  steps_count: 5
   common_scenarios:
     - "Jest tests failing after dependency updates"
     - "Flaky integration tests in CI/CD pipeline" 
