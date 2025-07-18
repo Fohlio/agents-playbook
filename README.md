@@ -7,7 +7,7 @@
 **Structured Workflow System** - designed to help both high-tier and low-tier AI models follow consistent processes:
 
 - **🧠 Context Engineering** - workflows engineered for reliable AI execution across model tiers
-- **🔧 6 Workflows** - battle-tested processes that provide structure and guardrails  
+- **🔧 9 Workflows** - battle-tested processes that provide structure and guardrails  
 - **⚡ Smart Validation** - automatically validates prerequisites and skips irrelevant steps
 - **📋 12 Mini-Prompts** - context-engineered prompts organized by development phases
 
@@ -41,7 +41,7 @@ npm run dev
 # MCP Inspector for testing
 DANGEROUSLY_OMIT_AUTH=true npx @modelcontextprotocol/inspector@latest http://localhost:3000/api/mcp
 
-# Run tests (86 tests)
+# Run tests (90+ tests)
 npm run test:integration
 ```
 
@@ -60,14 +60,17 @@ Get complete workflow with execution plan.
 ### `get_next_step`
 Step-by-step navigation with smart validation.
 
-## 📁 Workflows (8 total)
+## 📁 Workflows (9 total)
 
-### 🚀 Development (6)
+### 🚀 Development (4)
 - **feature-development** - Complete feature development lifecycle
 - **product-development** - From idea to product launch
 - **quick-fix** - Fast bug fixes and hotfixes
 - **code-refactoring** - Code architecture improvements
-- **fix-tests** - Systematic test failure diagnosis and repair
+
+### 🧪 Testing & QA (3)
+- **fix-tests** - Systematic test failure diagnosis and repair with refactoring integration
+- **fix-circular-dependencies** - Comprehensive circular dependency resolution with architectural refactoring
 - **unit-test-coverage** - Comprehensive unit test coverage improvement
 
 ### 📋 Setup & Planning (2)
@@ -86,6 +89,12 @@ Step-by-step navigation with smart validation.
 1. Search: "improve test coverage"  
 2. Result: unit-test-coverage workflow (🎯 94% match)
 3. Execute: 7 steps of systematic coverage improvement
+```
+
+```
+1. Search: "circular dependencies"  
+2. Result: fix-circular-dependencies workflow (🎯 95% match)
+3. Execute: 7 steps of dependency resolution with refactoring integration
 ```
 
 ```

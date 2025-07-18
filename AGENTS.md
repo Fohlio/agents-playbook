@@ -21,7 +21,8 @@ This is a **production-ready workflow automation repository** for AI agents in s
 - **product-development.yml** - Product from idea to launch (15 steps) 
 - **quick-fix.yml** - Bug fixes and hotfixes (4 steps)
 - **code-refactoring.yml** - Code architecture improvements (8 steps)
-- **fix-tests.yml** - Systematic test failure diagnosis and repair (5 steps)
+- **fix-tests.yml** - Systematic test failure diagnosis and repair with refactoring integration (8 steps)
+- **fix-circular-dependencies.yml** - Comprehensive circular dependency resolution with architectural refactoring (7 steps)
 - **unit-test-coverage.yml** - Comprehensive unit test coverage improvement (7 steps)
 - **trd-creation.yml** - Technical Requirements Document creation (7 steps)
 - **project-initialization.yml** - New project setup (5 steps)
@@ -105,12 +106,19 @@ Critical Bug/Hotfix → quick-fix workflow
 
 #### Test Issues
 ```
-Tests Failing → fix-tests workflow
-Flaky Tests → fix-tests workflow
-Circular Dependencies → fix-tests workflow (includes architectural fixes)
+Tests Failing → fix-tests workflow (with refactoring integration)
+Flaky Tests → fix-tests workflow (with refactoring integration)
 Low Test Coverage → unit-test-coverage workflow
 Need Unit Tests → unit-test-coverage workflow
 Quality Gates → unit-test-coverage workflow
+```
+
+#### Circular Dependencies & Architecture
+```
+Circular Dependencies → fix-circular-dependencies workflow
+Module Dependency Cycles → fix-circular-dependencies workflow
+Import/Export Issues → fix-circular-dependencies workflow
+Architectural Debt → fix-circular-dependencies workflow → code-refactoring
 ```
 
 #### Feature Development
@@ -147,7 +155,9 @@ Legacy Code Without Tests → unit-test-coverage → code-refactoring
 #### Search Examples
 - "fix critical production bug" → quick-fix (🎯 89%)
 - "tests failing" → fix-tests (🎯 91%)
-- "circular dependencies" → fix-tests (🎯 88%)
+- "circular dependencies" → fix-circular-dependencies (🎯 95%)
+- "import export issues" → fix-circular-dependencies (🎯 87%)
+- "module dependency cycles" → fix-circular-dependencies (🎯 93%)
 - "implement new feature" → feature-development (🎯 92%)
 - "improve test coverage" → unit-test-coverage (🎯 94%)
 - "write unit tests" → unit-test-coverage (🎯 91%)
@@ -161,7 +171,7 @@ Legacy Code Without Tests → unit-test-coverage → code-refactoring
 # Generate embeddings for semantic search
 npm run build:embeddings
 
-# Run comprehensive test suite (47 tests)
+# Run comprehensive test suite (49+ tests)
 npm run test:integration
 
 # Start development server
@@ -173,6 +183,7 @@ npm run dev
 - **Smart Validation**: Automatic step skipping based on context
 - **Error Handling**: Graceful fallbacks and error recovery
 - **Performance**: Fast semantic search with OpenAI embeddings (falls back to text search)
+- **Refactoring Integration**: Built-in refactoring proposal and approval workflow
 
 ### Tool Integration Notes
 - **Context7** - For library documentation access
@@ -199,6 +210,7 @@ npm run dev
 - User finds the right workflow quickly using semantic search
 - Workflow produces expected output with smart execution
 - Implementation meets requirements with proper validation
+- Refactoring integration improves code quality systematically
 - Documentation stays current and accurate
 - Test coverage remains comprehensive (50+ tests passing)
 

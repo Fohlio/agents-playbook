@@ -21,6 +21,9 @@ This is a **production-ready workflow automation repository** for AI agents in s
 - **product-development.yml** - Product from idea to launch (15 steps) 
 - **quick-fix.yml** - Bug fixes and hotfixes (4 steps)
 - **code-refactoring.yml** - Code architecture improvements (8 steps)
+- **fix-tests.yml** - Systematic test failure diagnosis and repair with refactoring integration (8 steps)
+- **fix-circular-dependencies.yml** - Comprehensive circular dependency resolution with architectural refactoring (7 steps)
+- **unit-test-coverage.yml** - Comprehensive unit test coverage improvement (7 steps)
 - **trd-creation.yml** - Technical Requirements Document creation (7 steps)
 - **brd-creation.yml** - Business Requirements with research (6 steps)
 - **brd-to-trd-translation.yml** - Business to technical translation (6 steps)
@@ -110,6 +113,23 @@ Feature Idea → trd-creation → feature-development (with TRD integration [[me
 Business Requirements → brd-to-trd-translation → feature-development
 ```
 
+#### Test Issues
+```
+Tests Failing → fix-tests workflow (with refactoring integration)
+Flaky Tests → fix-tests workflow (with refactoring integration)
+Low Test Coverage → unit-test-coverage workflow
+Need Unit Tests → unit-test-coverage workflow
+Quality Gates → unit-test-coverage workflow
+```
+
+#### Circular Dependencies & Architecture
+```
+Circular Dependencies → fix-circular-dependencies workflow
+Module Dependency Cycles → fix-circular-dependencies workflow
+Import/Export Issues → fix-circular-dependencies workflow
+Architectural Debt → fix-circular-dependencies workflow → code-refactoring
+```
+
 #### Product Development
 ```
 Product Idea → brd-creation → product-development → infrastructure-setup
@@ -136,6 +156,11 @@ Legacy Code → code-refactoring → feature-development
 
 #### Search Examples
 - "fix critical production bug" → quick-fix (🎯 89%)
+- "tests failing" → fix-tests (🎯 91%)
+- "circular dependencies" → fix-circular-dependencies (🎯 95%)
+- "import export issues" → fix-circular-dependencies (🎯 87%)
+- "module dependency cycles" → fix-circular-dependencies (🎯 93%)
+- "improve test coverage" → unit-test-coverage (🎯 94%)
 - "implement new feature" → feature-development (🎯 92%)
 - "create technical documentation" → trd-creation (🎯 94%)
 - "setup new infrastructure" → infrastructure-setup (🎯 91%)
@@ -147,7 +172,7 @@ Legacy Code → code-refactoring → feature-development
 # Generate embeddings for semantic search
 npm run build:embeddings
 
-# Run comprehensive test suite (47 tests)
+# Run comprehensive test suite (50+ tests)
 npm run test:integration
 
 # Start development server
@@ -159,6 +184,7 @@ npm run dev
 - **Smart Validation**: Automatic step skipping based on context
 - **Error Handling**: Graceful fallbacks and error recovery
 - **Performance**: Fast semantic search with OpenAI embeddings
+- **Refactoring Integration**: Built-in refactoring proposal and approval workflow
 
 ### Tool Integration Notes
 - **Context7** - For library documentation access
@@ -186,7 +212,7 @@ npm run dev
 - Workflow produces expected output with smart execution
 - Implementation meets requirements with proper validation
 - Documentation stays current and accurate
-- Test coverage remains comprehensive (47 tests passing)
+- Test coverage remains comprehensive (50+ tests passing)
 
 ## Emergency Situations
 For urgent bugs or critical issues:

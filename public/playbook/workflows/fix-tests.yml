@@ -24,8 +24,29 @@ phases:
           optionalContext: ["error_logs", "stack_traces", "test_environment_details"]
         dependencies: ["analyze-test-failures"]
 
+  - phase: "planning-clarification"
+    description: "Assess need for refactoring and get approval if required"
+    required: true
+    steps:
+      - id: "assess-refactoring-need"
+        miniPrompt: "development/ask-clarifying-questions"
+        required: true
+        prerequisites:
+          requiredContext: ["root_cause_analysis", "test_failure_patterns"]
+          optionalContext: ["architectural_issues", "code_quality_concerns"]
+        dependencies: ["trace-bug-root-cause"]
+
+      - id: "document-refactoring-proposal"
+        miniPrompt: "business/document-decisions"
+        required: false
+        prerequisites:
+          requiredContext: ["refactoring_assessment", "user_approval"]
+          optionalContext: ["architectural_improvements", "technical_debt_reduction"]
+          skipConditions: ["simple_test_fixes", "no_refactoring_needed"]
+        dependencies: ["assess-refactoring-need"]
+
   - phase: "implementation"
-    description: "Fix the identified test issues"
+    description: "Fix the identified test issues and implement refactoring if approved"
     required: true
     steps:
       - id: "fix-circular-dependencies"
@@ -35,7 +56,7 @@ phases:
           requiredContext: ["circular_dependency_detected"]
           optionalContext: ["module_structure", "dependency_graph"]
           skipConditions: ["no_circular_deps", "simple_test_fixes"]
-        dependencies: ["trace-bug-root-cause"]
+        dependencies: ["assess-refactoring-need"]
 
       - id: "fix-test-issues"
         miniPrompt: "qa/fix-test-issues"
@@ -43,7 +64,16 @@ phases:
         prerequisites:
           requiredContext: ["root_cause_analysis", "test_failure_types"]
           optionalContext: ["existing_test_code", "test_configuration", "architectural_fixes"]
-        dependencies: ["trace-bug-root-cause"]
+        dependencies: ["assess-refactoring-need"]
+
+      - id: "implement-refactoring"
+        miniPrompt: "development/implement-feature"
+        required: false
+        prerequisites:
+          requiredContext: ["approved_refactoring_plan", "test_fixes_completed"]
+          optionalContext: ["architectural_improvements", "code_restructuring"]
+          skipConditions: ["no_refactoring_approved", "simple_fixes_only"]
+        dependencies: ["fix-test-issues", "document-refactoring-proposal"]
 
   - phase: "testing-validation"
     description: "Validate that fixes resolve issues without breaking other tests"
@@ -57,14 +87,24 @@ phases:
           optionalContext: ["test_environment", "test_data"]
         dependencies: ["fix-test-issues"]
 
+      - id: "validate-refactoring"
+        miniPrompt: "qa/validate-requirements"
+        required: false
+        prerequisites:
+          requiredContext: ["implemented_refactoring", "original_functionality"]
+          optionalContext: ["performance_requirements", "architectural_validation"]
+          skipConditions: ["no_refactoring_implemented"]
+        dependencies: ["implement-refactoring"]
+
 workflow_context:
-  steps_count: 5
+  steps_count: 8
   common_scenarios:
     - "Jest tests failing after dependency updates"
     - "Flaky integration tests in CI/CD pipeline" 
     - "Unit tests broken by code refactoring"
     - "Test environment configuration issues"
     - "Mock and stub problems in test setup"
+    - "Tests failing due to architectural issues requiring refactoring"
 
 skip_conditions:
   - condition: "simple_syntax_error"
@@ -73,9 +113,25 @@ skip_conditions:
   - condition: "single_test_failure"
     description: "Skip comprehensive analysis for isolated test failures"
     affects_steps: ["analyze-test-failures"]
+  - condition: "simple_test_fixes"
+    description: "Skip refactoring steps when only simple fixes are needed"
+    affects_steps: ["document-refactoring-proposal", "implement-refactoring", "validate-refactoring"]
+  - condition: "no_refactoring_needed"
+    description: "Skip refactoring when root cause doesn't indicate architectural issues"
+    affects_steps: ["document-refactoring-proposal", "implement-refactoring", "validate-refactoring"]
 
 success_criteria:
   - "All previously failing tests now pass"
   - "No new test failures introduced"
   - "Test execution time remains reasonable"
-  - "Root cause documented for future reference" 
+  - "Root cause documented for future reference"
+  - "Architectural improvements implemented if approved"
+  - "Refactoring validated without breaking existing functionality"
+
+refactoring_integration:
+  triggers:
+    - "Test failures indicate architectural problems"
+    - "Multiple tests failing due to same root cause"
+    - "Circular dependencies causing test issues"
+  approval_required: true
+  documentation_required: true 

@@ -34,7 +34,7 @@ export default function Home() {
           <div className="max-w-4xl mx-auto px-4">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
               <div className="p-4">
-                <div className="text-2xl font-bold text-blue-600">7</div>
+                <div className="text-2xl font-bold text-blue-600">9</div>
                 <div className="text-sm text-gray-600">Workflows</div>
               </div>
               <div className="p-4">
@@ -42,7 +42,7 @@ export default function Home() {
                 <div className="text-sm text-gray-600">Mini-Prompts</div>
               </div>
               <div className="p-4">
-                <div className="text-2xl font-bold text-purple-600">86</div>
+                <div className="text-2xl font-bold text-purple-600">90+</div>
                 <div className="text-sm text-gray-600">Tests</div>
               </div>
               <div className="p-4">
@@ -102,7 +102,7 @@ export default function Home() {
         <section className="py-16 bg-gray-50">
           <div className="max-w-4xl mx-auto px-4">
             <h2 className="text-3xl font-bold text-gray-900 text-center mb-8">Workflows</h2>
-            <div className="grid md:grid-cols-2 gap-6">
+            <div className="grid md:grid-cols-3 gap-6">
               <div className="bg-white p-6 rounded-lg shadow-sm">
                 <h3 className="text-lg font-semibold text-gray-900 mb-3">🚀 Development</h3>
                 <ul className="text-sm text-gray-600 space-y-1">
@@ -110,7 +110,15 @@ export default function Home() {
                   <li>• product-development</li>
                   <li>• quick-fix</li>
                   <li>• code-refactoring</li>
+                </ul>
+              </div>
+              
+              <div className="bg-white p-6 rounded-lg shadow-sm">
+                <h3 className="text-lg font-semibold text-gray-900 mb-3">🧪 Testing & QA</h3>
+                <ul className="text-sm text-gray-600 space-y-1">
                   <li>• fix-tests</li>
+                  <li>• fix-circular-dependencies</li>
+                  <li>• unit-test-coverage</li>
                 </ul>
               </div>
               
