@@ -38,7 +38,7 @@ Establish realistic and meaningful test coverage targets based on project needs 
   - [ ] Consider maintenance overhead
 
 ## 📤 Output
-**File:** `docs/planning/coverage-goals.md`
+**File:** `.agents-playbook/[feature-or-task-name]/coverage-goals.md`
 
 Sections:
 1. **Coverage Targets** – overall %, by module, by priority

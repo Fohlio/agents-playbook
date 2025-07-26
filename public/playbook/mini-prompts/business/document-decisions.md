@@ -24,7 +24,7 @@ Capture every impactful tech, business, and process decision so future devs aren
 
 ## 📤 Output
 1. Gather insights from the user directly
-2. Fill in **File:** `docs/planning/[feature-name]-decisions.md`
+2. Fill in **File:** `.agents-playbook/[feature-or-task-name]/decisions.md`
 Structure: chronological log of Architecture Decision Records (ADR-style), plus business & process picks—everything in one searchable Markdown file.
 
 ### ADR Mini-template

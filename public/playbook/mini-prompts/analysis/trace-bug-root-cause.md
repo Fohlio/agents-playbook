@@ -22,7 +22,7 @@ Hunt down the exact line(s) causing the bug, prove it, and outline a fix—zero 
 - [ ] Review recent commits / releases  
 - [ ] Form & test hypothesis, then validate with alt scenarios  
 
-## 📤 Outputs (to `docs/analysis/[bug-name].md`)
+## 📤 Outputs (to `.agents-playbook/[feature-or-task-name]/bug-analysis.md`)
 – TL;DR + evidence (logs, code refs, screenshots) and includes: 
 - scope, severity, affected users  
 - minimal steps / script  

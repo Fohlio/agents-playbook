@@ -21,7 +21,7 @@ Describe the current architecture, highlight weak spots, and propose improvement
 - [ ] Data stores, consistency, access patterns  
 - [ ] Quality attributes: ⬆️ scalability, ⚡ performance, 🔒 security, 🛠️ maintainability  
 
-## 📤 Outputs (create in `docs/analysis/[date]-architecture-report.md`)
+## 📤 Outputs (create in `.agents-playbook/[feature-or-task-name]/architecture-report.md`)
 - narrative + diagram (PlantUML or Mermaid)
 - strengths & weaknesses per attribute
 - tech debt + roadmap

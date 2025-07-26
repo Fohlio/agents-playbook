@@ -37,7 +37,7 @@ Repository • Service • Factory • Middleware • Decorator • Observer
 
 ## 📤 Output
 1. Gather insights from the user directly
-2. Fill in **File:** `docs/planning/[feature-name]-implementation-plan.md`
+2. Fill in **File:** `.agents-playbook/[feature-or-task-name]/implementation-plan.md`
 
 Sections:
 1. **Summary** – feature scope & branch.  

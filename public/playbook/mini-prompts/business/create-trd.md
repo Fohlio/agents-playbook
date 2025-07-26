@@ -45,7 +45,7 @@ Turn business needs into a tech-ready TRD, ready for devs to pick up—no fluff.
 
 ## 📤 Outputs
 1. Gather insights from the user directly
-2. Fill in **File:** `docs/planning/[feature-name]-trd.md`
+2. Fill in **File:** `.agents-playbook/[feature-or-task-name]/trd.md`
 - complete doc covering all sections above and also:
 - Diagrams: architecture & data (PlantUML/Mermaid inline)  
 - endpoint table + examples  

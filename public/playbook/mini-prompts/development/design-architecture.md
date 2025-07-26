@@ -46,7 +46,7 @@ Craft a rock-solid solution architecture that meets all requirements. **Always p
 
 ## 📤 Output
 1. Gather insights from the user directly
-2. Fill in **File:** `docs/planning/[feature-name]-architecture-design.md`
+2. Fill in **File:** `.agents-playbook/[feature-or-task-name]/architecture-design.md`
 
 Sections:
 1. **Executive Summary** – TL;DR of the solution  

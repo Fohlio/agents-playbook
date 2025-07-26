@@ -38,7 +38,7 @@ Create comprehensive documentation of testing approach, standards, and maintenan
   - [ ] Set up knowledge sharing practices
 
 ## 📤 Output
-**File:** `docs/testing/test-strategy.md`
+**File:** `.agents-playbook/[feature-or-task-name]/test-strategy.md`
 
 Sections:
 1. **Testing Philosophy** – approach, principles, goals

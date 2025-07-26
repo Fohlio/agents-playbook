@@ -65,7 +65,7 @@ Systematically repair failing tests with minimal side effects—get green fast.
 ## 📤 Output
 **Files:** Updated test files and configuration
 
-**Log:** `docs/analysis/test-fixes-log.md`
+**Log:** `.agents-playbook/[feature-or-task-name]/test-fixes-log.md`
 1. **Changes Made** – what was fixed and why
 2. **Before/After** – error messages vs passing results
 3. **Validation** – confirmation all fixes work together 

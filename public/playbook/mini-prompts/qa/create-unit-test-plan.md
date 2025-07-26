@@ -38,7 +38,7 @@ Develop a comprehensive plan for implementing unit tests to achieve coverage goa
   - [ ] Set up automated test execution
 
 ## 📤 Output
-**File:** `docs/planning/unit-test-plan.md`
+**File:** `.agents-playbook/[feature-or-task-name]/unit-test-plan.md`
 
 Sections:
 1. **Executive Summary** – scope, goals, timeline

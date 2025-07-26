@@ -54,7 +54,7 @@ Eliminate circular dependencies through proper architectural restructuring—no 
 ## 📤 Output
 **Files:** Restructured modules with proper separation
 
-**Documentation:** `docs/architecture/circular-deps-fix.md`
+**Documentation:** `.agents-playbook/[feature-or-task-name]/circular-deps-fix.md`
 1. **Original Problem** – dependency graph before
 2. **Solution Strategy** – architectural changes made
 3. **New Structure** – dependency graph after

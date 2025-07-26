@@ -35,7 +35,7 @@ Run the test plan, capture every result, surface every bug—no fluff.
 - [ ] Logs, screenshots, metrics captured for fails  
 
 ## 📤 Output
-**File:** `docs/planning/[feature-name]-test-execution.md`
+**File:** `.agents-playbook/[feature-or-task-name]/test-execution.md`
 
 Sections:
 1. **Summary** – 🚦 Go / No-Go recommendation  

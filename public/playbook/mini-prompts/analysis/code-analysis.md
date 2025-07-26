@@ -31,7 +31,7 @@ Deep-scan the codebase, expose issues, and recommend fixes—no fluff.
   - [ ] Security: input validation, authN/Z, crypto, secrets  
   - [ ] Error & exception handling patterns  
 
-## 📤 Outputs (in `docs/analysis/[date]-report.md`), which includes:
+## 📤 Outputs (in `.agents-playbook/[feature-or-task-name]/code-analysis-report.md`), which includes:
 - overview + dependency diagram (Mermaid/PlantUML)
 - metrics, smells, maintainability score
 - prioritized table with file/line refs

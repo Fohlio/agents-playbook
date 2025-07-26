@@ -37,7 +37,7 @@ Prove the build meets every requirement and acceptance criterion—no fluff.
 
 ## 📤 Output
 1. Gather insights from the user directly
-2. Fill in **File:** `docs/planning/[feature-name]-requirements-validation.md`
+2. Fill in **File:** `.agents-playbook/[feature-or-task-name]/requirements-validation.md`
 
 Sections:
 1. **Executive Summary** – ✅ Pass / ⚠️ Conditional / ❌ Fail  

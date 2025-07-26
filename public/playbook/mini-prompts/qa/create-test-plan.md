@@ -33,7 +33,7 @@ Define a full-stack test strategy—functional, non-functional, regression—so 
   - [ ] People, tools, infra, data seeding  
 
 ## 📤 Output
-**File:** `docs/planning/[feature-name]-test-plan.md`
+**File:** `.agents-playbook/[feature-or-task-name]/test-plan.md`
 
 Sections:
 1. **Executive Summary** – what, why, timeline  

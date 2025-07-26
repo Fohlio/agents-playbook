@@ -34,7 +34,7 @@ Quickly categorize test failures, identify patterns, and prioritize fixes—no f
   - [ ] Test coverage gaps created
 
 ## 📤 Output
-**File:** `docs/analysis/test-failure-analysis.md`
+**File:** `.agents-playbook/[feature-or-task-name]/test-failure-analysis.md`
 
 Sections:
 1. **Summary** – failure count, types, urgency level

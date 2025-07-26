@@ -47,8 +47,8 @@ Before gathering requirements, assess the existing documentation and project con
 ## 📤 Output
 1. Gather insights from the user directly
 2. Generate comprehensive requirements documentation
-3. Fill in **File:** `docs/planning/[feature-name]-requirements.md`
-**File:** `docs/planning/[feature-name]-requirements.md`  
+3. Fill in **File:** `.agents-playbook/[feature-or-task-name]/requirements.md`
+**File:** `.agents-playbook/[feature-or-task-name]/requirements.md`  
 Sections (in order):
 1. **Executive Summary** – goals & scope  
 2. **System Users** – types & requirements  

@@ -37,7 +37,7 @@ Audit the finished code for quality, security, performance, and standards, then 
   - [ ] Tests pass and are maintainable  
 
 ## 📤 Output
-**File:** `docs/planning/[feature-name]-code-review.md`
+**File:** `.agents-playbook/[feature-or-task-name]/code-review.md`
 
 Structure:
 1. **Summary** – 🚦 Approved / Approved-with-changes / Needs-rework  

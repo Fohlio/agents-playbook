@@ -32,7 +32,7 @@ Dissect an existing feature, reveal weak spots, and suggest upgrades—no fluff.
   - [ ] Perceived speed / responsiveness  
   - [ ] Clarity of error messages  
 
-## 📤 Outputs (in `docs/analysis/[feature-name].md`), which includes:
+## 📤 Outputs (in `.agents-playbook/[feature-or-task-name]/feature-analysis.md`), which includes:
 - what it does, user flows, data paths
 - diagram + component breakdown
 - strengths, weaknesses, perf/security findings

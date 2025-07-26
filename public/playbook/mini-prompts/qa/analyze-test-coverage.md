@@ -38,7 +38,7 @@ Evaluate current unit test coverage to identify gaps and opportunities for impro
   - [ ] Note any missing testing infrastructure
 
 ## 📤 Output
-**File:** `docs/analysis/test-coverage-analysis.md`
+**File:** `.agents-playbook/[feature-or-task-name]/test-coverage-analysis.md`
 
 Sections:
 1. **Executive Summary** – current coverage state, key findings
