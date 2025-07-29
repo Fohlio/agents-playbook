@@ -10,7 +10,7 @@ Shared memory board where agents write messages to each other during phase trans
 4. **Key Outcomes** – what was accomplished/decided
 
 ## 🚦 Skip if
-- Same agent continuing without interruption **or** trivial single-step task.
+- Trivial single-step task.
 
 ## 📋 Memory Board Structure
 **File:** `.agents-playbook/[feature-or-task-name]/memory-board.md`
@@ -59,11 +59,14 @@ This is a **persistent conversation board** - each agent adds their message at t
 (Each agent continues adding messages...)
 ```
 
+## ⚠️ **REQUIRED ACTION**
+**You MUST ask the user:** "Would you like to switch to a new chat for the next phase? (YES/NO)"
+
 ## 🔄 **CHAT TRANSITION PROMPT**
 
 **Before switching chats, add your message to the memory board.**
 
-**For the next chat session:**
+**If YES, use this template in your new chat:**
 ```
 I'm continuing a [workflow-name] workflow at the [current-phase] phase.
 
