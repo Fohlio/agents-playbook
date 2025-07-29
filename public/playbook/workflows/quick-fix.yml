@@ -39,6 +39,15 @@ phases:
           requiredContext: ["problem_analysis", "solution_approach"]
           optionalContext: ["existing_code_context"]
         dependencies: ["ask-clarifying-questions"]
+        
+      - id: "handoff-to-testing"
+        miniPrompt: "handoff-memory-board"
+        required: false
+        prerequisites:
+          requiredContext: ["implemented_fix"]
+          optionalContext: []
+        dependencies: ["implement-feature"]
+        skipConditions: ["trivial_change", "emergency_hotfix"]
 
   - phase: "testing-validation"
     description: "Quick validation and testing"
@@ -51,7 +60,20 @@ phases:
           requiredContext: ["implemented_fix"]
           optionalContext: ["test_cases", "reproduction_environment"]
           skipConditions: ["trivial_change", "emergency_hotfix"]
-        dependencies: ["implement-feature"]
+        dependencies: ["handoff-to-testing"]
+
+  - phase: "review"
+    description: "Quick quality assessment for fix"
+    required: false
+    steps:
+      - id: "deliverable-review"
+        miniPrompt: "review/deliverable-review"
+        required: false
+        prerequisites:
+          requiredContext: ["implemented_fix", "original_issue"]
+          optionalContext: ["test_results"]
+        dependencies: ["execute-tests"]
+        skipConditions: ["trivial_change", "emergency_hotfix"]
 
 # Workflow-level configurations
 skipConditions:

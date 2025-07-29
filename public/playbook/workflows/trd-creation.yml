@@ -23,6 +23,14 @@ phases:
           requiredContext: ["requirements"]
           optionalContext: ["business_context"]
         dependencies: ["gather-requirements"]
+        
+      - id: "handoff-to-analysis"
+        miniPrompt: "handoff-memory-board"
+        required: true
+        prerequisites:
+          requiredContext: ["clarified_requirements"]
+          optionalContext: []
+        dependencies: ["ask-clarifying-questions"]
 
   - phase: "analysis"
     description: "Technical analysis and architecture planning"
@@ -34,7 +42,7 @@ phases:
         prerequisites:
           requiredContext: ["clarified_requirements"]
           optionalContext: ["existing_codebase", "system_architecture"]
-        dependencies: ["ask-clarifying-questions"]
+        dependencies: ["handoff-to-analysis"]
         
       - id: "architecture-analysis"
         miniPrompt: "analysis/architecture-analysis"
@@ -43,6 +51,14 @@ phases:
           requiredContext: ["system_architecture"]
           optionalContext: ["performance_requirements", "scalability_needs"]
           skipConditions: ["simple_feature", "no_architecture_impact"]
+          
+      - id: "handoff-to-design"
+        miniPrompt: "handoff-memory-board"
+        required: true
+        prerequisites:
+          requiredContext: ["feature_analysis"]
+          optionalContext: ["architecture_analysis"]
+        dependencies: ["feature-analysis"]
 
   - phase: "design-architecture"
     description: "Solution design and technical specification"
@@ -54,19 +70,27 @@ phases:
         prerequisites:
           requiredContext: ["feature_analysis", "technical_requirements"]
           optionalContext: ["architecture_analysis", "existing_patterns"]
-        dependencies: ["feature-analysis"]
+        dependencies: ["handoff-to-design"]
+        
+      - id: "handoff-to-documentation"
+        miniPrompt: "handoff-memory-board"
+        required: true
+        prerequisites:
+          requiredContext: ["design_specifications"]
+          optionalContext: []
+        dependencies: ["trd-review"]
 
-  - phase: "completion-reflection"
-    description: "Documentation creation and validation"
+  - phase: "review"
+    description: "TRD quality assessment and validation"
     required: true
     steps:
-      - id: "create-trd"
-        miniPrompt: "business/create-trd"
+      - id: "trd-review"
+        miniPrompt: "review/trd-review"
         required: true
         prerequisites:
           requiredContext: ["design_specifications", "technical_analysis"]
-          optionalContext: ["architectural_decisions", "trade_off_analysis"]
-        dependencies: ["design-architecture"]
+          optionalContext: ["original_requirements"]
+        dependencies: ["handoff-to-documentation"]
 
 # Workflow-level configurations
 skipConditions:
@@ -80,7 +104,7 @@ validationRules:
     phases: ["design-architecture"]
     message: "Technical specifications must be clear and implementable"
   - rule: "documentation_completeness"
-    phases: ["completion-reflection"]
+    phases: ["review"]
     dependencies: ["design-architecture"]
     message: "All technical decisions must be documented before completion"
 

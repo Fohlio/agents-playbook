@@ -23,6 +23,14 @@ phases:
           requiredContext: ["code_analysis_results", "system_architecture"]
           optionalContext: ["scalability_requirements", "performance_targets"]
         dependencies: ["code-analysis"]
+        
+      - id: "handoff-to-design"
+        miniPrompt: "handoff-memory-board"
+        required: true
+        prerequisites:
+          requiredContext: ["code_analysis_results", "architecture_analysis"]
+          optionalContext: []
+        dependencies: ["architecture-analysis"]
 
   - phase: "design-architecture"
     description: "Refactoring strategy and design"
@@ -34,7 +42,15 @@ phases:
         prerequisites:
           requiredContext: ["architecture_analysis", "refactoring_goals"]
           optionalContext: ["new_requirements", "technical_constraints"]
-        dependencies: ["architecture-analysis"]
+        dependencies: ["handoff-to-design"]
+        
+      - id: "handoff-to-implementation"
+        miniPrompt: "handoff-memory-board"
+        required: true
+        prerequisites:
+          requiredContext: ["refactoring_design"]
+          optionalContext: []
+        dependencies: ["design-architecture"]
 
   - phase: "implementation"
     description: "Code refactoring execution"
@@ -46,7 +62,15 @@ phases:
         prerequisites:
           requiredContext: ["refactoring_design", "implementation_plan"]
           optionalContext: ["migration_strategy", "backward_compatibility"]
-        dependencies: ["design-architecture"]
+        dependencies: ["handoff-to-implementation"]
+        
+      - id: "handoff-to-testing"
+        miniPrompt: "handoff-memory-board"
+        required: true
+        prerequisites:
+          requiredContext: ["refactored_code"]
+          optionalContext: []
+        dependencies: ["implement-feature"]
 
   - phase: "testing-validation"
     description: "Refactoring validation and testing"
@@ -58,7 +82,7 @@ phases:
         prerequisites:
           requiredContext: ["refactored_code", "original_functionality"]
           optionalContext: ["performance_requirements", "compatibility_requirements"]
-        dependencies: ["implement-feature"]
+        dependencies: ["handoff-to-testing"]
         
       - id: "execute-tests"
         miniPrompt: "qa/execute-tests"
@@ -67,6 +91,34 @@ phases:
           requiredContext: ["test_plan", "refactored_system"]
           optionalContext: ["automated_tests", "performance_benchmarks"]
         dependencies: ["create-test-plan"]
+        
+      - id: "handoff-to-review"
+        miniPrompt: "handoff-memory-board"
+        required: true
+        prerequisites:
+          requiredContext: ["test_results", "refactored_system"]
+          optionalContext: []
+        dependencies: ["execute-tests"]
+
+  - phase: "review"
+    description: "Refactoring quality assessment and validation"
+    required: true
+    steps:
+      - id: "code-review"
+        miniPrompt: "review/code-review"
+        required: true
+        prerequisites:
+          requiredContext: ["refactored_code", "test_results"]
+          optionalContext: ["original_code_comparison"]
+        dependencies: ["handoff-to-review"]
+        
+      - id: "deliverable-review"
+        miniPrompt: "review/deliverable-review"
+        required: true
+        prerequisites:
+          requiredContext: ["refactored_system", "original_requirements"]
+          optionalContext: ["performance_improvements"]
+        dependencies: ["code-review"]
 
 # Workflow-level configurations
 skipConditions:

@@ -68,12 +68,12 @@ phases:
           optionalContext: ["test_environment", "ci_configuration"]
         dependencies: ["write-unit-tests"]
 
-  - phase: "completion-reflection"
-    description: "Document test strategy and results"
+  - phase: "review"
+    description: "Test coverage assessment and validation"
     required: true
     steps:
-      - id: "document-test-strategy"
-        miniPrompt: "qa/document-test-strategy"
+      - id: "deliverable-review"
+        miniPrompt: "review/deliverable-review"
         required: true
         prerequisites:
           requiredContext: ["completed_coverage_improvement", "test_implementation"]
@@ -113,7 +113,7 @@ validationRules:
     dependencies: ["analysis"]
     message: "Coverage analysis must be completed before planning"
   - rule: "tests_must_pass"
-    phases: ["completion-reflection"]
+    phases: ["review"]
     dependencies: ["testing-validation"]
     message: "All tests must pass before documenting strategy"
 

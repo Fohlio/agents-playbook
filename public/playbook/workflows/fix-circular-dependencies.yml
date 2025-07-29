@@ -23,6 +23,14 @@ phases:
           requiredContext: ["circular_dependency_chain", "module_structure"]
           optionalContext: ["business_logic_mapping", "existing_patterns"]
         dependencies: ["trace-circular-dependencies"]
+        
+      - id: "handoff-to-planning"
+        miniPrompt: "handoff-memory-board"
+        required: true
+        prerequisites:
+          requiredContext: ["circular_dependency_analysis", "architecture_issues"]
+          optionalContext: []
+        dependencies: ["architecture-analysis"]
 
   - phase: "planning-clarification"
     description: "Plan refactoring strategy and get approval if needed"
@@ -34,7 +42,7 @@ phases:
         prerequisites:
           requiredContext: ["circular_dependency_analysis", "architecture_issues"]
           optionalContext: ["business_constraints", "timeline_requirements"]
-        dependencies: ["architecture-analysis"]
+        dependencies: ["handoff-to-planning"]
 
       - id: "document-refactoring-proposal"
         miniPrompt: "business/document-decisions"
@@ -43,6 +51,14 @@ phases:
           requiredContext: ["refactoring_scope", "user_approval"]
           optionalContext: ["architectural_changes", "impact_assessment"]
           skipConditions: ["simple_circular_fix", "no_major_refactoring"]
+        dependencies: ["assess-refactoring-scope"]
+        
+      - id: "handoff-to-implementation"
+        miniPrompt: "handoff-memory-board"
+        required: true
+        prerequisites:
+          requiredContext: ["refactoring_scope", "fix_strategy"]
+          optionalContext: ["refactoring_proposal"]
         dependencies: ["assess-refactoring-scope"]
 
   - phase: "implementation"
@@ -55,7 +71,7 @@ phases:
         prerequisites:
           requiredContext: ["dependency_chain", "fix_strategy"]
           optionalContext: ["module_restructure_plan", "approved_refactoring"]
-        dependencies: ["assess-refactoring-scope"]
+        dependencies: ["handoff-to-implementation"]
 
       - id: "implement-refactoring"
         miniPrompt: "development/implement-feature"
@@ -65,6 +81,14 @@ phases:
           optionalContext: ["migration_strategy", "backward_compatibility_plan"]
           skipConditions: ["no_refactoring_approved", "minimal_changes_only"]
         dependencies: ["fix-circular-dependencies", "document-refactoring-proposal"]
+        
+      - id: "handoff-to-testing"
+        miniPrompt: "handoff-memory-board"
+        required: true
+        prerequisites:
+          requiredContext: ["implemented_fixes"]
+          optionalContext: ["implemented_refactoring"]
+        dependencies: ["fix-circular-dependencies"]
 
   - phase: "testing-validation"
     description: "Validate fixes and ensure no regression"
@@ -76,7 +100,7 @@ phases:
         prerequisites:
           requiredContext: ["implemented_fixes", "dependency_changes"]
           optionalContext: ["build_process", "import_validation"]
-        dependencies: ["fix-circular-dependencies"]
+        dependencies: ["handoff-to-testing"]
 
       - id: "validate-refactoring"
         miniPrompt: "qa/validate-requirements"
@@ -86,6 +110,26 @@ phases:
           optionalContext: ["performance_requirements", "compatibility_tests"]
           skipConditions: ["no_refactoring_implemented"]
         dependencies: ["implement-refactoring"]
+
+  - phase: "review"
+    description: "Review circular dependency fixes and refactoring"
+    required: true
+    steps:
+      - id: "code-review"
+        miniPrompt: "review/code-review"
+        required: true
+        prerequisites:
+          requiredContext: ["implemented_fixes", "dependency_changes"]
+          optionalContext: ["implemented_refactoring"]
+        dependencies: ["validate-dependency-resolution"]
+        
+      - id: "deliverable-review"
+        miniPrompt: "review/deliverable-review"
+        required: true
+        prerequisites:
+          requiredContext: ["resolved_dependencies", "original_requirements"]
+          optionalContext: ["architectural_improvements"]
+        dependencies: ["code-review"]
 
 workflow_context:
   steps_count: 7

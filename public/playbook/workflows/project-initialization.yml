@@ -51,6 +51,19 @@ phases:
           skipConditions: ["architecture_already_documented", "simple_project"]
         dependencies: ["create-project-navigation"]
 
+  - phase: "review"
+    description: "Project setup and documentation review"
+    required: false
+    steps:
+      - id: "deliverable-review"
+        miniPrompt: "review/deliverable-review"
+        required: false
+        prerequisites:
+          requiredContext: ["project_navigation", "setup_deliverables"]
+          optionalContext: ["architecture_analysis"]
+        dependencies: ["create-project-navigation"]
+        skipConditions: ["simple_project", "minimal_setup"]
+
 # Workflow-level configurations
 skipConditions:
   - condition: "project_already_exists"

@@ -23,6 +23,14 @@ phases:
           requiredContext: ["requirements"]
           optionalContext: []
         dependencies: ["gather-requirements"]
+        
+      - id: "handoff-to-analysis"
+        miniPrompt: "handoff-memory-board"
+        required: true
+        prerequisites:
+          requiredContext: ["clarified_requirements"]
+          optionalContext: []
+        dependencies: ["ask-clarifying-questions"]
 
   - phase: "analysis"
     description: "Market and technical analysis"
@@ -34,7 +42,7 @@ phases:
         prerequisites:
           requiredContext: ["clarified_requirements", "product_vision"]
           optionalContext: ["existing_analysis"]
-        dependencies: ["ask-clarifying-questions"]
+        dependencies: ["handoff-to-analysis"]
         
       - id: "architecture-analysis"
         miniPrompt: "analysis/architecture-analysis"
@@ -43,6 +51,14 @@ phases:
           requiredContext: ["feature_analysis", "technical_requirements"]
           optionalContext: ["scalability_requirements", "performance_targets"]
         dependencies: ["feature-analysis"]
+        
+      - id: "handoff-to-design"
+        miniPrompt: "handoff-memory-board"
+        required: true
+        prerequisites:
+          requiredContext: ["feature_analysis", "architecture_analysis"]
+          optionalContext: []
+        dependencies: ["architecture-analysis"]
 
   - phase: "design-architecture"
     description: "Product and technical design"
@@ -54,7 +70,15 @@ phases:
         prerequisites:
           requiredContext: ["feature_analysis", "architecture_analysis"]
           optionalContext: ["design_guidelines", "technical_constraints"]
-        dependencies: ["architecture-analysis"]
+        dependencies: ["handoff-to-design"]
+        
+      - id: "handoff-to-implementation"
+        miniPrompt: "handoff-memory-board"
+        required: true
+        prerequisites:
+          requiredContext: ["design_specifications"]
+          optionalContext: []
+        dependencies: ["design-architecture"]
 
   - phase: "implementation"
     description: "Product development and implementation"
@@ -66,7 +90,15 @@ phases:
         prerequisites:
           requiredContext: ["design_specifications", "technical_architecture"]
           optionalContext: ["development_environment", "coding_standards"]
-        dependencies: ["design-architecture"]
+        dependencies: ["handoff-to-implementation"]
+        
+      - id: "handoff-to-testing"
+        miniPrompt: "handoff-memory-board"
+        required: true
+        prerequisites:
+          requiredContext: ["implemented_features"]
+          optionalContext: []
+        dependencies: ["implement-feature"]
 
   - phase: "testing-validation"
     description: "Quality assurance and user validation"
@@ -78,7 +110,7 @@ phases:
         prerequisites:
           requiredContext: ["implemented_features", "product_requirements"]
           optionalContext: ["acceptance_criteria"]
-        dependencies: ["implement-feature"]
+        dependencies: ["handoff-to-testing"]
         
       - id: "execute-tests"
         miniPrompt: "qa/execute-tests"
@@ -86,38 +118,31 @@ phases:
         prerequisites:
           requiredContext: ["test_plan", "implemented_features"]
           optionalContext: ["test_automation"]
-        dependencies: ["create-test-plan"]
+                dependencies: ["create-test-plan"]
         
-
-
-  - phase: "deployment-operations"
-    description: "Product launch and operational setup"
-    required: true
-    steps:
-      - id: "deploy-application"
-        miniPrompt: "operations/deploy-application"
+      - id: "handoff-to-review"
+        miniPrompt: "handoff-memory-board"
         required: true
         prerequisites:
-          requiredContext: ["validated_product", "deployment_environment"]
-          optionalContext: ["deployment_pipeline", "rollback_procedures"]
-        dependencies: ["execute-tests"]
-        
+          requiredContext: ["test_results", "validated_features"]
+          optionalContext: []
+        dependencies: ["handoff-to-deployment"]
 
-
-  - phase: "completion-reflection"
-    description: "Launch validation and knowledge capture"
+  - phase: "review"
+    description: "Product quality assessment and validation"
     required: true
     steps:
-      - id: "create-trd"
-        miniPrompt: "business/create-trd"
+      - id: "deliverable-review"
+        miniPrompt: "review/deliverable-review"
         required: true
         prerequisites:
-          requiredContext: ["completed_product", "design_specifications"]
-          optionalContext: ["architecture_analysis", "technical_decisions"]
-        dependencies: ["deploy-application"]
+          requiredContext: ["implemented_features", "test_results", "product_requirements"]
+          optionalContext: ["user_feedback"]
+        dependencies: ["handoff-to-review"]
         
 
-     
+
+
 # Workflow-level configurations
 skipConditions:
   - condition: "product_already_launched"
@@ -134,13 +159,13 @@ validationRules:
     dependencies: ["implementation"]
     message: "Feature testing must be completed before launch"
   - rule: "performance_validation_required"
-    phases: ["deployment-operations"]
+    phases: ["review"]
     dependencies: ["testing-validation"]
-    message: "Performance testing required before production deployment"
+    message: "Performance testing required before review completion"
 
 notifications:
   - trigger: "phase_completion"
-    phases: ["analysis", "implementation", "testing-validation"]
+    phases: ["analysis", "implementation", "testing-validation", "review"]
     message: "Major phase completed, ready for next milestone"
   - trigger: "workflow_completion"
     message: "Product development workflow completed successfully"

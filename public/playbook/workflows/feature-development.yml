@@ -23,6 +23,14 @@ phases:
           requiredContext: ["requirements"]
           optionalContext: []
         dependencies: ["gather-requirements"]
+        
+      - id: "handoff-to-design"
+        miniPrompt: "handoff-memory-board"
+        required: true
+        prerequisites:
+          requiredContext: ["clarified_requirements"]
+          optionalContext: []
+        dependencies: ["ask-clarifying-questions"]
 
   - phase: "analysis"
     description: "Technical analysis and architecture planning"
@@ -63,6 +71,14 @@ phases:
           requiredContext: ["feature_analysis", "technical_requirements"]
           optionalContext: ["architecture_analysis", "existing_patterns"]
         dependencies: ["create-trd"]
+        
+      - id: "handoff-to-implementation"
+        miniPrompt: "handoff-memory-board"
+        required: true
+        prerequisites:
+          requiredContext: ["design_specifications"]
+          optionalContext: []
+        dependencies: ["design-architecture"]
 
   - phase: "implementation"
     description: "Technical execution and coding"
@@ -74,7 +90,15 @@ phases:
         prerequisites:
           requiredContext: ["design_specifications"]
           optionalContext: ["development_environment", "coding_standards"]
-        dependencies: ["design-architecture"]
+        dependencies: ["handoff-to-implementation"]
+        
+      - id: "handoff-to-testing"
+        miniPrompt: "handoff-memory-board"
+        required: true
+        prerequisites:
+          requiredContext: ["implemented_feature"]
+          optionalContext: []
+        dependencies: ["implement-feature"]
 
   - phase: "testing-validation"
     description: "Quality assurance and validation"
@@ -96,25 +120,37 @@ phases:
           optionalContext: ["test_automation", "test_environments"]
         dependencies: ["create-test-plan"]
         
-      - id: "code-review"
-        miniPrompt: "development/code-review"
+      - id: "handoff-to-review"
+        miniPrompt: "handoff-memory-board"
         required: true
         prerequisites:
-          requiredContext: ["implemented_feature"]
-          optionalContext: ["code_review_checklist"]
-        dependencies: ["implement-feature"]
+          requiredContext: ["tested_feature", "test_results"]
+          optionalContext: []
+        dependencies: ["execute-tests"]
 
-  - phase: "deployment-operations"
-    description: "Production deployment"
+  - phase: "review"
+    description: "Critical assessment of deliverables and quality"
     required: true
     steps:
-      - id: "deploy-application"
-        miniPrompt: "operations/deploy-application"
+      - id: "code-review"
+        miniPrompt: "review/code-review"
         required: true
         prerequisites:
-          requiredContext: ["tested_feature", "deployment_environment"]
-          optionalContext: ["deployment_pipeline", "rollback_procedures"]
-        dependencies: ["execute-tests", "code-review"]
+          requiredContext: ["implemented_feature", "test_results"]
+          optionalContext: ["code_review_checklist"]
+        dependencies: ["handoff-to-review"]
+        
+      - id: "deliverable-review"
+        miniPrompt: "review/deliverable-review"
+        required: true
+        prerequisites:
+          requiredContext: ["implemented_feature", "test_results", "original_requirements"]
+          optionalContext: ["trd_document"]
+        dependencies: ["code-review"]
+        
+
+
+
 
 # Workflow-level configurations
 skipConditions:

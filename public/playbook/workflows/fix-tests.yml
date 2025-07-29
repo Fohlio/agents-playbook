@@ -23,6 +23,14 @@ phases:
           requiredContext: ["test_failure_analysis"]
           optionalContext: ["error_logs", "stack_traces", "test_environment_details"]
         dependencies: ["analyze-test-failures"]
+        
+      - id: "handoff-to-planning"
+        miniPrompt: "handoff-memory-board"
+        required: true
+        prerequisites:
+          requiredContext: ["root_cause_analysis", "test_failure_patterns"]
+          optionalContext: []
+        dependencies: ["trace-bug-root-cause"]
 
   - phase: "planning-clarification"
     description: "Assess need for refactoring and get approval if required"
@@ -34,7 +42,7 @@ phases:
         prerequisites:
           requiredContext: ["root_cause_analysis", "test_failure_patterns"]
           optionalContext: ["architectural_issues", "code_quality_concerns"]
-        dependencies: ["trace-bug-root-cause"]
+        dependencies: ["handoff-to-planning"]
 
       - id: "document-refactoring-proposal"
         miniPrompt: "business/document-decisions"
@@ -43,6 +51,14 @@ phases:
           requiredContext: ["refactoring_assessment", "user_approval"]
           optionalContext: ["architectural_improvements", "technical_debt_reduction"]
           skipConditions: ["simple_test_fixes", "no_refactoring_needed"]
+        dependencies: ["assess-refactoring-need"]
+        
+      - id: "handoff-to-implementation"
+        miniPrompt: "handoff-memory-board"
+        required: true
+        prerequisites:
+          requiredContext: ["refactoring_assessment", "fix_strategy"]
+          optionalContext: ["refactoring_proposal"]
         dependencies: ["assess-refactoring-need"]
 
   - phase: "implementation"
@@ -56,7 +72,7 @@ phases:
           requiredContext: ["circular_dependency_detected"]
           optionalContext: ["module_structure", "dependency_graph"]
           skipConditions: ["no_circular_deps", "simple_test_fixes"]
-        dependencies: ["assess-refactoring-need"]
+        dependencies: ["handoff-to-implementation"]
 
       - id: "fix-test-issues"
         miniPrompt: "qa/fix-test-issues"
@@ -64,7 +80,7 @@ phases:
         prerequisites:
           requiredContext: ["root_cause_analysis", "test_failure_types"]
           optionalContext: ["existing_test_code", "test_configuration", "architectural_fixes"]
-        dependencies: ["assess-refactoring-need"]
+        dependencies: ["handoff-to-implementation"]
 
       - id: "implement-refactoring"
         miniPrompt: "development/implement-feature"
@@ -74,6 +90,14 @@ phases:
           optionalContext: ["architectural_improvements", "code_restructuring"]
           skipConditions: ["no_refactoring_approved", "simple_fixes_only"]
         dependencies: ["fix-test-issues", "document-refactoring-proposal"]
+        
+      - id: "handoff-to-testing"
+        miniPrompt: "handoff-memory-board"
+        required: true
+        prerequisites:
+          requiredContext: ["implemented_fixes"]
+          optionalContext: ["implemented_refactoring"]
+        dependencies: ["fix-test-issues"]
 
   - phase: "testing-validation"
     description: "Validate that fixes resolve issues without breaking other tests"
@@ -85,7 +109,7 @@ phases:
         prerequisites:
           requiredContext: ["implemented_fixes"]
           optionalContext: ["test_environment", "test_data"]
-        dependencies: ["fix-test-issues"]
+        dependencies: ["handoff-to-testing"]
 
       - id: "validate-refactoring"
         miniPrompt: "qa/validate-requirements"
@@ -95,6 +119,18 @@ phases:
           optionalContext: ["performance_requirements", "architectural_validation"]
           skipConditions: ["no_refactoring_implemented"]
         dependencies: ["implement-refactoring"]
+
+  - phase: "review"
+    description: "Review test fixes and refactoring"
+    required: true
+    steps:
+      - id: "deliverable-review"
+        miniPrompt: "review/deliverable-review"
+        required: true
+        prerequisites:
+          requiredContext: ["implemented_fixes", "test_results"]
+          optionalContext: ["implemented_refactoring"]
+        dependencies: ["execute-tests"]
 
 workflow_context:
   steps_count: 8

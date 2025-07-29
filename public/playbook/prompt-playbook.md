@@ -44,9 +44,7 @@ Use the **AI-powered semantic search** MCP server to find workflows instantly:
 - **code-review** - Code quality review and improvement recommendations
 - **implement-feature** - Feature implementation guidance and best practices
 
-#### 🚀 Operations Phase
-- **deploy-application** - Application deployment procedures and automation
-- **monitor-system-health** - System monitoring, alerting, and observability
+
 
 #### 🧪 QA Phase
 - **create-test-plan** - Test planning, strategy, and coverage analysis
@@ -59,35 +57,35 @@ Use the **AI-powered semantic search** MCP server to find workflows instantly:
 
 ### Feature Development
 **Complete feature development from requirements to deployment**
-- **Phases**: Planning → Analysis → Design → Implementation → Testing → Deployment → Reflection
+- **Phases**: Planning → Analysis → Design → Implementation → Testing → Review
 - **Smart Features**: Auto-skips architecture analysis for simple features
 - **TRD Integration**: Creates comprehensive technical documentation
 - **Best For**: New features, enhancements, complex development tasks
 
 ### Product Development  
 **Comprehensive product development from idea to launch**
-- **Phases**: Planning → Analysis → Design → Implementation → Testing → Deployment → Reflection
+- **Phases**: Planning → Analysis → Design → Implementation → Testing → Review
 - **Advanced Features**: Technical analysis, requirements validation, automated testing
 - **Complexity**: High - requires extensive planning and validation
 - **Best For**: New products, major feature releases, product launches
 
 ### Quick Fix
 **Fast resolution for bugs, hotfixes, and urgent tasks**
-- **Phases**: Planning → Analysis → Implementation → Testing
+- **Phases**: Planning → Analysis → Implementation → Testing → Review
 - **Smart Features**: Auto-skips testing for trivial changes, minimal overhead
 - **Speed**: Optimized for emergency situations and simple fixes
 - **Best For**: Production bugs, hotfixes, small urgent tasks
 
 ### Code Refactoring
 **Systematic code improvement and architecture enhancement**
-- **Phases**: Analysis → Design → Implementation → Testing → Documentation
+- **Phases**: Analysis → Design → Implementation → Testing → Review
 - **Focus**: Architecture improvements, performance optimization, technical debt
 - **Validation**: Backward compatibility and performance impact assessment
 - **Best For**: Technical debt reduction, performance improvements, code modernization
 
 ### TRD Creation
 **Technical Requirements Document creation from feature ideas**
-- **Phases**: Planning → Analysis → Design → Documentation
+- **Phases**: Planning → Analysis → Design → Review
 - **Integration**: Built-in TRD mini-prompt for comprehensive documentation [[memory:2316971]]
 - **Smart Features**: Auto-skips architecture analysis for simple features
 - **Best For**: Feature planning, technical specification, development preparation
@@ -96,7 +94,7 @@ Use the **AI-powered semantic search** MCP server to find workflows instantly:
 
 ### Project Initialization
 **Set up new project context and AI agent documentation**
-- **Phases**: Analysis → Planning → Design → Documentation
+- **Phases**: Analysis → Setup → Review
 - **Output**: AGENTS.MD, project navigation, technology stack analysis
 - **Smart Features**: Auto-skips steps when sufficient context exists
 - **Best For**: New codebases, AI agent setup, project onboarding
