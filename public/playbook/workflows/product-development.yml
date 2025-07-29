@@ -118,7 +118,7 @@ phases:
         prerequisites:
           requiredContext: ["test_plan", "implemented_features"]
           optionalContext: ["test_automation"]
-                dependencies: ["create-test-plan"]
+        dependencies: ["create-test-plan"]
         
       - id: "handoff-to-review"
         miniPrompt: "handoff-memory-board"
@@ -126,7 +126,7 @@ phases:
         prerequisites:
           requiredContext: ["test_results", "validated_features"]
           optionalContext: []
-        dependencies: ["handoff-to-deployment"]
+        dependencies: ["execute-tests"]
 
   - phase: "review"
     description: "Product quality assessment and validation"

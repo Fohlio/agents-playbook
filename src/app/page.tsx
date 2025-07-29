@@ -17,13 +17,13 @@ export default function Home() {
             <h2 className="text-3xl font-bold text-gray-900 mb-8">What is this?</h2>
             <div className="text-lg text-gray-700 space-y-4">
               <p>
-                <strong>AI Agent Workflow Engine</strong> that transforms complex collaboration processes into structured, repeatable agent workflows.
+                <strong>AI Agent Workflow Engine</strong> that transforms complex collaboration processes into structured, repeatable agent workflows with seamless handoffs and critical review phases.
               </p>
               <p>
-                <strong>Context Engineering Framework</strong> - designed to help AI models follow consistent, validated processes with intelligent guardrails and semantic workflow discovery.
+                <strong>Context Engineering Framework</strong> - designed to help AI models follow consistent, validated processes with intelligent guardrails, semantic workflow discovery, and agent handoff system for optimal context management.
               </p>
               <p>
-                Turn manual coordination into automated intelligence. Semantic search finds the right workflow, smart validation provides structure for reliable execution.
+                Turn manual coordination into automated intelligence. Semantic search finds the right workflow, smart validation provides structure for reliable execution, and agent handoffs ensure seamless context transfer between phases.
               </p>
             </div>
           </div>
@@ -32,22 +32,26 @@ export default function Home() {
         {/* Quick Stats */}
         <section className="py-12 bg-gray-50">
           <div className="max-w-4xl mx-auto px-4">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-6 text-center">
               <div className="p-4">
                 <div className="text-2xl font-bold text-blue-600">9</div>
                 <div className="text-sm text-gray-600">Workflows</div>
               </div>
               <div className="p-4">
-                <div className="text-2xl font-bold text-green-600">12</div>
+                <div className="text-2xl font-bold text-green-600">25+</div>
                 <div className="text-sm text-gray-600">Mini-Prompts</div>
+              </div>
+              <div className="p-4">
+                <div className="text-2xl font-bold text-orange-600">🔄</div>
+                <div className="text-sm text-gray-600">Agent Handoffs</div>
               </div>
               <div className="p-4">
                 <div className="text-2xl font-bold text-purple-600">90+</div>
                 <div className="text-sm text-gray-600">Tests</div>
               </div>
               <div className="p-4">
-                <div className="text-2xl font-bold text-orange-600">🎯</div>
-                <div className="text-sm text-gray-600">Context Engineering</div>
+                <div className="text-2xl font-bold text-red-600">🔍</div>
+                <div className="text-sm text-gray-600">Review Phases</div>
               </div>
             </div>
           </div>
@@ -91,7 +95,7 @@ export default function Home() {
             <div className="text-center">
               <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
                 <p className="text-blue-800">
-                  <strong>Transform collaboration into automation:</strong> Turn manual coordination processes into structured, intelligent agent workflows.
+                  <strong>Transform collaboration into automation:</strong> Turn manual coordination processes into structured, intelligent agent workflows with built-in handoffs and critical review phases.
                 </p>
               </div>
             </div>

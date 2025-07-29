@@ -36,12 +36,22 @@ export class MiniPromptLoader {
    * Find mini-prompt file by step ID across all categories
    */
   private async findAndParseMiniPrompt(stepId: string): Promise<MiniPrompt> {
-    const categories = ['development', 'analysis', 'qa', 'business', 'operations'];
+    // Special handling for handoff steps - they all use handoff-memory-board
+    if (stepId.startsWith('handoff-to-') || stepId.includes('handoff')) {
+      const handoffFilePath = path.join(this.miniPromptsPath, 'handoff-memory-board.md');
+      if (fs.existsSync(handoffFilePath)) {
+        return await this.parseMiniPromptFile(handoffFilePath);
+      }
+    }
+
+    // Search through all category directories
+    const categories = fs.readdirSync(this.miniPromptsPath);
     
     for (const category of categories) {
       const categoryPath = path.join(this.miniPromptsPath, category);
       
-      if (!fs.existsSync(categoryPath)) {
+      // Skip if it's not a directory
+      if (!fs.statSync(categoryPath).isDirectory()) {
         continue;
       }
 

@@ -105,7 +105,7 @@ describe('Context System Integration Tests', () => {
       
       expect(workflowText).toContain('Detailed Step Breakdown');
       expect(workflowText).toContain('Context Gathering');
-      expect(workflowText).toContain('create-trd');
+      expect(workflowText).toContain('trd-review');
     }, TEST_TIMEOUT);
 
     test('should show workflow overview for all major workflows', async () => {

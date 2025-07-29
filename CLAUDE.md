@@ -3,7 +3,7 @@
 **AI Agent Instructions for agents-playbook repository**
 
 ## Repository Overview
-This is a **production-ready workflow automation repository** for AI agents in software development. It provides **YAML-based workflows**, **modular mini-prompts**, and **AI-powered semantic search** to help AI agents perform development tasks efficiently.
+This is a **production-ready workflow automation repository** for AI agents in software development. It provides **YAML-based workflows**, **modular mini-prompts**, **AI-powered semantic search**, and **agent handoff system** to help AI agents perform development tasks efficiently with seamless context transfer.
 
 ## Key Files & Structure
 
@@ -25,10 +25,7 @@ This is a **production-ready workflow automation repository** for AI agents in s
 - **fix-circular-dependencies.yml** - Comprehensive circular dependency resolution with architectural refactoring (7 steps)
 - **unit-test-coverage.yml** - Comprehensive unit test coverage improvement (7 steps)
 - **trd-creation.yml** - Technical Requirements Document creation (7 steps)
-- **brd-creation.yml** - Business Requirements with research (6 steps)
-- **brd-to-trd-translation.yml** - Business to technical translation (6 steps)
 - **project-initialization.yml** - New project setup (5 steps)
-- **infrastructure-setup.yml** - Infrastructure deployment (12 steps)
 
 #### 🧱 Mini-Prompts Library (`playbook/mini-prompts/`)
 
@@ -45,17 +42,25 @@ This is a **production-ready workflow automation repository** for AI agents in s
 **Development Phase** (`development/`)
 - `design-architecture.md` - Solution architecture and design
 - `ask-clarifying-questions.md` - Requirements clarification
-- `code-review.md` - Code quality review and feedback
 - `implement-feature.md` - Feature implementation guidance
+- `fix-circular-dependencies.md` - Circular dependency resolution
 
-**Operations Phase** (`operations/`)
-- `deploy-application.md` - Application deployment procedures
-- `monitor-system-health.md` - System monitoring and alerting
+**Review Phase** (`review/`)
+- `code-review.md` - Code quality assessment and improvement recommendations
+- `trd-review.md` - Technical requirements document review and validation
+- `deliverable-review.md` - Universal deliverable quality assessment
 
 **QA Phase** (`qa/`)
 - `create-test-plan.md` - Test planning and strategy
 - `execute-tests.md` - Test execution and validation
 - `validate-requirements.md` - Requirements validation and acceptance
+- `analyze-test-failures.md` - Test failure analysis and diagnosis
+- `analyze-test-coverage.md` - Test coverage analysis and improvement
+- `fix-test-issues.md` - Test issue resolution and fixes
+- `write-unit-tests.md` - Unit test creation and implementation
+
+**Handoff System**
+- `handoff-memory-board.md` - Agent context transfer and communication system
 
 
 
@@ -132,7 +137,7 @@ Architectural Debt → fix-circular-dependencies workflow → code-refactoring
 
 #### Product Development
 ```
-Product Idea → brd-creation → product-development → infrastructure-setup
+Product Idea → product-development
 ```
 
 #### New Projects

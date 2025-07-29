@@ -9,7 +9,9 @@
 - **🧠 Context Engineering** - workflows engineered for reliable AI execution across model tiers
 - **🔧 9 Workflows** - battle-tested processes that provide structure and guardrails  
 - **⚡ Smart Validation** - automatically validates prerequisites and skips irrelevant steps
-- **📋 12 Mini-Prompts** - context-engineered prompts organized by development phases
+- **🔄 Agent Handoffs** - seamless context transfer between workflow phases with memory board system
+- **🔍 Critical Review** - built-in review phases for quality assessment and continuous improvement
+- **📋 25+ Mini-Prompts** - context-engineered prompts organized by development phases with review and handoff system
 
 ## 🚀 Installation
 
@@ -74,8 +76,8 @@ Step-by-step navigation with smart validation.
 - **unit-test-coverage** - Comprehensive unit test coverage improvement
 
 ### 📋 Setup & Planning (2)
-- **project-initialization** - New project setup
-- **trd-creation** - Technical Requirements Document creation
+- **project-initialization** - New project setup with documentation review
+- **trd-creation** - Technical Requirements Document creation with quality assessment
 
 ## 🎯 Usage Examples
 
@@ -172,6 +174,8 @@ echo "Use workflows from playbook/ directory for structured development" > .curs
 - **YAML Workflows** - structured processes with phases, steps, and guardrails
 - **Mini-Prompts** - context-engineered reusable prompts that work across model tiers
 - **Smart Validation** - prevents execution without required context, provides structure for low-tier models
+- **Agent Handoffs** - memory board system for seamless context transfer between phases
+- **Critical Review** - built-in quality assessment phases for continuous improvement
 
 ## 🐛 Troubleshooting
 
