@@ -1,8 +1,8 @@
 name: "Feature Brainstorming & Enhancement Discovery Workflow"
-description: "Comprehensive workflow for discovering, researching and prioritizing new features and enhancements"
+description: "Comprehensive workflow for discovering, researching and prioritizing potential new features and enhancement opportunities (not for implementation)"
 version: "1.0"
 category: "analysis"
-tags: ["features", "brainstorming", "enhancement", "discovery", "research"]
+tags: ["features", "brainstorming", "discovery", "research", "ideation", "opportunity-analysis", "what-to-build"]
 
 phases:
   - phase: "analysis"

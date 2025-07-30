@@ -1,8 +1,8 @@
 name: "Feature Development Workflow"
-description: "Complete workflow for developing new features from requirements to deployment"
+description: "Complete workflow for implementing and developing new features, improvements, and enhancements from requirements to deployment"
 version: "1.0"
 category: "development"
-tags: ["feature", "development", "full-cycle"]
+tags: ["feature", "development", "implementation", "enhancement", "improvement", "build", "create", "full-cycle"]
 
 phases:
   - phase: "planning-clarification"
