@@ -1,0 +1,102 @@
+name: "Feature Brainstorming & Enhancement Discovery Workflow"
+description: "Comprehensive workflow for discovering, researching and prioritizing new features and enhancements"
+version: "1.0"
+category: "analysis"
+tags: ["features", "brainstorming", "enhancement", "discovery", "research"]
+
+phases:
+  - phase: "analysis"
+    description: "Codebase analysis and opportunity discovery"
+    required: true
+    steps:
+      - id: "analyze-codebase-opportunities"
+        miniPrompt: "analysis/codebase-opportunity-analysis"
+        required: true
+        prerequisites:
+          requiredContext: ["project_codebase"]
+          optionalContext: ["system_architecture", "user_feedback"]
+        
+      - id: "discover-user-interests"
+        miniPrompt: "business/user-interest-discovery"
+        required: true
+        prerequisites:
+          requiredContext: ["codebase_analysis"]
+          optionalContext: ["product_vision"]
+        dependencies: ["analyze-codebase-opportunities"]
+
+  - phase: "research"
+    description: "Market research and trend analysis"
+    required: true
+    steps:
+      - id: "research-trends"
+        miniPrompt: "analysis/trend-research"
+        required: true
+        prerequisites:
+          requiredContext: ["user_interests", "codebase_analysis"]
+          optionalContext: ["technology_stack", "competitor_analysis"]
+        dependencies: ["discover-user-interests"]
+        
+      - id: "analyze-specific-features"
+        miniPrompt: "analysis/specific-feature-analysis"
+        required: true
+        prerequisites:
+          requiredContext: ["user_interests", "trend_research"]
+          optionalContext: ["existing_features"]
+        dependencies: ["research-trends"]
+
+  - phase: "ideation"
+    description: "Creative brainstorming and feature ideation"
+    required: true
+    steps:
+      - id: "brainstorm-features"
+        miniPrompt: "business/feature-brainstorming"
+        required: true
+        prerequisites:
+          requiredContext: ["codebase_analysis", "user_interests", "trend_research"]
+          optionalContext: ["competitive_analysis"]
+        dependencies: ["analyze-specific-features"]
+        
+      - id: "compile-suggestions"
+        miniPrompt: "business/feature-compilation"
+        required: true
+        prerequisites:
+          requiredContext: ["brainstormed_features", "specific_feature_analysis"]
+          optionalContext: ["feasibility_constraints"]
+        dependencies: ["brainstorm-features"]
+
+  - phase: "documentation"
+    description: "Final documentation and presentation"
+    required: true
+    steps:
+      - id: "create-feature-document"
+        miniPrompt: "business/create-feature-document"
+        required: true
+        prerequisites:
+          requiredContext: ["compiled_suggestions", "user_interests"]
+          optionalContext: ["implementation_estimates"]
+        dependencies: ["compile-suggestions"]
+
+# Workflow-level configurations
+skipConditions:
+  - condition: "no_codebase_access"
+    message: "Cannot access codebase for analysis"
+  - condition: "recent_feature_analysis"
+    message: "Recent feature analysis exists (within 30 days)"
+
+validationRules:
+  - rule: "codebase_analysis_required"
+    phases: ["analysis"]
+    message: "Codebase analysis required before proceeding to research phase"
+
+notifications:
+  - trigger: "phase_completion"
+    phases: ["research", "ideation"]
+    message: "Phase completed, ready for next phase"
+  - trigger: "workflow_completion"
+    message: "Feature brainstorming workflow completed successfully"
+
+# Smart execution settings
+execution:
+  allowSkipping: true
+  requireExplicitApproval: false
+  automaticProgressTracking: true
