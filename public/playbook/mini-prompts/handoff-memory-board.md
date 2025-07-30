@@ -68,9 +68,15 @@ This is a **persistent conversation board** - each agent adds their message at t
 
 **If YES, use this template in your new chat:**
 ```
-I'm continuing a [workflow-name] workflow at the [current-phase] phase.
+I'm continuing a [workflow-name] workflow at step [step-number].
 
 Please read our memory board: .agents-playbook/[feature-or-task-name]/memory-board.md
+
+**Workflow State (if using MCP workflows):**
+- Workflow ID: "[workflow-id]"
+- Current Step: [step-number] 
+- Available Context: [context-list]
+- Next Action: Use `get_next_step` with above state
 
 Latest context: [2-3 key points from the board]
 
@@ -83,18 +89,16 @@ Ready to continue with [next-phase].
 ### [Your Role] - [Current Phase] → [Next Phase] - [Date/Time]
 **Completed:** [What was done]
 **Created:** [Files/artifacts] 
-**Decided:** [Key decisions]
+**Workflow State:** [workflow_id="...", current_step=X, context=[...]]
 **Next agent needs:** [Critical context]
-**Watch out for:** [Warnings/issues]
 **Questions:** [Unresolved items]
 ```
 
 ## ➡️ Usage Flow
 ```mermaid
 flowchart LR
-    A[Finish Phase Work] --> B[Add Message to Board]
-    B --> C[Recommend Chat Switch]
-    C --> D[New Agent Reads Board]
-    D --> E[Continues Work]
-    E --> F[Adds Own Message]
+    A[Finish Phase] --> B[Add Message to Board]
+    B --> C[Switch Chat]
+    C --> D[New Agent: Read Board + get_next_step]
+    D --> E[Continue Work]
 ``` 
