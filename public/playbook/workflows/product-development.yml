@@ -1,30 +1,34 @@
-name: "Product Development Workflow"
-description: "Comprehensive product development from idea to launch including planning, development, and validation"
+name: "MVP Product Development Workflow"
+description: "Build working MVP foundation - core functionality skeleton ready for feature additions"
+objective: "Create deployable minimum viable product that validates core concept and user value"
 version: "1.0"
-category: "development"
-tags: ["product", "development", "planning", "full-cycle", "launch"]
+category: "mvp-development"
+tags: ["mvp", "skeleton", "foundation", "core-product", "minimal-viable"]
+
+# MVP scope definition
+scope:
+  include: ["core user flow", "essential business logic", "basic UI/UX", "deployment foundation"]
+  exclude: ["advanced features", "optimization", "nice-to-have functionality"]
+  
+transitionTo: "feature-development.yml"
+transitionWhen: ["mvp_deployed", "core_validation_complete", "user_feedback_collected"]
+
+mvpGuidance:
+  globalContext: "Building MVP skeleton - focus on working foundation, not feature completeness"
 
 phases:
   - phase: "planning-clarification"
-    description: "Product planning and requirements definition"
+    description: "MVP scope definition and requirements clarification"
     required: true
     steps:
-      - id: "gather-requirements"
-        miniPrompt: "business/gather-requirements"
-        required: true
-        prerequisites:
-          requiredContext: []
-          optionalContext: ["existing_feature_analysis"]
-        
       - id: "ask-clarifying-questions"
         miniPrompt: "development/ask-clarifying-questions"
         required: true
         prerequisites:
-          requiredContext: ["requirements"]
-          optionalContext: []
-        dependencies: ["gather-requirements"]
+          requiredContext: []
+          optionalContext: ["product_vision", "initial_concept"]
         
-      - id: "handoff-to-analysis"
+      - id: "handoff-to-design"
         miniPrompt: "handoff-memory-board"
         required: true
         prerequisites:
@@ -32,35 +36,15 @@ phases:
           optionalContext: []
         dependencies: ["ask-clarifying-questions"]
 
-  - phase: "analysis"
-    description: "Market and technical analysis"
-    required: true
-    steps:
-      - id: "feature-analysis"
-        miniPrompt: "analysis/feature-analysis"
-        required: true
-        prerequisites:
-          requiredContext: ["clarified_requirements", "product_vision"]
-          optionalContext: ["existing_analysis"]
-        dependencies: ["handoff-to-analysis"]
-        
-      - id: "handoff-to-design"
-        miniPrompt: "handoff-memory-board"
-        required: true
-        prerequisites:
-          requiredContext: ["feature_analysis"]
-          optionalContext: []
-        dependencies: ["feature-analysis"]
-
   - phase: "design-architecture"
-    description: "Product and technical design"
+    description: "MVP architecture and core design"
     required: true
     steps:
       - id: "design-architecture"
         miniPrompt: "development/design-architecture"
         required: true
         prerequisites:
-          requiredContext: ["feature_analysis"]
+          requiredContext: ["clarified_requirements"]
           optionalContext: ["design_guidelines", "technical_constraints"]
         dependencies: ["handoff-to-design"]
         
@@ -137,30 +121,41 @@ phases:
 
 # Workflow-level configurations
 skipConditions:
-  - condition: "product_already_launched"
-    message: "Product has already been successfully launched"
-  - condition: "insufficient_technical_requirements"
-    message: "Insufficient technical requirements for full product development"
+  - condition: "mvp_already_deployed"
+    message: "MVP has already been successfully deployed"
+  - condition: "insufficient_core_requirements"
+    message: "Insufficient core requirements for MVP development"
 
 validationRules:
-  - rule: "requirements_validation_required"
-    phases: ["analysis"]
-    message: "Requirements validation required before development"
-  - rule: "feature_testing_required"
+  - rule: "mvp_scope_validation_required"
+    phases: ["planning-clarification"]
+    message: "MVP scope must be clearly defined before development"
+  - rule: "core_functionality_testing_required"
     phases: ["testing-validation"]
     dependencies: ["implementation"]
-    message: "Feature testing must be completed before launch"
-  - rule: "performance_validation_required"
+    message: "Core functionality testing must be completed before MVP launch"
+  - rule: "deployment_readiness_required"
     phases: ["review"]
     dependencies: ["testing-validation"]
-    message: "Performance testing required before review completion"
+    message: "MVP must be deployment-ready before completion"
+
+# MVP-specific focus rules
+mvpFocus:
+  - rule: "core_functionality_only"
+    message: "Focus on essential features needed for MVP - avoid feature creep"
+  - rule: "minimal_viable_scope"
+    message: "Build the smallest version that provides user value"
+  - rule: "deployment_first"
+    message: "Prioritize getting working version deployed over feature completeness"
 
 notifications:
   - trigger: "phase_completion"
-    phases: ["analysis", "implementation", "testing-validation", "review"]
-    message: "Major phase completed, ready for next milestone"
+    phases: ["implementation", "testing-validation", "review"]
+    message: "Major MVP phase completed, ready for next milestone"
   - trigger: "workflow_completion"
-    message: "Product development workflow completed successfully"
+    message: "MVP development completed - ready to transition to feature-development.yml"
+  - trigger: "mvp_ready_for_features"
+    message: "MVP foundation established, switch to feature development workflow for enhancements"
 
 # Smart execution settings
 execution:
