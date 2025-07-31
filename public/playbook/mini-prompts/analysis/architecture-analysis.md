@@ -21,7 +21,7 @@ Describe the current architecture, highlight weak spots, and propose improvement
 - [ ] Data stores, consistency, access patterns  
 - [ ] Quality attributes: ⬆️ scalability, ⚡ performance, 🔒 security, 🛠️ maintainability  
 
-## 📤 Outputs (create in `.agents-playbook/[feature-or-task-name]/architecture-report.md`)
+## 📤 Outputs (provide verbal analysis)
 - narrative + diagram (PlantUML or Mermaid)
 - strengths & weaknesses per attribute
 - tech debt + roadmap
@@ -32,4 +32,4 @@ flowchart LR
     A[User] -->|request| B[Analysis Engine]
     B --> C{Need more context?}
     C -- Yes --> D[Ask clarifying questions]
-    C -- No --> E[Generate reports]
+    C -- No --> E[Provide verbal analysis]

@@ -32,7 +32,7 @@ Dissect an existing feature, reveal weak spots, and suggest upgrades—no fluff.
   - [ ] Perceived speed / responsiveness  
   - [ ] Clarity of error messages  
 
-## 📤 Outputs (in `.agents-playbook/[feature-or-task-name]/feature-analysis.md`), which includes:
+## 📤 Outputs (provide verbal analysis), which includes:
 - what it does, user flows, data paths
 - diagram + component breakdown
 - strengths, weaknesses, perf/security findings
@@ -45,4 +45,4 @@ flowchart LR
     U[User] -->|request| A[Feature Analysis Engine]
     A --> B{Need more input?}
     B -- Yes --> C[Ask for scope / repo]
-    B -- No --> D[Run analysis & generate reports]
+    B -- No --> D[Provide verbal analysis]

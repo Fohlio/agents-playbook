@@ -92,13 +92,41 @@ phases:
           optionalContext: ["development_environment", "coding_standards"]
         dependencies: ["handoff-to-implementation"]
         
-      - id: "handoff-to-testing"
+      - id: "handoff-to-review"
         miniPrompt: "handoff-memory-board"
         required: true
         prerequisites:
           requiredContext: ["implemented_feature"]
           optionalContext: []
         dependencies: ["implement-feature"]
+
+  - phase: "review"
+    description: "CRITICAL and thorough assessment of code quality, security, and production readiness"
+    required: true
+    steps:
+      - id: "code-review"
+        miniPrompt: "review/code-review"
+        required: true
+        prerequisites:
+          requiredContext: ["implemented_feature"]
+          optionalContext: ["code_review_checklist"]
+        dependencies: ["handoff-to-review"]
+        
+      - id: "deliverable-review"
+        miniPrompt: "review/deliverable-review"
+        required: true
+        prerequisites:
+          requiredContext: ["implemented_feature", "original_requirements"]
+          optionalContext: ["trd_document"]
+        dependencies: ["code-review"]
+        
+      - id: "handoff-to-testing"
+        miniPrompt: "handoff-memory-board"
+        required: true
+        prerequisites:
+          requiredContext: ["reviewed_feature", "code_review_results"]
+          optionalContext: []
+        dependencies: ["deliverable-review"]
 
   - phase: "testing-validation"
     description: "Quality assurance and validation"
@@ -108,45 +136,17 @@ phases:
         miniPrompt: "qa/create-test-plan"
         required: true
         prerequisites:
-          requiredContext: ["feature_specifications", "implemented_feature"]
+          requiredContext: ["feature_specifications", "reviewed_feature"]
           optionalContext: ["testing_framework", "test_data"]
-        dependencies: ["implement-feature"]
+        dependencies: ["handoff-to-testing"]
         
       - id: "execute-tests"
         miniPrompt: "qa/execute-tests"
         required: true
         prerequisites:
-          requiredContext: ["test_plan", "implemented_feature"]
+          requiredContext: ["test_plan", "reviewed_feature"]
           optionalContext: ["test_automation", "test_environments"]
         dependencies: ["create-test-plan"]
-        
-      - id: "handoff-to-review"
-        miniPrompt: "handoff-memory-board"
-        required: true
-        prerequisites:
-          requiredContext: ["tested_feature", "test_results"]
-          optionalContext: []
-        dependencies: ["execute-tests"]
-
-  - phase: "review"
-    description: "Critical assessment of deliverables and quality"
-    required: true
-    steps:
-      - id: "code-review"
-        miniPrompt: "review/code-review"
-        required: true
-        prerequisites:
-          requiredContext: ["implemented_feature", "test_results"]
-          optionalContext: ["code_review_checklist"]
-        dependencies: ["handoff-to-review"]
-        
-      - id: "deliverable-review"
-        miniPrompt: "review/deliverable-review"
-        required: true
-        prerequisites:
-          requiredContext: ["implemented_feature", "test_results", "original_requirements"]
-          optionalContext: ["trd_document"]
-        dependencies: ["code-review"]
         
 
 
@@ -167,7 +167,7 @@ validationRules:
 
 notifications:
   - trigger: "phase_completion"
-    phases: ["implementation", "testing-validation"]
+    phases: ["implementation", "review", "testing-validation"]
     message: "Phase completed, ready for next phase"
   - trigger: "workflow_completion"
     message: "Feature development workflow completed successfully"

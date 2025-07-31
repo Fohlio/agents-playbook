@@ -47,9 +47,9 @@ Always give multiple-choice or concrete examples for clear requirements.
 
 ## 📤 Output
 1. Gather insights from the user directly
-2. Fill in **File:** `.agents-playbook/[feature-or-task-name]/clarified-requirements.md`
+2. Provide **clear verbal summary** with key clarifications
 
-Sections:
+Include:
 1. **Summary** – task/problem in plain English  
 2. **Requirements Answers** – captured multiple-choice selections  
 3. **Final Scope** – what’s in / out  
@@ -62,4 +62,4 @@ flowchart LR
     U[User] -->|initial ask| A[Clarifier]
     A --> B{Need more info?}
     B -- Yes --> C[Send MCQs]
-    B -- No --> D[Write clarified-requirements.md]
+    B -- No --> D[Provide verbal summary]

@@ -1,7 +1,7 @@
-# Code Review Prompt (v2)
+# Code Review Prompt (v3) - Critical Review
 
 ## 🎯 Goal
-Audit the finished code for quality, security, performance, and standards, then hand back a crisp report—no fluff.
+**CRITICALLY** audit the finished code for quality, security, performance, and standards. Be thorough, demanding, and uncompromising—catch everything before it goes to production.
 
 ## 📥 Context (ask if missing)
 1. **Code Branch / PR** – where's the diff?
@@ -12,46 +12,70 @@ Audit the finished code for quality, security, performance, and standards, then 
 ## 🚦 Skip if
 - Only trivial config tweaks **or** review already done.
 
-## 🔍 Checklist
-- **Functional**  
-  - [ ] Implements all requirements & edge cases  
+## 🔍 Critical Review Checklist
+- **Functional** ⚡ STRICT
+  - [ ] Implements ALL requirements completely
+  - [ ] Handles ALL edge cases (empty inputs, max limits, failures)
+  - [ ] No silent failures or incomplete logic
 
-- **Quality**  
-  - [ ] Readable, DRY, follows style guide  
-  - [ ] No dead code / duplication  
+- **Security** 🔒 NON-NEGOTIABLE  
+  - [ ] Input validation on EVERY parameter
+  - [ ] SQL injection protection with prepared statements
+  - [ ] XSS prevention with proper escaping
+  - [ ] No hardcoded secrets, proper env/vault usage
+  - [ ] Authorization checks at every entry point
+  - [ ] Error messages don't leak sensitive info
 
-- **Security**  
-  - [ ] Input validation / sanitization  
-  - [ ] Secrets handled via env/secret manager  
-  - [ ] AuthN/Z correct  
+- **Performance** ⚡ CRITICAL
+  - [ ] No N+1 database queries 
+  - [ ] Proper indexing for database operations
+  - [ ] Memory leaks checked (especially in loops)
+  - [ ] Async operations where appropriate
+  - [ ] No blocking operations on main thread
 
-- **Performance**  
-  - [ ] No obvious bottlenecks or N+1 queries  
-  - [ ] Memory & CPU use sane  
+- **Quality** 📐 MANDATORY
+  - [ ] Code follows project patterns consistently
+  - [ ] No duplication (DRY principle enforced)
+  - [ ] Functions under 50 lines, classes under 300
+  - [ ] Clear naming (no abbreviations or unclear terms)
+  - [ ] No commented-out code or debug statements
 
-- **Error Handling**  
-  - [ ] Graceful exceptions, helpful logs  
+- **Error Handling** 🚨 COMPREHENSIVE
+  - [ ] Every external call wrapped in try/catch
+  - [ ] Meaningful error messages for debugging
+  - [ ] Proper logging levels (error/warn/info)
+  - [ ] Graceful degradation for non-critical failures
 
-- **Testing**  
-  - [ ] Adequate unit / integration coverage  
-  - [ ] Tests pass and are maintainable  
+- **Testing** 🧪 THOROUGH
+  - [ ] Unit test coverage > 80% for new code
+  - [ ] Integration tests for API endpoints
+  - [ ] Negative test cases included
+  - [ ] Tests are fast (<5s total) and deterministic  
 
-## 📤 Output
-**File:** `.agents-playbook/[feature-or-task-name]/code-review.md`
+## 📤 Critical Review Output
+**Approach:** FAIL-FAST - Block merge if any Critical/High severity issues found
 
-Structure:
-1. **Summary** – 🚦 Approved / Approved-with-changes / Needs-rework  
-2. **Issue Table**  
+**Verdict:** 
+- 🚦 **APPROVED** - Production ready, no issues
+- 🔶 **APPROVED WITH MINOR CHANGES** - Low severity fixes only  
+- 🛑 **REJECTED** - Critical/High issues must be fixed before merge
 
-| Severity | File/Line | Issue | Recommendation |
-|----------|-----------|-------|----------------|
-| Critical | `auth.go:42` | SQL injection risk | Use prepared stmt |
+**Issue Breakdown:**
 
-3. **Security Findings** – bullets  
-4. **Performance Notes** – bullets  
-5. **Quality & Style** – highlights + nitpicks  
-6. **Test Coverage** – % plus missing cases  
-7. **Next Steps** – who fixes what by when  
+| Severity | File/Line | Category | Issue | Required Fix |
+|----------|-----------|----------|-------|-------------|
+| 🔴 Critical | `auth.go:42` | Security | SQL injection vulnerability | Use prepared statements |
+| 🟠 High | `api.go:15` | Performance | N+1 query in loop | Implement bulk loading |
+| 🟡 Medium | `utils.js:28` | Quality | 80-line function | Split into smaller functions |
+| 🔵 Low | `styles.css:45` | Style | Missing semicolon | Add semicolon |
+
+**Detailed Analysis:**
+1. **Security Assessment** – Any vulnerabilities or risks  
+2. **Performance Impact** – Bottlenecks, scaling concerns  
+3. **Code Quality Score** – Maintainability, readability (1-10)
+4. **Test Coverage Analysis** – % coverage + critical missing tests  
+5. **Technical Debt Added** – New debt introduced  
+6. **Deployment Risks** – What could break in production  
 
 ## ➡️ Response Flow
 ```mermaid
@@ -60,5 +84,5 @@ flowchart LR
     A --> B{Need more context?}
     B -- Yes --> C[Ask for branch / specs]
     B -- No --> D[Run review]
-    D --> E[Write code_review.md]
+    D --> E[Provide critical review]
 ``` 
