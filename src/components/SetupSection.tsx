@@ -29,22 +29,7 @@ export default function SetupSection() {
       }
     },
     {
-      number: "2", 
-      title: "Restart IDE",
-      description: "The server will be automatically available after restart",
-      icon: (
-        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-        </svg>
-      ),
-      gradient: "from-purple-500 to-pink-500",
-      ides: [
-        { name: "Claude Desktop", action: "Restart Claude Desktop" },
-        { name: "Cursor", action: "Restart Cursor" }
-      ]
-    },
-    {
-      number: "3",
+      number: "2",
       title: "Start Using", 
       description: "Ask your AI assistant for intelligent workflow recommendations",
       icon: (
@@ -147,25 +132,7 @@ export default function SetupSection() {
                     </div>
                   )}
 
-                  {/* IDE list for step 2 */}
-                  {step.ides && (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                      {step.ides.map((ide, ideIndex) => (
-                        <div 
-                          key={ideIndex}
-                          className="flex items-center space-x-3 p-4 bg-gradient-to-r from-slate-50 to-blue-50 rounded-xl border border-slate-200/50"
-                        >
-                          <div className="w-2 h-2 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full"></div>
-                          <div>
-                            <div className="font-medium text-slate-800">{ide.name}</div>
-                            <div className="text-sm text-slate-600">{ide.action}</div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-
-                  {/* Examples for step 3 */}
+                  {/* Examples for step 2 */}
                   {step.examples && (
                     <div className="space-y-3">
                       {step.examples.map((example, exampleIndex) => (

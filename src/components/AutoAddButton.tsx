@@ -39,15 +39,13 @@ export default function AutoAddButton() {
       "Open Claude Desktop",
       "Go to Settings",
       "Find \"MCP Servers\" section",
-      "Paste the copied configuration",
-      "Restart Claude Desktop"
+      "Paste the copied configuration"
     ],
     cursor: [
       "Open Cursor Settings",
       "Navigate to \"Extensions\" or \"Integrations\"",
       "Add MCP Server configuration",
-      "Paste the copied configuration",
-      "Restart Cursor"
+      "Paste the copied configuration"
     ]
   };
 
