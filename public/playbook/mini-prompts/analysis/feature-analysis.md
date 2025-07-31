@@ -22,6 +22,7 @@ Dissect an existing feature, reveal weak spots, and suggest upgrades—no fluff.
 - **Tech**  
   - [ ] Component structure & patterns  
   - [ ] Code quality & organization  
+  - [ ] Anti-patterns & code smells  
   - [ ] Performance hotspots (CPU, I/O, DB)  
   - [ ] Security: authN/Z, data protection  
   - [ ] Error / edge-case handling  

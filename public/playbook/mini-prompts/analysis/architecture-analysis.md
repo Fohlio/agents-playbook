@@ -18,6 +18,7 @@ Describe the current architecture, highlight weak spots, and propose improvement
 - [ ] Components + responsibilities  
 - [ ] Data flows & dependencies  
 - [ ] Architectural patterns  
+- [ ] Anti-patterns & code smells  
 - [ ] Data stores, consistency, access patterns  
 - [ ] Quality attributes: ⬆️ scalability, ⚡ performance, 🔒 security, 🛠️ maintainability  
 

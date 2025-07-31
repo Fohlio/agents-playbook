@@ -23,7 +23,7 @@ Deep-scan the codebase, expose issues, and recommend fixes—no fluff.
   - [ ] Readability (naming, comments, style)  
   - [ ] Maintainability & extensibility  
   - [ ] Complexity hotspots (length, nesting, cyclomatic)  
-  - [ ] Code smells & duplication  
+  - [ ] Anti-patterns, code smells & duplication  
 
 - **Perf / Sec**  
   - [ ] Algorithmic complexity on critical paths  

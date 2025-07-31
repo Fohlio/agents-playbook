@@ -44,21 +44,13 @@ phases:
           optionalContext: ["existing_analysis"]
         dependencies: ["handoff-to-analysis"]
         
-      - id: "architecture-analysis"
-        miniPrompt: "analysis/architecture-analysis"
-        required: true
-        prerequisites:
-          requiredContext: ["feature_analysis", "technical_requirements"]
-          optionalContext: ["scalability_requirements", "performance_targets"]
-        dependencies: ["feature-analysis"]
-        
       - id: "handoff-to-design"
         miniPrompt: "handoff-memory-board"
         required: true
         prerequisites:
-          requiredContext: ["feature_analysis", "architecture_analysis"]
+          requiredContext: ["feature_analysis"]
           optionalContext: []
-        dependencies: ["architecture-analysis"]
+        dependencies: ["feature-analysis"]
 
   - phase: "design-architecture"
     description: "Product and technical design"
@@ -68,7 +60,7 @@ phases:
         miniPrompt: "development/design-architecture"
         required: true
         prerequisites:
-          requiredContext: ["feature_analysis", "architecture_analysis"]
+          requiredContext: ["feature_analysis"]
           optionalContext: ["design_guidelines", "technical_constraints"]
         dependencies: ["handoff-to-design"]
         
