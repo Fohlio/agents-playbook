@@ -9,11 +9,6 @@ const config = {
   // TypeScript support
   preset: 'ts-jest',
   extensionsToTreatAsEsm: ['.ts'],
-  globals: {
-    'ts-jest': {
-      useESM: true,
-    },
-  },
   
   // Module name mapping for absolute imports
   moduleNameMapper: {

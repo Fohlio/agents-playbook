@@ -20,7 +20,6 @@ describe('Workflow Steps Integration Tests', () => {
       'code-refactoring',
       'feature-development',
       'product-development',
-      'project-initialization',
       'quick-fix',
       'trd-creation'
     ];
@@ -157,20 +156,7 @@ describe('Workflow Steps Integration Tests', () => {
       }
     }, TEST_TIMEOUT);
 
-    test('project-initialization workflow step details', async () => {
-      const workflow = 'project-initialization';
-      console.log(`\n🔍 Detailed step analysis for ${workflow}`);
-      
-      // Should handle project initialization steps
-      const step0 = await getNextStepHandler({ workflow_id: workflow, current_step: 0 });
-      const stepText = step0.content[0].text;
-      
-      if (!stepText.includes('100% complete')) {
-        expect(stepText).toMatch(/(create-project-navigation|Step)/);
-      }
-      
-      console.log(`   🚀 Project initialization workflow properly configured`);
-    }, TEST_TIMEOUT);
+
 
     // New tests for context system in workflow steps
     test('feature-development workflow with available context', async () => {
@@ -324,7 +310,6 @@ describe('Workflow Steps Integration Tests', () => {
       const workflows = [
         'quick-fix', 
         'feature-development', 
-        'project-initialization', 
         'trd-creation'
       ];
       
@@ -434,8 +419,7 @@ describe('Workflow Steps Integration Tests', () => {
       const workflows = [
         'quick-fix',
         'feature-development',
-        'trd-creation',
-        'project-initialization'
+        'trd-creation'
       ];
       
       const testContexts = [

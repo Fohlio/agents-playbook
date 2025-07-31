@@ -53,7 +53,7 @@ describe('MCP Tools Integration Tests', () => {
       });
 
       expect(result.content).toBeDefined();
-      expect(result.content[0].text).toContain('project-initialization');
+      expect(result.content[0].text).toContain('product-development');
     }, TEST_TIMEOUT);
 
     test('should handle query with low relevance gracefully', async () => {
@@ -89,15 +89,7 @@ describe('MCP Tools Integration Tests', () => {
       expect(result.content[0].text).toContain('create-trd');
     }, TEST_TIMEOUT);
 
-    test('should return full workflow details for project-initialization', async () => {
-      const result = await selectWorkflowHandler({ 
-        workflow_id: 'project-initialization' 
-      });
 
-      expect(result.content).toBeDefined();
-      expect(result.content[0].text).toContain('Project Initialization Workflow');
-      expect(result.content[0].text).toContain('create-project-navigation');
-    }, TEST_TIMEOUT);
 
     test('should handle invalid workflow ID gracefully', async () => {
       const result = await selectWorkflowHandler({ 
@@ -339,7 +331,6 @@ describe('MCP Tools Integration Tests', () => {
       'feature-brainstorming',
       'feature-development',
       'product-development',
-      'project-initialization',
       'quick-fix',
       'trd-creation'
     ];
@@ -366,7 +357,7 @@ describe('MCP Tools Integration Tests', () => {
       { query: 'fix bug', expectedWorkflow: 'quick-fix' },
       { query: 'new feature', expectedWorkflow: 'feature-development' },
       { query: 'technical documentation', expectedWorkflow: 'trd-creation' },
-      { query: 'project setup', expectedWorkflow: 'project-initialization' },
+      { query: 'project setup', expectedWorkflow: 'product-development' },
       { query: 'code cleanup', expectedWorkflow: 'code-refactoring' },
       { query: 'product development', expectedWorkflow: 'product-development' },
       { query: 'brainstorm ideas', expectedWorkflow: 'feature-brainstorming' },

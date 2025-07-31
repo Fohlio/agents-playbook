@@ -342,7 +342,6 @@ describe('Context System Integration Tests', () => {
       'code-refactoring',
       'feature-development',
       'product-development',
-      'project-initialization',
       'quick-fix',
       'trd-creation'
     ];
