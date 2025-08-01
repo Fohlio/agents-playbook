@@ -1,9 +1,8 @@
-import { Fragment } from "react";
 import Header from "@/components/Header";
 import HeroSection from "@/components/HeroSection";
 import FeaturesSection from "@/components/FeaturesSection";
 import SetupSection from "@/components/SetupSection";
-import Footer from "@/components/Footer";
+import WorkflowMatcherGame from "@/components/WorkflowMatcherGame";
 
 // Types
 interface Stat {
@@ -11,12 +10,6 @@ interface Stat {
   label: string;
   color: string;
   icon?: string;
-}
-
-interface MCPConfig {
-  name: string;
-  color: string;
-  config: object;
 }
 
 interface WorkflowCategory {
@@ -30,15 +23,15 @@ const OVERVIEW_CONTENT = {
   title: "What is this?",
   descriptions: [
     {
-      term: "AI Agent Workflow Engine",
-      definition: "transforms complex collaboration processes into structured, repeatable agent workflows with seamless handoffs and critical review phases."
+      term: "Workflow Engine",
+      definition: "structured development processes with semantic search and validation."
     },
     {
-      term: "Context Engineering Framework",
-      definition: "designed to help AI models follow consistent, validated processes with intelligent guardrails, semantic workflow discovery, and agent handoff system for optimal context management."
+      term: "Context Framework", 
+      definition: "helps AI models follow consistent processes with intelligent workflow discovery."
     },
     {
-      summary: "Turn manual coordination into automated intelligence. Semantic search finds the right workflow, smart validation provides structure for reliable execution, and agent handoffs ensure seamless context transfer between phases."
+      summary: "Find workflows through semantic search, validate steps automatically, and transfer context between development phases."
     }
   ]
 } as const;
@@ -46,52 +39,25 @@ const OVERVIEW_CONTENT = {
 const STATS: Stat[] = [
   { value: "9", label: "Workflows", color: "text-blue-600" },
   { value: "25+", label: "Mini-Prompts", color: "text-green-600" },
-  { value: "🔄", label: "Agent Handoffs", color: "text-orange-600", icon: "🔄" },
-  { value: "90+", label: "Tests", color: "text-purple-600" },
-  { value: "🔍", label: "Review Phases", color: "text-red-600", icon: "🔍" }
-] as const;
-
-const MCP_CONFIGURATIONS: MCPConfig[] = [
-  {
-    name: "Claude Desktop",
-    color: "bg-blue-500",
-    config: {
-      mcpServers: {
-        "agents-playbook": {
-          url: "https://agents-playbook.vercel.app/api/mcp"
-        }
-      }
-    }
-  },
-  {
-    name: "Cursor",
-    color: "bg-purple-500", 
-    config: {
-      mcpServers: {
-        "agents-playbook": {
-          url: "https://agents-playbook.vercel.app/api/mcp",
-          description: "AI Agent Workflow Engine"
-        }
-      }
-    }
-  }
+  { value: "65", label: "Tests", color: "text-purple-600" },
+  { value: "3", label: "MCP Tools", color: "text-orange-600" }
 ] as const;
 
 const WORKFLOW_CATEGORIES: WorkflowCategory[] = [
   {
-    title: "🚀 Development",
-    icon: "🚀",
+    title: "Development",
+    icon: "⚡",
     workflows: ["feature-development", "product-development", "quick-fix", "code-refactoring"]
   },
   {
-    title: "🧪 Testing & QA", 
-    icon: "🧪",
+    title: "Testing & QA", 
+    icon: "🔧",
     workflows: ["fix-tests", "fix-circular-dependencies", "unit-test-coverage"]
   },
   {
-    title: "📋 Setup & Planning",
-    icon: "📋", 
-    workflows: ["project-initialization", "trd-creation"]
+    title: "Setup & Planning",
+    icon: "📝", 
+    workflows: ["trd-creation", "feature-brainstorming"]
   }
 ] as const;
 
@@ -141,42 +107,6 @@ function StatsSection() {
   );
 }
 
-function MCPIntegrationSection() {
-  return (
-    <section className="py-16 bg-white" aria-labelledby="mcp-title">
-      <div className="max-w-4xl mx-auto px-4">
-        <h2 id="mcp-title" className="text-3xl font-bold text-gray-900 text-center mb-8">
-          MCP Integration
-        </h2>
-        
-        <div className="grid md:grid-cols-2 gap-6 mb-8">
-          {MCP_CONFIGURATIONS.map((mcp, index) => (
-            <div key={index} className="bg-gray-900 text-gray-100 p-6 rounded-lg">
-              <div className="flex items-center space-x-2 mb-4">
-                <div className={`w-3 h-3 ${mcp.color} rounded-full`} aria-hidden="true"></div>
-                <h3 className="text-white font-semibold">{mcp.name}</h3>
-              </div>
-              <pre className="text-sm overflow-x-auto" role="region" aria-label={`${mcp.name} configuration`}>
-                <code>{JSON.stringify(mcp.config, null, 2)}</code>
-              </pre>
-            </div>
-          ))}
-        </div>
-        
-        <div className="text-center">
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-            <p className="text-blue-800">
-              <strong>Transform collaboration into automation:</strong> Turn manual coordination 
-              processes into structured, intelligent agent workflows with built-in handoffs 
-              and critical review phases.
-            </p>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
-
 function WorkflowsSection() {
   return (
     <section className="py-16 bg-gray-50" aria-labelledby="workflows-title">
@@ -215,7 +145,7 @@ export default function Home() {
         <HeroSection />
         <OverviewSection />
         <StatsSection />
-        <MCPIntegrationSection />
+        <WorkflowMatcherGame />
         <WorkflowsSection />
         <FeaturesSection />
         <SetupSection />

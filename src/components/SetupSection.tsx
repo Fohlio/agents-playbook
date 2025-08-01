@@ -1,5 +1,3 @@
-import AutoAddButton from "./AutoAddButton";
-
 export default function SetupSection() {
   const steps = [
     {
@@ -152,10 +150,7 @@ export default function SetupSection() {
           ))}
         </div>
 
-        {/* Auto Add Button */}
-        <div className="mt-20">
-          <AutoAddButton />
-        </div>
+
       </div>
     </section>
   );
