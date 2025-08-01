@@ -13,32 +13,14 @@ Dissect an existing feature, reveal weak spots, and suggest upgrades—no fluff.
 - Feature is trivial **and** unchanged, or you already have a fresh analysis (<30 days).
 
 ## 🔍 Checklist
-- **Function**  
-  - [ ] Core use cases & user flows  
-  - [ ] Business rules & validation  
-  - [ ] Data inputs → transforms → outputs  
-  - [ ] Integration touchpoints  
+- **Function**: Use cases, flows, business rules, data transforms, integrations
+- **Tech**: Structure, patterns, quality, performance hotspots, security, error handling
+- **UX & Design**: Usability, accessibility, responsiveness, design tokens, theming, consistency  
 
-- **Tech**  
-  - [ ] Component structure & patterns  
-  - [ ] Code quality & organization  
-  - [ ] Anti-patterns & code smells  
-  - [ ] Performance hotspots (CPU, I/O, DB)  
-  - [ ] Security: authN/Z, data protection  
-  - [ ] Error / edge-case handling  
-
-- **UX**  
-  - [ ] Usability & interface sanity  
-  - [ ] Accessibility flags (WCAG, etc.)  
-  - [ ] Perceived speed / responsiveness  
-  - [ ] Clarity of error messages  
-
-## 📤 Outputs (provide verbal analysis), which includes:
-- what it does, user flows, data paths
-- diagram + component breakdown
-- strengths, weaknesses, perf/security findings
-- prioritized list w/ file & line refs
-- quick wins, larger refactors, effort estimates
+## 📤 Outputs (verbal analysis):
+- Function overview: flows, data paths, diagram + breakdown
+- Assessment: strengths, weaknesses, perf/security/UX/design gaps
+- Prioritized improvements w/ file refs & effort estimates
 
 ## ➡️ Response Flow
 ```mermaid

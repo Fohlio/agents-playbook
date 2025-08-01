@@ -42,6 +42,10 @@ This is a **persistent conversation board** - each agent adds their message at t
 - [Unresolved item 1]
 - [Need clarification on X]
 
+**Unobvious learnings:**
+- [Something that wasn't clear initially but became obvious]
+- [Gotcha or insight that could save time later]
+
 ---
 
 ### [Next Agent Name] - [Phase] → [Next Phase] - [Timestamp]
@@ -92,6 +96,7 @@ Ready to continue with [next-phase].
 **Workflow State:** [workflow_id="...", current_step=X, context=[...]]
 **Next agent needs:** [Critical context]
 **Questions:** [Unresolved items]
+**Learnings:** [Non-obvious insights discovered during work]
 ```
 
 ## ➡️ Usage Flow

@@ -15,17 +15,16 @@ Describe the current architecture, highlight weak spots, and propose improvement
 - Only an urgent bug-fix is needed, with no architecture impact.
 
 ## 🔍 Analysis Checklist
-- [ ] Components + responsibilities  
-- [ ] Data flows & dependencies  
-- [ ] Architectural patterns  
-- [ ] Anti-patterns & code smells  
-- [ ] Data stores, consistency, access patterns  
-- [ ] Quality attributes: ⬆️ scalability, ⚡ performance, 🔒 security, 🛠️ maintainability  
+- [ ] Components, responsibilities, data flows & dependencies
+- [ ] Architectural patterns vs anti-patterns & code smells
+- [ ] Data stores, consistency, access patterns
+- [ ] Quality: ⬆️ scalability, ⚡ performance, 🔒 security, 🛠️ maintainability
+- [ ] Design system: tokens, components, theming, accessibility  
 
 ## 📤 Outputs (provide verbal analysis)
-- narrative + diagram (PlantUML or Mermaid)
-- strengths & weaknesses per attribute
-- tech debt + roadmap
+- Narrative + diagram (PlantUML/Mermaid)
+- Strengths, weaknesses, design system gaps
+- Tech debt + roadmap
 
 ## ➡️ Response Flow
 ```mermaid
