@@ -41,73 +41,32 @@ Critically assess Technical Requirements Document (TRD) for completeness, clarit
 - [ ] Potential blockers anticipated
 - [ ] Fallback options considered
 
+## 🪞 Self-Reflection Analysis
+**MANDATORY FIRST STEP:** Before reviewing TRD, critically assess your own technical design:
+
+### Design Self-Assessment
+- **Architecture Quality**: Are my design choices optimal for the requirements and constraints?
+- **Technical Feasibility**: Is my approach realistic given available resources and timeline?
+- **Completeness**: Did I address all functional and non-functional requirements?
+- **Risk Mitigation**: Have I properly identified and planned for potential risks?
+
+### Honest Self-Evaluation
+1. What parts of my technical design am I most uncertain about?
+2. If I designed this system again today, what would I change?
+3. What could go wrong during implementation of this design?
+4. How easily could another technical team understand and implement this TRD?
+
 ## 📤 Output
-**File:** `.agents-playbook/[workflow-name]/trd-review-assessment.md`
 
-Structure:
-1. **Executive Summary** – 🟢 Approved / 🟡 Needs Minor Changes / 🔴 Major Revision Required
-2. **Strengths** – what's well done
-3. **Critical Issues** – must-fix problems
-4. **Recommendations** – suggested improvements
-5. **Risk Assessment** – potential issues and mitigation
-6. **Approval Status** – ready for implementation or needs rework
+**Status**: 🟢 Approved / 🟡 Minor Changes / 🔴 Major Revision
 
-## 📋 Assessment Template
+**What Worked Well:**
+- [Strengths in design/documentation]
 
-### Executive Summary
-**Status**: [🟢 Approved / 🟡 Minor Changes / 🔴 Major Revision]  
-**Confidence Level**: [High/Medium/Low] that implementation will succeed  
-**Key Recommendation**: [Main action needed]
+**Critical Issues:**
+- [Must-fix problems with specific recommendations]
 
-### Strengths
-- ✅ [What's well documented/designed]
-- ✅ [Technical approach strengths]
-- ✅ [Clear specifications]
-
-### Critical Issues
-| Priority | Section | Issue | Impact | Recommendation |
-|----------|---------|-------|--------|----------------|
-| High | Architecture | [Issue] | [Business/Technical impact] | [Specific fix] |
-| Medium | API Design | [Issue] | [Impact] | [Fix] |
-
-### Technical Assessment
-
-**Architecture Review:**
-- Design Pattern: [Appropriate/Concerning/Unclear]
-- Scalability: [Well-planned/Adequate/Insufficient]
-- Performance: [Optimized/Acceptable/Problematic]
-
-**Implementation Readiness:**
-- Development Complexity: [Low/Medium/High]
-- Required Skills: [Available/Need Training/Need Hiring]
-- Timeline Feasibility: [Realistic/Tight/Unrealistic]
-
-### Risk Analysis
-- **High Risk**: [Item] - Probability: [%] - Impact: [High/Medium/Low]
-- **Medium Risk**: [Item] - Probability: [%] - Impact: [High/Medium/Low]
-
-### Recommendations
-1. **Immediate Actions**: [Must-do before implementation]
-2. **Improvements**: [Should-do for better outcomes]
-3. **Future Considerations**: [Nice-to-have for next version]
-
-### Approval Decision
+**Approval Decision:**
 - [ ] **Approved**: Ready for implementation
-- [ ] **Conditional Approval**: Approved with minor changes
-- [ ] **Revision Required**: Major issues must be addressed
-- [ ] **Reject**: Fundamental problems, need complete rework
-
-**Next Steps**: [What needs to happen before proceeding]
-
-## ➡️ Review Flow
-```mermaid
-flowchart LR
-    A[Receive TRD] --> B[Technical Feasibility Check]
-    B --> C[Completeness Review]
-    C --> D[Risk Assessment]
-    D --> E[Write Assessment]
-    E --> F{Decision}
-    F -->|Approved| G[Implementation Ready]
-    F -->|Needs Changes| H[Back to Design]
-    F -->|Major Issues| I[Complete Rework]
-``` 
+- [ ] **Conditional**: Minor changes needed
+- [ ] **Revision**: Major issues must be addressed 

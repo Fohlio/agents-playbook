@@ -36,4 +36,7 @@ Analyze problem space, existing systems, and technical landscape to understand c
 - Problem root cause (if applicable)
 - Architecture overview and constraints
 - Risk assessment with mitigation strategies
-- Recommended solution approach 
+- Recommended solution approach
+
+## ⚠️ Implementation Gate
+**CRITICAL:** Do not proceed to implementation phase until user explicitly approves the analysis results and recommended approach. Present findings clearly and wait for user confirmation before moving forward. 

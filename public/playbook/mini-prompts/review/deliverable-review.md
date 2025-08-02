@@ -38,97 +38,35 @@ Critically assess workflow deliverables for quality, completeness, and alignment
 - [ ] Migration/rollback plans if applicable
 - [ ] Knowledge transfer needs addressed
 
+## 🪞 Self-Reflection Analysis
+**MANDATORY FIRST STEP:** Before reviewing deliverables, critically assess your own work:
+
+### Implementation Self-Assessment
+- **Decision Quality**: Were my approach and choices optimal for the requirements?
+- **Completeness**: Did I address all requirements thoroughly?
+- **Quality**: Could the deliverable be clearer, more comprehensive, or better structured?
+- **Future Impact**: How will this deliverable affect future work and maintenance?
+
+### Honest Self-Evaluation
+1. What aspects of my deliverable am I most uncertain about?
+2. If I started over today, what would I do differently?
+3. What could cause problems with this deliverable in practice?
+4. How easily could someone else understand and use what I've created?
+
 ## 📤 Output
-**File:** `.agents-playbook/[workflow-name]/deliverable-review-assessment.md`
 
-Structure:
-1. **Review Summary** – 🟢 Meets Goals / 🟡 Partial Success / 🔴 Major Issues
-2. **What Worked Well** – strengths and successes
-3. **Critical Issues** – problems that need immediate attention
-4. **Recommendations** – improvements and next steps
-5. **Lessons Learned** – insights for future work
+**Status**: 🟢 Meets Goals / 🟡 Partial Success / 🔴 Major Issues
 
-## 📋 Assessment Template
+**What Worked Well:**
+- [Strengths and successes]
 
-### Review Summary
-**Overall Status**: [🟢 Success / 🟡 Partial / 🔴 Issues]  
-**Goal Achievement**: [X%] of original objectives met  
-**Key Finding**: [Most important insight]
+**Critical Issues:**
+- [Problems that need immediate attention]
 
-### Deliverable Inventory
-| Deliverable | Status | Quality | Notes |
-|-------------|--------|---------|-------|
-| [Item 1] | ✅ Complete | High | [Comments] |
-| [Item 2] | ⚠️ Partial | Medium | [Issues] |
+**Recommendations:**
+- [Improvements and next steps]
 
-### What Worked Well
-- ✅ [Specific success 1]
-- ✅ [Specific success 2]
-- ✅ [Process or approach that worked]
-
-### Critical Issues Found
-| Priority | Issue | Impact | Recommended Action |
-|----------|-------|--------|-------------------|
-| High | [Problem] | [Business/technical impact] | [Specific fix needed] |
-| Medium | [Problem] | [Impact] | [Action] |
-
-### Quality Assessment
-
-**Strengths:**
-- [What was done well]
-- [Quality highlights]
-
-**Areas for Improvement:**
-- [Specific issues with recommendations]
-- [Quality gaps]
-
-**Technical Evaluation:** [For technical deliverables]
-- Architecture: [Sound/Concerning/Unclear]
-- Implementation: [Clean/Acceptable/Problematic]
-- Testing: [Comprehensive/Adequate/Insufficient]
-
-### Recommendations
-
-**Immediate Actions (Before Proceeding):**
-1. [Must-fix item 1]
-2. [Must-fix item 2]
-
-**Improvements (Should Address):**
-1. [Enhancement 1]
-2. [Enhancement 2]
-
-**Future Considerations:**
-1. [Long-term consideration]
-2. [Next iteration idea]
-
-### Lessons Learned
-**What we learned:**
-- [Insight about process]
-- [Insight about approach]
-- [Insight about requirements]
-
-**Apply to future work:**
-- [Process improvement]
-- [Approach refinement]
-
-### Final Recommendation
-- [ ] **Approve**: Ready to proceed/deploy
-- [ ] **Approve with conditions**: Minor fixes needed
-- [ ] **Major revision required**: Significant issues must be addressed
-- [ ] **Restart**: Fundamental problems require new approach
-
-**Next Steps**: [What should happen next]
-
-## ➡️ Review Flow
-```mermaid
-flowchart LR
-    A[Receive Deliverables] --> B[Check Goal Alignment]
-    B --> C[Assess Quality]
-    C --> D[Evaluate Completeness]
-    D --> E[Future Viability Check]
-    E --> F[Write Assessment]
-    F --> G{Decision}
-    G -->|Approve| H[Proceed]
-    G -->|Conditions| I[Minor Fixes]
-    G -->|Revision| J[Major Rework]
-``` 
+**Final Decision:**
+- [ ] **Approve**: Ready to proceed
+- [ ] **Conditional**: Minor fixes needed
+- [ ] **Revision**: Major issues must be addressed 

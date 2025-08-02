@@ -55,4 +55,12 @@ shouldSkipPhase() {
 ## Notes
 - This phase is almost always required unless requirements are extremely clear
 - Skip only for emergency fixes or trivial tasks
-- Investment in planning saves significant time in later phases 
+- Investment in planning saves significant time in later phases
+
+## ⚠️ Implementation Gate
+**CRITICAL:** Do not proceed to implementation phase until user explicitly confirms:
+1. Requirements are complete and accurate
+2. Scope and approach are approved
+3. All clarifying questions have been answered satisfactorily
+
+Present the planning results clearly and wait for explicit user approval before moving to next phase. 

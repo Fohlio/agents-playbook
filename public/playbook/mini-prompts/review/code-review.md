@@ -52,37 +52,34 @@
   - [ ] Negative test cases included
   - [ ] Tests are fast (<5s total) and deterministic  
 
+## 🪞 Self-Reflection Analysis
+**MANDATORY FIRST STEP:** Before reviewing others' code, critically assess your own implementation decisions:
+
+### Implementation Self-Assessment
+- **Decision Quality**: Were my technical choices optimal? What alternatives existed?
+- **Code Quality**: Could my solution be simpler, more maintainable, or more performant?
+- **Edge Cases**: What scenarios might I have missed or not properly handled?
+- **Future Impact**: How will my implementation affect maintainability and scalability?
+- **Learning**: What would I do differently with current knowledge?
+
+### Honest Self-Evaluation
+1. What am I most uncertain about in my implementation?
+2. If I started over today, what would I change?
+3. What could go wrong with this in production?
+4. How would a new team member understand my code?
+
 ## 📤 Critical Review Output
-**Approach:** FAIL-FAST - Block merge if any Critical/High severity issues found
 
 **Verdict:** 
-- 🚦 **APPROVED** - Production ready, no issues
-- 🔶 **APPROVED WITH MINOR CHANGES** - Low severity fixes only  
-- 🛑 **REJECTED** - Critical/High issues must be fixed before merge
+- 🚦 **APPROVED** - Production ready
+- 🔶 **APPROVED WITH CHANGES** - Minor fixes needed
+- 🛑 **REJECTED** - Critical issues found
 
-**Issue Breakdown:**
+**Critical Issues:**
+- [List any 🔴 Critical or 🟠 High severity issues that block merge]
 
-| Severity | File/Line | Category | Issue | Required Fix |
-|----------|-----------|----------|-------|-------------|
-| 🔴 Critical | `auth.go:42` | Security | SQL injection vulnerability | Use prepared statements |
-| 🟠 High | `api.go:15` | Performance | N+1 query in loop | Implement bulk loading |
-| 🟡 Medium | `utils.js:28` | Quality | 80-line function | Split into smaller functions |
-| 🔵 Low | `styles.css:45` | Style | Missing semicolon | Add semicolon |
+**Other Issues:**
+- [🟡 Medium and 🔵 Low issues that should be addressed]
 
-**Detailed Analysis:**
-1. **Security Assessment** – Any vulnerabilities or risks  
-2. **Performance Impact** – Bottlenecks, scaling concerns  
-3. **Code Quality Score** – Maintainability, readability (1-10)
-4. **Test Coverage Analysis** – % coverage + critical missing tests  
-5. **Technical Debt Added** – New debt introduced  
-6. **Deployment Risks** – What could break in production  
-
-## ➡️ Response Flow
-```mermaid
-flowchart LR
-    U[User] -->|PR ready| A[Review Engine]
-    A --> B{Need more context?}
-    B -- Yes --> C[Ask for branch / specs]
-    B -- No --> D[Run review]
-    D --> E[Provide critical review]
-``` 
+**Recommendations:**
+- [Specific actions needed before/after merge] 
