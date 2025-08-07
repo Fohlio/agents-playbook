@@ -1,7 +1,7 @@
 # Handoff Memory Board (v1)
 
 ## 🎯 Goal
-Write a message to the next agent on the shared memory board and ask if user wants to switch chats.
+Write a message to the shared memory board documenting phase completion and validate readiness to continue to the next phase.
 
 ## 📥 Context (ask if missing)
 1. **Current Phase** – what just finished
@@ -25,13 +25,12 @@ Write a message to the next agent on the shared memory board and ask if user wan
 **Learnings:** [Non-obvious insights discovered during work]
 ```
 
-## 🔄 **PHASE TRANSITION NOTICE**
-**REQUIRED ACTION: You MUST ask the user:** "Would you like to switch to a new chat for the next phase? (YES/NO)"
+## ✅ **PHASE COMPLETION VALIDATION**
+**REQUIRED ACTION: Confirm phase completion status:**
 
-**If YES, use this in new chat:**
-```
-Continuing [workflow-name] from [current-phase] to [next-phase].
-Memory board: .agents-playbook/[feature-or-task-name]/memory-board.md
-Key context: [2-3 critical points]
-Ready for [next-phase].
-```
+**Validation Questions:**
+- Are all phase deliverables complete and documented?
+- Is the memory board updated with critical context for the next phase?
+- Are there any blocking issues that need resolution before proceeding?
+
+**If all validations pass:** Proceed directly to the next phase with the documented context and workflow state.
