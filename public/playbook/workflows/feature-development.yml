@@ -6,127 +6,122 @@ tags: ["feature", "development", "implementation", "enhancement", "improvement",
 
 phases:
   - phase: "planning-clarification"
-    description: "Requirements gathering and scope definition"
+    description: "Requirements gathering, clarification and scope definition"
     required: true
     steps:
-      - id: "gather-requirements"
+      - id: "gather-and-clarify-requirements"
         miniPrompt: "business/gather-requirements"
         required: true
         prerequisites:
           requiredContext: []
           optionalContext: ["product_roadmap", "user_feedback"]
         
-      - id: "ask-clarifying-questions"
-        miniPrompt: "development/ask-clarifying-questions"
-        required: true
-        prerequisites:
-          requiredContext: ["requirements"]
-          optionalContext: []
-        dependencies: ["gather-requirements"]
-        
-      - id: "handoff-to-design"
+      - id: "handoff-to-analysis"
         miniPrompt: "handoff-memory-board"
         required: true
         prerequisites:
           requiredContext: ["clarified_requirements"]
           optionalContext: []
-        dependencies: ["ask-clarifying-questions"]
+        dependencies: ["gather-and-clarify-requirements"]
 
   - phase: "analysis"
-    description: "Technical analysis and architecture planning"
+    description: "Comprehensive technical and architectural analysis"
     required: true
     steps:
-      - id: "feature-analysis"
+      - id: "feature-and-architecture-analysis"
         miniPrompt: "analysis/feature-analysis"
         required: true
         prerequisites:
           requiredContext: ["clarified_requirements"]
-          optionalContext: ["existing_codebase", "system_architecture"]
-        dependencies: ["ask-clarifying-questions"]
-        
-      - id: "architecture-analysis"
-        miniPrompt: "analysis/architecture-analysis"
-        required: false
-        prerequisites:
-          requiredContext: ["system_architecture"]
-          optionalContext: ["performance_requirements"]
-          skipConditions: ["simple_feature", "no_architecture_impact"]
+          optionalContext: ["existing_codebase", "system_architecture", "performance_requirements"]
+        dependencies: ["gather-and-clarify-requirements"]
 
   - phase: "design-architecture"
-    description: "Solution design and architecture planning"
+    description: "Iterative TRD creation with solution design, architecture planning and task breakdown"
     required: true
+    iterative: true
     steps:
-      - id: "create-trd"
+      - id: "create-trd-with-design"
         miniPrompt: "business/create-trd"
         required: true
+        iterative: true
         prerequisites:
-          requiredContext: ["feature_analysis", "clarified_requirements"]
-          optionalContext: ["architecture_analysis", "technical_decisions"]
-        dependencies: ["feature-analysis"]
-        
-      - id: "design-architecture"
-        miniPrompt: "development/design-architecture"
-        required: true
-        prerequisites:
-          requiredContext: ["feature_analysis", "technical_requirements"]
-          optionalContext: ["architecture_analysis", "existing_patterns"]
-        dependencies: ["create-trd"]
+          requiredContext: ["comprehensive_analysis", "clarified_requirements"]
+          optionalContext: ["technical_decisions", "existing_patterns", "development_environment"]
+        dependencies: ["feature-and-architecture-analysis"]
+        outputs: ["design_specifications", "task_breakdown", "technical_requirements"]
         
       - id: "handoff-to-implementation"
         miniPrompt: "handoff-memory-board"
         required: true
         prerequisites:
-          requiredContext: ["design_specifications"]
+          requiredContext: ["design_specifications", "task_breakdown"]
           optionalContext: []
-        dependencies: ["design-architecture"]
+        dependencies: ["create-trd-with-design"]
 
   - phase: "implementation"
-    description: "Technical execution and coding"
+    description: "Technical execution and coding with iterative improvements"
     required: true
     steps:
       - id: "implement-feature"
         miniPrompt: "development/implement-feature"
         required: true
         prerequisites:
-          requiredContext: ["design_specifications"]
-          optionalContext: ["development_environment", "coding_standards"]
+          requiredContext: ["design_specifications", "task_breakdown"]
+          optionalContext: ["development_environment", "coding_standards", "review_feedback"]
         dependencies: ["handoff-to-implementation"]
+        
+      - id: "write-unit-tests"
+        miniPrompt: "qa/write-unit-tests"
+        required: true
+        prerequisites:
+          requiredContext: ["implemented_feature"]
+          optionalContext: ["test_framework", "testing_standards"]
+        dependencies: ["implement-feature"]
         
       - id: "handoff-to-review"
         miniPrompt: "handoff-memory-board"
         required: true
         prerequisites:
-          requiredContext: ["implemented_feature"]
+          requiredContext: ["implemented_feature", "unit_tests"]
           optionalContext: []
-        dependencies: ["implement-feature"]
+        dependencies: ["write-unit-tests"]
 
   - phase: "review"
-    description: "CRITICAL and thorough assessment of code quality, security, and production readiness"
+    description: "CRITICAL and thorough assessment of code quality, security, and production readiness with feedback loop"
     required: true
+    iterative: true
     steps:
       - id: "code-review"
         miniPrompt: "review/code-review"
         required: true
         prerequisites:
-          requiredContext: ["implemented_feature"]
-          optionalContext: ["code_review_checklist"]
+          requiredContext: ["implemented_feature", "unit_tests"]
+          optionalContext: ["code_review_checklist", "quality_standards"]
         dependencies: ["handoff-to-review"]
         
-      - id: "deliverable-review"
-        miniPrompt: "review/deliverable-review"
-        required: true
+      - id: "bugfix-handoff"
+        miniPrompt: "handoff-memory-board"
+        required: false
+        conditional: true
+        condition: "bugs_or_issues_found"
         prerequisites:
-          requiredContext: ["implemented_feature", "original_requirements"]
-          optionalContext: ["trd_document"]
+          requiredContext: ["review_feedback", "issues_identified"]
+          optionalContext: []
         dependencies: ["code-review"]
-        
+        loopback:
+          targetPhase: "implementation"
+          targetStep: "implement-feature"
+          context: ["review_feedback", "bugs_to_fix"]
+         
       - id: "handoff-to-testing"
         miniPrompt: "handoff-memory-board"
         required: true
         prerequisites:
           requiredContext: ["reviewed_feature", "code_review_results"]
           optionalContext: []
-        dependencies: ["deliverable-review"]
+        dependencies: ["code-review"]
+        skipConditions: ["bugs_or_issues_found"]
 
   - phase: "testing-validation"
     description: "Quality assurance and validation"
@@ -158,11 +153,19 @@ skipConditions:
     message: "Feature has already been implemented and deployed"
   - condition: "requirements_incomplete"
     message: "Feature requirements are incomplete or unclear"
+  - condition: "bugs_or_issues_found"
+    message: "Issues found during review, looping back to implementation"
 
 validationRules:
   - rule: "requirements_validation_required"
     phases: ["planning-clarification"]
     message: "Requirements validation required before proceeding to implementation"
+  - rule: "unit_tests_required"
+    phases: ["implementation"]
+    message: "Unit tests must be written after feature implementation"
+  - rule: "review_feedback_loop"
+    phases: ["review"]
+    message: "Review phase must complete successfully or provide feedback for bugfixes"
 
 
 notifications:
@@ -171,9 +174,19 @@ notifications:
     message: "Phase completed, ready for next phase"
   - trigger: "workflow_completion"
     message: "Feature development workflow completed successfully"
+  - trigger: "bugfix_loop"
+    phases: ["review"]
+    condition: "bugs_or_issues_found"
+    message: "Issues found during review, returning to implementation for bugfixes"
+  - trigger: "unit_tests_completed"
+    phases: ["implementation"]
+    message: "Unit tests written and ready for review"
 
 # Smart execution settings
 execution:
   allowSkipping: true
   requireExplicitApproval: false
-  automaticProgressTracking: true 
+  automaticProgressTracking: true
+  allowIterativeLoops: true
+  maxIterations: 3
+  loopbackSupport: true 
