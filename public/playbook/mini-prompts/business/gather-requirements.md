@@ -1,7 +1,7 @@
-# Gather Requirements & Clarify Prompt (v3)
+# Gather Requirements & Clarify Prompt (v4)
 
 ## 🎯 Goal
-Extract crystal-clear business requirements, ask clarifying questions, and lock them down—no fluff.
+Extract crystal-clear business requirements by asking clarifying questions in chat, then document them.
 
 ## 📋 Context Assessment
 Before gathering requirements, assess the existing documentation and project context:
@@ -11,94 +11,30 @@ Before gathering requirements, assess the existing documentation and project con
 - **Documentation Quality:** Evaluate completeness and currency of available documents
 - **Gap Analysis:** Identify missing information that needs to be gathered
 
-### Document Generation Support
-- **Requirements Format:** Determine appropriate format for requirements documentation
-- **Technical Alignment:** Ensure requirements documentation meets technical needs
-- **Integration Points:** Consider how requirements documentation fits into overall project documentation
+## 🚨 CRITICAL: Always Ask Questions in Chat First
+Before writing any documentation, **ASK THE USER CLARIFYING QUESTIONS DIRECTLY IN THE CHAT**.
 
 ## 📥 Context (ask if missing)
 1. **Project Scope** – what's being built?
-2. **System Users** – what are the different user types?
-3. **Business Objectives** – why does this exist?
-4. **Current State** – legacy systems / processes?
-5. **Existing Docs** – technical specs, user stories, notes? (Y/N)
+2. **Business Goals** – why does this exist?
+3. **Current State** – existing systems/processes?
+4. **Existing Docs** – technical specs, user stories, notes? (Y/N)
 
-## 🔍 Clarifying Questions Phase
-If requirements are unclear, use structured questions to fill gaps:
+## 🔍 Clarifying Questions Style
+Ask one-liner questions with multiple choice options. AI should determine what to ask based on project needs:
 
-### Question Style
-Always give multiple-choice or concrete examples for clear requirements.
-
-> **Target users?**  
-> A) End-users B) Admins C) Both D) Other: ____  
->
-> **Priority?**  
-> A) 🔥 Critical (today) B) High (this week) C) Medium (this month) D) Low
-
-### Quick Templates
-- **Bug Fix**  
-  - Steps to reproduce?  
-  - Expected vs. actual?  
-  - Workarounds?  
-- **New Feature**  
-  - User types?  
-  - Problem it solves?  
-  - Flow happy-path?  
-- **Refactor**  
-  - Pain points?  
-  - Perf hits?  
-  - Desired end state?
-
-### Clarification Checklist
-- **Scope**  
-  - [ ] Included vs. excluded functionality  
-- **Constraints**  
-  - [ ] Platform, perf, security  
-- **Success**  
-  - [ ] How will we know it's done?  
-- **Dependencies**  
-  - [ ] External systems, data, approvals
+> **Platform?** A) Web B) Mobile C) Desktop D) API  
 
 ## 🚦 Skip if
-- A validated requirements doc exists (<30 days) or scope is trivial/emergency.
-
-## 🔍 Checklist
-- **System Users**  
-  - [ ] End users, system administrators, integrations  
-
-- **Functional**  
-  - [ ] Core features & workflows  
-  - [ ] Business rules & data needs  
-  - [ ] Integrations & touchpoints  
-
-- **NFR**  
-  - [ ] Performance, security, usability, reliability, scalability  
-
-- **Constraints**  
-  - [ ] Tech stack, performance, security, regulations  
-
-- **Doc Hygiene**  
-  - [ ] Unique IDs, priority (MoSCoW), acceptance criteria, dependencies  
+Requirements doc exists (<30 days) or scope is trivial/emergency.
 
 ## 📤 Output
-1. Gather insights from the user directly
-2. Generate comprehensive requirements documentation
-3. Fill in **File:** `.agents-playbook/[feature-or-task-name]/requirements.md`
-**File:** `.agents-playbook/[feature-or-task-name]/requirements.md`  
-Sections (in order):
-1. **Executive Summary** – goals & scope  
-2. **System Users** – types & requirements  
-3. **Functional Requirements** – table w/ ID, desc, priority, AC  
-4. **Non-Functional Requirements** – same table style  
-5. **Business Constraints** – bullets  
-6. **Assumptions & Dependencies** – clarity upfront  
-7. **Open Questions** – what still needs answers  
-8. **Revision Log** – date, author, change summary  
+**After gathering answers in chat**, create:  
+**File:** `.agents-playbook/[feature-name]/requirements.md`
 
-## ➡️ Response Flow
-```mermaid
-flowchart LR
-    U[User] -->|project info| A[Requirements Engine]
-    A --> B{Need more context?}
-    B -- Yes --> C[Ask focused Qs]
-    B -- No --> D[Draft requirements.md]
+Sections:
+1. **Executive Summary** – goals & scope  
+2. **Functional Requirements** – ID, description, priority, acceptance criteria  
+3. **Non-Functional Requirements** – performance, security, usability  
+4. **Constraints & Dependencies** – tech stack, timeline, external systems  
+5. **Open Questions** – unresolved items
