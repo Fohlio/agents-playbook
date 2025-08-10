@@ -5,6 +5,25 @@ category: "development"
 tags: ["refactoring", "architecture", "performance", "maintainability", "technical-debt"]
 
 phases:
+  - phase: "planning-clarification"
+    description: "Requirements gathering, clarification and refactoring scope definition"
+    required: true
+    steps:
+      - id: "gather-and-clarify-requirements"
+        miniPrompt: "business/gather-requirements"
+        required: true
+        prerequisites:
+          requiredContext: []
+          optionalContext: ["existing_codebase", "performance_issues", "maintenance_concerns", "technical_debt"]
+        
+      - id: "handoff-to-analysis"
+        miniPrompt: "handoff-memory-board"
+        required: true
+        prerequisites:
+          requiredContext: ["clarified_requirements"]
+          optionalContext: []
+        dependencies: ["gather-and-clarify-requirements"]
+
   - phase: "analysis"
     description: "Code analysis and refactoring planning"
     required: true
@@ -13,8 +32,9 @@ phases:
         miniPrompt: "analysis/code-analysis"
         required: true
         prerequisites:
-          requiredContext: ["existing_codebase"]
+          requiredContext: ["existing_codebase", "clarified_requirements"]
           optionalContext: ["performance_metrics", "maintenance_issues"]
+        dependencies: ["handoff-to-analysis"]
         
       - id: "architecture-analysis"
         miniPrompt: "analysis/architecture-analysis"
@@ -128,6 +148,9 @@ skipConditions:
     message: "Codebase doesn't require significant refactoring"
 
 validationRules:
+  - rule: "requirements_validation_required"
+    phases: ["planning-clarification"]
+    message: "Refactoring requirements and scope must be clearly defined before proceeding to analysis"
   - rule: "backward_compatibility_required"
     phases: ["implementation"]
     dependencies: ["design-architecture"]
@@ -139,7 +162,7 @@ validationRules:
 
 notifications:
   - trigger: "phase_completion"
-    phases: ["analysis", "implementation"]
+    phases: ["planning-clarification", "analysis", "implementation"]
     message: "Major refactoring phase completed"
   - trigger: "workflow_completion"
     message: "Code refactoring completed successfully"
