@@ -32,8 +32,14 @@ Generate detailed implementation plan (tasks.md) with hierarchical task breakdow
   - [ ] 1.1 Specific Subtask
     - Detailed implementation steps
     - Specific technical requirements and acceptance criteria
-    - Testing and validation requirements
     - _Requirements: X.X, X.X_
+    
+    - [ ] 1.1.1 Validate implementation
+      - Test functionality works as expected
+      - Verify all acceptance criteria met
+    - [ ] 1.1.2 Write tests
+      - Unit tests for core logic
+      - Integration tests if applicable
 ```
 
 ## 📋 Implementation Plan Structure
@@ -54,8 +60,15 @@ Generate detailed implementation plan (tasks.md) with hierarchical task breakdow
 - [ ] **Technical Details** – implementation approach specified
 - [ ] **Acceptance Criteria** – clear definition of done
 - [ ] **Requirement Traceability** – linked to specific requirements
-- [ ] **Testing Requirements** – unit/integration tests specified
+- [ ] **Validation Step** – explicit validation subtask after implementation
+- [ ] **Testing Step** – explicit test writing subtask after implementation
 - [ ] **Dependencies** – prerequisites and order clearly defined
+
+## 🔄 Mandatory Task Flow
+Each implementation task MUST include:
+1. **Implementation** – core development work
+2. **Validation** – verify functionality meets requirements
+3. **Testing** – write and execute tests for the implementation
 
 ## 🔗 Requirement Linking Format
 Each task must include:
@@ -77,8 +90,14 @@ Where numbers refer to specific requirements from structured requirements docume
 
   - [ ] 1.1 Create data models
     - [Specific technical implementation details]
-    - [Testing requirements]
     - _Requirements: X.X_
+    
+    - [ ] 1.1.1 Validate data models
+      - Test model relationships and constraints
+      - Verify data integrity and validation rules
+    - [ ] 1.1.2 Write tests for data models
+      - Unit tests for model methods
+      - Database integration tests
 
 - [ ] 2. Create API endpoints
   - [API layer description]
@@ -87,6 +106,13 @@ Where numbers refer to specific requirements from structured requirements docume
   - [ ] 2.1 Implement GET endpoints
     - [Detailed implementation steps]
     - _Requirements: X.X_
+    
+    - [ ] 2.1.1 Validate GET endpoints
+      - Test all endpoints return correct data
+      - Verify error handling and edge cases
+    - [ ] 2.1.2 Write tests for GET endpoints
+      - Unit tests for endpoint logic
+      - Integration tests for full request/response cycle
 ```
 
 ## 🎯 Task Planning Guidelines
