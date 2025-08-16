@@ -51,11 +51,11 @@ Turn business needs into a comprehensive TRD with solution architecture and deta
 - **Development Standards**  
   - [ ] Code style, testing patterns, error handling
 
-### **Task Breakdown & Planning**
-- [ ] **Vertical Slice Breakdown**: Complete user scenarios with tasks
-- [ ] **Dependency Mapping**: Prerequisites and blockers for each slice  
-- [ ] **Effort Estimation**: Time estimates for each task/slice
-- [ ] **Acceptance Criteria**: Clear definition of done for each task  
+### **Architecture Validation**
+- [ ] **Architecture Review**: Validate system design decisions
+- [ ] **Integration Points**: Define component interfaces and contracts  
+- [ ] **Scalability Assessment**: Architecture scalability and performance considerations
+- [ ] **Security Review**: Architecture security considerations and compliance  
 
 ## 📤 Outputs
 1. Gather insights from the user directly
@@ -65,16 +65,23 @@ Turn business needs into a comprehensive TRD with solution architecture and deta
 
 ### Document Sections:
 1. **Executive Summary** – objectives, scope, recommended architecture
-2. **Architecture Design** – system diagrams, component matrix, data design
-3. **Technical Specifications** – all TRD sections above
-4. **Implementation Roadmap** – vertical slice breakdown with tasks
-5. **Task Breakdown** – detailed task list with estimates and dependencies
+2. **Requirements Analysis** – clarified and analyzed requirements
+3. **Feature Analysis** – comprehensive feature breakdown and implications
+4. **Architecture Analysis** – system architecture and component design
+5. **Solution Design** – detailed technical solution approach
+6. **Implementation Strategy** – high-level approach and vertical slice organization
+7. **API Specification** – detailed API contracts and interfaces
+8. **Integration Architecture** – external systems and integration points
+9. **Development Standards** – coding patterns and quality requirements
+10. **Security Considerations** – security architecture and compliance
+11. **Risk Assessment** – technical risks and mitigation strategies
+12. **Appendices** – supporting documents and detailed specifications
 
 ### Additional Deliverables:
 - **Architecture diagrams**: System & data flow (PlantUML/Mermaid)
 - **API documentation**: Endpoint tables with examples
-- **Task tracking**: Structured task list ready for project management
-- **Decision log**: Architecture trade-offs and rationale  
+- **Decision log**: Architecture trade-offs and rationale
+- **Technical specifications**: Detailed system specifications  
 
 ## ➡️ Response Flow
 ```mermaid

@@ -28,13 +28,31 @@ phases:
           requiredContext: []
           optionalContext: ["product_vision", "initial_concept"]
         
+      - id: "create-structured-requirements"
+        miniPrompt: "business/create-structured-requirements"
+        required: true
+        prerequisites:
+          requiredContext: ["clarified_requirements"]
+          optionalContext: ["user_personas", "business_context", "mvp_scope"]
+        dependencies: ["ask-clarifying-questions"]
+        outputs: ["structured_requirements", "user_stories", "acceptance_criteria"]
+        
+      - id: "create-implementation-plan"
+        miniPrompt: "business/create-implementation-plan"
+        required: true
+        prerequisites:
+          requiredContext: ["structured_requirements", "clarified_requirements"]
+          optionalContext: ["technical_architecture", "development_environment", "team_capabilities", "mvp_scope"]
+        dependencies: ["create-structured-requirements"]
+        outputs: ["implementation_plan", "task_breakdown", "technical_specifications"]
+        
       - id: "handoff-to-design"
         miniPrompt: "handoff-memory-board"
         required: true
         prerequisites:
-          requiredContext: ["clarified_requirements"]
+          requiredContext: ["clarified_requirements", "structured_requirements", "implementation_plan"]
           optionalContext: []
-        dependencies: ["ask-clarifying-questions"]
+        dependencies: ["create-implementation-plan"]
 
   - phase: "design-architecture"
     description: "MVP architecture and core design"
@@ -44,7 +62,7 @@ phases:
         miniPrompt: "development/design-architecture"
         required: true
         prerequisites:
-          requiredContext: ["clarified_requirements"]
+          requiredContext: ["clarified_requirements", "structured_requirements", "implementation_plan"]
           optionalContext: ["design_guidelines", "technical_constraints"]
         dependencies: ["handoff-to-design"]
         
@@ -52,7 +70,7 @@ phases:
         miniPrompt: "handoff-memory-board"
         required: true
         prerequisites:
-          requiredContext: ["design_specifications"]
+          requiredContext: ["design_specifications", "implementation_plan"]
           optionalContext: []
         dependencies: ["design-architecture"]
 
@@ -64,7 +82,7 @@ phases:
         miniPrompt: "development/implement-feature"
         required: true
         prerequisites:
-          requiredContext: ["design_specifications", "technical_architecture"]
+          requiredContext: ["design_specifications", "implementation_plan"]
           optionalContext: ["development_environment", "coding_standards"]
         dependencies: ["handoff-to-implementation"]
         

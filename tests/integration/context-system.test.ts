@@ -91,8 +91,8 @@ describe('Context System Integration Tests', () => {
       
       expect(workflowText).toContain('Detailed Step Breakdown');
       expect(workflowText).toContain('Context Gathering');
-      expect(workflowText).toContain('gather-requirements');
-      expect(workflowText).toContain('ask-clarifying-questions');
+      expect(workflowText).toContain('gather-and-clarify-requirements');
+      expect(workflowText).toContain('create-structured-requirements');
     }, TEST_TIMEOUT);
 
     test('should show workflow overview and context guidance for trd-creation', async () => {
@@ -230,7 +230,7 @@ describe('Context System Integration Tests', () => {
       const workflowId = 'feature-development';
       console.log(`\n🔄 Testing context flow for ${workflowId}`);
       
-      // Step 0: gather-requirements (no context needed)
+      // Step 0: gather-and-clarify-requirements (no context needed)
       const step0 = await getNextStepHandler({ 
         workflow_id: workflowId,
         current_step: 0,

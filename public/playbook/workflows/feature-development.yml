@@ -10,34 +10,40 @@ phases:
     required: true
     steps:
       - id: "gather-and-clarify-requirements"
-        miniPrompt: "business/gather-requirements"
+        miniPrompt: "business/gather-and-clarify-requirements"
         required: true
         prerequisites:
           requiredContext: []
           optionalContext: ["product_roadmap", "user_feedback"]
         
-      - id: "handoff-to-analysis"
+      - id: "create-structured-requirements"
+        miniPrompt: "business/create-structured-requirements"
+        required: true
+        prerequisites:
+          requiredContext: ["clarified_requirements"]
+          optionalContext: ["user_personas", "business_context"]
+        dependencies: ["gather-and-clarify-requirements"]
+        outputs: ["structured_requirements", "user_stories", "acceptance_criteria"]
+        
+      - id: "create-implementation-plan"
+        miniPrompt: "business/create-implementation-plan"
+        required: true
+        prerequisites:
+          requiredContext: ["structured_requirements", "clarified_requirements"]
+          optionalContext: ["technical_architecture", "development_environment", "team_capabilities"]
+        dependencies: ["create-structured-requirements"]
+        outputs: ["implementation_plan", "task_breakdown", "technical_specifications"]
+        
+      - id: "handoff-to-design"
         miniPrompt: "handoff-memory-board"
         required: true
         prerequisites:
-          requiredContext: ["clarified_requirements"]
+          requiredContext: ["clarified_requirements", "structured_requirements", "implementation_plan"]
           optionalContext: []
-        dependencies: ["gather-and-clarify-requirements"]
-
-  - phase: "analysis"
-    description: "Comprehensive technical and architectural analysis"
-    required: true
-    steps:
-      - id: "feature-and-architecture-analysis"
-        miniPrompt: "analysis/feature-analysis"
-        required: true
-        prerequisites:
-          requiredContext: ["clarified_requirements"]
-          optionalContext: ["existing_codebase", "system_architecture", "performance_requirements"]
-        dependencies: ["gather-and-clarify-requirements"]
+        dependencies: ["create-implementation-plan"]
 
   - phase: "design-architecture"
-    description: "Iterative TRD creation with solution design, architecture planning and task breakdown"
+    description: "Technical design and architecture specification"
     required: true
     iterative: true
     steps:
@@ -46,16 +52,16 @@ phases:
         required: true
         iterative: true
         prerequisites:
-          requiredContext: ["comprehensive_analysis", "clarified_requirements"]
-          optionalContext: ["technical_decisions", "existing_patterns", "development_environment"]
-        dependencies: ["feature-and-architecture-analysis"]
-        outputs: ["design_specifications", "task_breakdown", "technical_requirements"]
+          requiredContext: ["clarified_requirements", "structured_requirements", "implementation_plan"]
+          optionalContext: ["technical_decisions", "existing_patterns", "development_environment", "existing_codebase"]
+        dependencies: ["handoff-to-design"]
+        outputs: ["design_specifications", "technical_requirements", "architecture_specifications"]
         
       - id: "handoff-to-implementation"
         miniPrompt: "handoff-memory-board"
         required: true
         prerequisites:
-          requiredContext: ["design_specifications", "task_breakdown"]
+          requiredContext: ["design_specifications", "implementation_plan"]
           optionalContext: []
         dependencies: ["create-trd-with-design"]
 
@@ -67,7 +73,7 @@ phases:
         miniPrompt: "development/implement-feature"
         required: true
         prerequisites:
-          requiredContext: ["design_specifications", "task_breakdown"]
+          requiredContext: ["design_specifications", "implementation_plan"]
           optionalContext: ["development_environment", "coding_standards", "review_feedback"]
         dependencies: ["handoff-to-implementation"]
         

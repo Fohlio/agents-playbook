@@ -9,8 +9,8 @@ phases:
     description: "Requirements gathering and scope definition"
     required: true
     steps:
-      - id: "gather-requirements"
-        miniPrompt: "business/gather-requirements"
+      - id: "gather-and-clarify-requirements"
+        miniPrompt: "business/gather-and-clarify-requirements"
         required: true
         prerequisites:
           requiredContext: []
@@ -22,7 +22,7 @@ phases:
         prerequisites:
           requiredContext: ["requirements"]
           optionalContext: ["business_context"]
-        dependencies: ["gather-requirements"]
+        dependencies: ["gather-and-clarify-requirements"]
         
       - id: "handoff-to-analysis"
         miniPrompt: "handoff-memory-board"

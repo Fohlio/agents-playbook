@@ -28,8 +28,8 @@ describe('Workflow Progression Tests', () => {
       expect(firstStepResult.content).toBeDefined();
       const firstStepText = firstStepResult.content[0].text;
       
-      // Should show the first step (Gather Requirements)
-      expect(firstStepText).toContain('Gather Requirements');
+      // Should show the first step (Gather Requirements & Clarify Prompt)
+      expect(firstStepText).toContain('Gather Requirements & Clarify Prompt');
       expect(firstStepText).not.toContain('100% complete');
       
       // Now let's simulate completing the first step by moving to step 1
@@ -50,13 +50,13 @@ describe('Workflow Progression Tests', () => {
     }, TEST_TIMEOUT);
 
     test('should properly handle context updates during progression', async () => {
-      // Start with step 0 (gather-requirements)
+      // Start with step 0 (gather-and-clarify-requirements)
       const step0Result = await getNextStepHandler({ 
         workflow_id: 'feature-development',
         current_step: 0
       });
 
-      expect(step0Result.content[0].text).toContain('Gather Requirements');
+      expect(step0Result.content[0].text).toContain('Gather Requirements & Clarify Prompt');
       
       // Move to step 1 with requirements context
       const step1Result = await getNextStepHandler({ 
@@ -126,8 +126,8 @@ describe('Workflow Progression Tests', () => {
   });
 
   describe('Context Auto-Generation Tests', () => {
-    test('should auto-generate requirements context after gather-requirements step', async () => {
-      // Move to step 1 (simulating completion of gather-requirements)
+    test('should auto-generate requirements context after gather-and-clarify-requirements step', async () => {
+      // Move to step 1 (simulating completion of gather-and-clarify-requirements)
       const result = await getNextStepHandler({ 
         workflow_id: 'feature-development',
         current_step: 1
@@ -216,7 +216,7 @@ describe('Workflow Progression Tests', () => {
   });
 
   describe('Context Integration Tests', () => {
-    test('should integrate context assessment from updated gather-requirements', async () => {
+    test('should integrate context assessment from updated gather-and-clarify-requirements', async () => {
       const result = await getNextStepHandler({ 
         workflow_id: 'feature-development',
         current_step: 0
@@ -225,11 +225,11 @@ describe('Workflow Progression Tests', () => {
       expect(result.content).toBeDefined();
       const resultText = result.content[0].text;
       
-      // Should contain the context assessment we added
+      // Should contain the context assessment sections
       expect(resultText).toContain('Context Assessment');
       expect(resultText).toContain('Existing Documentation');
-      expect(resultText).toContain('Document Generation Support');
-      expect(resultText).toContain('requirements documentation');
+      expect(resultText).toContain('Gap Analysis');
+      expect(resultText).toContain('CRITICAL: Always Ask Questions');
     }, TEST_TIMEOUT);
 
     test('should show proper step progression indicators', async () => {

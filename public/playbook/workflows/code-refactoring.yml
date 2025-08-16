@@ -10,67 +10,73 @@ phases:
     required: true
     steps:
       - id: "gather-and-clarify-requirements"
-        miniPrompt: "business/gather-requirements"
+        miniPrompt: "business/gather-and-clarify-requirements"
         required: true
         prerequisites:
           requiredContext: []
           optionalContext: ["existing_codebase", "performance_issues", "maintenance_concerns", "technical_debt"]
         
-      - id: "handoff-to-analysis"
-        miniPrompt: "handoff-memory-board"
+      - id: "create-structured-requirements"
+        miniPrompt: "business/create-structured-requirements"
         required: true
         prerequisites:
           requiredContext: ["clarified_requirements"]
-          optionalContext: []
+          optionalContext: ["user_personas", "business_context", "refactoring_scope"]
         dependencies: ["gather-and-clarify-requirements"]
+        outputs: ["structured_requirements", "user_stories", "acceptance_criteria"]
+        
+      - id: "create-implementation-plan"
+        miniPrompt: "business/create-implementation-plan"
+        required: true
+        prerequisites:
+          requiredContext: ["structured_requirements", "clarified_requirements"]
+          optionalContext: ["technical_architecture", "development_environment", "team_capabilities", "existing_codebase"]
+        dependencies: ["create-structured-requirements"]
+        outputs: ["implementation_plan", "task_breakdown", "technical_specifications"]
+        
+      - id: "handoff-to-analysis-design"
+        miniPrompt: "handoff-memory-board"
+        required: true
+        prerequisites:
+          requiredContext: ["clarified_requirements", "structured_requirements", "implementation_plan"]
+          optionalContext: []
+        dependencies: ["create-implementation-plan"]
 
-  - phase: "analysis"
-    description: "Code analysis and refactoring planning"
+  - phase: "analysis-design"
+    description: "Code analysis and refactoring strategy design"
     required: true
     steps:
       - id: "code-analysis"
         miniPrompt: "analysis/code-analysis"
         required: true
         prerequisites:
-          requiredContext: ["existing_codebase", "clarified_requirements"]
-          optionalContext: ["performance_metrics", "maintenance_issues"]
-        dependencies: ["handoff-to-analysis"]
+          requiredContext: ["existing_codebase", "clarified_requirements", "structured_requirements"]
+          optionalContext: ["performance_metrics", "maintenance_issues", "implementation_plan"]
+        dependencies: ["handoff-to-analysis-design"]
         
       - id: "architecture-analysis"
         miniPrompt: "analysis/architecture-analysis"
         required: true
         prerequisites:
-          requiredContext: ["code_analysis_results", "system_architecture"]
-          optionalContext: ["scalability_requirements", "performance_targets"]
+          requiredContext: ["code_analysis_results", "system_architecture", "implementation_plan"]
+          optionalContext: ["scalability_requirements", "performance_targets", "structured_requirements"]
         dependencies: ["code-analysis"]
         
-      - id: "handoff-to-design"
-        miniPrompt: "handoff-memory-board"
-        required: true
-        prerequisites:
-          requiredContext: ["code_analysis_results", "architecture_analysis"]
-          optionalContext: []
-        dependencies: ["architecture-analysis"]
-
-  - phase: "design-architecture"
-    description: "Refactoring strategy and design"
-    required: true
-    steps:
-      - id: "design-architecture"
+      - id: "design-refactoring-strategy"
         miniPrompt: "development/design-architecture"
         required: true
         prerequisites:
-          requiredContext: ["architecture_analysis", "refactoring_goals"]
-          optionalContext: ["new_requirements", "technical_constraints"]
-        dependencies: ["handoff-to-design"]
+          requiredContext: ["architecture_analysis", "implementation_plan", "structured_requirements"]
+          optionalContext: ["technical_constraints", "existing_patterns", "code_analysis_results"]
+        dependencies: ["architecture-analysis"]
         
       - id: "handoff-to-implementation"
         miniPrompt: "handoff-memory-board"
         required: true
         prerequisites:
-          requiredContext: ["refactoring_design"]
+          requiredContext: ["refactoring_design", "implementation_plan"]
           optionalContext: []
-        dependencies: ["design-architecture"]
+        dependencies: ["design-refactoring-strategy"]
 
   - phase: "implementation"
     description: "Code refactoring execution"
@@ -81,10 +87,10 @@ phases:
         required: true
         prerequisites:
           requiredContext: ["refactoring_design", "implementation_plan"]
-          optionalContext: ["migration_strategy", "backward_compatibility"]
+          optionalContext: ["migration_strategy", "backward_compatibility", "existing_codebase"]
         dependencies: ["handoff-to-implementation"]
         
-      - id: "handoff-to-testing"
+      - id: "handoff-to-validation"
         miniPrompt: "handoff-memory-board"
         required: true
         prerequisites:
@@ -92,8 +98,8 @@ phases:
           optionalContext: []
         dependencies: ["implement-feature"]
 
-  - phase: "testing-validation"
-    description: "Refactoring validation and testing"
+  - phase: "validation"
+    description: "Testing, code review and refactoring validation"
     required: true
     steps:
       - id: "create-test-plan"
@@ -102,7 +108,7 @@ phases:
         prerequisites:
           requiredContext: ["refactored_code", "original_functionality"]
           optionalContext: ["performance_requirements", "compatibility_requirements"]
-        dependencies: ["handoff-to-testing"]
+        dependencies: ["handoff-to-validation"]
         
       - id: "execute-tests"
         miniPrompt: "qa/execute-tests"
@@ -112,31 +118,19 @@ phases:
           optionalContext: ["automated_tests", "performance_benchmarks"]
         dependencies: ["create-test-plan"]
         
-      - id: "handoff-to-review"
-        miniPrompt: "handoff-memory-board"
-        required: true
-        prerequisites:
-          requiredContext: ["test_results", "refactored_system"]
-          optionalContext: []
-        dependencies: ["execute-tests"]
-
-  - phase: "review"
-    description: "Refactoring quality assessment and validation"
-    required: true
-    steps:
       - id: "code-review"
         miniPrompt: "review/code-review"
         required: true
         prerequisites:
           requiredContext: ["refactored_code", "test_results"]
           optionalContext: ["original_code_comparison"]
-        dependencies: ["handoff-to-review"]
+        dependencies: ["execute-tests"]
         
       - id: "deliverable-review"
         miniPrompt: "review/deliverable-review"
         required: true
         prerequisites:
-          requiredContext: ["refactored_system", "original_requirements"]
+          requiredContext: ["refactored_system", "original_requirements", "test_results"]
           optionalContext: ["performance_improvements"]
         dependencies: ["code-review"]
 
@@ -153,16 +147,16 @@ validationRules:
     message: "Refactoring requirements and scope must be clearly defined before proceeding to analysis"
   - rule: "backward_compatibility_required"
     phases: ["implementation"]
-    dependencies: ["design-architecture"]
+    dependencies: ["analysis-design"]
     message: "Refactoring must maintain backward compatibility unless technical requirements specify otherwise"
   - rule: "performance_validation_required"
-    phases: ["testing-validation"]
+    phases: ["validation"]
     dependencies: ["implementation"]
     message: "Performance impact must be measured and validated"
 
 notifications:
   - trigger: "phase_completion"
-    phases: ["planning-clarification", "analysis", "implementation"]
+    phases: ["planning-clarification", "analysis-design", "implementation"]
     message: "Major refactoring phase completed"
   - trigger: "workflow_completion"
     message: "Code refactoring completed successfully"
