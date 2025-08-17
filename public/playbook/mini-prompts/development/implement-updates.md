@@ -7,9 +7,18 @@ Update dependencies safely with immediate validation checks.
 **IMPORTANT**: Make sure your code is committed to git first! You'll need a clean working state to rollback if something goes wrong.
 
 ## 📥 Context (ask if missing)
-1. **Audit Results** – which packages to update and priority level
-2. **Breaking Changes List** – any API changes to watch for
-3. **Library Usage** – where and how updated libraries are used in codebase
+1. **Tasks File** – `.agents-playbook/[task-name]/tasks.md` (if update is part of larger feature)
+2. **Requirements File** – `.agents-playbook/[task-name]/requirements.md` (if update is part of larger feature)
+3. **Design Spec** – `.agents-playbook/[task-name]/design.md` (if update is part of larger feature)
+4. **Audit Results** – which packages to update and priority level
+5. **Breaking Changes List** – any API changes to watch for
+6. **Library Usage** – where and how updated libraries are used in codebase
+
+## 🎯 Task-Based Updates (if applicable)
+If this update is part of a larger feature with tasks.md:
+- Follow the specific update task from tasks.md
+- Complete validation and testing steps for the task
+- Mark update task as ✅ in tasks.md when complete
 
 ## 🚦 Skip if
 - Updates already implemented **or** working directory not clean.

@@ -4,8 +4,8 @@
 Generate detailed implementation plan (tasks.md) with hierarchical task breakdown, technical specifications, and requirement traceability for systematic development execution.
 
 ## 📥 Context (ask if missing)
-1. **Structured Requirements** – requirements.md with User Stories and Acceptance Criteria
-2. **Technical Architecture** – high-level system design and components
+1. **Requirements File** – `.agents-playbook/[task-name]/requirements.md` with User Stories and Acceptance Criteria
+2. **Design Spec** – `.agents-playbook/[task-name]/design.md` with technical architecture and system components
 3. **Technology Stack** – frameworks, libraries, and tools to be used
 4. **Development Environment** – existing codebase patterns and standards
 5. **Team Capabilities** – available skills and resources for planning
@@ -15,12 +15,17 @@ Generate detailed implementation plan (tasks.md) with hierarchical task breakdow
 
 ## 🔍 Task Breakdown Strategy
 
-### **Task Grouping Principles**
-- **Data Layer First** – database, models, migrations
-- **API Layer Second** – backend endpoints and business logic  
-- **UI Components Third** – user interface and interactions
-- **Integration Fourth** – connecting components and systems
-- **Testing & Polish Fifth** – validation, error handling, optimization
+### **Code Patterns Analysis First**
+- [ ] **Analyze Existing Patterns** – review codebase for established architectural patterns
+- [ ] **Extract Best Practices** – identify coding conventions, naming standards, and reusable components
+- [ ] **Document Standards** – note error handling, testing, and logging patterns currently in use
+
+### **Task Grouping Principles** (Following Existing Patterns)
+- **Data Layer First** – database, models, migrations following existing data patterns
+- **API Layer Second** – backend endpoints and business logic using established API conventions  
+- **UI Components Third** – user interface and interactions leveraging existing component patterns
+- **Integration Fourth** – connecting components and systems using current integration approaches
+- **Testing & Polish Fifth** – validation, error handling, optimization following existing standards
 
 ### **Task Hierarchy Format**
 ```
@@ -135,9 +140,10 @@ Where numbers refer to specific requirements from structured requirements docume
 
 ## 🔄 Integration Notes
 This prompt works with:
-- `create-structured-requirements.md` - uses requirements for task creation
-- `create-trd.md` - aligns with technical architecture decisions
-- `implement-feature.md` - provides detailed task list for implementation
+- **requirements.md** - uses original user stories and acceptance criteria for task creation
+- **design.md** - aligns with technical architecture decisions and system design
+- **tasks.md** - creates the implementation breakdown that other prompts follow
+- `implement-feature.md` - provides detailed task list for systematic implementation
 
 ## ➡️ Response Flow
 ```mermaid
