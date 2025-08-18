@@ -31,6 +31,7 @@ If this update is part of a larger feature with tasks.md:
 - [ ] Fix any TypeScript or linting errors
 - [ ] For breaking changes: check latest docs via Context7 MCP tool, fallback to web search
 - [ ] Update code where updated libraries are used (imports, API calls, config)
+- [ ] **Remove old code**: Clean up deprecated API usage, old logging, debug statements, unused imports
 - [ ] Test basic app functionality
 
 ## 📤 Output

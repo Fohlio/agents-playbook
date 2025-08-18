@@ -48,7 +48,8 @@ Ship the feature per specs with clean, secure, performant code. **Consider alter
 - [ ] Unit tests written and passing for the task
 - [ ] Follows style guide & naming conventions.  
 - [ ] Inputs validated, secrets via env/manager.  
-- [ ] No hard-coded limits; efficient queries.  
+- [ ] No hard-coded limits; efficient queries.
+- [ ] **Remove old code**: Clean up old logging, debug statements, commented code, unused functions
 - [ ] Task marked as ✅ complete in tasks.md  
 
 ## 🛠️ Common Patterns
@@ -58,7 +59,6 @@ Repository • Service • Factory • Middleware • Decorator • Observer
 1. **Updated tasks.md** – mark completed tasks with ✅
 2. **Implementation code** – following task specifications exactly
 3. **Unit tests** – comprehensive test coverage for each task
-4. **File:** `.agents-playbook/[feature-or-task-name]/implementation-progress.md`
 
 Sections:
 1. **Current Task** – which task from tasks.md is being worked on
