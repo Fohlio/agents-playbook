@@ -33,7 +33,7 @@ phases:
         dependencies: ["trace-bug-root-cause"]
 
   - phase: "planning-clarification"
-    description: "Assess need for refactoring and get approval if required"
+    description: "Assess need for refactoring and get approval if required - CRITICAL: Ask clarifying questions about test failure context and fix scope preferences before proceeding"
     required: true
     steps:
       - id: "assess-refactoring-need"

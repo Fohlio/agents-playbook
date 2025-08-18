@@ -6,7 +6,7 @@ tags: ["trd", "documentation", "technical-requirements", "planning"]
 
 phases:
   - phase: "planning-clarification"
-    description: "Requirements gathering and scope definition"
+    description: "Requirements gathering and scope definition - CRITICAL: Ask detailed clarifying questions to fully understand technical requirements and constraints before proceeding"
     required: true
     steps:
       - id: "gather-and-clarify-requirements"

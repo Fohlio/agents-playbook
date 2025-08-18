@@ -6,7 +6,7 @@ tags: ["refactoring", "architecture", "performance", "maintainability", "technic
 
 phases:
   - phase: "planning-clarification"
-    description: "Requirements gathering and refactoring scope definition"
+    description: "Requirements gathering and refactoring scope definition - CRITICAL: Ask detailed clarifying questions to fully understand refactoring goals and constraints before proceeding"
     required: true
     steps:
       - id: "create-structured-requirements"
@@ -16,6 +16,14 @@ phases:
           requiredContext: []
           optionalContext: ["existing_codebase", "performance_issues", "maintenance_concerns", "technical_debt", "user_personas", "business_context", "refactoring_scope"]
         outputs: ["structured_requirements", "user_stories", "acceptance_criteria"]
+        
+      - id: "handoff-to-analysis"
+        miniPrompt: "handoff-memory-board"
+        required: true
+        prerequisites:
+          requiredContext: ["structured_requirements"]
+          optionalContext: []
+        dependencies: ["create-structured-requirements"]
 
   - phase: "analysis-design"
     description: "Code analysis and refactoring strategy design"
@@ -27,6 +35,15 @@ phases:
         prerequisites:
           requiredContext: ["existing_codebase", "structured_requirements"]
           optionalContext: ["performance_metrics", "maintenance_issues"]
+        dependencies: ["handoff-to-analysis"]
+        
+      - id: "handoff-to-planning"
+        miniPrompt: "handoff-memory-board"
+        required: true
+        prerequisites:
+          requiredContext: ["code_analysis_results"]
+          optionalContext: []
+        dependencies: ["code-analysis"]
         
   - phase: "implementation-planning"
     description: "Technical planning and implementation strategy"
@@ -38,7 +55,16 @@ phases:
         prerequisites:
           requiredContext: ["structured_requirements", "code_analysis_results"]
           optionalContext: ["technical_architecture", "development_environment", "team_capabilities", "existing_codebase"]
+        dependencies: ["handoff-to-planning"]
         outputs: ["implementation_plan", "task_breakdown", "technical_specifications"]
+        
+      - id: "handoff-to-implementation"
+        miniPrompt: "handoff-memory-board"
+        required: true
+        prerequisites:
+          requiredContext: ["implementation_plan"]
+          optionalContext: []
+        dependencies: ["create-implementation-plan"]
 
   - phase: "implementation"
     description: "Code refactoring execution"
@@ -50,6 +76,15 @@ phases:
         prerequisites:
           requiredContext: ["implementation_plan", "code_analysis_results"]
           optionalContext: ["migration_strategy", "backward_compatibility", "existing_codebase"]
+        dependencies: ["handoff-to-implementation"]
+        
+      - id: "handoff-to-validation"
+        miniPrompt: "handoff-memory-board"
+        required: true
+        prerequisites:
+          requiredContext: ["refactored_code"]
+          optionalContext: []
+        dependencies: ["implement-feature"]
 
   - phase: "validation"
     description: "Testing and refactoring validation"
@@ -61,6 +96,7 @@ phases:
         prerequisites:
           requiredContext: ["refactored_code", "original_functionality"]
           optionalContext: ["automated_tests", "performance_benchmarks", "test_plan"]
+        dependencies: ["handoff-to-validation"]
 
 # Workflow-level configurations
 skipConditions:

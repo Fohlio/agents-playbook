@@ -91,7 +91,7 @@ describe('Context System Integration Tests', () => {
       
       expect(workflowText).toContain('Detailed Step Breakdown');
       expect(workflowText).toContain('Context Gathering');
-      expect(workflowText).toContain('gather-and-clarify-requirements');
+      expect(workflowText).toContain('create-structured-requirements');
       expect(workflowText).toContain('create-structured-requirements');
     }, TEST_TIMEOUT);
 

@@ -6,7 +6,7 @@ tags: ["feature", "development", "implementation", "enhancement", "improvement",
 
 phases:
   - phase: "planning-clarification"
-    description: "Requirements gathering and scope definition"
+    description: "Requirements gathering and scope definition - CRITICAL: Ask detailed clarifying questions to fully understand the task before proceeding"
     required: true
     steps:
       - id: "create-structured-requirements"
@@ -16,6 +16,14 @@ phases:
           requiredContext: []
           optionalContext: ["product_roadmap", "user_feedback", "user_personas", "business_context"]
         outputs: ["structured_requirements", "user_stories", "acceptance_criteria"]
+        
+      - id: "handoff-to-design"
+        miniPrompt: "handoff-memory-board"
+        required: true
+        prerequisites:
+          requiredContext: ["structured_requirements"]
+          optionalContext: []
+        dependencies: ["create-structured-requirements"]
 
   - phase: "design-architecture"
     description: "Technical design and architecture specification"
@@ -27,7 +35,16 @@ phases:
         prerequisites:
           requiredContext: ["structured_requirements"]
           optionalContext: ["technical_decisions", "existing_patterns", "development_environment", "existing_codebase"]
+        dependencies: ["handoff-to-design"]
         outputs: ["design_specifications", "technical_requirements", "architecture_specifications"]
+        
+      - id: "handoff-to-planning"
+        miniPrompt: "handoff-memory-board"
+        required: true
+        prerequisites:
+          requiredContext: ["design_specifications"]
+          optionalContext: []
+        dependencies: ["create-trd"]
         
   - phase: "implementation-planning"
     description: "Technical planning and implementation strategy"
@@ -39,7 +56,16 @@ phases:
         prerequisites:
           requiredContext: ["structured_requirements", "design_specifications"]
           optionalContext: ["technical_architecture", "development_environment", "team_capabilities"]
+        dependencies: ["handoff-to-planning"]
         outputs: ["implementation_plan", "task_breakdown", "technical_specifications"]
+        
+      - id: "handoff-to-implementation"
+        miniPrompt: "handoff-memory-board"
+        required: true
+        prerequisites:
+          requiredContext: ["implementation_plan"]
+          optionalContext: []
+        dependencies: ["create-implementation-plan"]
 
   - phase: "implementation"
     description: "Technical execution and coding"
@@ -51,6 +77,15 @@ phases:
         prerequisites:
           requiredContext: ["design_specifications", "implementation_plan"]
           optionalContext: ["development_environment", "coding_standards"]
+        dependencies: ["handoff-to-implementation"]
+        
+      - id: "handoff-to-testing"
+        miniPrompt: "handoff-memory-board"
+        required: true
+        prerequisites:
+          requiredContext: ["implemented_feature"]
+          optionalContext: []
+        dependencies: ["implement-feature"]
 
   - phase: "testing-validation"
     description: "Quality assurance and validation"
@@ -62,6 +97,7 @@ phases:
         prerequisites:
           requiredContext: ["implemented_feature"]
           optionalContext: ["test_automation", "test_environments", "test_plan"]
+        dependencies: ["handoff-to-testing"]
 
 # Workflow-level configurations
 skipConditions:

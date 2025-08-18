@@ -33,7 +33,7 @@ phases:
         dependencies: ["architecture-analysis"]
 
   - phase: "planning-clarification"
-    description: "Plan refactoring strategy and get approval if needed"
+    description: "Plan refactoring strategy and get approval if needed - CRITICAL: Ask clarifying questions about scope, constraints, and architectural preferences before proceeding"
     required: true
     steps:
       - id: "assess-refactoring-scope"

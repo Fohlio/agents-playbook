@@ -18,7 +18,7 @@ mvpGuidance:
 
 phases:
   - phase: "planning-clarification"
-    description: "MVP scope definition and requirements clarification"
+    description: "MVP scope definition and requirements clarification - CRITICAL: Ask detailed clarifying questions about MVP vision, scope, and user needs before proceeding"
     required: true
     steps:
       - id: "ask-clarifying-questions"

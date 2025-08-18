@@ -6,7 +6,7 @@ tags: ["dependencies", "libraries", "updates", "security", "maintenance", "npm"]
 
 phases:
   - phase: "analysis"
-    description: "Quick dependency assessment and risk evaluation"
+    description: "Quick dependency assessment and risk evaluation - CRITICAL: Ask clarifying questions about update requirements and security priorities before proceeding"
     required: true
     steps:
       - id: "dependency-audit"
@@ -15,6 +15,14 @@ phases:
         prerequisites:
           requiredContext: ["package_json"]
           optionalContext: ["security_advisories", "known_issues"]
+          
+      - id: "handoff-to-implementation"
+        miniPrompt: "handoff-memory-board"
+        required: true
+        prerequisites:
+          requiredContext: ["audit_results"]
+          optionalContext: []
+        dependencies: ["dependency-audit"]
 
   - phase: "implementation"
     description: "Safe update execution with validation"
@@ -26,7 +34,15 @@ phases:
         prerequisites:
           requiredContext: ["audit_results"]
           optionalContext: ["breaking_changes_list"]
-        dependencies: ["dependency-audit"]
+        dependencies: ["handoff-to-implementation"]
+        
+      - id: "handoff-to-testing"
+        miniPrompt: "handoff-memory-board"
+        required: true
+        prerequisites:
+          requiredContext: ["updated_system"]
+          optionalContext: []
+        dependencies: ["implement-updates"]
 
   - phase: "testing-validation"
     description: "Verify updates work correctly"
@@ -38,7 +54,7 @@ phases:
         prerequisites:
           requiredContext: ["updated_system"]
           optionalContext: ["test_suite", "critical_features"]
-        dependencies: ["implement-updates"]
+        dependencies: ["handoff-to-testing"]
         
       - id: "update-review"
         miniPrompt: "review/update-review"

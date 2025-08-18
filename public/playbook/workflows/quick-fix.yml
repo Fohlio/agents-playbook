@@ -6,7 +6,7 @@ tags: ["quick-fix", "hotfix", "bug", "urgent", "minimal"]
 
 phases:
   - phase: "planning-clarification"
-    description: "Quick problem analysis and scope definition"
+    description: "Quick problem analysis and scope definition - CRITICAL: Ask clarifying questions about the issue and desired outcome before implementing fix"
     required: true
     steps:
       - id: "ask-clarifying-questions"

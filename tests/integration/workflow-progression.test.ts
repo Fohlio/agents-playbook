@@ -28,8 +28,8 @@ describe('Workflow Progression Tests', () => {
       expect(firstStepResult.content).toBeDefined();
       const firstStepText = firstStepResult.content[0].text;
       
-      // Should show the first step (Gather Requirements & Clarify Prompt)
-      expect(firstStepText).toContain('Gather Requirements & Clarify Prompt');
+      // Should show the first step (Create Structured Requirements Document Prompt)
+      expect(firstStepText).toContain('Create Structured Requirements Document Prompt');
       expect(firstStepText).not.toContain('100% complete');
       
       // Now let's simulate completing the first step by moving to step 1
@@ -50,13 +50,13 @@ describe('Workflow Progression Tests', () => {
     }, TEST_TIMEOUT);
 
     test('should properly handle context updates during progression', async () => {
-      // Start with step 0 (gather-and-clarify-requirements)
+      // Start with step 0 (create-structured-requirements)
       const step0Result = await getNextStepHandler({ 
         workflow_id: 'feature-development',
         current_step: 0
       });
 
-      expect(step0Result.content[0].text).toContain('Gather Requirements & Clarify Prompt');
+      expect(step0Result.content[0].text).toContain('Create Structured Requirements Document Prompt');
       
       // Move to step 1 with requirements context
       const step1Result = await getNextStepHandler({ 
@@ -225,11 +225,11 @@ describe('Workflow Progression Tests', () => {
       expect(result.content).toBeDefined();
       const resultText = result.content[0].text;
       
-      // Should contain the context assessment sections
-      expect(resultText).toContain('Context Assessment');
-      expect(resultText).toContain('Existing Documentation');
-      expect(resultText).toContain('Gap Analysis');
-      expect(resultText).toContain('CRITICAL: Always Ask Questions');
+      // Should contain the structured requirements sections
+      expect(resultText).toContain('Goal');
+      expect(resultText).toContain('Context (ask if missing)');
+      expect(resultText).toContain('Requirements Structure Format');
+      expect(resultText).toContain('Quality Checklist');
     }, TEST_TIMEOUT);
 
     test('should show proper step progression indicators', async () => {

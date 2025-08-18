@@ -6,7 +6,7 @@ tags: ["features", "brainstorming", "discovery", "research", "ideation", "opport
 
 phases:
   - phase: "analysis"
-    description: "Codebase analysis and opportunity discovery"
+    description: "Codebase analysis and opportunity discovery - CRITICAL: Ask clarifying questions about desired features and target users before proceeding with analysis"
     required: true
     steps:
       - id: "analyze-codebase-opportunities"
@@ -23,6 +23,14 @@ phases:
           requiredContext: ["codebase_analysis"]
           optionalContext: ["product_vision"]
         dependencies: ["analyze-codebase-opportunities"]
+        
+      - id: "handoff-to-research"
+        miniPrompt: "handoff-memory-board"
+        required: true
+        prerequisites:
+          requiredContext: ["codebase_analysis", "user_interests"]
+          optionalContext: []
+        dependencies: ["discover-user-interests"]
 
   - phase: "research"
     description: "Market research and trend analysis"
@@ -34,7 +42,7 @@ phases:
         prerequisites:
           requiredContext: ["user_interests", "codebase_analysis"]
           optionalContext: ["technology_stack", "competitor_analysis"]
-        dependencies: ["discover-user-interests"]
+        dependencies: ["handoff-to-research"]
         
       - id: "analyze-specific-features"
         miniPrompt: "analysis/specific-feature-analysis"
@@ -43,6 +51,14 @@ phases:
           requiredContext: ["user_interests", "trend_research"]
           optionalContext: ["existing_features"]
         dependencies: ["research-trends"]
+        
+      - id: "handoff-to-ideation"
+        miniPrompt: "handoff-memory-board"
+        required: true
+        prerequisites:
+          requiredContext: ["trend_research", "specific_feature_analysis"]
+          optionalContext: []
+        dependencies: ["analyze-specific-features"]
 
   - phase: "ideation"
     description: "Creative brainstorming and feature ideation"
@@ -54,7 +70,7 @@ phases:
         prerequisites:
           requiredContext: ["codebase_analysis", "user_interests", "trend_research"]
           optionalContext: ["competitive_analysis"]
-        dependencies: ["analyze-specific-features"]
+        dependencies: ["handoff-to-ideation"]
         
       - id: "compile-suggestions"
         miniPrompt: "business/feature-compilation"
@@ -63,6 +79,14 @@ phases:
           requiredContext: ["brainstormed_features", "specific_feature_analysis"]
           optionalContext: ["feasibility_constraints"]
         dependencies: ["brainstorm-features"]
+        
+      - id: "handoff-to-documentation"
+        miniPrompt: "handoff-memory-board"
+        required: true
+        prerequisites:
+          requiredContext: ["brainstormed_features", "compiled_suggestions"]
+          optionalContext: []
+        dependencies: ["compile-suggestions"]
 
   - phase: "documentation"
     description: "Final documentation and presentation"
@@ -74,7 +98,7 @@ phases:
         prerequisites:
           requiredContext: ["compiled_suggestions", "user_interests"]
           optionalContext: ["implementation_estimates"]
-        dependencies: ["compile-suggestions"]
+        dependencies: ["handoff-to-documentation"]
 
 # Workflow-level configurations
 skipConditions:

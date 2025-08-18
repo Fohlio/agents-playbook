@@ -23,9 +23,17 @@ phases:
           requiredContext: ["codebase_analysis"]
           optionalContext: ["coverage_reports", "test_files", "build_configuration"]
         dependencies: ["code-analysis"]
+        
+      - id: "handoff-to-planning"
+        miniPrompt: "handoff-memory-board"
+        required: true
+        prerequisites:
+          requiredContext: ["codebase_analysis", "coverage_analysis"]
+          optionalContext: []
+        dependencies: ["analyze-test-coverage"]
 
   - phase: "planning-clarification"
-    description: "Define coverage goals and create testing strategy"
+    description: "Define coverage goals and create testing strategy - CRITICAL: Ask detailed clarifying questions about testing requirements and coverage expectations before proceeding"
     required: true
     steps:
       - id: "define-coverage-goals"
@@ -34,7 +42,7 @@ phases:
         prerequisites:
           requiredContext: ["coverage_analysis", "code_structure"]
           optionalContext: ["team_standards", "project_requirements"]
-        dependencies: ["analyze-test-coverage"]
+        dependencies: ["handoff-to-planning"]
 
       - id: "create-unit-test-plan"
         miniPrompt: "qa/create-unit-test-plan"
@@ -43,6 +51,14 @@ phases:
           requiredContext: ["coverage_goals", "code_analysis"]
           optionalContext: ["testing_priorities", "resource_constraints"]
         dependencies: ["define-coverage-goals"]
+        
+      - id: "handoff-to-implementation"
+        miniPrompt: "handoff-memory-board"
+        required: true
+        prerequisites:
+          requiredContext: ["test_plan", "coverage_goals"]
+          optionalContext: []
+        dependencies: ["create-unit-test-plan"]
 
   - phase: "implementation"
     description: "Write unit tests to improve coverage"
@@ -54,7 +70,15 @@ phases:
         prerequisites:
           requiredContext: ["test_plan", "target_functions"]
           optionalContext: ["test_environment", "mocking_strategy", "existing_test_patterns"]
-        dependencies: ["create-unit-test-plan"]
+        dependencies: ["handoff-to-implementation"]
+        
+      - id: "handoff-to-testing"
+        miniPrompt: "handoff-memory-board"
+        required: true
+        prerequisites:
+          requiredContext: ["implemented_tests"]
+          optionalContext: []
+        dependencies: ["write-unit-tests"]
 
   - phase: "testing-validation"
     description: "Execute and validate tests"
@@ -66,7 +90,7 @@ phases:
         prerequisites:
           requiredContext: ["implemented_tests"]
           optionalContext: ["test_environment", "ci_configuration"]
-        dependencies: ["write-unit-tests"]
+        dependencies: ["handoff-to-testing"]
 
   - phase: "review"
     description: "Test coverage assessment and validation"
