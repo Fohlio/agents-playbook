@@ -10,27 +10,43 @@ phases:
     required: true
     steps:
       - id: "analyze-test-requirements"
-        miniPrompt: "qa/analyze-test-requirements"
+        miniPrompt: "e2e/analysis/analyze-test-requirements"
         required: true
         prerequisites:
           requiredContext: []
           optionalContext: ["feature_description", "user_stories", "acceptance_criteria", "business_requirements"]
         
-      - id: "identify-test-scenarios"
-        miniPrompt: "qa/identify-test-scenarios"
+      - id: "analyze-current-e2e-codebase"
+        miniPrompt: "e2e/analysis/analyze-current-e2e-codebase"
         required: true
         prerequisites:
           requiredContext: ["test_requirements_analysis"]
-          optionalContext: ["user_journeys", "edge_cases", "error_scenarios"]
+          optionalContext: ["existing_test_patterns", "repository_structure"]
         dependencies: ["analyze-test-requirements"]
-        
-      - id: "determine-test-priority"
-        miniPrompt: "qa/determine-test-priority"
+
+      - id: "code-analysis"
+        miniPrompt: "analysis/code-analysis"
         required: true
         prerequisites:
-          requiredContext: ["test_scenarios", "business_impact"]
-          optionalContext: ["regression_risk", "user_impact"]
-        dependencies: ["identify-test-scenarios"]
+          requiredContext: ["codebase_analysis"]
+          optionalContext: ["code_quality_metrics", "technical_debt"]
+        dependencies: ["analyze-current-e2e-codebase"]
+
+      - id: "investigate-recent-changes"
+        miniPrompt: "analysis/investigate-recent-changes"
+        required: true
+        prerequisites:
+          requiredContext: ["code_analysis", "git_history"]
+          optionalContext: ["recent_commits", "changed_files"]
+        dependencies: ["code-analysis"]
+
+      - id: "analyze-module-structure"
+        miniPrompt: "e2e/analysis/analyze-module-structure"
+        required: true
+        prerequisites:
+          requiredContext: ["recent_changes_analysis", "module_dependencies"]
+          optionalContext: ["file_structure", "import_graphs"]
+        dependencies: ["investigate-recent-changes"]
         
       - id: "handoff-to-planning"
         miniPrompt: "handoff-memory-board"
@@ -45,7 +61,7 @@ phases:
     required: true
     steps:
       - id: "plan-test-structure"
-        miniPrompt: "qa/plan-test-structure"
+        miniPrompt: "e2e/test_planning/plan-test-structure"
         required: true
         prerequisites:
           requiredContext: ["test_scenarios", "feature_complexity"]
@@ -53,7 +69,7 @@ phases:
         dependencies: ["handoff-to-planning"]
         
       - id: "identify-test-data-requirements"
-        miniPrompt: "qa/identify-test-data-requirements"
+        miniPrompt: "e2e/test_planning/identify-test-data-requirements"
         required: true
         prerequisites:
           requiredContext: ["test_structure", "scenarios"]
@@ -61,7 +77,7 @@ phases:
         dependencies: ["plan-test-structure"]
         
       - id: "assess-page-object-needs"
-        miniPrompt: "qa/assess-page-object-needs"
+        miniPrompt: "e2e/test_planning/assess-page-object-needs"
         required: true
         prerequisites:
           requiredContext: ["test_structure", "ui_elements"]
@@ -81,7 +97,7 @@ phases:
     required: true
     steps:
       - id: "create-page-objects"
-        miniPrompt: "qa/create-page-objects"
+        miniPrompt: "e2e/test_creation/create-page-objects"
         required: false
         prerequisites:
           requiredContext: ["page_object_assessment", "ui_elements"]
@@ -90,7 +106,7 @@ phases:
         dependencies: ["handoff-to-implementation"]
         
       - id: "implement-test-logic"
-        miniPrompt: "qa/implement-test-logic"
+        miniPrompt: "e2e/test_creation/implement-test-logic"
         required: true
         prerequisites:
           requiredContext: ["test_plan", "page_objects", "test_data"]
@@ -98,7 +114,7 @@ phases:
         dependencies: ["handoff-to-implementation"]
         
       - id: "add-assertions-and-validations"
-        miniPrompt: "qa/add-assertions-validations"
+        miniPrompt: "e2e/test_creation/add-assertions-validations"
         required: true
         prerequisites:
           requiredContext: ["test_logic", "acceptance_criteria"]
@@ -118,7 +134,7 @@ phases:
     required: true
     steps:
       - id: "execute-test-locally"
-        miniPrompt: "qa/execute-test-locally"
+        miniPrompt: "e2e/test_execution/execute-test-locally"
         required: true
         prerequisites:
           requiredContext: ["implemented_test", "test_environment"]
@@ -126,7 +142,7 @@ phases:
         dependencies: ["handoff-to-testing"]
         
       - id: "validate-test-stability"
-        miniPrompt: "qa/validate-test-stability"
+        miniPrompt: "e2e/test_execution/validate-test-stability"
         required: true
         prerequisites:
           requiredContext: ["test_execution_results", "stability_metrics"]
@@ -134,7 +150,7 @@ phases:
         dependencies: ["execute-test-locally"]
         
       - id: "review-code-quality"
-        miniPrompt: "qa/review-code-quality"
+        miniPrompt: "e2e/test_review/review-code-quality"
         required: true
         prerequisites:
           requiredContext: ["test_implementation", "playwright_best_practices"]
@@ -154,7 +170,7 @@ phases:
     required: true
     steps:
       - id: "integration-testing"
-        miniPrompt: "qa/integration-testing"
+        miniPrompt: "e2e/test_execution/integration-testing"
         required: true
         prerequisites:
           requiredContext: ["validated_test", "test_suite"]
@@ -162,7 +178,7 @@ phases:
         dependencies: ["handoff-to-review"]
         
       - id: "update-test-documentation"
-        miniPrompt: "qa/update-test-documentation"
+        miniPrompt: "e2e/test_creation/update-test-documentation"
         required: true
         prerequisites:
           requiredContext: ["test_implementation", "test_results"]

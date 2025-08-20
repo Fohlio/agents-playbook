@@ -10,14 +10,14 @@ phases:
     required: true
     steps:
       - id: "analyze-test-report"
-        miniPrompt: "qa/analyze-e2e-test-report"
+        miniPrompt: "e2e/analysis/analyze-e2e-test-report"
         required: true
         prerequisites:
           requiredContext: []
           optionalContext: ["test_report_file", "failure_statistics", "trace_files", "attachments"]
         
       - id: "identify-failure-patterns"
-        miniPrompt: "qa/analyze-test-failures"
+        miniPrompt: "e2e/analysis/analyze-test-failures"
         required: true
         prerequisites:
           requiredContext: ["test_report_analysis"]
@@ -25,7 +25,7 @@ phases:
         dependencies: ["analyze-test-report"]
         
       - id: "extract-failing-test-details"
-        miniPrompt: "qa/extract-failing-test-details"
+        miniPrompt: "e2e/analysis/extract-failing-test-details"
         required: true
         prerequisites:
           requiredContext: ["failure_patterns", "test_report_analysis"]
@@ -53,7 +53,7 @@ phases:
         dependencies: ["handoff-to-investigation"]
         
       - id: "analyze-module-structure"
-        miniPrompt: "analysis/analyze-module-structure"
+        miniPrompt: "e2e/analysis/analyze-module-structure"
         required: true
         prerequisites:
           requiredContext: ["recent_changes_analysis"]
@@ -101,7 +101,7 @@ phases:
     required: true
     steps:
       - id: "implement-test-fix"
-        miniPrompt: "qa/fix-test-issues"
+        miniPrompt: "e2e/test_creation/fix-test-issues"
         required: true
         prerequisites:
           requiredContext: ["approved_fix_strategy", "root_cause_analysis", "failing_test_details", "test_locations"]
@@ -109,7 +109,7 @@ phases:
         dependencies: ["handoff-to-implementation"]
         
       - id: "validate-fix-implementation"
-        miniPrompt: "qa/validate-test-fix"
+        miniPrompt: "e2e/test_execution/validate-test-fix"
         required: true
         prerequisites:
           requiredContext: ["implemented_fix"]
@@ -129,7 +129,7 @@ phases:
     required: true
     steps:
       - id: "rerun-failing-tests"
-        miniPrompt: "qa/execute-tests"
+        miniPrompt: "e2e/test_execution/execute-tests"
         required: true
         prerequisites:
           requiredContext: ["implemented_fix", "test_environment", "failing_test_details", "test_locations"]
@@ -137,7 +137,7 @@ phases:
         dependencies: ["handoff-to-testing"]
         
       - id: "validate-test-results"
-        miniPrompt: "qa/validate-requirements"
+        miniPrompt: "e2e/test_execution/validate-requirements"
         required: true
         prerequisites:
           requiredContext: ["test_execution_results", "fix_validation"]
@@ -157,7 +157,7 @@ phases:
     required: true
     steps:
       - id: "code-review"
-        miniPrompt: "review/code-review"
+        miniPrompt: "e2e/test_review/review-code-quality"
         required: true
         prerequisites:
           requiredContext: ["implemented_fix", "test_results"]
