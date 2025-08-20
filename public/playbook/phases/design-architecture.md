@@ -12,6 +12,9 @@ Design the solution architecture, data models, and technical approach based on r
 6. **design-security-model** - Design security architecture and access controls [conditional: if security requirements]
 7. **design-deployment-strategy** - Plan deployment approach and infrastructure [conditional: if deployment changes]
 
+## Clarifying Questions (ask after analysis)
+Create a short, targeted set of clarifying questions based on the analysis to confirm scope boundaries, non-functional requirements, integration points, data contracts, access controls, technical constraints, key trade-offs, and risks requiring spikes. Focus on the minimum questions necessary to finalize the design with confidence.
+
 ## Phase Prerequisites
 - **Context**: Requirements and analysis results from previous phases
 - **MCP Servers**: 

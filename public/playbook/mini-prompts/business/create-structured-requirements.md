@@ -10,6 +10,9 @@ Create comprehensive structured requirements document with User Stories and Acce
 4. **Business Context** – why this feature is needed
 5. **Existing Systems** – current system state and constraints
 
+## ❓ Clarifying Questions (ask before proceeding)
+Generate a concise, prioritized set of one-line clarifying questions tailored to the provided context to fully understand goals, scope, user roles and journeys, constraints, data/integrations, acceptance criteria, risks/edge cases, security/compliance, performance expectations, and dependencies. Ask only what is necessary to proceed with high confidence and stop once information suffices for producing structured requirements.
+
 ## 🚦 Skip if
 - Structured requirements already exist (<30 days) or feature scope is trivial
 

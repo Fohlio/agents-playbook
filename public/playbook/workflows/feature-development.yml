@@ -29,12 +29,12 @@ phases:
     description: "Technical design and architecture specification"
     required: true
     steps:
-      - id: "create-trd"
-        miniPrompt: "business/create-trd"
+      - id: "design-architecture"
+        miniPrompt: "development/design-architecture"
         required: true
         prerequisites:
-          requiredContext: ["structured_requirements"]
-          optionalContext: ["technical_decisions", "existing_patterns", "development_environment", "existing_codebase"]
+          requiredContext: ["clarified_requirements", "structured_requirements", "implementation_plan"]
+          optionalContext: ["design_guidelines", "technical_constraints"]
         dependencies: ["handoff-to-design"]
         outputs: ["design_specifications", "technical_requirements", "architecture_specifications"]
         
@@ -44,7 +44,7 @@ phases:
         prerequisites:
           requiredContext: ["design_specifications"]
           optionalContext: []
-        dependencies: ["create-trd"]
+        dependencies: ["design-architecture"]
         
   - phase: "implementation-planning"
     description: "Technical planning and implementation strategy"

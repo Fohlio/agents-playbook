@@ -21,13 +21,6 @@ phases:
     description: "MVP scope definition and requirements clarification - CRITICAL: Ask detailed clarifying questions about MVP vision, scope, and user needs before proceeding"
     required: true
     steps:
-      - id: "ask-clarifying-questions"
-        miniPrompt: "development/ask-clarifying-questions"
-        required: true
-        prerequisites:
-          requiredContext: []
-          optionalContext: ["product_vision", "initial_concept"]
-        
       - id: "create-structured-requirements"
         miniPrompt: "business/create-structured-requirements"
         required: true
