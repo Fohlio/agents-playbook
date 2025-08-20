@@ -16,27 +16,19 @@ phases:
           requiredContext: []
           optionalContext: ["test_report_file", "failure_statistics", "trace_files", "attachments"]
         
-      - id: "identify-failure-patterns"
-        miniPrompt: "e2e/analysis/analyze-test-failures"
-        required: true
-        prerequisites:
-          requiredContext: ["test_report_analysis"]
-          optionalContext: ["failure_patterns", "error_logs", "screenshots"]
-        dependencies: ["analyze-test-report"]
-        
       - id: "extract-failing-test-details"
         miniPrompt: "e2e/analysis/extract-failing-test-details"
         required: true
         prerequisites:
-          requiredContext: ["failure_patterns", "test_report_analysis"]
-          optionalContext: ["test_file_paths", "test_function_names", "failure_details"]
-        dependencies: ["identify-failure-patterns"]
+          requiredContext: ["test_report_analysis"]
+          optionalContext: ["failure_patterns", "test_file_paths", "test_function_names", "failure_details"]
+        dependencies: ["analyze-test-report"]
         
       - id: "handoff-to-investigation"
         miniPrompt: "handoff-memory-board"
         required: true
         prerequisites:
-          requiredContext: ["failing_test_details", "test_locations", "failure_analysis"]
+          requiredContext: []
           optionalContext: []
         dependencies: ["extract-failing-test-details"]
 
@@ -48,8 +40,8 @@ phases:
         miniPrompt: "analysis/investigate-recent-changes"
         required: true
         prerequisites:
-          requiredContext: ["failure_analysis", "test_statistics"]
-          optionalContext: ["git_history", "recent_commits", "changed_files"]
+          requiredContext: ["failing_test_details"]
+          optionalContext: ["test_statistics", "git_history", "recent_commits", "changed_files"]
         dependencies: ["handoff-to-investigation"]
         
       - id: "analyze-module-structure"
@@ -64,7 +56,7 @@ phases:
         miniPrompt: "handoff-memory-board"
         required: true
         prerequisites:
-          requiredContext: ["module_structure_analysis", "recent_changes_impact"]
+          requiredContext: []
           optionalContext: []
         dependencies: ["analyze-module-structure"]
 
@@ -73,7 +65,7 @@ phases:
     required: true
     steps:
       - id: "assess-fix-approach"
-        miniPrompt: "development/ask-clarifying-questions"
+        miniPrompt: "e2e/test_planning/ask-clarifying-questions"
         required: true
         prerequisites:
           requiredContext: ["failure_root_cause", "module_analysis", "recent_changes_impact"]
@@ -92,7 +84,7 @@ phases:
         miniPrompt: "handoff-memory-board"
         required: true
         prerequisites:
-          requiredContext: ["approved_fix_strategy", "fix_plan"]
+          requiredContext: []
           optionalContext: []
         dependencies: ["document-fix-strategy"]
 
@@ -101,7 +93,7 @@ phases:
     required: true
     steps:
       - id: "implement-test-fix"
-        miniPrompt: "e2e/test_creation/fix-test-issues"
+        miniPrompt: "e2e/test_creation/implement-test-logic"
         required: true
         prerequisites:
           requiredContext: ["approved_fix_strategy", "root_cause_analysis", "failing_test_details", "test_locations"]
@@ -109,7 +101,7 @@ phases:
         dependencies: ["handoff-to-implementation"]
         
       - id: "validate-fix-implementation"
-        miniPrompt: "e2e/test_execution/validate-test-fix"
+        miniPrompt: "e2e/test_review/validate-test-fix"
         required: true
         prerequisites:
           requiredContext: ["implemented_fix"]
@@ -120,7 +112,7 @@ phases:
         miniPrompt: "handoff-memory-board"
         required: true
         prerequisites:
-          requiredContext: ["validated_fix", "fix_implementation"]
+          requiredContext: []
           optionalContext: []
         dependencies: ["validate-fix-implementation"]
 
@@ -129,7 +121,7 @@ phases:
     required: true
     steps:
       - id: "rerun-failing-tests"
-        miniPrompt: "e2e/test_execution/execute-tests"
+        miniPrompt: "e2e/test_execution/execute-test-locally"
         required: true
         prerequisites:
           requiredContext: ["implemented_fix", "test_environment", "failing_test_details", "test_locations"]
@@ -137,7 +129,7 @@ phases:
         dependencies: ["handoff-to-testing"]
         
       - id: "validate-test-results"
-        miniPrompt: "e2e/test_execution/validate-requirements"
+        miniPrompt: "e2e/test_review/validate-test-stability"
         required: true
         prerequisites:
           requiredContext: ["test_execution_results", "fix_validation"]
@@ -148,7 +140,7 @@ phases:
         miniPrompt: "handoff-memory-board"
         required: true
         prerequisites:
-          requiredContext: ["test_validation_results", "fix_effectiveness"]
+          requiredContext: []
           optionalContext: []
         dependencies: ["validate-test-results"]
 
@@ -171,6 +163,14 @@ phases:
           requiredContext: ["reviewed_fix", "test_validation_results"]
           optionalContext: ["fix_documentation", "lessons_learned"]
         dependencies: ["code-review"]
+
+      - id: "handoff-to-completion"
+        miniPrompt: "handoff-memory-board"
+        required: true
+        prerequisites:
+          requiredContext: []
+          optionalContext: []
+        dependencies: ["deliverable-review"]
 
 # Critical Rules Integration (from test_fix_flow.md)
 criticalRules:
