@@ -1,0 +1,286 @@
+name: "E2E Test Creation Workflow"
+description: "Comprehensive workflow for creating new E2E tests in Playwright repository following established patterns and best practices"
+version: "1.0"
+category: "testing"
+tags: ["e2e-tests", "playwright", "test-creation", "automation", "quality", "typescript"]
+
+phases:
+  - phase: "requirements-analysis"
+    description: "Analyze test requirements and understand the feature to be tested"
+    required: true
+    steps:
+      - id: "analyze-test-requirements"
+        miniPrompt: "qa/analyze-test-requirements"
+        required: true
+        prerequisites:
+          requiredContext: []
+          optionalContext: ["feature_description", "user_stories", "acceptance_criteria", "business_requirements"]
+        
+      - id: "identify-test-scenarios"
+        miniPrompt: "qa/identify-test-scenarios"
+        required: true
+        prerequisites:
+          requiredContext: ["test_requirements_analysis"]
+          optionalContext: ["user_journeys", "edge_cases", "error_scenarios"]
+        dependencies: ["analyze-test-requirements"]
+        
+      - id: "determine-test-priority"
+        miniPrompt: "qa/determine-test-priority"
+        required: true
+        prerequisites:
+          requiredContext: ["test_scenarios", "business_impact"]
+          optionalContext: ["regression_risk", "user_impact"]
+        dependencies: ["identify-test-scenarios"]
+        
+      - id: "handoff-to-planning"
+        miniPrompt: "handoff-memory-board"
+        required: true
+        prerequisites:
+          requiredContext: ["test_requirements", "scenarios", "priority_level"]
+          optionalContext: []
+        dependencies: ["determine-test-priority"]
+
+  - phase: "test-planning"
+    description: "Plan test structure, data requirements, and implementation approach"
+    required: true
+    steps:
+      - id: "plan-test-structure"
+        miniPrompt: "qa/plan-test-structure"
+        required: true
+        prerequisites:
+          requiredContext: ["test_scenarios", "feature_complexity"]
+          optionalContext: ["existing_test_patterns", "page_object_models"]
+        dependencies: ["handoff-to-planning"]
+        
+      - id: "identify-test-data-requirements"
+        miniPrompt: "qa/identify-test-data-requirements"
+        required: true
+        prerequisites:
+          requiredContext: ["test_structure", "scenarios"]
+          optionalContext: ["presets", "factories", "test_data"]
+        dependencies: ["plan-test-structure"]
+        
+      - id: "assess-page-object-needs"
+        miniPrompt: "qa/assess-page-object-needs"
+        required: true
+        prerequisites:
+          requiredContext: ["test_structure", "ui_elements"]
+          optionalContext: ["existing_models", "component_reusability"]
+        dependencies: ["identify-test-data-requirements"]
+        
+      - id: "handoff-to-implementation"
+        miniPrompt: "handoff-memory-board"
+        required: true
+        prerequisites:
+          requiredContext: ["test_plan", "data_requirements", "page_object_assessment"]
+          optionalContext: []
+        dependencies: ["assess-page-object-needs"]
+
+  - phase: "test-implementation"
+    description: "Implement the E2E test following Playwright best practices and established patterns"
+    required: true
+    steps:
+      - id: "create-page-objects"
+        miniPrompt: "qa/create-page-objects"
+        required: false
+        prerequisites:
+          requiredContext: ["page_object_assessment", "ui_elements"]
+          optionalContext: ["existing_models", "component_structure"]
+          skipConditions: ["existing_page_objects_sufficient", "simple_test_no_new_objects"]
+        dependencies: ["handoff-to-implementation"]
+        
+      - id: "implement-test-logic"
+        miniPrompt: "qa/implement-test-logic"
+        required: true
+        prerequisites:
+          requiredContext: ["test_plan", "page_objects", "test_data"]
+          optionalContext: ["existing_test_patterns", "fixtures"]
+        dependencies: ["handoff-to-implementation"]
+        
+      - id: "add-assertions-and-validations"
+        miniPrompt: "qa/add-assertions-validations"
+        required: true
+        prerequisites:
+          requiredContext: ["test_logic", "acceptance_criteria"]
+          optionalContext: ["visual_assertions", "performance_checks"]
+        dependencies: ["implement-test-logic"]
+        
+      - id: "handoff-to-testing"
+        miniPrompt: "handoff-memory-board"
+        required: true
+        prerequisites:
+          requiredContext: ["implemented_test", "assertions", "validations"]
+          optionalContext: []
+        dependencies: ["add-assertions-and-validations"]
+
+  - phase: "test-validation"
+    description: "Validate test functionality, stability, and adherence to best practices"
+    required: true
+    steps:
+      - id: "execute-test-locally"
+        miniPrompt: "qa/execute-test-locally"
+        required: true
+        prerequisites:
+          requiredContext: ["implemented_test", "test_environment"]
+          optionalContext: ["test_data", "dependencies"]
+        dependencies: ["handoff-to-testing"]
+        
+      - id: "validate-test-stability"
+        miniPrompt: "qa/validate-test-stability"
+        required: true
+        prerequisites:
+          requiredContext: ["test_execution_results", "stability_metrics"]
+          optionalContext: ["flakiness_analysis", "retry_behavior"]
+        dependencies: ["execute-test-locally"]
+        
+      - id: "review-code-quality"
+        miniPrompt: "qa/review-code-quality"
+        required: true
+        prerequisites:
+          requiredContext: ["test_implementation", "playwright_best_practices"]
+          optionalContext: ["linting_results", "code_standards"]
+        dependencies: ["validate-test-stability"]
+        
+      - id: "handoff-to-review"
+        miniPrompt: "handoff-memory-board"
+        required: true
+        prerequisites:
+          requiredContext: ["validated_test", "code_quality_review", "stability_validation"]
+          optionalContext: []
+        dependencies: ["review-code-quality"]
+
+  - phase: "integration-review"
+    description: "Final review, integration testing, and documentation"
+    required: true
+    steps:
+      - id: "integration-testing"
+        miniPrompt: "qa/integration-testing"
+        required: true
+        prerequisites:
+          requiredContext: ["validated_test", "test_suite"]
+          optionalContext: ["parallel_execution", "cross_browser_testing"]
+        dependencies: ["handoff-to-review"]
+        
+      - id: "update-test-documentation"
+        miniPrompt: "qa/update-test-documentation"
+        required: true
+        prerequisites:
+          requiredContext: ["test_implementation", "test_results"]
+          optionalContext: ["test_metadata", "qase_integration"]
+        dependencies: ["integration-testing"]
+        
+      - id: "final-deliverable-review"
+        miniPrompt: "review/deliverable-review"
+        required: true
+        prerequisites:
+          requiredContext: ["integrated_test", "documentation", "test_results"]
+          optionalContext: ["performance_metrics", "coverage_impact"]
+        dependencies: ["update-test-documentation"]
+
+# Playwright-Specific Rules Integration
+playwrightRules:
+  - rule: "use_established_patterns"
+    description: "Follow existing Playwright test patterns and file structure"
+    phases: ["test-implementation", "test-validation"]
+    message: "Use established fixtures, models, and test structure from the repository"
+    
+  - rule: "page_object_model"
+    description: "Implement Page Object Model for UI interactions"
+    phases: ["test-implementation"]
+    message: "Create or extend existing page objects for UI elements and interactions"
+    
+  - rule: "fixture_usage"
+    description: "Use established fixtures for common test setup and teardown"
+    phases: ["test-implementation"]
+    message: "Leverage existing fixtures from src/fixtures/test.ts for test setup"
+    
+  - rule: "preset_integration"
+    description: "Use presets for test data preparation"
+    phases: ["test-implementation"]
+    message: "Utilize presets from src/presets/ for consistent test data setup"
+    
+  - rule: "test_step_wrapping"
+    description: "Wrap methods inside classes with test.step"
+    phases: ["test-implementation"]
+    message: "Use test.step for class methods, avoid in test body"
+    
+  - rule: "locator_best_practices"
+    description: "Use recommended Playwright locators over complex selectors"
+    phases: ["test-implementation"]
+    message: "Prefer page.getByRole, page.getByLabel, page.getByText over page.locator"
+    
+  - rule: "test_data_management"
+    description: "Use factories for CRUD operations and presets for data setup"
+    phases: ["test-implementation"]
+    message: "Leverage factories from src/factories/ for entity operations"
+
+# Workflow-level configurations
+skipConditions:
+  - condition: "simple_unit_test"
+    message: "Test is too simple and doesn't require E2E approach"
+  - condition: "existing_test_coverage"
+    message: "Feature already has sufficient test coverage"
+  - condition: "no_ui_interaction"
+    message: "Test doesn't require UI interaction"
+
+validationRules:
+  - rule: "requirements_analysis_required"
+    phases: ["test-planning"]
+    message: "Test requirements must be analyzed before planning"
+  - rule: "test_plan_required"
+    phases: ["test-implementation"]
+    dependencies: ["test-planning"]
+    message: "Test plan must be completed before implementation"
+  - rule: "local_execution_required"
+    phases: ["test-validation"]
+    dependencies: ["test-implementation"]
+    message: "Test must execute locally before integration testing"
+
+notifications:
+  - trigger: "test_creation_started"
+    phases: ["requirements-analysis"]
+    message: "E2E test creation workflow initiated"
+  - trigger: "test_implementation_complete"
+    phases: ["test-implementation"]
+    message: "Test implementation completed and ready for validation"
+  - trigger: "test_validation_complete"
+    phases: ["test-validation"]
+    message: "Test validation completed successfully"
+  - trigger: "workflow_completion"
+    message: "E2E test creation workflow completed successfully"
+
+# Smart execution settings
+execution:
+  allowSkipping: false
+  requireExplicitApproval: true
+  automaticProgressTracking: true
+  criticalPhaseValidation: true
+
+# Playwright-specific context requirements
+workflow_context:
+  steps_count: 12
+  common_scenarios:
+    - "New feature E2E testing"
+    - "Critical user journey validation"
+    - "Regression test creation"
+    - "Cross-browser compatibility testing"
+    - "Performance testing integration"
+    - "Accessibility testing scenarios"
+  
+  required_playwright_knowledge:
+    - "Page Object Model implementation"
+    - "Fixture usage and customization"
+    - "Preset integration for test data"
+    - "Factory patterns for entity operations"
+    - "Playwright locator best practices"
+    - "Test step organization and structure"
+
+success_criteria:
+  - "Test follows established Playwright patterns"
+  - "Page objects are properly implemented"
+  - "Test data is managed through presets/factories"
+  - "Test executes reliably without flakiness"
+  - "Code quality meets repository standards"
+  - "Test integrates successfully with existing suite"
+  - "Documentation is updated and accurate"
+  - "QASE integration is properly configured"
