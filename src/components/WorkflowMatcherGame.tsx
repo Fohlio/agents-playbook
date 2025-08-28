@@ -12,27 +12,17 @@ const GAME_SCENARIOS: GameScenario[] = [
   {
     scenario: "Production bug causing crashes, need immediate fix",
     correctWorkflow: "quick-fix",
-    options: ["quick-fix", "feature-development", "code-refactoring", "unit-test-coverage"]
+    options: ["quick-fix", "feature-development", "code-refactoring", "feature-brainstorming"]
   },
   {
     scenario: "Need to implement user authentication for new app",
     correctWorkflow: "feature-development", 
-    options: ["feature-development", "quick-fix", "trd-creation", "fix-tests"]
+    options: ["feature-development", "quick-fix", "code-refactoring", "feature-brainstorming"]
   },
   {
     scenario: "Legacy codebase needs restructuring and improvements",
     correctWorkflow: "code-refactoring",
-    options: ["code-refactoring", "quick-fix", "feature-development", "fix-circular-dependencies"]
-  },
-  {
-    scenario: "Tests are failing after dependency updates",
-    correctWorkflow: "fix-tests",
-    options: ["fix-tests", "unit-test-coverage", "quick-fix", "feature-development"]
-  },
-  {
-    scenario: "Starting a new project from scratch",
-    correctWorkflow: "product-development",
-    options: ["product-development", "feature-development", "trd-creation", "code-refactoring"]
+    options: ["code-refactoring", "quick-fix", "feature-development", "feature-brainstorming"]
   }
 ] as const;
 

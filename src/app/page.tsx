@@ -37,8 +37,8 @@ const OVERVIEW_CONTENT = {
 } as const;
 
 const STATS: Stat[] = [
-  { value: "9", label: "Workflows", color: "text-blue-600" },
-  { value: "25+", label: "Mini-Prompts", color: "text-green-600" },
+  { value: "4", label: "Workflows", color: "text-blue-600" },
+  { value: "12+", label: "Mini-Prompts", color: "text-green-600" },
   { value: "65", label: "Tests", color: "text-purple-600" },
   { value: "3", label: "MCP Tools", color: "text-orange-600" }
 ] as const;
@@ -47,17 +47,12 @@ const WORKFLOW_CATEGORIES: WorkflowCategory[] = [
   {
     title: "Development",
     icon: "⚡",
-    workflows: ["feature-development", "product-development", "quick-fix", "code-refactoring"]
+    workflows: ["feature-development", "quick-fix", "code-refactoring"]
   },
   {
-    title: "Testing & QA", 
-    icon: "🔧",
-    workflows: ["fix-tests", "fix-circular-dependencies", "unit-test-coverage"]
-  },
-  {
-    title: "Setup & Planning",
+    title: "Planning & Discovery",
     icon: "📝", 
-    workflows: ["trd-creation", "feature-brainstorming"]
+    workflows: ["feature-brainstorming"]
   }
 ] as const;
 

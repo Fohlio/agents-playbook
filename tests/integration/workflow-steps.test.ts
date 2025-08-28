@@ -19,9 +19,8 @@ describe('Workflow Steps Integration Tests', () => {
     const allWorkflowIds = [
       'code-refactoring',
       'feature-development',
-      'product-development',
-      'quick-fix',
-      'trd-creation'
+      'feature-brainstorming',
+      'quick-fix'
     ];
 
     test.each(allWorkflowIds)('should progress through all steps in workflow: %s', async (workflowId) => {
@@ -207,8 +206,8 @@ describe('Workflow Steps Integration Tests', () => {
       }
     }, TEST_TIMEOUT);
 
-    test('trd-creation workflow with business requirements context', async () => {
-      const workflow = 'trd-creation';
+    test('feature-brainstorming workflow with business requirements context', async () => {
+      const workflow = 'feature-brainstorming';
       console.log(`\n🔍 Testing TRD creation with business context`);
       
       // Test with business requirements context
@@ -284,7 +283,7 @@ describe('Workflow Steps Integration Tests', () => {
     }, TEST_TIMEOUT);
 
     test('should validate step content structure', async () => {
-      const workflows = ['quick-fix', 'feature-development', 'trd-creation'];
+      const workflows = ['quick-fix', 'feature-development', 'feature-brainstorming'];
       
       for (const workflow of workflows) {
         const step0 = await getNextStepHandler({ 
@@ -310,7 +309,7 @@ describe('Workflow Steps Integration Tests', () => {
       const workflows = [
         'quick-fix', 
         'feature-development', 
-        'trd-creation'
+        'feature-brainstorming'
       ];
       
       for (const workflow of workflows) {
@@ -379,8 +378,8 @@ describe('Workflow Steps Integration Tests', () => {
       }
     }, TEST_TIMEOUT);
 
-    test('should handle context progression through trd-creation workflow', async () => {
-      const workflow = 'trd-creation';
+    test('should handle context progression through feature-brainstorming workflow', async () => {
+      const workflow = 'feature-brainstorming';
       console.log(`\n🔄 Testing context progression in ${workflow}`);
       
       // Test different context scenarios for TRD creation
@@ -419,7 +418,7 @@ describe('Workflow Steps Integration Tests', () => {
       const workflows = [
         'quick-fix',
         'feature-development',
-        'trd-creation'
+        'feature-brainstorming'
       ];
       
       const testContexts = [

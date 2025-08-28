@@ -23,6 +23,7 @@ Create a short, targeted set of clarifying questions based on the analysis to co
 - **Optional**: Existing architecture documentation, design systems, compliance requirements
 
 ## Phase Success Criteria
+- **design.md** file created with comprehensive design documentation
 - Complete solution architecture documented
 - All major components and their interactions defined
 - Data models designed and validated
@@ -66,6 +67,7 @@ requiresDesignWork() {
 **Complex**: 1-3 days
 
 ## Outputs
+- **design.md** - Comprehensive design document consolidating all design decisions
 - Solution architecture diagram
 - Component interaction diagrams
 - Data model specifications (ERD, schemas)
@@ -78,6 +80,7 @@ requiresDesignWork() {
 
 ## Notes
 - Essential for any non-trivial development work
+- **design.md** serves as the single source of truth for all design decisions
 - Quality of design directly impacts implementation speed and maintainability
 - Invest time in design to save debugging and refactoring later
 - Consider multiple design alternatives and document trade-offs

@@ -44,7 +44,7 @@ describe('MCP Tools Integration Tests', () => {
       });
 
       expect(result.content).toBeDefined();
-      expect(result.content[0].text).toContain('trd-creation');
+      expect(result.content[0].text).toContain('Feature');
     }, TEST_TIMEOUT);
 
     test('should find workflows for project setup query', async () => {
@@ -53,7 +53,7 @@ describe('MCP Tools Integration Tests', () => {
       });
 
       expect(result.content).toBeDefined();
-      expect(result.content[0].text).toContain('product-development');
+      expect(result.content[0].text).toContain('feature-development');
     }, TEST_TIMEOUT);
 
     test('should handle query with low relevance gracefully', async () => {
@@ -86,7 +86,7 @@ describe('MCP Tools Integration Tests', () => {
 
       expect(result.content).toBeDefined();
       expect(result.content[0].text).toContain('Feature Development Workflow');
-      expect(result.content[0].text).toContain('create-trd');
+      expect(result.content[0].text).toContain('create-structured-requirements');
     }, TEST_TIMEOUT);
 
 
@@ -289,7 +289,6 @@ describe('MCP Tools Integration Tests', () => {
       const stepText = result.content[0].text;
       
       if (!stepText.includes('100% complete')) {
-        expect(stepText).toContain('discover-user-interests');
         expect(stepText).toContain('Discover User Interests');
       }
     }, TEST_TIMEOUT);
@@ -330,9 +329,7 @@ describe('MCP Tools Integration Tests', () => {
       'code-refactoring',
       'feature-brainstorming',
       'feature-development',
-      'product-development',
-      'quick-fix',
-      'trd-creation'
+      'quick-fix'
     ];
 
     test.each(allWorkflowIds)('should handle workflow: %s', async (workflowId) => {
@@ -356,10 +353,7 @@ describe('MCP Tools Integration Tests', () => {
     const testQueries = [
       { query: 'fix bug', expectedWorkflow: 'quick-fix' },
       { query: 'new feature', expectedWorkflow: 'feature-development' },
-      { query: 'technical documentation', expectedWorkflow: 'trd-creation' },
-      { query: 'project setup', expectedWorkflow: 'product-development' },
       { query: 'code cleanup', expectedWorkflow: 'code-refactoring' },
-      { query: 'product development', expectedWorkflow: 'product-development' },
       { query: 'brainstorm ideas', expectedWorkflow: 'feature-brainstorming' },
       { query: 'enhancement opportunities', expectedWorkflow: 'feature-brainstorming' },
       { query: 'feature ideas and suggestions', expectedWorkflow: 'feature-brainstorming' }

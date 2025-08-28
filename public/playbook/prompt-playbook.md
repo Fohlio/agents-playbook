@@ -9,47 +9,44 @@ Use the **AI-powered semantic search** MCP server to find workflows instantly:
 - **Quality Indicators**: 🎯✅👍🤔❓ show match quality  
 - **Smart Execution**: Auto-skip steps based on context and prerequisites
 
-## 📋 Available Workflows (9 Total)
+## 📋 Available Workflows (4 Total)
 
 | Workflow | Category | Complexity | Steps | Use Case |
 |----------|----------|------------|-------|----------|
 | [feature-development](#feature-development) | Development | Medium | 14 | Complete feature lifecycle |
-| [product-development](#product-development) | Development | High | 15 | Product from idea to launch |
 | [quick-fix](#quick-fix) | Development | Low | 4 | Bugs, hotfixes, urgent tasks |
 | [code-refactoring](#code-refactoring) | Development | Medium-High | 8 | Architecture improvements |
-| [trd-creation](#trd-creation) | Documentation | Medium | 7 | Technical requirements |
-| [brd-creation](#brd-creation) | Documentation | Medium | 6 | Business requirements with research |
-| [brd-to-trd-translation](#brd-to-trd-translation) | Documentation | Medium | 6 | Business → Technical translation |
-| [project-initialization](#project-initialization) | Setup | Medium | 5 | New project context setup |
-| [infrastructure-setup](#infrastructure-setup) | Operations | High | 12 | Complete infrastructure deployment |
+| [feature-brainstorming](#feature-brainstorming) | Planning | Medium | 5 | Feature discovery and planning |
 
 ## 🔧 Smart Mini-Prompts Architecture
 
-### 25+ Specialized Mini-Prompts by Phase
+### 12+ Specialized Mini-Prompts by Phase
 
 #### 📋 Business Phase
-- **gather-requirements** - Requirements collection and stakeholder analysis
-- **document-decisions** - Decision documentation and architectural rationale
-- **create-trd** - Technical Requirements Document creation with TRD integration 
+- **create-structured-requirements** - Structured requirements creation and analysis
+- **create-implementation-plan** - Implementation planning and task breakdown
+- **feature-brainstorming** - Feature ideation and opportunity discovery
+- **feature-compilation** - Feature compilation and prioritization
+- **create-feature-document** - Feature documentation and specification
+- **user-interest-discovery** - User interest research and validation
 
 #### 🔍 Analysis Phase  
-- **feature-analysis** - Feature scope, impact, and complexity analysis
-- **architecture-analysis** - System architecture evaluation and planning
 - **code-analysis** - Code quality, structure, and technical debt analysis
 - **trace-bug-root-cause** - Bug investigation and root cause identification
+- **codebase-opportunity-analysis** - Codebase analysis for enhancement opportunities
+- **trend-research** - Technology and market trend research
+- **specific-feature-analysis** - Detailed feature analysis and impact assessment
 
 #### 🎨 Development Phase
 - **design-architecture** - Solution architecture and technical design
 - **ask-clarifying-questions** - Requirements clarification and scope definition
-- **code-review** - Code quality review and improvement recommendations
 - **implement-feature** - Feature implementation guidance and best practices
 
-
-
 #### 🧪 QA Phase
-- **create-test-plan** - Test planning, strategy, and coverage analysis
 - **execute-tests** - Test execution, automation, and validation
-- **validate-requirements** - Requirements validation and acceptance criteria
+
+#### 📝 Review Phase
+- **deliverable-review** - Universal deliverable quality assessment
 
 
 
@@ -57,47 +54,31 @@ Use the **AI-powered semantic search** MCP server to find workflows instantly:
 
 ### Feature Development
 **Complete feature development from requirements to deployment**
-- **Phases**: Planning → Analysis → Design → Implementation → Testing → Review
+- **Phases**: Planning → Design → Implementation → Testing
 - **Smart Features**: Auto-skips architecture analysis for simple features
-- **TRD Integration**: Creates comprehensive technical documentation
+- **Documentation**: Creates comprehensive technical documentation
 - **Best For**: New features, enhancements, complex development tasks
-
-### Product Development  
-**Comprehensive product development from idea to launch**
-- **Phases**: Planning → Analysis → Design → Implementation → Testing → Review
-- **Advanced Features**: Technical analysis, requirements validation, automated testing
-- **Complexity**: High - requires extensive planning and validation
-- **Best For**: New products, major feature releases, product launches
 
 ### Quick Fix
 **Fast resolution for bugs, hotfixes, and urgent tasks**
-- **Phases**: Planning → Analysis → Implementation → Testing → Review
+- **Phases**: Planning → Analysis → Implementation → Testing
 - **Smart Features**: Auto-skips testing for trivial changes, minimal overhead
 - **Speed**: Optimized for emergency situations and simple fixes
 - **Best For**: Production bugs, hotfixes, small urgent tasks
 
 ### Code Refactoring
 **Systematic code improvement and architecture enhancement**
-- **Phases**: Analysis → Design → Implementation → Testing → Review
+- **Phases**: Planning → Analysis → Implementation → Testing
 - **Focus**: Architecture improvements, performance optimization, technical debt
 - **Validation**: Backward compatibility and performance impact assessment
 - **Best For**: Technical debt reduction, performance improvements, code modernization
 
-### TRD Creation
-**Technical Requirements Document creation from feature ideas**
-- **Phases**: Planning → Analysis → Design → Review
-- **Integration**: Built-in TRD mini-prompt for comprehensive documentation [[memory:2316971]]
-- **Smart Features**: Auto-skips architecture analysis for simple features
-- **Best For**: Feature planning, technical specification, development preparation
-
-
-
-### Project Initialization
-**Set up new project context and AI agent documentation**
-- **Phases**: Analysis → Setup → Review
-- **Output**: AGENTS.MD, project navigation, technology stack analysis
-- **Smart Features**: Auto-skips steps when sufficient context exists
-- **Best For**: New codebases, AI agent setup, project onboarding
+### Feature Brainstorming
+**Discover and plan new features through comprehensive analysis**
+- **Phases**: Analysis → Research → Brainstorming → Documentation
+- **Features**: Codebase analysis, trend research, user interest discovery
+- **Output**: Feature compilation and detailed feature documents
+- **Best For**: Feature planning, product roadmap development, enhancement discovery
 
 
 
@@ -107,19 +88,16 @@ Use the **AI-powered semantic search** MCP server to find workflows instantly:
 | You Have | You Need | Recommended Workflow |
 |----------|----------|---------------------|
 | Bug/Issue | Quick resolution | **quick-fix** |
-| Feature idea | Technical planning | **trd-creation** |
+| Feature idea | Feature planning | **feature-brainstorming** |
 | Technical spec | Working feature | **feature-development** |
-| Product idea | Market launch | **product-development** |
 | Legacy code | Modern architecture | **code-refactoring** |
-| New project | AI setup | **project-initialization** |
 
 ### By Complexity Level
 | Complexity | Timeframe | Workflows |
 |------------|-----------|-----------|
 | **Simple** | Hours to 1 day | quick-fix |
-| **Standard** | 1-5 days | trd-creation, project-initialization |
+| **Standard** | 1-5 days | feature-brainstorming |
 | **Complex** | 1-4 weeks | feature-development, code-refactoring |
-| **Advanced** | 1+ months | product-development |
 
 ## 🧠 Smart Execution Features
 
@@ -143,17 +121,12 @@ Critical Bug → quick-fix → [Optional: feature-development for proper fix]
 
 ### Feature Development Flow  
 ```
-Feature Idea → trd-creation → feature-development → [product-development for major features]
+Feature Idea → feature-brainstorming → feature-development
 ```
 
-### Product Development Flow
+### Enhancement Discovery Flow
 ```
-Product Idea → product-development
-```
-
-### New Project Flow
-```
-New Codebase → project-initialization → [Choose development workflow]
+Existing Codebase → feature-brainstorming → feature-development
 ```
 
 ### Migration Flow
@@ -176,10 +149,8 @@ Legacy System → code-refactoring → feature-development
 - Customize for your team's needs
 
 ### 3. Direct Navigation
-- **Planning & Documentation**: trd-creation
+- **Feature Planning**: feature-brainstorming
 - **Development**: feature-development, quick-fix, code-refactoring
-- **Product & Launch**: product-development
-- **Setup & Operations**: project-initialization
 
 ## 📊 Success Criteria
 
@@ -191,9 +162,10 @@ Legacy System → code-refactoring → feature-development
 - ✅ Requirements validation completed (where required)
 
 ### Workflow-Specific Success Metrics
-- **Feature Development**: TRD created, feature deployed, requirements validated
-- **Product Development**: Product launch successful, technical requirements met
+- **Feature Development**: Technical documentation created, feature deployed, requirements satisfied
+- **Feature Brainstorming**: Feature opportunities identified, feature documents created, roadmap defined
 - **Quick Fix**: Issue resolved, no side effects, minimal disruption
+- **Code Refactoring**: Architecture improved, performance enhanced, technical debt reduced
 
 
 ---

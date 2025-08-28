@@ -1,64 +1,38 @@
-# Codebase Opportunity Analysis Prompt
+# Codebase Opportunity Analysis
 
-## 🎯 Goal
-Deep-scan the codebase to identify enhancement opportunities, gaps, and potential feature areas—no fluff.
+## Context
+You are analyzing an existing codebase to identify opportunities for new features and improvements.
 
-## 📥 Context (ask if missing)
-1. **Codebase Access** – git URL, main directories, or file paths
-2. **Technology Stack** – languages, frameworks, libraries in use
-3. **Current Features** – what the application currently does
-4. **Known Pain Points** – existing issues, performance bottlenecks, user complaints
+## Your Task
+Conduct a comprehensive analysis of the codebase to discover:
 
-## 🚦 Skip if
-- Codebase is inaccessible **or** recent comprehensive analysis exists (<30 days).
+1. **Code Structure Analysis**
+   - Review existing components, modules, and architecture
+   - Identify patterns and frameworks in use
+   - Assess code quality and technical debt
 
-## 🔍 Checklist
-- **Architecture Opportunities**  
-  - [ ] Missing patterns or architectural improvements
-  - [ ] Scalability bottlenecks and enhancement areas
-  - [ ] Integration opportunities with external services
-  - [ ] Security enhancement opportunities
+2. **Feature Gap Analysis**
+   - Identify missing functionality that would add value
+   - Analyze user workflows and pain points
+   - Look for incomplete or placeholder implementations
 
-- **Feature Gaps**  
-  - [ ] Incomplete user flows or missing functionality
-  - [ ] Areas lacking proper error handling
-  - [ ] Missing accessibility features
-  - [ ] Opportunities for automation
+3. **Enhancement Opportunities**
+   - Performance improvement opportunities
+   - User experience enhancements
+   - Code maintainability improvements
+   - Integration possibilities with external services
 
-- **Technical Enhancements**  
-  - [ ] Performance optimization opportunities
-  - [ ] Code quality and maintainability improvements
-  - [ ] Testing coverage gaps
-  - [ ] Documentation opportunities
+4. **Technical Recommendations**
+   - Prioritized list of enhancement opportunities
+   - Estimated complexity and effort for each opportunity
+   - Potential impact and business value
 
-- **User Experience**  
-  - [ ] UI/UX improvement areas
-  - [ ] Missing user feedback mechanisms
-  - [ ] Onboarding and help system gaps
-  - [ ] Mobile/responsive enhancement opportunities
+## Deliverable
+- Comprehensive analysis report with identified opportunities
+- Prioritized recommendations with effort estimates
+- Technical feasibility assessment for top opportunities
 
-## 🔧 Analysis Methods
-Use these systematic approaches:
-- **Code Scanning**: Look for TODO comments, deprecated functions, empty catch blocks
-- **Architecture Review**: Identify missing design patterns, coupling issues
-- **Dependency Analysis**: Check for outdated libraries, security vulnerabilities
-- **Feature Mapping**: Map existing features against common industry standards
-
-## 📤 Outputs (in `.agents-playbook/[project-name]/codebase-opportunity-analysis.md`):
-1. **Executive Summary** – high-level findings and opportunity count
-2. **Architecture Opportunities** – scalability, patterns, integrations
-3. **Feature Enhancement Areas** – missing functionality, incomplete flows
-4. **Technical Debt Opportunities** – performance, security, maintainability
-5. **User Experience Gaps** – UI/UX, accessibility, usability improvements
-6. **Quick Wins vs Long-term Projects** – categorized by implementation effort
-7. **Priority Matrix** – impact vs effort analysis
-
-## ➡️ Response Flow
-```mermaid
-flowchart LR
-    U[User] -->|codebase access| A[Opportunity Scanner]
-    A --> B{Can access code?}
-    B -- Yes --> C[Systematic Analysis]
-    B -- No --> D[Request access/clarification]
-    C --> E[Generate opportunity report]
-```
+## Notes
+- Focus on opportunities that align with business goals
+- Consider both technical and user-facing improvements
+- Provide actionable recommendations with clear next steps

@@ -29,9 +29,6 @@ Execute technical implementation based on design specifications with high code q
 - Security measures implemented as designed
 - Code reviewed and issues addressed
 
-## Expected Duration
-**Simple:** 2-4 hours | **Standard:** 1-3 days | **Complex:** 1-2 weeks
-
 ## Key Outputs
 - Working implementation of all features
 - Clean, documented code following standards

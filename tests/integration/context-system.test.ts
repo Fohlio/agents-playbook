@@ -95,9 +95,9 @@ describe('Context System Integration Tests', () => {
       expect(workflowText).toContain('create-structured-requirements');
     }, TEST_TIMEOUT);
 
-    test('should show workflow overview and context guidance for trd-creation', async () => {
+    test('should show workflow overview and context guidance for feature-brainstorming', async () => {
       const result = await selectWorkflowHandler({ 
-        workflow_id: 'trd-creation' 
+        workflow_id: 'feature-brainstorming' 
       });
 
       expect(result.content).toBeDefined();
@@ -105,11 +105,11 @@ describe('Context System Integration Tests', () => {
       
       expect(workflowText).toContain('Detailed Step Breakdown');
       expect(workflowText).toContain('Context Gathering');
-      expect(workflowText).toContain('trd-review');
+      expect(workflowText).toContain('feature-brainstorming');
     }, TEST_TIMEOUT);
 
     test('should show workflow overview for all major workflows', async () => {
-      const workflows = ['feature-development', 'trd-creation'];
+      const workflows = ['feature-development', 'feature-brainstorming'];
       
       for (const workflowId of workflows) {
         const result = await selectWorkflowHandler({ workflow_id: workflowId });
@@ -166,7 +166,7 @@ describe('Context System Integration Tests', () => {
 
     test('should provide context-aware instructions', async () => {
       const result = await getNextStepHandler({ 
-        workflow_id: 'trd-creation',
+        workflow_id: 'feature-development',
         current_step: 0,
         available_context: [StandardContext.BUSINESS_REQUIREMENTS]
       });
@@ -272,8 +272,8 @@ describe('Context System Integration Tests', () => {
       }
     }, TEST_TIMEOUT);
 
-    test('should handle context flow in trd-creation workflow', async () => {
-      const workflowId = 'trd-creation';
+    test('should handle context flow in feature-development workflow', async () => {
+      const workflowId = 'feature-development';
       console.log(`\n🔄 Testing context flow for ${workflowId}`);
       
       // Test with business requirements context
@@ -341,9 +341,8 @@ describe('Context System Integration Tests', () => {
     const allWorkflowIds = [
       'code-refactoring',
       'feature-development',
-      'product-development',
-      'quick-fix',
-      'trd-creation'
+      'feature-brainstorming',
+      'quick-fix'
     ];
 
     test.each(allWorkflowIds)('should handle context system for workflow: %s', async (workflowId) => {

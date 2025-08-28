@@ -66,6 +66,21 @@ This is a **production-ready workflow automation repository** for AI agents in s
 
 ## AI Agent Guidelines
 
+### ⚠️ CRITICAL WORKFLOW ADHERENCE
+
+**AGENTS PLAYBOOK WORKFLOW COMPLIANCE:**
+- 🎯 **FOLLOW ALL STEPS**: Every workflow step has been carefully designed - execute completely without shortcuts
+- 📋 **NO STEP SKIPPING**: Do not skip or abbreviate steps unless explicitly validated as unnecessary 
+- ⏱️ **COMPLETE THOROUGHLY**: Ensure all requirements of each step are met before proceeding
+- 🔄 **VALIDATE OUTPUT**: Confirm each step produces expected results before continuing
+- 💡 **PATIENCE REQUIRED**: These workflows optimize for quality over speed - invest the time needed
+
+**Why This Matters:**
+- Each step builds on the previous ones for optimal results
+- Skipping steps can lead to incomplete implementations or missed requirements
+- The workflows have been tested and refined for maximum effectiveness
+- Following the complete process ensures professional-grade deliverables
+
 ### When User Asks for Help
 
 #### 1. Use MCP Server (Recommended)
