@@ -35,7 +35,7 @@ Determine the specific test data needed for E2E tests, including data setup, sta
       ],
       "prerequisites": ["Data that must exist before this test"],
       "expected_changes": ["Data modifications this test will make"],
-      "cleanup_required": true/false
+      "cleanup_required": true
     }
   ],
   "data_sources": {

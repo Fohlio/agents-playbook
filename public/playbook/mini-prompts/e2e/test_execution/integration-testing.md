@@ -25,7 +25,7 @@ Execute E2E tests as part of the broader test suite to ensure they integrate pro
     "new_tests": 8,
     "existing_tests": 142,
     "overall_pass_rate": "94%",
-    "integration_success": true/false
+    "integration_success": true
   },
   "test_suite_results": {
     "new_tests_status": "All passed/Some failed/All failed",

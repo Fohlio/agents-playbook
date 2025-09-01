@@ -19,6 +19,7 @@ Implement page objects for E2E tests following Playwright best practices and est
 
 ## Output Format
 ```typescript
+import { test } from '~/fixtures/test';
 // Example page object implementation
 export class FeaturePageObject extends BasePageObject {
   // Locators
@@ -26,21 +27,21 @@ export class FeaturePageObject extends BasePageObject {
   private readonly inputField = this.page.getByLabel('Input Label');
   
   // Methods wrapped with test.step
-  async fillInput(value: string) {
+  async fillInput(value: string): Promise<void>  {
     return await test.step('Fill input field', async () => {
       await this.inputField.fill(value);
     });
   }
   
-  async clickSubmit() {
+  async clickSubmit(): Promise<void>  {
     return await test.step('Click submit button', async () => {
       await this.submitButton.click();
     });
   }
   
-  async verifySuccessMessage() {
+  async verifySuccessMessage(): Promise<void>  {
     return await test.step('Verify success message', async () => {
-      await expect(this.page.getByText('Success')).toBeVisible();
+      await test.expect(this.page.getByText('Success')).toBeVisible();
     });
   }
 }

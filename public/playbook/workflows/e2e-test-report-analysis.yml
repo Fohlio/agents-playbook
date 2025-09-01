@@ -21,7 +21,7 @@ phases:
         required: true
         prerequisites:
           requiredContext: ["test_report_analysis"]
-          optionalContext: ["failure_patterns", "test_file_paths", "test_function_names", "failure_details"]
+          optionalContext: ["failure_patterns", "test_files", "test_function_names", "failing_tests"]
         dependencies: ["analyze-test-report"]
         
       - id: "handoff-to-investigation"
@@ -40,7 +40,7 @@ phases:
         miniPrompt: "analysis/investigate-recent-changes"
         required: true
         prerequisites:
-          requiredContext: ["failing_test_details"]
+          requiredContext: ["failing_tests"]
           optionalContext: ["test_statistics", "git_history", "recent_commits", "changed_files"]
         dependencies: ["handoff-to-investigation"]
         
@@ -96,7 +96,7 @@ phases:
         miniPrompt: "e2e/test_creation/implement-test-logic"
         required: true
         prerequisites:
-          requiredContext: ["approved_fix_strategy", "root_cause_analysis", "failing_test_details", "test_locations"]
+          requiredContext: ["approved_fix_strategy", "failing_tests", "test_files"]
           optionalContext: ["existing_test_code", "test_configuration", "ui_selectors", "specific_test_files"]
         dependencies: ["handoff-to-implementation"]
         
@@ -124,8 +124,8 @@ phases:
         miniPrompt: "e2e/test_execution/execute-test-locally"
         required: true
         prerequisites:
-          requiredContext: ["implemented_fix", "test_environment", "failing_test_details", "test_locations"]
-          optionalContext: ["test_suite", "specific_test_files", "previously_failing_tests"]
+          requiredContext: ["implemented_fix", "failing_tests", "test_files"]
+          optionalContext: ["test_suite", "specific_test_files", "previously_failing_tests", "test_environment", "fix_validation"]
         dependencies: ["handoff-to-testing"]
         
       - id: "validate-test-results"
