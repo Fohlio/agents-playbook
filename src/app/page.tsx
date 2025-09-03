@@ -38,8 +38,8 @@ const OVERVIEW_CONTENT = {
 
 const STATS: Stat[] = [
   { value: "4", label: "Workflows", color: "text-blue-600" },
-  { value: "12+", label: "Mini-Prompts", color: "text-green-600" },
-  { value: "65", label: "Tests", color: "text-purple-600" },
+  { value: "18", label: "Mini-Prompts", color: "text-green-600" },
+  { value: "83", label: "Tests", color: "text-purple-600" },
   { value: "3", label: "MCP Tools", color: "text-orange-600" }
 ] as const;
 
@@ -76,6 +76,12 @@ function OverviewSection() {
               )}
             </p>
           ))}
+        </div>
+        
+        <div className="mt-8 p-4 bg-blue-50 rounded-lg border-l-4 border-blue-500">
+          <p className="text-sm text-blue-800">
+            💡 <strong>Tip:</strong> When chatting with AI models, ask them to "use agents-playbook to select workflow" for structured development processes.
+          </p>
         </div>
       </div>
     </section>

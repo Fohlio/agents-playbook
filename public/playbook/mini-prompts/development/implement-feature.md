@@ -25,6 +25,9 @@ Ship the feature per specs with clean, secure, performant code. **Consider alter
 ## 🚦 Skip if
 - Implementation already merged **or** change is trivial/config-only.
 
+## 📋 Preparation Steps
+**Before implementation:** Verify Context7 MCP access and fetch fresh documentation for libraries that may have updates since AI training cutoff (React, Next.js, testing frameworks, etc.) if needed (you can check package.json or any version file)
+
 ## 🔍 Implementation Flow
 **For Each Task in tasks.md:**
 1. **Implement** – write the code for the task
@@ -45,7 +48,7 @@ Ship the feature per specs with clean, secure, performant code. **Consider alter
 4. **Integrations** – external services, queues, webhooks.  
 5. **UI** – components, state mgmt, a11y.  
 6. **Cross-Cutting** – logging, monitoring, error handling, auth.  
-7. **Libraries & Dependencies** – when working with libraries, use MCP tools like Context7 for fresh docs or check latest documentation.  
+7. **Libraries & Dependencies** – refer to fresh documentation gathered in Preparation Steps; use Context7 for any additional library queries during implementation.  
 
 ### Quality Gates (Per Task)
 - [ ] Task implemented according to tasks.md specifications
@@ -79,5 +82,5 @@ flowchart LR
     U[User] -->|specs ready| A[Implementation Engine]
     A --> B{Need more context?}
     B -- Yes --> C[Ask for spec / env]
-    B -- No --> D[Code + tests]
+    B -- No --> D[Check Context7 + Code + tests]
     D --> E[Write implementation_plan.md]

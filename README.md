@@ -10,12 +10,13 @@ Agents Playbook is a framework for AI-driven development workflows. It provides 
 
 ### Features
 
-- 9 YAML-based workflows for development tasks
-- 25+ context-engineered mini-prompts organized by phases
-- Semantic search using OpenAI embeddings
+- 4 core YAML-based workflows for development tasks
+- 18+ context-engineered mini-prompts organized by phases
+- Semantic search using OpenAI embeddings (with text fallback)
 - MCP (Model Context Protocol) server integration
 - TypeScript implementation
 - Workflow validation and smart step skipping
+- Context7 integration for fresh library documentation
 
 ## Prerequisites
 
@@ -110,19 +111,14 @@ OPENAI_API_KEY=your_api_key    # Required for semantic search
 Available workflows:
 
 **Development**
-- feature-development
-- product-development
-- quick-fix
-- code-refactoring
+- feature-development - Complete feature implementation lifecycle
+- quick-fix - Fast bug fixes and hotfixes  
+- code-refactoring - Code quality improvements
 
-**Testing & QA**
-- fix-tests
-- fix-circular-dependencies
-- unit-test-coverage
+**Planning & Discovery**
+- feature-brainstorming - Structured feature ideation and opportunity analysis
 
-**Setup & Planning**
-- trd-creation
-- feature-brainstorming
+> 💡 **Tip**: When chatting with AI models, ask them to "use agents-playbook to select workflow" for structured development processes.
 
 ## MCP Integration
 
