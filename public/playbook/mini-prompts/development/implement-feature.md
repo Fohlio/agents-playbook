@@ -3,6 +3,11 @@
 ## 🎯 Goal
 Ship the feature per specs with clean, secure, performant code. **Consider alternative implementation approaches and choose the most appropriate one.**
 
+## 📋 General Instructions
+- **Follow instructions precisely** - implement exactly what is requested, no more, no less
+- **Avoid unnecessary code** - write only the code that is essential for the functionality  
+- **Minimal logging** - use logging sparingly, only for essential debugging/monitoring
+
 ## 📥 Context (ask if missing)
 1. **Tasks File** – `.agents-playbook/[task-name]/tasks.md` with implementation breakdown
 2. **Requirements File** – `.agents-playbook/[task-name]/requirements.md` with original user stories & acceptance criteria

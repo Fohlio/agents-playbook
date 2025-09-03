@@ -1,7 +1,27 @@
 # Design Architecture
 
+## 📋 General Instructions
+- **Follow instructions precisely** - implement exactly what is requested, no more, no less
+- **Avoid unnecessary code** - write only the code that is essential for the functionality  
+- **Minimal logging** - use logging sparingly, only for essential debugging/monitoring
+
 ## Context
 You are helping design the technical architecture and solution approach for a feature or system.
+
+## ❓ Architecture Clarifications (ask in chat first)
+
+**IMPORTANT: Ask architecture questions directly in chat before finalizing design.**
+
+### **Architecture Decision Questions**
+Present multiple choice questions to clarify key architectural decisions
+
+### **UI/Design System Clarifications**
+**If UI implementation is required and no design document is provided, ask in chat:**
+- What design system or component library should be used? (e.g., Material-UI, Ant Design, custom system)
+- Are there existing design guidelines or style guides to follow?
+- Should new UI components follow specific patterns or frameworks?
+- Is there a design document, mockups, or Figma file to reference?
+- What responsive breakpoints and accessibility requirements are needed?
 
 ## Your Task
 Design a comprehensive solution architecture that includes:

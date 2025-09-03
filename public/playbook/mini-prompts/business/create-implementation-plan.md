@@ -3,6 +3,11 @@
 ## 🎯 Goal
 Generate detailed implementation plan (tasks.md) with hierarchical task breakdown, technical specifications, and requirement traceability for systematic development execution.
 
+## 📋 General Instructions
+- **Follow instructions precisely** - implement exactly what is requested, no more, no less
+- **Avoid unnecessary code** - write only the code that is essential for the functionality  
+- **Minimal logging** - use logging sparingly, only for essential debugging/monitoring
+
 ## 📥 Context (ask if missing)
 1. **Requirements File** – `.agents-playbook/[task-name]/requirements.md` with User Stories and Acceptance Criteria
 2. **Design Spec** – `.agents-playbook/[task-name]/design.md` with technical architecture and system components
