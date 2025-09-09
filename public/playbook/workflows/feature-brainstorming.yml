@@ -4,6 +4,12 @@ version: "1.0"
 category: "analysis"
 tags: ["features", "brainstorming", "discovery", "research", "ideation", "opportunity-analysis", "what-to-build"]
 
+# CRITICAL: VALIDATE ALL STEPS BEFORE STARTING
+agentInstructions:
+  validation:
+    required: true
+    message: "🚨 MANDATORY: Before starting, validate ALL workflow steps, prerequisites, mini-prompts access, and required context. Execute ALL steps completely - no skipping unless explicitly optional."
+
 phases:
   - phase: "analysis"
     description: "Codebase analysis and opportunity discovery - CRITICAL: Ask clarifying questions about desired features and target users before proceeding with analysis"

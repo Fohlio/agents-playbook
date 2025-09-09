@@ -4,6 +4,12 @@ version: "1.0"
 category: "development"
 tags: ["quick-fix", "hotfix", "bug", "urgent", "minimal"]
 
+# CRITICAL: VALIDATE ALL STEPS BEFORE STARTING
+agentInstructions:
+  validation:
+    required: true
+    message: "🚨 MANDATORY: Before starting, validate ALL workflow steps, prerequisites, mini-prompts access, and required context. Execute ALL steps completely - no skipping unless explicitly optional."
+
 phases:
   - phase: "planning-clarification"
     description: "Quick problem analysis and scope definition - CRITICAL: Ask clarifying questions about the issue and desired outcome before implementing fix"
