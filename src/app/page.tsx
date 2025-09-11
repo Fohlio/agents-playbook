@@ -37,22 +37,17 @@ const OVERVIEW_CONTENT = {
 } as const;
 
 const STATS: Stat[] = [
-  { value: "4", label: "Workflows", color: "text-blue-600" },
-  { value: "18", label: "Mini-Prompts", color: "text-green-600" },
-  { value: "83", label: "Tests", color: "text-purple-600" },
+  { value: "3", label: "Workflows", color: "text-blue-600" },
+  { value: "8", label: "Mini-Prompts", color: "text-green-600" },
+  { value: "70", label: "Tests", color: "text-purple-600" },
   { value: "3", label: "MCP Tools", color: "text-orange-600" }
 ] as const;
 
 const WORKFLOW_CATEGORIES: WorkflowCategory[] = [
   {
-    title: "Development",
+    title: "Development Workflows",
     icon: "⚡",
     workflows: ["feature-development", "quick-fix", "code-refactoring"]
-  },
-  {
-    title: "Planning & Discovery",
-    icon: "📝", 
-    workflows: ["feature-brainstorming"]
   }
 ] as const;
 
@@ -116,9 +111,9 @@ function WorkflowsSection() {
           Workflows
         </h2>
         
-        <div className="grid md:grid-cols-3 gap-6">
+        <div className="flex justify-center">
           {WORKFLOW_CATEGORIES.map((category, index) => (
-            <article key={index} className="bg-white p-6 rounded-lg shadow-sm">
+            <article key={index} className="bg-white p-6 rounded-lg shadow-sm max-w-md">
               <h3 className="text-lg font-semibold text-gray-900 mb-3">
                 {category.title}
               </h3>

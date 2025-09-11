@@ -172,7 +172,7 @@ describe('Workflow Progression Tests', () => {
       
       // Should show phases
       expect(workflowText).toContain('Phase');
-      expect(workflowText).toContain('planning-clarification');
+      expect(workflowText).toContain('analysis');
     }, TEST_TIMEOUT);
 
     test('should handle missing context properly', async () => {

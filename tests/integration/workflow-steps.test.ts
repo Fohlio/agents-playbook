@@ -19,7 +19,6 @@ describe('Workflow Steps Integration Tests', () => {
     const allWorkflowIds = [
       'code-refactoring',
       'feature-development',
-      'feature-brainstorming',
       'quick-fix'
     ];
 
@@ -206,24 +205,6 @@ describe('Workflow Steps Integration Tests', () => {
       }
     }, TEST_TIMEOUT);
 
-    test('feature-brainstorming workflow with business requirements context', async () => {
-      const workflow = 'feature-brainstorming';
-      console.log(`\n🔍 Testing TRD creation with business context`);
-      
-      // Test with business requirements context
-      const step0 = await getNextStepHandler({ 
-        workflow_id: workflow, 
-        current_step: 0,
-        available_context: [StandardContext.BUSINESS_REQUIREMENTS]
-      });
-      
-      if (!step0.content[0].text.includes('100% complete')) {
-        expect(step0.content[0].text).toContain('Available Context');
-        expect(step0.content[0].text).toContain('business_requirements');
-        expect(step0.content[0].text).toContain('Context Note');
-        console.log(`   ✅ TRD creation: Business requirements context properly integrated`);
-      }
-    }, TEST_TIMEOUT);
 
     test('context modification in mini-prompts', async () => {
       const workflow = 'feature-development';
@@ -283,7 +264,7 @@ describe('Workflow Steps Integration Tests', () => {
     }, TEST_TIMEOUT);
 
     test('should validate step content structure', async () => {
-      const workflows = ['quick-fix', 'feature-development', 'feature-brainstorming'];
+      const workflows = ['quick-fix', 'feature-development', 'code-refactoring'];
       
       for (const workflow of workflows) {
         const step0 = await getNextStepHandler({ 
@@ -309,7 +290,7 @@ describe('Workflow Steps Integration Tests', () => {
       const workflows = [
         'quick-fix', 
         'feature-development', 
-        'feature-brainstorming'
+        'code-refactoring'
       ];
       
       for (const workflow of workflows) {
@@ -378,47 +359,12 @@ describe('Workflow Steps Integration Tests', () => {
       }
     }, TEST_TIMEOUT);
 
-    test('should handle context progression through feature-brainstorming workflow', async () => {
-      const workflow = 'feature-brainstorming';
-      console.log(`\n🔄 Testing context progression in ${workflow}`);
-      
-      // Test different context scenarios for TRD creation
-      const contextScenarios = [
-        { step: 0, contexts: [], label: 'no context' },
-        { step: 0, contexts: [StandardContext.BUSINESS_REQUIREMENTS], label: 'business requirements' },
-        { step: 1, contexts: [StandardContext.REQUIREMENTS], label: 'requirements' },
-        { step: 2, contexts: [StandardContext.CLARIFIED_REQUIREMENTS], label: 'clarified requirements' }
-      ];
-      
-      for (const scenario of contextScenarios) {
-        const result = await getNextStepHandler({ 
-          workflow_id: workflow, 
-          current_step: scenario.step,
-          available_context: scenario.contexts
-        });
-        
-        // Check if workflow completed
-        if (result.content[0].text.includes('100% complete') || 
-            result.content[0].text.includes('Workflow Complete')) {
-          console.log(`   ✅ Step ${scenario.step} (${scenario.label}): Workflow completed`);
-          continue;
-        }
-        
-        if (scenario.contexts.length > 0) {
-          expect(result.content[0].text).toContain('Available Context');
-          console.log(`   ✅ Step ${scenario.step} (${scenario.label}): Context properly integrated`);
-        } else {
-          expect(result.content[0].text).not.toContain('Available Context');
-          console.log(`   ✅ Step ${scenario.step} (${scenario.label}): No context shown`);
-        }
-      }
-    }, TEST_TIMEOUT);
 
     test('should handle context with all workflow types', async () => {
       const workflows = [
         'quick-fix',
         'feature-development',
-        'feature-brainstorming'
+        'code-refactoring'
       ];
       
       const testContexts = [

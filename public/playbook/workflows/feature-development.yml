@@ -11,12 +11,12 @@ agentInstructions:
     message: "🚨 MANDATORY: Before starting, validate ALL workflow steps, prerequisites, mini-prompts access, and required context. Execute ALL steps completely - no skipping unless explicitly optional."
 
 phases:
-  - phase: "planning-clarification"
+  - phase: "analysis"
     description: "Requirements gathering and scope definition - CRITICAL: Ask detailed clarifying questions to fully understand the task before proceeding"
     required: true
     steps:
       - id: "create-structured-requirements"
-        miniPrompt: "business/create-structured-requirements"
+        miniPrompt: "analysis/create-structured-requirements"
         required: true
         prerequisites:
           requiredContext: []
@@ -36,10 +36,10 @@ phases:
     required: true
     steps:
       - id: "design-architecture"
-        miniPrompt: "development/design-architecture"
+        miniPrompt: "design-architecture/design-architecture"
         required: true
         prerequisites:
-          requiredContext: ["clarified_requirements", "structured_requirements", "implementation_plan"]
+          requiredContext: ["clarified_requirements", "structured_requirements"]
           optionalContext: ["design_guidelines", "technical_constraints"]
         dependencies: ["handoff-to-design"]
         outputs: ["design_specifications", "technical_requirements", "architecture_specifications"]
@@ -51,13 +51,13 @@ phases:
           requiredContext: ["design_specifications"]
           optionalContext: []
         dependencies: ["design-architecture"]
-        
-  - phase: "implementation-planning"
-    description: "Technical planning and implementation strategy"
+
+  - phase: "planning"
+    description: "Implementation planning and strategy"
     required: true
     steps:
       - id: "create-implementation-plan"
-        miniPrompt: "business/create-implementation-plan"
+        miniPrompt: "planning/create-implementation-plan"
         required: true
         prerequisites:
           requiredContext: ["structured_requirements", "design_specifications"]
@@ -78,7 +78,7 @@ phases:
     required: true
     steps:
       - id: "implement-feature"
-        miniPrompt: "development/implement-feature"
+        miniPrompt: "implementation/implement-feature"
         required: true
         prerequisites:
           requiredContext: ["design_specifications", "implementation_plan"]
@@ -93,17 +93,18 @@ phases:
           optionalContext: []
         dependencies: ["implement-feature"]
 
-  - phase: "testing-validation"
-    description: "Quality assurance and validation"
+  - phase: "testing-review"
+    description: "Quality assurance, testing, and validation"
     required: true
     steps:
       - id: "execute-tests"
-        miniPrompt: "qa/execute-tests"
+        miniPrompt: "testing-review/execute-tests"
         required: true
         prerequisites:
           requiredContext: ["implemented_feature"]
           optionalContext: ["test_automation", "test_environments", "test_plan"]
         dependencies: ["handoff-to-testing"]
+        
 
 # Workflow-level configurations
 skipConditions:
@@ -114,12 +115,12 @@ skipConditions:
 
 validationRules:
   - rule: "requirements_validation_required"
-    phases: ["planning-clarification"]
+    phases: ["analysis"]
     message: "Requirements validation required before proceeding to design"
 
 notifications:
   - trigger: "phase_completion"
-    phases: ["planning-clarification", "design-architecture", "implementation-planning", "implementation", "testing-validation"]
+    phases: ["analysis", "design-architecture", "planning", "implementation", "testing-review"]
     message: "Phase completed, ready for next phase"
   - trigger: "workflow_completion"
     message: "Feature development workflow completed successfully"

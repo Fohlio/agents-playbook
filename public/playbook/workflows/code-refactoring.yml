@@ -11,56 +11,55 @@ agentInstructions:
     message: "🚨 MANDATORY: Before starting, validate ALL workflow steps, prerequisites, mini-prompts access, and required context. Execute ALL steps completely - no skipping unless explicitly optional."
 
 phases:
-  - phase: "planning-clarification"
+  - phase: "analysis"
     description: "Requirements gathering and refactoring scope definition - CRITICAL: Ask detailed clarifying questions to fully understand refactoring goals and constraints before proceeding"
     required: true
     steps:
       - id: "create-structured-requirements"
-        miniPrompt: "business/create-structured-requirements"
+        miniPrompt: "analysis/create-structured-requirements"
         required: true
         prerequisites:
           requiredContext: []
           optionalContext: ["existing_codebase", "performance_issues", "maintenance_concerns", "technical_debt", "user_personas", "business_context", "refactoring_scope"]
         outputs: ["structured_requirements", "user_stories", "acceptance_criteria"]
         
-      - id: "handoff-to-analysis"
-        miniPrompt: "handoff-memory-board"
-        required: true
-        prerequisites:
-          requiredContext: ["structured_requirements"]
-          optionalContext: []
-        dependencies: ["create-structured-requirements"]
-
-  - phase: "analysis-design"
-    description: "Code analysis and refactoring strategy design"
-    required: true
-    steps:
-      - id: "code-analysis"
-        miniPrompt: "analysis/code-analysis"
-        required: true
+      - id: "trace-bug-root-cause"
+        miniPrompt: "analysis/trace-bug-root-cause"
+        required: false
         prerequisites:
           requiredContext: ["existing_codebase", "structured_requirements"]
           optionalContext: ["performance_metrics", "maintenance_issues"]
-        dependencies: ["handoff-to-analysis"]
+        dependencies: ["create-structured-requirements"]
+        skipConditions: ["greenfield_development", "new_feature_only"]
         
       - id: "handoff-to-planning"
         miniPrompt: "handoff-memory-board"
         required: true
         prerequisites:
-          requiredContext: ["code_analysis_results"]
-          optionalContext: []
-        dependencies: ["code-analysis"]
-        
-  - phase: "implementation-planning"
-    description: "Technical planning and implementation strategy"
+          requiredContext: ["structured_requirements"]
+          optionalContext: ["code_analysis_results"]
+        dependencies: ["create-structured-requirements"]
+
+  - phase: "planning"
+    description: "Technical design, architecture, and implementation planning"
     required: true
     steps:
+      - id: "design-architecture"
+        miniPrompt: "design-architecture/design-architecture"
+        required: false
+        prerequisites:
+          requiredContext: ["structured_requirements"]
+          optionalContext: ["existing_architecture", "technical_constraints"]
+        dependencies: ["handoff-to-planning"]
+        skipConditions: ["minor_refactoring", "simple_cleanup"]
+        outputs: ["design_specifications", "technical_requirements", "architecture_specifications"]
+        
       - id: "create-implementation-plan"
-        miniPrompt: "business/create-implementation-plan"
+        miniPrompt: "planning/create-implementation-plan"
         required: true
         prerequisites:
-          requiredContext: ["structured_requirements", "code_analysis_results"]
-          optionalContext: ["technical_architecture", "development_environment", "team_capabilities", "existing_codebase"]
+          requiredContext: ["structured_requirements"]
+          optionalContext: ["design_specifications", "technical_architecture", "development_environment", "team_capabilities", "existing_codebase"]
         dependencies: ["handoff-to-planning"]
         outputs: ["implementation_plan", "task_breakdown", "technical_specifications"]
         
@@ -77,14 +76,14 @@ phases:
     required: true
     steps:
       - id: "implement-feature"
-        miniPrompt: "development/implement-feature"
+        miniPrompt: "implementation/implement-feature"
         required: true
         prerequisites:
-          requiredContext: ["implementation_plan", "code_analysis_results"]
-          optionalContext: ["migration_strategy", "backward_compatibility", "existing_codebase"]
+          requiredContext: ["implementation_plan"]
+          optionalContext: ["design_specifications", "migration_strategy", "backward_compatibility", "existing_codebase"]
         dependencies: ["handoff-to-implementation"]
         
-      - id: "handoff-to-validation"
+      - id: "handoff-to-testing"
         miniPrompt: "handoff-memory-board"
         required: true
         prerequisites:
@@ -92,17 +91,17 @@ phases:
           optionalContext: []
         dependencies: ["implement-feature"]
 
-  - phase: "validation"
-    description: "Testing and refactoring validation"
+  - phase: "testing-review"
+    description: "Testing, validation, and quality assessment"
     required: true
     steps:
       - id: "execute-tests"
-        miniPrompt: "qa/execute-tests"
+        miniPrompt: "testing-review/execute-tests"
         required: true
         prerequisites:
           requiredContext: ["refactored_code", "original_functionality"]
           optionalContext: ["automated_tests", "performance_benchmarks", "test_plan"]
-        dependencies: ["handoff-to-validation"]
+        dependencies: ["handoff-to-testing"]
 
 # Workflow-level configurations
 skipConditions:
@@ -113,20 +112,20 @@ skipConditions:
 
 validationRules:
   - rule: "requirements_validation_required"
-    phases: ["planning-clarification"]
-    message: "Refactoring requirements and scope must be clearly defined before proceeding to analysis"
+    phases: ["analysis"]
+    message: "Refactoring requirements and scope must be clearly defined before proceeding to planning"
   - rule: "backward_compatibility_required"
     phases: ["implementation"]
-    dependencies: ["analysis-design"]
+    dependencies: ["planning"]
     message: "Refactoring must maintain backward compatibility unless technical requirements specify otherwise"
   - rule: "performance_validation_required"
-    phases: ["validation"]
+    phases: ["testing-review"]
     dependencies: ["implementation"]
     message: "Performance impact must be measured and validated"
 
 notifications:
   - trigger: "phase_completion"
-    phases: ["planning-clarification", "analysis-design", "implementation"]
+    phases: ["analysis", "planning", "implementation", "testing-review"]
     message: "Major refactoring phase completed"
   - trigger: "workflow_completion"
     message: "Code refactoring completed successfully"

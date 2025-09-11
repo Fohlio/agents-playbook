@@ -249,85 +249,10 @@ describe('MCP Tools Integration Tests', () => {
     }, TEST_TIMEOUT);
   });
 
-  describe('Feature brainstorming workflow tests', () => {
-    test('should return full workflow details for feature-brainstorming', async () => {
-      const result = await selectWorkflowHandler({ 
-        workflow_id: 'feature-brainstorming' 
-      });
-
-      expect(result.content).toBeDefined();
-      expect(result.content[0].text).toContain('Feature Brainstorming');
-      expect(result.content[0].text).toContain('analysis');
-      expect(result.content[0].text).toContain('research');
-      expect(result.content[0].text).toContain('ideation');
-      expect(result.content[0].text).toContain('documentation');
-    }, TEST_TIMEOUT);
-
-    test('should start with codebase analysis step', async () => {
-      const result = await getNextStepHandler({ 
-        workflow_id: 'feature-brainstorming',
-        current_step: 0
-      });
-
-      expect(result.content).toBeDefined();
-      const stepText = result.content[0].text;
-      
-      if (!stepText.includes('100% complete')) {
-        expect(stepText).toContain('analyze-codebase-opportunities');
-        expect(stepText).toMatch(/(codebase|analysis|opportunities)/);
-      }
-    }, TEST_TIMEOUT);
-
-    test('should progress through user interest discovery step', async () => {
-      const result = await getNextStepHandler({ 
-        workflow_id: 'feature-brainstorming',
-        current_step: 1,
-        available_context: ['codebase_analysis']
-      });
-
-      expect(result.content).toBeDefined();
-      const stepText = result.content[0].text;
-      
-      if (!stepText.includes('100% complete')) {
-        expect(stepText).toContain('Discover User Interests');
-      }
-    }, TEST_TIMEOUT);
-
-    test('should handle brainstorming queries with semantic search', async () => {
-      const queries = [
-        'brainstorm new features for my app',
-        'discover enhancement opportunities',
-        'generate feature ideas and suggestions',
-        'analyze codebase for improvement areas'
-      ];
-
-      for (const query of queries) {
-        const result = await getWorkflowsHandler({ task_description: query });
-        expect(result.content).toBeDefined();
-        expect(result.content[0].text).toContain('feature-brainstorming');
-      }
-    }, TEST_TIMEOUT);
-
-    test('should show context requirements for brainstorming workflow', async () => {
-      const result = await selectWorkflowHandler({ 
-        workflow_id: 'feature-brainstorming' 
-      });
-
-      expect(result.content).toBeDefined();
-      const workflowText = result.content[0].text;
-      
-      // Should show workflow overview and context gathering guidance
-      expect(workflowText).toContain('Workflow Overview');
-      expect(workflowText).toContain('Context Gathering');
-      expect(workflowText).toContain('analyze-codebase-opportunities');
-      expect(workflowText).toContain('discover-user-interests');
-    }, TEST_TIMEOUT);
-  });
 
   describe('All workflows comprehensive test', () => {
     const allWorkflowIds = [
       'code-refactoring',
-      'feature-brainstorming',
       'feature-development',
       'quick-fix'
     ];
@@ -354,9 +279,7 @@ describe('MCP Tools Integration Tests', () => {
       { query: 'fix bug', expectedWorkflow: 'quick-fix' },
       { query: 'new feature', expectedWorkflow: 'feature-development' },
       { query: 'code cleanup', expectedWorkflow: 'code-refactoring' },
-      { query: 'brainstorm ideas', expectedWorkflow: 'feature-brainstorming' },
-      { query: 'enhancement opportunities', expectedWorkflow: 'feature-brainstorming' },
-      { query: 'feature ideas and suggestions', expectedWorkflow: 'feature-brainstorming' }
+      { query: 'refactor code', expectedWorkflow: 'code-refactoring' }
     ];
 
     test.each(testQueries)('semantic search for "$query" should find $expectedWorkflow', async ({ query, expectedWorkflow }) => {

@@ -11,21 +11,17 @@ agentInstructions:
     message: "🚨 MANDATORY: Before starting, validate ALL workflow steps, prerequisites, mini-prompts access, and required context. Execute ALL steps completely - no skipping unless explicitly optional."
 
 phases:
-  - phase: "planning-clarification"
-    description: "Quick problem analysis and scope definition - CRITICAL: Ask clarifying questions about the issue and desired outcome before implementing fix"
+  - phase: "analysis"
+    description: "Requirements gathering and problem analysis - CRITICAL: Ask clarifying questions about the issue and desired outcome before implementing fix"
     required: true
     steps:
       - id: "ask-clarifying-questions"
-        miniPrompt: "development/ask-clarifying-questions"
+        miniPrompt: "analysis/ask-clarifying-questions"
         required: true
         prerequisites:
           requiredContext: []
           optionalContext: ["issue_description", "error_logs", "reproduction_steps"]
-
-  - phase: "analysis"
-    description: "Root cause analysis for the issue"
-    required: false
-    steps:
+          
       - id: "trace-bug-root-cause"
         miniPrompt: "analysis/trace-bug-root-cause"
         required: false
@@ -33,13 +29,14 @@ phases:
           requiredContext: ["bug_symptoms", "reproduction_steps"]
           optionalContext: ["error_logs", "system_logs"]
           skipConditions: ["obvious_fix", "simple_feature_request"]
+        dependencies: ["ask-clarifying-questions"]
 
   - phase: "implementation"
     description: "Quick fix implementation"
     required: true
     steps:
       - id: "implement-feature"
-        miniPrompt: "development/implement-feature"
+        miniPrompt: "implementation/implement-feature"
         required: true
         prerequisites:
           requiredContext: ["problem_analysis", "solution_approach"]
@@ -55,31 +52,18 @@ phases:
         dependencies: ["implement-feature"]
         skipConditions: ["trivial_change", "emergency_hotfix"]
 
-  - phase: "testing-validation"
-    description: "Quick validation and testing"
+  - phase: "testing-review"
+    description: "Quick validation, testing, and quality assessment"
     required: false
     steps:
       - id: "execute-tests"
-        miniPrompt: "qa/execute-tests"
+        miniPrompt: "testing-review/execute-tests"
         required: false
         prerequisites:
           requiredContext: ["implemented_fix"]
           optionalContext: ["test_cases", "reproduction_environment"]
           skipConditions: ["trivial_change", "emergency_hotfix"]
         dependencies: ["handoff-to-testing"]
-
-  - phase: "review"
-    description: "Quick quality assessment for fix"
-    required: false
-    steps:
-      - id: "deliverable-review"
-        miniPrompt: "review/deliverable-review"
-        required: false
-        prerequisites:
-          requiredContext: ["implemented_fix", "original_issue"]
-          optionalContext: ["test_results"]
-        dependencies: ["execute-tests"]
-        skipConditions: ["trivial_change", "emergency_hotfix"]
 
 # Workflow-level configurations
 skipConditions:
@@ -90,11 +74,11 @@ skipConditions:
 
 validationRules:
   - rule: "minimal_scope_required"
-    phases: ["planning-clarification"]
+    phases: ["analysis"]
     message: "Quick fixes must have minimal scope and impact"
   - rule: "low_risk_validation"
     phases: ["implementation"]
-    dependencies: ["planning-clarification"]
+    dependencies: ["analysis"]
     message: "Changes must be low-risk and easily reversible"
 
 notifications:

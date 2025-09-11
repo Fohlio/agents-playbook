@@ -95,21 +95,9 @@ describe('Context System Integration Tests', () => {
       expect(workflowText).toContain('create-structured-requirements');
     }, TEST_TIMEOUT);
 
-    test('should show workflow overview and context guidance for feature-brainstorming', async () => {
-      const result = await selectWorkflowHandler({ 
-        workflow_id: 'feature-brainstorming' 
-      });
-
-      expect(result.content).toBeDefined();
-      const workflowText = result.content[0].text;
-      
-      expect(workflowText).toContain('Detailed Step Breakdown');
-      expect(workflowText).toContain('Context Gathering');
-      expect(workflowText).toContain('feature-brainstorming');
-    }, TEST_TIMEOUT);
 
     test('should show workflow overview for all major workflows', async () => {
-      const workflows = ['feature-development', 'feature-brainstorming'];
+      const workflows = ['feature-development', 'code-refactoring'];
       
       for (const workflowId of workflows) {
         const result = await selectWorkflowHandler({ workflow_id: workflowId });
@@ -341,7 +329,6 @@ describe('Context System Integration Tests', () => {
     const allWorkflowIds = [
       'code-refactoring',
       'feature-development',
-      'feature-brainstorming',
       'quick-fix'
     ];
 
