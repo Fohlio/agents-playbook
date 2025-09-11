@@ -7,6 +7,7 @@ Generate detailed implementation plan (tasks.md) with hierarchical task breakdow
 - **Follow instructions precisely** - implement exactly what is requested, no more, no less
 - **Avoid unnecessary code** - write only the code that is essential for the functionality  
 - **Minimal logging** - use logging sparingly, only for essential debugging/monitoring
+- **Critical review** - always step back and assess if the solution aligns with requirements and best practices
 
 ## 📥 Context (ask if missing)
 1. **Requirements File** – `.agents-playbook/[task-name]/requirements.md` with User Stories and Acceptance Criteria
@@ -44,12 +45,11 @@ Generate detailed implementation plan (tasks.md) with hierarchical task breakdow
     - Specific technical requirements and acceptance criteria
     - _Requirements: X.X, X.X_
     
-    - [ ] 1.1.1 Validate implementation
-      - Test functionality works as expected
+    - [ ] 1.1.1 Critical review and write tests
+      - Make critical review of the implementation
       - Verify all acceptance criteria met
-    - [ ] 1.1.2 Write tests
-      - Unit tests for core logic
-      - Integration tests if applicable
+      - Write unit tests for core logic (optional for simple tasks)
+      - Write integration tests if applicable (optional)
 ```
 
 ## 📋 Implementation Plan Structure
@@ -70,15 +70,13 @@ Generate detailed implementation plan (tasks.md) with hierarchical task breakdow
 - [ ] **Technical Details** – implementation approach specified
 - [ ] **Acceptance Criteria** – clear definition of done
 - [ ] **Requirement Traceability** – linked to specific requirements
-- [ ] **Validation Step** – explicit validation subtask after implementation
-- [ ] **Testing Step** – explicit test writing subtask after implementation
+- [ ] **Critical Review and Test Step** – explicit critical review and testing subtask after implementation (tests optional)
 - [ ] **Dependencies** – prerequisites and order clearly defined
 
 ## 🔄 Mandatory Task Flow
 Each implementation task MUST include:
 1. **Implementation** – core development work
-2. **Validation** – verify functionality meets requirements
-3. **Testing** – write and execute tests for the implementation
+2. **Critical review and write tests** – verify functionality meets requirements and write tests (tests optional for simple tasks)
 
 ## 🔗 Requirement Linking Format
 Each task must include:
@@ -102,12 +100,11 @@ Where numbers refer to specific requirements from structured requirements docume
     - [Specific technical implementation details]
     - _Requirements: X.X_
     
-    - [ ] 1.1.1 Validate data models
+    - [ ] 1.1.1 Critical review and write tests for data models
       - Test model relationships and constraints
       - Verify data integrity and validation rules
-    - [ ] 1.1.2 Write tests for data models
-      - Unit tests for model methods
-      - Database integration tests
+      - Write unit tests for model methods (optional for simple models)
+      - Write database integration tests (optional)
 
 - [ ] 2. Create API endpoints
   - [API layer description]
@@ -117,12 +114,11 @@ Where numbers refer to specific requirements from structured requirements docume
     - [Detailed implementation steps]
     - _Requirements: X.X_
     
-    - [ ] 2.1.1 Validate GET endpoints
+    - [ ] 2.1.1 Critical review and write tests for GET endpoints
       - Test all endpoints return correct data
       - Verify error handling and edge cases
-    - [ ] 2.1.2 Write tests for GET endpoints
-      - Unit tests for endpoint logic
-      - Integration tests for full request/response cycle
+      - Write unit tests for endpoint logic (optional for simple endpoints)
+      - Write integration tests for full request/response cycle (optional)
 ```
 
 ## 🎯 Task Planning Guidelines
