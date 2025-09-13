@@ -68,6 +68,12 @@ Then use: workflow_id="[id]", current_step=[X] with agents-playbook MCP get_next
 - Make architectural decisions (already decided in planning)
 - Skip steps from your implementation plan
 
+## ✅ Task Progress Tracking
+**IMPORTANT:** Mark each completed task with ✅ as you work:
+- Update tasks.md or implementation-plan.md with completed status
+- Example: `- [x] ✅ Create user authentication API endpoints`
+- Keep progress visible for handoffs to next sub-agent
+
 ## 📋 Requirements Context
 [Key requirements from analysis phase - what user wants]
 
