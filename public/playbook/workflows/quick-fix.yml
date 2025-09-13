@@ -36,7 +36,7 @@ phases:
     required: true
     steps:
       - id: "implement-feature"
-        miniPrompt: "implementation/implement-feature"
+        miniPrompt: "implementation/implement-task"
         required: true
         prerequisites:
           requiredContext: ["problem_analysis", "solution_approach"]

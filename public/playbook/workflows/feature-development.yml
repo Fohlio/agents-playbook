@@ -66,11 +66,11 @@ phases:
         outputs: ["implementation_plan", "task_breakdown", "technical_specifications"]
         
       - id: "handoff-to-implementation"
-        miniPrompt: "handoff-memory-board"
+        miniPrompt: "handoff-to-subagent"
         required: true
         prerequisites:
-          requiredContext: ["implementation_plan"]
-          optionalContext: []
+          requiredContext: ["implementation_plan", "design_specifications", "structured_requirements"]
+          optionalContext: ["technical_specifications", "task_breakdown"]
         dependencies: ["create-implementation-plan"]
 
   - phase: "implementation"
@@ -78,7 +78,7 @@ phases:
     required: true
     steps:
       - id: "implement-feature"
-        miniPrompt: "implementation/implement-feature"
+        miniPrompt: "implementation/implement-task"
         required: true
         prerequisites:
           requiredContext: ["design_specifications", "implementation_plan"]

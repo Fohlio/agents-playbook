@@ -23,7 +23,7 @@ phases:
           optionalContext: ["existing_codebase", "performance_issues", "maintenance_concerns", "technical_debt", "code_smells", "refactoring_motivation"]
         outputs: ["refactoring_requirements", "scope_definition", "priority_areas"]
         
-      - id: "handoff-to-planning"
+      - id: "handoff-to-design"
         miniPrompt: "handoff-memory-board"
         required: true
         prerequisites:
@@ -31,8 +31,8 @@ phases:
           optionalContext: ["scope_definition", "priority_areas"]
         dependencies: ["analyze-refactoring-scope"]
 
-  - phase: "planning"
-    description: "Technical design, architecture, and implementation planning"
+  - phase: "design-architecture"
+    description: "Technical design and architecture specification for refactoring"
     required: true
     steps:
       - id: "design-architecture"
@@ -41,24 +41,45 @@ phases:
         prerequisites:
           requiredContext: ["refactoring_requirements"]
           optionalContext: ["existing_architecture", "technical_constraints", "scope_definition"]
-        dependencies: ["handoff-to-planning"]
+        dependencies: ["handoff-to-design"]
         skipConditions: ["minor_refactoring", "simple_cleanup"]
         outputs: ["design_specifications", "technical_requirements", "architecture_specifications"]
         
-      - id: "handoff-to-implementation"
+      - id: "handoff-to-planning"
         miniPrompt: "handoff-memory-board"
         required: true
         prerequisites:
           requiredContext: ["refactoring_requirements"]
           optionalContext: ["design_specifications"]
+        dependencies: ["design-architecture"]
+
+  - phase: "planning"
+    description: "Implementation planning and strategy"
+    required: true
+    steps:
+      - id: "create-implementation-plan"
+        miniPrompt: "planning/create-implementation-plan"
+        required: true
+        prerequisites:
+          requiredContext: ["refactoring_requirements", "design_specifications"]
+          optionalContext: ["technical_architecture", "existing_codebase", "scope_definition"]
         dependencies: ["handoff-to-planning"]
+        outputs: ["implementation_plan", "task_breakdown", "technical_specifications"]
+        
+      - id: "handoff-to-implementation"
+        miniPrompt: "handoff-to-subagent"
+        required: true
+        prerequisites:
+          requiredContext: ["implementation_plan", "refactoring_requirements"]
+          optionalContext: ["design_specifications", "technical_specifications", "task_breakdown"]
+        dependencies: ["create-implementation-plan"]
 
   - phase: "implementation"
     description: "Code refactoring execution"
     required: true
     steps:
       - id: "implement-refactoring"
-        miniPrompt: "implementation/implement-refactoring"
+        miniPrompt: "implementation/implement-task"
         required: true
         prerequisites:
           requiredContext: ["refactoring_requirements"]
@@ -107,7 +128,7 @@ validationRules:
 
 notifications:
   - trigger: "phase_completion"
-    phases: ["analysis", "planning", "implementation", "testing-review"]
+    phases: ["analysis", "design-architecture", "planning", "implementation", "testing-review"]
     message: "Major refactoring phase completed"
   - trigger: "workflow_completion"
     message: "Code refactoring completed successfully"

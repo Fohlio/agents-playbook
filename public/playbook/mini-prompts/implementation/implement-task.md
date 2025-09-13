@@ -1,7 +1,7 @@
-# Implement Feature Prompt (v2)
+# Implement Task (v3)
 
 ## 🎯 Goal
-Ship the feature per specs with clean, secure, performant code. **Consider alternative implementation approaches and choose the most appropriate one.**
+Execute any implementation task per specifications with clean, secure, performant code. **Consider alternative implementation approaches and choose the most appropriate one.**
 
 ## 📋 General Instructions
 - **Follow instructions precisely** - implement exactly what is requested, no more, no less
