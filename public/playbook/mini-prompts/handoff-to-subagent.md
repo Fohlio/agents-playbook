@@ -17,21 +17,56 @@ Prepare detailed context handoff for sub-agent to work on specific implementatio
 ## 📋 Sub-Agent Context Package
 **Create comprehensive handoff document for sub-agent:**
 
-### 🔗 Context Files Quick Links
+### 📄 Create `subagent-prompt.md` File
+**Generate this file for user to copy directly:**
+
+**File:** `.agents-playbook/[feature-name]/subagent-prompt.md`
+
+### 🔗 Context Files for Sub-Agent to Read
+**Tell sub-agent to read these files first to refresh context:**
 - **requirements.md** - structured_requirements, user_stories, acceptance_criteria
-- **design.md** - design_specifications, technical_requirements, architecture_specifications
+- **design.md** - design_specifications, technical_requirements, architecture_specifications  
 - **implementation-plan.md** - implementation_plan, task_breakdown, technical_specifications
 - **scope-definition.md** - refactoring_requirements, scope_definition, priority_areas
 - **memory-board.md** - phase handoffs, agent communications, workflow state
 - **architecture-diagrams/** - system flows, component diagrams, data flows
 - **next-step-id:** [workflow_id="...", current_step=X] - use agents-playbook MCP `get_next_step`
 
-### Implementation Context Summary
+### Sub-Agent Prompt Template
 ```markdown
 # Sub-Agent Implementation Task - [Task Name]
 
+## 📚 FIRST: Read These Context Files
+Before starting implementation, read these files to refresh your context:
+1. requirements.md - understand what user wants
+2. design.md - understand technical approach  
+3. implementation-plan.md - understand your specific tasks
+4. memory-board.md - understand current workflow state
+
+Then use: workflow_id="[id]", current_step=[X] with agents-playbook MCP get_next_step
+
+## 🌊 Workflow Flow & Your Role
+**Overall Workflow:** [workflow_name] → Analysis → Design-Architecture → Planning → **[YOUR PHASE]** → Testing-Review
+
+**What's Been Completed:**
+- ✅ Analysis: [Brief summary of requirements and clarification]
+- ✅ Design-Architecture: [Brief summary of technical design decisions]
+- ✅ Planning: [Brief summary of implementation strategy]
+
+**Your Phase:** [Phase name - e.g., Implementation Phase 1 of 3]
+**Your Scope:** [Specific boundary - e.g., Backend API implementation only, Frontend components only, Database layer only]
+
+**What Comes Next:** [What the next sub-agent or phase will handle]
+
 ## 🎯 Your Specific Task
 [Clear, focused description of what this sub-agent should accomplish]
+
+## 🚫 Scope Boundaries - DO NOT:
+- Work on phases outside your assignment
+- Continue to next workflow phase when done
+- Implement features not in your specific scope
+- Make architectural decisions (already decided in planning)
+- Skip steps from your implementation plan
 
 ## 📋 Requirements Context
 [Key requirements from analysis phase - what user wants]
@@ -51,8 +86,19 @@ Prepare detailed context handoff for sub-agent to work on specific implementatio
 ## ✅ Definition of Done
 [Clear success criteria for this sub-task]
 
+## 🏁 Completion & Handoff Protocol
+When you complete your phase:
+1. **Update memory-board.md** - Document what you completed
+2. **Create handoff summary** - What the next sub-agent needs to know
+3. **Test your work** - Ensure your phase deliverables work correctly
+4. **STOP HERE** - Do not continue to next phase
+5. **Ask user** to start new chat for next sub-agent with updated context
+
 ## 🔄 Next Sub-Agent Context
 [What should be passed to the next sub-agent, if any]
+- Files created/modified in your phase
+- Any discoveries or issues encountered
+- Updated context for next phase
 ```
 
 ## 🔄 Sub-Agent Instructions
@@ -64,11 +110,12 @@ Prepare detailed context handoff for sub-agent to work on specific implementatio
 This task is complex enough to benefit from a clean context sub-agent approach.
 
 NEXT STEPS:
-1. **Start New Chat** - Open a fresh conversation for cleaner context
-2. **Copy Context** - Paste the implementation context above into the new chat
-3. **Sub-Agent Acknowledgment** - The sub-agent will confirm understanding
-4. **Focused Implementation** - Sub-agent works only on this specific task
-5. **Return Here** - When complete, sub-agent will update memory board
+1. **Copy the subagent-prompt.md file** I just created above
+2. **Start New Chat** - Open a fresh conversation for cleaner context  
+3. **Paste the file contents** into the new chat
+4. **Sub-Agent reads context files** - They'll refresh context from linked .md files
+5. **Sub-Agent implements** - Works only on this specific task
+6. **Return Here** - When complete, sub-agent will update memory board
 
 This approach provides:
 ✅ Clean context without conversation history noise  
@@ -85,6 +132,33 @@ Ready to proceed with sub-agent workflow?
 - **Be specific** - Tell user exactly what to copy/paste and where
 - **Include next action** - Clear "what to do next" statement
 - **Avoid explanations** - Focus on actionable steps, not theory
+- **Create the subagent-prompt.md file** - Generate actual file content for easy copying
+- **Fill in ALL template sections** - Don't leave placeholders blank
+- **Be explicit about scope** - Clearly define what sub-agent should and shouldn't do
+- **Show workflow progression** - Make it clear where this fits in the overall flow
+
+## 📖 Sub-Agent Context Refresh Instructions
+**Add this to the subagent-prompt.md file:**
+```markdown
+## 📚 FIRST: Read These Context Files
+Before starting implementation, read these files to refresh your context:
+1. requirements.md - understand what user wants
+2. design.md - understand technical approach  
+3. implementation-plan.md - understand your specific tasks
+4. memory-board.md - understand current workflow state
+
+Then use: workflow_id="[id]", current_step=[X] with agents-playbook MCP get_next_step
+```
+
+## 🎯 Required Information for Planning Agent
+**When creating subagent-prompt.md, you MUST include:**
+- **Workflow name** and current progress status
+- **What phases are complete** with brief summaries  
+- **Sub-agent's specific phase** and boundaries
+- **Exact scope limits** - what they should NOT work on
+- **Implementation breakdown** - specific tasks only for this sub-agent
+- **Success criteria** - how they know they're done
+- **Next phase preview** - what comes after their work
 
 ## 📝 Memory Board Update
 **Update memory board with sub-agent handoff:**
