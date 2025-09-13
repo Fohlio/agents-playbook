@@ -56,7 +56,7 @@ Prepare detailed context handoff for sub-agent to work on specific implementatio
 ```
 
 ## 🔄 Sub-Agent Instructions
-**Tell user:**
+**Write SHORT and PRECISE instructions to user in chat:**
 
 ```
 🤖 SUB-AGENT WORKFLOW RECOMMENDED
@@ -78,6 +78,13 @@ This approach provides:
 
 Ready to proceed with sub-agent workflow?
 ```
+
+## 💬 Chat Communication Guidelines
+**Agent must provide CONCISE user guidance:**
+- **Keep instructions brief** - 2-3 sentences maximum per step
+- **Be specific** - Tell user exactly what to copy/paste and where
+- **Include next action** - Clear "what to do next" statement
+- **Avoid explanations** - Focus on actionable steps, not theory
 
 ## 📝 Memory Board Update
 **Update memory board with sub-agent handoff:**
