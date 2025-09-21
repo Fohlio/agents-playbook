@@ -1,0 +1,218 @@
+{
+  "name": "agents-playbook-orchestrator",
+  "displayName": "Agents Playbook - Multi-Agent Orchestrator",
+  "description": "Transform workflows into multi-agent orchestration with isolated AI contexts",
+  "version": "0.1.0",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "AI",
+    "Other"
+  ],
+  "keywords": [
+    "agents",
+    "workflow",
+    "orchestration",
+    "ai",
+    "automation"
+  ],
+  "activationEvents": [
+    "onCommand:agents-playbook.startWorkflow",
+    "workspaceContains:**/*.yml",
+    "workspaceContains:playbook/workflows/*.yml"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "agents-playbook.startWorkflow",
+        "title": "Start Workflow",
+        "category": "Agents Playbook",
+        "icon": "$(play)"
+      },
+      {
+        "command": "agents-playbook.viewProgress",
+        "title": "View Workflow Progress",
+        "category": "Agents Playbook",
+        "icon": "$(dashboard)"
+      },
+      {
+        "command": "agents-playbook.validateStage",
+        "title": "Validate Current Stage",
+        "category": "Agents Playbook",
+        "icon": "$(check)"
+      },
+      {
+        "command": "agents-playbook.assignAgent",
+        "title": "Assign Sub-Agent",
+        "category": "Agents Playbook",
+        "icon": "$(person-add)"
+      },
+      {
+        "command": "agents-playbook.handoffAgent",
+        "title": "Handoff to Next Agent",
+        "category": "Agents Playbook",
+        "icon": "$(arrow-right)"
+      },
+      {
+        "command": "agents-playbook.stopWorkflow",
+        "title": "Stop Current Workflow",
+        "category": "Agents Playbook",
+        "icon": "$(stop)"
+      },
+      {
+        "command": "agents-playbook.showHelp",
+        "title": "Show Help",
+        "category": "Agents Playbook",
+        "icon": "$(question)"
+      },
+      {
+        "command": "agents-playbook.quickStart",
+        "title": "🤖 Start Multi-Agent Workflow",
+        "category": "Agents Playbook",
+        "icon": "$(robot)"
+      }
+    ],
+    "views": {
+      "explorer": [
+        {
+          "id": "agents-playbook.workflowProgress",
+          "name": "Workflow Progress",
+          "when": "agents-playbook:workflowActive"
+        },
+        {
+          "id": "agents-playbook.agentStatus",
+          "name": "Agent Status",
+          "when": "agents-playbook:workflowActive"
+        }
+      ]
+    },
+    "menus": {
+      "commandPalette": [
+        {
+          "command": "agents-playbook.startWorkflow",
+          "when": "true"
+        },
+        {
+          "command": "agents-playbook.viewProgress",
+          "when": "agents-playbook:workflowActive"
+        },
+        {
+          "command": "agents-playbook.validateStage",
+          "when": "agents-playbook:workflowActive"
+        },
+        {
+          "command": "agents-playbook.assignAgent",
+          "when": "agents-playbook:workflowActive"
+        },
+        {
+          "command": "agents-playbook.handoffAgent",
+          "when": "agents-playbook:workflowActive"
+        },
+        {
+          "command": "agents-playbook.stopWorkflow",
+          "when": "agents-playbook:workflowActive"
+        },
+        {
+          "command": "agents-playbook.showHelp",
+          "when": "true"
+        },
+        {
+          "command": "agents-playbook.quickStart",
+          "when": "true"
+        }
+      ],
+      "view/title": [
+        {
+          "command": "agents-playbook.startWorkflow",
+          "when": "view == agents-playbook.workflowProgress",
+          "group": "navigation"
+        }
+      ],
+      "editor/title": [
+        {
+          "command": "agents-playbook.quickStart",
+          "when": "true",
+          "group": "navigation@1"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "Agents Playbook",
+      "properties": {
+        "agents-playbook.orchestrator.maxConcurrentAgents": {
+          "type": "number",
+          "default": 3,
+          "description": "Maximum number of concurrent sub-agents"
+        },
+        "agents-playbook.orchestrator.defaultTokenBudget": {
+          "type": "number",
+          "default": 10000,
+          "description": "Default token budget per agent"
+        },
+        "agents-playbook.orchestrator.autoValidation": {
+          "type": "boolean",
+          "default": false,
+          "description": "Enable automatic stage validation"
+        },
+        "agents-playbook.agents.analysisAgent.maxTokens": {
+          "type": "number",
+          "default": 8000,
+          "description": "Token limit for analysis agents"
+        },
+        "agents-playbook.agents.designAgent.maxTokens": {
+          "type": "number",
+          "default": 10000,
+          "description": "Token limit for design agents"
+        },
+        "agents-playbook.agents.implementationAgent.maxTokens": {
+          "type": "number",
+          "default": 15000,
+          "description": "Token limit for implementation agents"
+        },
+        "agents-playbook.ui.showProgressSidebar": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show workflow progress sidebar"
+        },
+        "agents-playbook.ui.autoOpenValidation": {
+          "type": "boolean",
+          "default": true,
+          "description": "Automatically open validation UI"
+        },
+        "agents-playbook.ui.compactMode": {
+          "type": "boolean",
+          "default": false,
+          "description": "Use compact UI mode"
+        },
+        "agents-playbook.ui.useModernInterface": {
+          "type": "boolean",
+          "default": true,
+          "description": "Use modern chat-based validation interface with tabs"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile && npm run lint",
+    "lint": "eslint src --ext ts",
+    "test": "node ./out/test/runTest.js"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.85.0",
+    "@types/node": "20.x",
+    "@typescript-eslint/eslint-plugin": "^6.13.1",
+    "@typescript-eslint/parser": "^6.13.1",
+    "eslint": "^8.54.0",
+    "typescript": "^5.3.2"
+  },
+  "dependencies": {
+    "js-yaml": "^4.1.0",
+    "gray-matter": "^4.0.3",
+    "@types/js-yaml": "^4.0.9"
+  }
+}
