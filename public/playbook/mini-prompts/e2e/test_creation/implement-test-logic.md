@@ -9,8 +9,15 @@ Implement the core E2E test logic using page objects, test data, and established
 - **Test Data**: Test data requirements and management strategy
 - **Existing Test Patterns**: Current test structure and organization in the repository
 
+## 🎯 Task-Based Implementation
+**MUST follow tasks.md systematically:**
+- Implement tasks **one by one** in order
+- Complete validation step for each task
+- Write unit tests for each completed task (when applicable)
+- Mark tasks as ✅ completed in tasks.md
+
 ## Instructions
-1. **Follow Test Structure**: Implement tests according to the planned test organization
+1. **Follow tasks.md**: Implement tests according to the planned task breakdown
 2. **Use Page Objects**: Leverage page objects for all UI interactions
 3. **Integrate Test Data**: Use presets, factories, and fixtures for data management
 4. **Apply Playwright Patterns**: Follow established test patterns and best practices

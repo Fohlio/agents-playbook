@@ -1,12 +1,12 @@
 name: "E2E Test Creation Workflow"
-description: "Comprehensive workflow for creating new E2E tests in Playwright repository following established patterns and best practices"
-version: "1.0"
+description: "Streamlined workflow for creating new E2E tests following established patterns and best practices"
+version: "1.1"
 category: "testing"
 tags: ["e2e-tests", "playwright", "test-creation", "automation", "quality", "typescript"]
 
 phases:
-  - phase: "requirements-analysis"
-    description: "Analyze test requirements and understand the feature to be tested"
+  - phase: "analysis"
+    description: "Requirements gathering and test scope definition"
     required: true
     steps:
       - id: "analyze-test-requirements"
@@ -15,247 +15,107 @@ phases:
         prerequisites:
           requiredContext: []
           optionalContext: ["feature_description", "user_stories", "acceptance_criteria", "business_requirements"]
-      
-      - id: "analyze-current-e2e-codebase"
-        miniPrompt: "e2e/analysis/analyze-current-e2e-codebase"
+        outputs: ["test_requirements", "test_scope", "acceptance_criteria"]
+        
+      - id: "handoff-to-design"
+        miniPrompt: "handoff-memory-board"
         required: true
         prerequisites:
-          requiredContext: ["test_requirements_analysis"]
-          optionalContext: ["existing_test_patterns", "repository_structure"]
+          requiredContext: ["test_requirements"]
+          optionalContext: []
         dependencies: ["analyze-test-requirements"]
 
-      - id: "analyze-module-structure"
-        miniPrompt: "e2e/analysis/analyze-module-structure"
+  - phase: "design-architecture"
+    description: "Test architecture and structure design"
+    required: true
+    steps:
+      - id: "design-e2e-architecture"
+        miniPrompt: "design-architecture/design-architecture"
         required: true
         prerequisites:
-          requiredContext: ["codebase_analysis"]
-          optionalContext: ["module_dependencies", "file_structure", "import_graphs"]
-        dependencies: ["analyze-current-e2e-codebase"]
-
+          requiredContext: ["test_requirements", "test_scope"]
+          optionalContext: ["existing_patterns", "page_objects", "fixtures"]
+        dependencies: ["handoff-to-design"]
+        outputs: ["test_architecture", "page_object_design", "test_structure"]
+        
       - id: "handoff-to-planning"
         miniPrompt: "handoff-memory-board"
         required: true
         prerequisites:
-          requiredContext: []
+          requiredContext: ["test_architecture"]
           optionalContext: []
-        dependencies: ["analyze-module-structure"]
+        dependencies: ["design-e2e-architecture"]
 
-  - phase: "test-planning"
-    description: "Plan test structure, data requirements, and implementation approach"
+  - phase: "planning"
+    description: "Implementation planning and task breakdown"
     required: true
     steps:
-      - id: "plan-test-structure"
-        miniPrompt: "e2e/test_planning/plan-test-structure"
+      - id: "create-implementation-plan"
+        miniPrompt: "planning/create-implementation-plan"
         required: true
         prerequisites:
-          requiredContext: ["test_scenarios", "feature_complexity"]
-          optionalContext: ["existing_test_patterns", "page_object_models"]
-        dependencies: ["analyze-current-e2e-codebase"]
-      
-      - id: "identify-test-data-requirements"
-        miniPrompt: "e2e/test_planning/identify-test-data-requirements"
-        required: true
-        prerequisites:
-          requiredContext: ["test_structure", "scenarios"]
-          optionalContext: ["presets", "factories", "test_data"]
-        dependencies: ["plan-test-structure"]
-
+          requiredContext: ["test_requirements", "test_architecture"]
+          optionalContext: ["existing_patterns", "development_environment"]
+        dependencies: ["handoff-to-planning"]
+        outputs: ["implementation_plan", "task_breakdown"]
+        
       - id: "handoff-to-implementation"
         miniPrompt: "handoff-memory-board"
         required: true
         prerequisites:
-          requiredContext: []
+          requiredContext: ["implementation_plan"]
           optionalContext: []
-        dependencies: ["identify-test-data-requirements"]
+        dependencies: ["create-implementation-plan"]
 
-  - phase: "test-implementation"
-    description: "Implement the E2E test following Playwright best practices and established patterns"
+  - phase: "implementation"
+    description: "E2E test implementation and coding"
     required: true
     steps:
       - id: "implement-test-logic"
         miniPrompt: "e2e/test_creation/implement-test-logic"
         required: true
         prerequisites:
-          requiredContext: ["test_plan", "test_data"]
-          optionalContext: ["existing_test_patterns", "fixtures", "page_objects"]
-        dependencies: ["identify-test-data-requirements"]
-      
-      - id: "add-assertions-and-validations"
-        miniPrompt: "e2e/test_creation/add-assertions-validations"
-        required: true
-        prerequisites:
-          requiredContext: ["test_logic", "acceptance_criteria"]
-          optionalContext: ["visual_assertions", "performance_checks"]
-        dependencies: ["implement-test-logic"]
-
+          requiredContext: ["implementation_plan", "test_architecture"]
+          optionalContext: ["page_objects", "fixtures", "test_data"]
+        dependencies: ["handoff-to-implementation"]
+        
       - id: "handoff-to-testing"
         miniPrompt: "handoff-memory-board"
         required: true
         prerequisites:
-          requiredContext: []
+          requiredContext: ["implemented_test"]
           optionalContext: []
-        dependencies: ["add-assertions-and-validations"]
+        dependencies: ["implement-test-logic"]
 
-  - phase: "test-validation"
-    description: "Validate test functionality, stability, and adherence to best practices"
+  - phase: "testing-review"
+    description: "Test execution, validation, and quality review"
     required: true
     steps:
-      - id: "execute-test-locally"
+      - id: "execute-and-validate-test"
         miniPrompt: "e2e/test_execution/execute-test-locally"
         required: true
         prerequisites:
-          requiredContext: ["implemented_test", "test_environment"]
-          optionalContext: ["test_data", "dependencies"]
-        dependencies: ["add-assertions-and-validations"]
-      
-      - id: "validate-test-stability"
-        miniPrompt: "e2e/test_execution/validate-test-stability"
-        required: true
-        prerequisites:
-          requiredContext: ["test_execution_results", "stability_metrics"]
-          optionalContext: ["flakiness_analysis", "retry_behavior"]
-        dependencies: ["execute-test-locally"]
-
-      - id: "handoff-to-review"
-        miniPrompt: "handoff-memory-board"
-        required: true
-        prerequisites:
-          requiredContext: []
-          optionalContext: []
-        dependencies: ["validate-test-stability"]
-
-  - phase: "integration-review"
-    description: "Final review, integration testing, and documentation"
-    required: true
-    steps:
-      - id: "integration-testing"
-        miniPrompt: "e2e/test_execution/integration-testing"
-        required: true
-        prerequisites:
-          requiredContext: ["validated_test", "test_suite"]
-          optionalContext: ["parallel_execution", "cross_browser_testing"]
-        dependencies: ["validate-test-stability"]
-      
-      - id: "update-test-documentation"
-        miniPrompt: "e2e/test_review/update-test-documentation"
-        required: true
-        prerequisites:
-          requiredContext: ["test_implementation", "test_results"]
-          optionalContext: ["test_metadata", "qase_integration"]
-        dependencies: ["integration-testing"]
-
-      - id: "handoff-to-completion"
-        miniPrompt: "handoff-memory-board"
-        required: true
-        prerequisites:
-          requiredContext: []
-          optionalContext: []
-        dependencies: ["update-test-documentation"]
-
-# Playwright-Specific Rules Integration
-playwrightRules:
-  - rule: "use_established_patterns"
-    description: "Follow existing Playwright test patterns and file structure"
-    phases: ["test-implementation", "test-validation"]
-    message: "Use established fixtures, models, and test structure from the repository"
-    
-  - rule: "page_object_model"
-    description: "Implement Page Object Model for UI interactions"
-    phases: ["test-implementation"]
-    message: "Create or extend existing page objects for UI elements and interactions"
-    
-  - rule: "fixture_usage"
-    description: "Use established fixtures for common test setup and teardown"
-    phases: ["test-implementation"]
-    message: "Leverage existing fixtures from src/fixtures/test.ts for test setup"
-    
-  - rule: "preset_integration"
-    description: "Use presets for test data preparation"
-    phases: ["test-implementation"]
-    message: "Utilize presets from src/presets/ for consistent test data setup"
-    
-  - rule: "test_step_wrapping"
-    description: "Wrap methods inside classes with test.step"
-    phases: ["test-implementation"]
-    message: "Use test.step for class methods, avoid in test body"
-    
-  - rule: "locator_best_practices"
-    description: "Use recommended Playwright locators over complex selectors"
-    phases: ["test-implementation"]
-    message: "Prefer page.getByRole, page.getByLabel, page.getByText over page.locator"
-    
-  - rule: "test_data_management"
-    description: "Use factories for CRUD operations and presets for data setup"
-    phases: ["test-implementation"]
-    message: "Leverage factories from src/factories/ for entity operations"
+          requiredContext: ["implemented_test"]
+          optionalContext: ["test_environment", "test_data"]
+        dependencies: ["handoff-to-testing"]
 
 # Workflow-level configurations
 skipConditions:
-  - condition: "simple_unit_test"
-    message: "Test is too simple and doesn't require E2E approach"
   - condition: "existing_test_coverage"
-    message: "Feature already has sufficient test coverage"
+    message: "Feature already has sufficient E2E test coverage"
   - condition: "no_ui_interaction"
-    message: "Test doesn't require UI interaction"
+    message: "Test doesn't require UI interaction - consider unit/integration tests instead"
 
 validationRules:
   - rule: "requirements_analysis_required"
-    phases: ["test-planning"]
-    message: "Test requirements must be analyzed before planning"
-  - rule: "test_plan_required"
-    phases: ["test-implementation"]
-    dependencies: ["test-planning"]
-    message: "Test plan must be completed before implementation"
-  - rule: "local_execution_required"
-    phases: ["test-validation"]
-    dependencies: ["test-implementation"]
-    message: "Test must execute locally before integration testing"
-
-notifications:
-  - trigger: "test_creation_started"
-    phases: ["requirements-analysis"]
-    message: "E2E test creation workflow initiated"
-  - trigger: "test_implementation_complete"
-    phases: ["test-implementation"]
-    message: "Test implementation completed and ready for validation"
-  - trigger: "test_validation_complete"
-    phases: ["test-validation"]
-    message: "Test validation completed successfully"
-  - trigger: "workflow_completion"
-    message: "E2E test creation workflow completed successfully"
+    phases: ["design-architecture"]
+    message: "Test requirements must be analyzed before architecture design"
+  - rule: "architecture_required"
+    phases: ["planning"]
+    message: "Test architecture must be designed before implementation planning"
 
 # Smart execution settings
 execution:
-  allowSkipping: false
-  requireExplicitApproval: true
+  allowSkipping: true
+  requireExplicitApproval: false
   automaticProgressTracking: true
-  criticalPhaseValidation: true
-
-# Playwright-specific context requirements
-workflow_context:
-  steps_count: 16
-  common_scenarios:
-    - "New feature E2E testing"
-    - "Critical user journey validation"
-    - "Regression test creation"
-    - "Cross-browser compatibility testing"
-    - "Performance testing integration"
-    - "Accessibility testing scenarios"
-  
-  required_playwright_knowledge:
-    - "Page Object Model implementation"
-    - "Fixture usage and customization"
-    - "Preset integration for test data"
-    - "Factory patterns for entity operations"
-    - "Playwright locator best practices"
-    - "Test step organization and structure"
-
-success_criteria:
-  - "Test follows established Playwright patterns"
-  - "Page objects are properly implemented"
-  - "Test data is managed through presets/factories"
-  - "Test executes reliably without flakiness"
-  - "Code quality meets repository standards"
-  - "Test integrates successfully with existing suite"
-  - "Documentation is updated and accurate"
-  - "QASE integration is properly configured"

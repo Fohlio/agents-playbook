@@ -1,198 +1,82 @@
 name: "E2E Test Report Analysis & Fix Workflow"
-description: "Comprehensive workflow for analyzing E2E test reports, investigating failures, and implementing fixes while maintaining test integrity"
-version: "1.0"
+description: "Streamlined workflow for analyzing E2E test reports and implementing fixes while maintaining test integrity"
+version: "1.1"
 category: "testing"
 tags: ["e2e-tests", "test-reports", "analysis", "fixing", "playwright", "quality"]
 
 phases:
-  - phase: "report-analysis"
-    description: "Analyze E2E test report with statistics, traces, and attachments"
+  - phase: "analysis"
+    description: "Analyze test report and create fix requirements"
     required: true
     steps:
-      - id: "analyze-test-report"
-        miniPrompt: "e2e/analysis/analyze-e2e-test-report"
+      - id: "analyze-and-create-requirements"
+        miniPrompt: "e2e/analysis/create-test-fix-requirements"
         required: true
         prerequisites:
           requiredContext: []
-          optionalContext: ["test_report_file", "failure_statistics", "trace_files", "attachments"]
-        
-      - id: "extract-failing-test-details"
-        miniPrompt: "e2e/analysis/extract-failing-test-details"
-        required: true
-        prerequisites:
-          requiredContext: ["test_report_analysis"]
-          optionalContext: ["failure_patterns", "test_files", "test_function_names", "failing_tests"]
-        dependencies: ["analyze-test-report"]
-        
-      - id: "handoff-to-investigation"
-        miniPrompt: "handoff-memory-board"
-        required: true
-        prerequisites:
-          requiredContext: []
-          optionalContext: []
-        dependencies: ["extract-failing-test-details"]
-
-  - phase: "codebase-investigation"
-    description: "Investigate recent changes in Fohlio frontend and understand related module structure"
-    required: true
-    steps:
-      - id: "investigate-recent-changes"
-        miniPrompt: "analysis/investigate-recent-changes"
-        required: true
-        prerequisites:
-          requiredContext: ["failing_tests"]
-          optionalContext: ["test_statistics", "git_history", "recent_commits", "changed_files"]
-        dependencies: ["handoff-to-investigation"]
-        
-      - id: "analyze-module-structure"
-        miniPrompt: "e2e/analysis/analyze-module-structure"
-        required: true
-        prerequisites:
-          requiredContext: ["recent_changes_analysis"]
-          optionalContext: ["module_dependencies", "file_structure", "import_graphs"]
-        dependencies: ["investigate-recent-changes"]
+          optionalContext: ["test_report_file", "failure_statistics", "failing_tests", "trace_files"]
+        outputs: ["fix_requirements", "failing_test_analysis", "root_cause_analysis"]
         
       - id: "handoff-to-planning"
         miniPrompt: "handoff-memory-board"
         required: true
         prerequisites:
-          requiredContext: []
+          requiredContext: ["fix_requirements"]
           optionalContext: []
-        dependencies: ["analyze-module-structure"]
+        dependencies: ["analyze-and-create-requirements"]
 
-  - phase: "planning-clarification"
-    description: "Plan the fix approach and get user approval"
+  - phase: "planning"
+    description: "Create implementation plan for test fixes"
     required: true
     steps:
-      - id: "assess-fix-approach"
-        miniPrompt: "e2e/test_planning/ask-clarifying-questions"
+      - id: "create-implementation-plan"
+        miniPrompt: "planning/create-implementation-plan"
         required: true
         prerequisites:
-          requiredContext: ["failure_root_cause", "module_analysis", "recent_changes_impact"]
-          optionalContext: ["business_constraints", "timeline_requirements"]
+          requiredContext: ["fix_requirements", "failing_test_analysis"]
+          optionalContext: ["test_files", "existing_patterns", "ui_changes"]
         dependencies: ["handoff-to-planning"]
-        
-      - id: "document-fix-strategy"
-        miniPrompt: "business/document-decisions"
-        required: true
-        prerequisites:
-          requiredContext: ["fix_approach", "user_approval"]
-          optionalContext: ["technical_impact", "rollback_plan"]
-        dependencies: ["assess-fix-approach"]
+        outputs: ["implementation_plan", "task_breakdown"]
         
       - id: "handoff-to-implementation"
         miniPrompt: "handoff-memory-board"
         required: true
         prerequisites:
-          requiredContext: []
+          requiredContext: ["implementation_plan"]
           optionalContext: []
-        dependencies: ["document-fix-strategy"]
+        dependencies: ["create-implementation-plan"]
 
   - phase: "implementation"
-    description: "Implement the fix while maintaining test integrity"
+    description: "Implement test fixes following task breakdown"
     required: true
     steps:
-      - id: "implement-test-fix"
+      - id: "implement-test-fixes"
         miniPrompt: "e2e/test_creation/implement-test-logic"
         required: true
         prerequisites:
-          requiredContext: ["approved_fix_strategy", "failing_tests", "test_files"]
-          optionalContext: ["existing_test_code", "test_configuration", "ui_selectors", "specific_test_files"]
+          requiredContext: ["implementation_plan", "fix_requirements"]
+          optionalContext: ["test_files", "ui_selectors", "test_data"]
         dependencies: ["handoff-to-implementation"]
-        
-      - id: "validate-fix-implementation"
-        miniPrompt: "e2e/test_review/validate-test-fix"
-        required: true
-        prerequisites:
-          requiredContext: ["implemented_fix"]
-          optionalContext: ["test_environment", "fix_validation"]
-        dependencies: ["implement-test-fix"]
         
       - id: "handoff-to-testing"
         miniPrompt: "handoff-memory-board"
         required: true
         prerequisites:
-          requiredContext: []
+          requiredContext: ["implemented_fixes"]
           optionalContext: []
-        dependencies: ["validate-fix-implementation"]
+        dependencies: ["implement-test-fixes"]
 
-  - phase: "testing-validation"
-    description: "Rerun fallen tests and validate fixes"
+  - phase: "testing-review"
+    description: "Execute tests and validate fixes"
     required: true
     steps:
-      - id: "rerun-failing-tests"
+      - id: "execute-and-validate-fixes"
         miniPrompt: "e2e/test_execution/execute-test-locally"
         required: true
         prerequisites:
-          requiredContext: ["implemented_fix", "failing_tests", "test_files"]
-          optionalContext: ["test_suite", "specific_test_files", "previously_failing_tests", "test_environment", "fix_validation"]
+          requiredContext: ["implemented_fixes", "failing_tests"]
+          optionalContext: ["test_environment", "test_data"]
         dependencies: ["handoff-to-testing"]
-        
-      - id: "validate-test-results"
-        miniPrompt: "e2e/test_review/validate-test-stability"
-        required: true
-        prerequisites:
-          requiredContext: ["test_execution_results", "fix_validation"]
-          optionalContext: ["performance_metrics", "stability_validation"]
-        dependencies: ["rerun-failing-tests"]
-        
-      - id: "handoff-to-review"
-        miniPrompt: "handoff-memory-board"
-        required: true
-        prerequisites:
-          requiredContext: []
-          optionalContext: []
-        dependencies: ["validate-test-results"]
-
-  - phase: "review"
-    description: "Final review and documentation of fixes"
-    required: true
-    steps:
-      - id: "code-review"
-        miniPrompt: "e2e/test_review/review-code-quality"
-        required: true
-        prerequisites:
-          requiredContext: ["implemented_fix", "test_results"]
-          optionalContext: ["fix_documentation", "test_changes"]
-        dependencies: ["handoff-to-review"]
-        
-      - id: "deliverable-review"
-        miniPrompt: "review/deliverable-review"
-        required: true
-        prerequisites:
-          requiredContext: ["reviewed_fix", "test_validation_results"]
-          optionalContext: ["fix_documentation", "lessons_learned"]
-        dependencies: ["code-review"]
-
-      - id: "handoff-to-completion"
-        miniPrompt: "handoff-memory-board"
-        required: true
-        prerequisites:
-          requiredContext: []
-          optionalContext: []
-        dependencies: ["deliverable-review"]
-
-# Critical Rules Integration (from test_fix_flow.md)
-criticalRules:
-  - rule: "never_remove_test_logic"
-    description: "NEVER simplify tests to just check if a page loads or remove actual assertions"
-    phases: ["implementation"]
-    message: "Maintain original test intent and functionality - no test.skip or test.fail()"
-    
-  - rule: "maintain_test_value"
-    description: "ALWAYS ensure tests actually verify the functionality they're supposed to test"
-    phases: ["implementation", "testing-validation"]
-    message: "Keep meaningful assertions that validate business logic"
-    
-  - rule: "proper_fixing_approach"
-    description: "Investigate root cause and update selectors to match current UI structure"
-    phases: ["codebase-investigation", "implementation"]
-    message: "Update selectors, add waitFor conditions, but maintain original test behavior"
-    
-  - rule: "no_fohlio_frontend_editing"
-    description: "NEVER fix anything in fohlio-frontend folder - only investigate and analyze"
-    phases: ["codebase-investigation", "planning-clarification"]
-    message: "Look, search, investigate, make assumptions - but NO editing of frontend code"
 
 # Workflow-level configurations
 skipConditions:
@@ -202,34 +86,21 @@ skipConditions:
     message: "All tests are already passing after previous fixes"
 
 validationRules:
-  - rule: "report_analysis_required"
-    phases: ["codebase-investigation"]
-    message: "E2E test report must be analyzed before investigating codebase changes"
-  - rule: "fix_approval_required"
+  - rule: "requirements_analysis_required"
+    phases: ["planning"]
+    message: "Test report analysis and fix requirements must be created before planning"
+  - rule: "implementation_plan_required"
     phases: ["implementation"]
-    dependencies: ["planning-clarification"]
-    message: "Fix strategy must be approved before implementation"
-  - rule: "test_rerun_required"
-    phases: ["testing-validation"]
-    dependencies: ["implementation"]
-    message: "Failing tests must be rerun to validate fixes"
-
-notifications:
-  - trigger: "critical_failure_detected"
-    phases: ["report-analysis"]
-    message: "Critical E2E test failures detected - immediate attention required"
-  - trigger: "fix_implementation_complete"
-    phases: ["implementation"]
-    message: "Test fix implemented and ready for validation"
-  - trigger: "tests_passing"
-    phases: ["testing-validation"]
-    message: "All previously failing tests now pass"
-  - trigger: "workflow_completion"
-    message: "E2E test report analysis and fix workflow completed successfully"
+    message: "Implementation plan must be completed before fixing tests"
 
 # Smart execution settings
 execution:
-  allowSkipping: false
-  requireExplicitApproval: true
+  allowSkipping: true
+  requireExplicitApproval: false
   automaticProgressTracking: true
-  criticalPhaseValidation: true
+
+# Critical Rules (embedded in mini-prompts)
+# - NEVER remove test logic or use test.skip/test.fail()
+# - NEVER edit fohlio-frontend - only investigate and analyze
+# - Update selectors and waits to match current UI structure
+# - Maintain original test intent and meaningful assertions
