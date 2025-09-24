@@ -1,0 +1,121 @@
+name: "E2E Test Creation Workflow"
+description: "Streamlined workflow for creating new E2E tests following established patterns and best practices"
+version: "1.1"
+category: "testing"
+tags: ["e2e-tests", "playwright", "test-creation", "automation", "quality", "typescript"]
+
+phases:
+  - phase: "analysis"
+    description: "Requirements gathering and test scope definition"
+    required: true
+    steps:
+      - id: "analyze-test-requirements"
+        miniPrompt: "e2e/analysis/analyze-test-requirements"
+        required: true
+        prerequisites:
+          requiredContext: []
+          optionalContext: ["feature_description", "user_stories", "acceptance_criteria", "business_requirements"]
+        outputs: ["test_requirements", "test_scope", "acceptance_criteria"]
+        
+      - id: "handoff-to-design"
+        miniPrompt: "handoff-memory-board"
+        required: true
+        prerequisites:
+          requiredContext: ["test_requirements"]
+          optionalContext: []
+        dependencies: ["analyze-test-requirements"]
+
+  - phase: "design-architecture"
+    description: "Test architecture and structure design"
+    required: true
+    steps:
+      - id: "design-e2e-architecture"
+        miniPrompt: "design-architecture/design-architecture"
+        required: true
+        prerequisites:
+          requiredContext: ["test_requirements", "test_scope"]
+          optionalContext: ["existing_patterns", "page_objects", "fixtures"]
+        dependencies: ["handoff-to-design"]
+        outputs: ["test_architecture", "page_object_design", "test_structure"]
+        
+      - id: "handoff-to-planning"
+        miniPrompt: "handoff-memory-board"
+        required: true
+        prerequisites:
+          requiredContext: ["test_architecture"]
+          optionalContext: []
+        dependencies: ["design-e2e-architecture"]
+
+  - phase: "planning"
+    description: "Implementation planning and task breakdown"
+    required: true
+    steps:
+      - id: "create-implementation-plan"
+        miniPrompt: "planning/create-implementation-plan"
+        required: true
+        prerequisites:
+          requiredContext: ["test_requirements", "test_architecture"]
+          optionalContext: ["existing_patterns", "development_environment"]
+        dependencies: ["handoff-to-planning"]
+        outputs: ["implementation_plan", "task_breakdown"]
+        
+      - id: "handoff-to-implementation"
+        miniPrompt: "handoff-memory-board"
+        required: true
+        prerequisites:
+          requiredContext: ["implementation_plan"]
+          optionalContext: []
+        dependencies: ["create-implementation-plan"]
+
+  - phase: "implementation"
+    description: "E2E test implementation and coding"
+    required: true
+    steps:
+      - id: "implement-test-logic"
+        miniPrompt: "e2e/test_creation/implement-test-logic"
+        required: true
+        prerequisites:
+          requiredContext: ["implementation_plan", "test_architecture"]
+          optionalContext: ["page_objects", "fixtures", "test_data"]
+        dependencies: ["handoff-to-implementation"]
+        
+      - id: "handoff-to-testing"
+        miniPrompt: "handoff-memory-board"
+        required: true
+        prerequisites:
+          requiredContext: ["implemented_test"]
+          optionalContext: []
+        dependencies: ["implement-test-logic"]
+
+  - phase: "testing-review"
+    description: "Test execution, validation, and quality review"
+    required: true
+    steps:
+      - id: "execute-and-validate-test"
+        miniPrompt: "e2e/test_execution/execute-test-locally"
+        required: true
+        prerequisites:
+          requiredContext: ["implemented_test"]
+          optionalContext: ["test_environment", "test_data"]
+        dependencies: ["handoff-to-testing"]
+
+# Workflow-level configurations
+skipConditions:
+  - condition: "existing_test_coverage"
+    message: "Feature already has sufficient E2E test coverage"
+  - condition: "no_ui_interaction"
+    message: "Test doesn't require UI interaction - consider unit/integration tests instead"
+
+validationRules:
+  - rule: "requirements_analysis_required"
+    phases: ["design-architecture"]
+    message: "Test requirements must be analyzed before architecture design"
+  - rule: "architecture_required"
+    phases: ["planning"]
+    message: "Test architecture must be designed before implementation planning"
+
+# Smart execution settings
+execution:
+  allowSkipping: true
+  requireExplicitApproval: false
+  automaticProgressTracking: true

@@ -1,0 +1,106 @@
+name: "E2E Test Report Analysis & Fix Workflow"
+description: "Streamlined workflow for analyzing E2E test reports and implementing fixes while maintaining test integrity"
+version: "1.1"
+category: "testing"
+tags: ["e2e-tests", "test-reports", "analysis", "fixing", "playwright", "quality"]
+
+phases:
+  - phase: "analysis"
+    description: "Analyze test report and create fix requirements"
+    required: true
+    steps:
+      - id: "analyze-and-create-requirements"
+        miniPrompt: "e2e/analysis/create-test-fix-requirements"
+        required: true
+        prerequisites:
+          requiredContext: []
+          optionalContext: ["test_report_file", "failure_statistics", "failing_tests", "trace_files"]
+        outputs: ["fix_requirements", "failing_test_analysis", "root_cause_analysis"]
+        
+      - id: "handoff-to-planning"
+        miniPrompt: "handoff-memory-board"
+        required: true
+        prerequisites:
+          requiredContext: ["fix_requirements"]
+          optionalContext: []
+        dependencies: ["analyze-and-create-requirements"]
+
+  - phase: "planning"
+    description: "Create implementation plan for test fixes"
+    required: true
+    steps:
+      - id: "create-implementation-plan"
+        miniPrompt: "planning/create-implementation-plan"
+        required: true
+        prerequisites:
+          requiredContext: ["fix_requirements", "failing_test_analysis"]
+          optionalContext: ["test_files", "existing_patterns", "ui_changes"]
+        dependencies: ["handoff-to-planning"]
+        outputs: ["implementation_plan", "task_breakdown"]
+        
+      - id: "handoff-to-implementation"
+        miniPrompt: "handoff-memory-board"
+        required: true
+        prerequisites:
+          requiredContext: ["implementation_plan"]
+          optionalContext: []
+        dependencies: ["create-implementation-plan"]
+
+  - phase: "implementation"
+    description: "Implement test fixes following task breakdown"
+    required: true
+    steps:
+      - id: "implement-test-fixes"
+        miniPrompt: "e2e/test_creation/implement-test-logic"
+        required: true
+        prerequisites:
+          requiredContext: ["implementation_plan", "fix_requirements"]
+          optionalContext: ["test_files", "ui_selectors", "test_data"]
+        dependencies: ["handoff-to-implementation"]
+        
+      - id: "handoff-to-testing"
+        miniPrompt: "handoff-memory-board"
+        required: true
+        prerequisites:
+          requiredContext: ["implemented_fixes"]
+          optionalContext: []
+        dependencies: ["implement-test-fixes"]
+
+  - phase: "testing-review"
+    description: "Execute tests and validate fixes"
+    required: true
+    steps:
+      - id: "execute-and-validate-fixes"
+        miniPrompt: "e2e/test_execution/execute-test-locally"
+        required: true
+        prerequisites:
+          requiredContext: ["implemented_fixes", "failing_tests"]
+          optionalContext: ["test_environment", "test_data"]
+        dependencies: ["handoff-to-testing"]
+
+# Workflow-level configurations
+skipConditions:
+  - condition: "no_test_failures"
+    message: "No test failures detected in the report"
+  - condition: "tests_already_passing"
+    message: "All tests are already passing after previous fixes"
+
+validationRules:
+  - rule: "requirements_analysis_required"
+    phases: ["planning"]
+    message: "Test report analysis and fix requirements must be created before planning"
+  - rule: "implementation_plan_required"
+    phases: ["implementation"]
+    message: "Implementation plan must be completed before fixing tests"
+
+# Smart execution settings
+execution:
+  allowSkipping: true
+  requireExplicitApproval: false
+  automaticProgressTracking: true
+
+# Critical Rules (embedded in mini-prompts)
+# - NEVER remove test logic or use test.skip/test.fail()
+# - NEVER edit fohlio-frontend - only investigate and analyze
+# - Update selectors and waits to match current UI structure
+# - Maintain original test intent and meaningful assertions
