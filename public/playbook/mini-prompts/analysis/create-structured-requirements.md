@@ -89,9 +89,3 @@ flowchart LR
     D --> E[Define acceptance criteria]
     E --> F[Generate requirements.md]
 ```
-
-## 🔄 Integration Notes
-This prompt works with:
-- `gather-requirements.md` - provides initial requirements
-- `create-trd.md` - uses structured requirements for technical design
-- `implement-feature.md` - implements based on clear acceptance criteria

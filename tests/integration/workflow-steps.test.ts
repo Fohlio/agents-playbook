@@ -19,7 +19,8 @@ describe('Workflow Steps Integration Tests', () => {
     const allWorkflowIds = [
       'code-refactoring',
       'feature-development',
-      'quick-fix'
+      'quick-fix',
+      'web-development-init'
     ];
 
     test.each(allWorkflowIds)('should progress through all steps in workflow: %s', async (workflowId) => {
