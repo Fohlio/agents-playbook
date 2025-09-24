@@ -44,7 +44,7 @@ describe('MCP Tools Integration Tests', () => {
       });
 
       expect(result.content).toBeDefined();
-      expect(result.content[0].text).toContain('trd-creation');
+      expect(result.content[0].text).toContain('Feature');
     }, TEST_TIMEOUT);
 
     test('should find workflows for project setup query', async () => {
@@ -53,7 +53,7 @@ describe('MCP Tools Integration Tests', () => {
       });
 
       expect(result.content).toBeDefined();
-      expect(result.content[0].text).toContain('product-development');
+      expect(result.content[0].text).toContain('feature-development');
     }, TEST_TIMEOUT);
 
     test('should handle query with low relevance gracefully', async () => {
@@ -86,7 +86,7 @@ describe('MCP Tools Integration Tests', () => {
 
       expect(result.content).toBeDefined();
       expect(result.content[0].text).toContain('Feature Development Workflow');
-      expect(result.content[0].text).toContain('create-trd');
+      expect(result.content[0].text).toContain('create-structured-requirements');
     }, TEST_TIMEOUT);
 
 
@@ -249,90 +249,13 @@ describe('MCP Tools Integration Tests', () => {
     }, TEST_TIMEOUT);
   });
 
-  describe('Feature brainstorming workflow tests', () => {
-    test('should return full workflow details for feature-brainstorming', async () => {
-      const result = await selectWorkflowHandler({ 
-        workflow_id: 'feature-brainstorming' 
-      });
-
-      expect(result.content).toBeDefined();
-      expect(result.content[0].text).toContain('Feature Brainstorming');
-      expect(result.content[0].text).toContain('analysis');
-      expect(result.content[0].text).toContain('research');
-      expect(result.content[0].text).toContain('ideation');
-      expect(result.content[0].text).toContain('documentation');
-    }, TEST_TIMEOUT);
-
-    test('should start with codebase analysis step', async () => {
-      const result = await getNextStepHandler({ 
-        workflow_id: 'feature-brainstorming',
-        current_step: 0
-      });
-
-      expect(result.content).toBeDefined();
-      const stepText = result.content[0].text;
-      
-      if (!stepText.includes('100% complete')) {
-        expect(stepText).toContain('analyze-codebase-opportunities');
-        expect(stepText).toMatch(/(codebase|analysis|opportunities)/);
-      }
-    }, TEST_TIMEOUT);
-
-    test('should progress through user interest discovery step', async () => {
-      const result = await getNextStepHandler({ 
-        workflow_id: 'feature-brainstorming',
-        current_step: 1,
-        available_context: ['codebase_analysis']
-      });
-
-      expect(result.content).toBeDefined();
-      const stepText = result.content[0].text;
-      
-      if (!stepText.includes('100% complete')) {
-        expect(stepText).toContain('discover-user-interests');
-        expect(stepText).toContain('Discover User Interests');
-      }
-    }, TEST_TIMEOUT);
-
-    test('should handle brainstorming queries with semantic search', async () => {
-      const queries = [
-        'brainstorm new features for my app',
-        'discover enhancement opportunities',
-        'generate feature ideas and suggestions',
-        'analyze codebase for improvement areas'
-      ];
-
-      for (const query of queries) {
-        const result = await getWorkflowsHandler({ task_description: query });
-        expect(result.content).toBeDefined();
-        expect(result.content[0].text).toContain('feature-brainstorming');
-      }
-    }, TEST_TIMEOUT);
-
-    test('should show context requirements for brainstorming workflow', async () => {
-      const result = await selectWorkflowHandler({ 
-        workflow_id: 'feature-brainstorming' 
-      });
-
-      expect(result.content).toBeDefined();
-      const workflowText = result.content[0].text;
-      
-      // Should show workflow overview and context gathering guidance
-      expect(workflowText).toContain('Workflow Overview');
-      expect(workflowText).toContain('Context Gathering');
-      expect(workflowText).toContain('analyze-codebase-opportunities');
-      expect(workflowText).toContain('discover-user-interests');
-    }, TEST_TIMEOUT);
-  });
 
   describe('All workflows comprehensive test', () => {
     const allWorkflowIds = [
       'code-refactoring',
-      'feature-brainstorming',
       'feature-development',
-      'product-development',
       'quick-fix',
-      'trd-creation'
+      'web-development-init'
     ];
 
     test.each(allWorkflowIds)('should handle workflow: %s', async (workflowId) => {
@@ -356,13 +279,8 @@ describe('MCP Tools Integration Tests', () => {
     const testQueries = [
       { query: 'fix bug', expectedWorkflow: 'quick-fix' },
       { query: 'new feature', expectedWorkflow: 'feature-development' },
-      { query: 'technical documentation', expectedWorkflow: 'trd-creation' },
-      { query: 'project setup', expectedWorkflow: 'product-development' },
       { query: 'code cleanup', expectedWorkflow: 'code-refactoring' },
-      { query: 'product development', expectedWorkflow: 'product-development' },
-      { query: 'brainstorm ideas', expectedWorkflow: 'feature-brainstorming' },
-      { query: 'enhancement opportunities', expectedWorkflow: 'feature-brainstorming' },
-      { query: 'feature ideas and suggestions', expectedWorkflow: 'feature-brainstorming' }
+      { query: 'refactor code', expectedWorkflow: 'code-refactoring' }
     ];
 
     test.each(testQueries)('semantic search for "$query" should find $expectedWorkflow', async ({ query, expectedWorkflow }) => {
@@ -405,6 +323,86 @@ describe('MCP Tools Integration Tests', () => {
       
       // Check that validation info is included
       expect(stepResult.content[0].text).toMatch(/(Executable|complete)/);
+    }, TEST_TIMEOUT);
+  });
+
+  describe('Web Development Init Workflow Specific Tests', () => {
+    test('should discover web-development-init workflow with appropriate keywords', async () => {
+      const keywords = [
+        'web development project setup',
+        'project structure analysis', 
+        'ui component catalog',
+        'data flow mapping',
+        'project initialization'
+      ];
+
+      for (const keyword of keywords) {
+        const result = await getWorkflowsHandler({ 
+          task_description: keyword 
+        });
+        
+        expect(result.content).toBeDefined();
+        const resultText = result.content[0].text;
+        expect(resultText).toContain('Web Development Init Workflow');
+      }
+    }, TEST_TIMEOUT);
+
+    test('should execute all analysis phases in web-development-init workflow', async () => {
+      const workflowId = 'web-development-init';
+      
+      // Get workflow structure
+      const selectResult = await selectWorkflowHandler({ workflow_id: workflowId });
+      expect(selectResult.content).toBeDefined();
+      
+      const workflowText = selectResult.content[0].text;
+      expect(workflowText).toContain('Web Development Init Workflow');
+      expect(workflowText).toContain('analyze-project-structure');
+      expect(workflowText).toContain('analyze-data-flow');
+      expect(workflowText).toContain('analyze-ui-components');
+      
+      // Test step progression
+      let currentStep = 0;
+      const maxSteps = 4; // Three analysis steps + consolidation
+      
+      while (currentStep < maxSteps) {
+        const stepResult = await getNextStepHandler({
+          workflow_id: workflowId,
+          current_step: currentStep,
+          available_context: []
+        });
+        
+        expect(stepResult.content).toBeDefined();
+        const stepText = stepResult.content[0].text;
+        
+        // Verify step contains analysis instructions
+        if (currentStep < 3) {
+          expect(stepText).toMatch(/(Analyze Project Structure|Analyze Data Flow|Analyze UI Components)/);
+          expect(stepText).toContain('Mini-Prompt Instructions');
+        }
+        
+        currentStep++;
+      }
+    }, TEST_TIMEOUT);
+
+    test('should validate ui.json output format requirements', async () => {
+      const workflowId = 'web-development-init';
+      
+      // Get the UI components analysis step
+      const stepResult = await getNextStepHandler({
+        workflow_id: workflowId,
+        current_step: 2, // analyze-ui-components step
+        available_context: []
+      });
+      
+      expect(stepResult.content).toBeDefined();
+      const stepText = stepResult.content[0].text;
+      
+      // Verify ui.json structure requirements are present
+      expect(stepText).toContain('ui.json');
+      expect(stepText).toContain('components');
+      expect(stepText).toContain('designSystem');
+      expect(stepText).toContain('folderStructure');
+      expect(stepText).toContain('deprecated');
     }, TEST_TIMEOUT);
   });
 }); 

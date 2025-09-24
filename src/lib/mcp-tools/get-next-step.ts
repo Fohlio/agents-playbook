@@ -107,7 +107,7 @@ export async function getNextStepHandler({
       return {
         content: [{ 
           type: "text" as const, 
-          text: `🎉 **Workflow Complete: ${workflowConfig.name}**\n\n✅ **Summary:**\n- Completed Steps: ${executionSummary.completed}\n- Skipped Steps: ${executionSummary.skipped}\n- Completion Rate: ${Math.round(executionSummary.completionRate * 100)}%\n\n**🚀 What's Next?**\nUse \`get_available_workflows\` to find related workflows or start a new one.`
+          text: `🎉 **Agents Playbook Workflow Complete: ${workflowConfig.name}**\n\n✅ **Summary:**\n- Completed Steps: ${executionSummary.completed}\n- Skipped Steps: ${executionSummary.skipped}\n- Completion Rate: ${Math.round(executionSummary.completionRate * 100)}%\n\n${executionSummary.skipped > 0 ? `⚠️ **Note:** This agents playbook workflow had ${executionSummary.skipped} skipped steps. For best results, consider reviewing and completing skipped steps if applicable.\n\n` : ''}**🚀 What's Next?**\nUse \`get_available_workflows\` to find related workflows or start a new one.`
         }],
       };
     }
@@ -119,7 +119,7 @@ export async function getNextStepHandler({
       return {
         content: [{ 
           type: "text" as const, 
-          text: `🎉 **Workflow Complete: ${workflowConfig.name}**\n\n✅ **Summary:**\n- Completed Steps: ${executionSummary.completed}\n- Skipped Steps: ${executionSummary.skipped}\n- Completion Rate: ${Math.round(executionSummary.completionRate * 100)}%\n\n**🚀 What's Next?**\nUse \`get_available_workflows\` to find related workflows or start a new one.`
+          text: `🎉 **Agents Playbook Workflow Complete: ${workflowConfig.name}**\n\n✅ **Summary:**\n- Completed Steps: ${executionSummary.completed}\n- Skipped Steps: ${executionSummary.skipped}\n- Completion Rate: ${Math.round(executionSummary.completionRate * 100)}%\n\n${executionSummary.skipped > 0 ? `⚠️ **Note:** This agents playbook workflow had ${executionSummary.skipped} skipped steps. For best results, consider reviewing and completing skipped steps if applicable.\n\n` : ''}**🚀 What's Next?**\nUse \`get_available_workflows\` to find related workflows or start a new one.`
         }],
       };
     }
@@ -179,8 +179,8 @@ export async function getNextStepHandler({
     stepContent += `---\n\n`;
     stepContent += `## 📋 Mini-Prompt Instructions\n\n`;
     
-    // Add general instructions about waiting for user answers
-    stepContent += `**🔄 General Instructions:**\n⚠️ **IMPORTANT:** For steps requiring user input, analysis, or answers:\n1. **First**: Try to find answers yourself using available tools, context, codebase search, and documentation\n2. **Then**: Present your findings to the user for validation and confirmation\n3. **Wait**: Do not proceed to the next step until the user validates your findings or provides corrections\n\n**📋 Context Gathering:**\nIf this step requires specific context that you don't have, gather it by:\n- Using codebase search to find relevant files and information\n- Reading existing documentation and project files\n- Analyzing the current project structure and setup\n- Asking targeted questions when automated gathering isn't sufficient\n\n`;
+    // Add workflow guidance
+    stepContent += `**⚠️ Important:** Complete this step fully before proceeding.\n\n**🔄 General Instructions:**\n⚠️ **IMPORTANT:** For steps requiring user input, analysis, or answers:\n1. **First**: Try to find answers yourself using available tools, context, codebase search, and documentation\n2. **Then**: Present your findings to the user for validation and confirmation\n3. **Wait**: Do not proceed to the next step until the user validates your findings or provides corrections\n\n**📋 Context Gathering:**\nIf this step requires specific context that you don't have, gather it by:\n- Using codebase search to find relevant files and information\n- Reading existing documentation and project files\n- Analyzing the current project structure and setup\n- Asking targeted questions when automated gathering isn't sufficient\n\n`;
     
     // Modify mini-prompt content based on available context
     let modifiedContent = miniPrompt.fullContent;
@@ -219,7 +219,7 @@ export async function getNextStepHandler({
     }
 
     // Add continuation instruction
-    stepContent += `\n**Next:** Complete this step and use \`get_next_step\` with current_step=${currentStep.stepNumber} to continue.`;
+    stepContent += `\n**Next:** Complete this step fully and use \`get_next_step\` with current_step=${currentStep.stepNumber} to continue.`;
 
     return {
       content: [{ 

@@ -83,7 +83,7 @@ export async function selectWorkflowHandler({ workflow_id }: { workflow_id: stri
       return `**${phase.name}:**\n${stepDetails}`;
     }).join('\n\n');
 
-    const nextStepsInfo = `\n\n**🚀 Ready to Start:**\nUse \`get_next_step\` with workflow_id="${workflow_id}" and current_step=0 to begin execution.\n\n**💡 Context Gathering:** Each step will guide you on how to gather the required context. Steps may auto-skip if context is missing or not needed.`;
+    const nextStepsInfo = `\n\n**🚀 Ready to Start:**\nUse \`get_next_step\` with workflow_id="${workflow_id}" and current_step=0 to begin execution.\n\n**💡 Context Gathering:** Each step will guide you on how to gather the required context. Steps may auto-skip if context is missing or not needed.\n\n**⚠️ Important:** Follow all steps completely - each has been designed for optimal results.`;
 
     return {
       content: [{ 

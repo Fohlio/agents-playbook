@@ -10,12 +10,13 @@ Agents Playbook is a framework for AI-driven development workflows. It provides 
 
 ### Features
 
-- 9 YAML-based workflows for development tasks
-- 25+ context-engineered mini-prompts organized by phases
-- Semantic search using OpenAI embeddings
+- 3 core YAML-based workflows for development tasks
+- 8 context-engineered mini-prompts organized by phases
+- Semantic search using OpenAI embeddings (with text fallback)
 - MCP (Model Context Protocol) server integration
 - TypeScript implementation
 - Workflow validation and smart step skipping
+- Context7 integration for fresh library documentation
 
 ## Prerequisites
 
@@ -67,8 +68,12 @@ npm run dev
 agents-playbook/
 ├── public/playbook/          # Workflow definitions
 │   ├── workflows/            # YAML workflow specifications
-│   ├── mini-prompts/         # Context-engineered prompts
-│   └── phases/               # Workflow phase definitions
+│   └── mini-prompts/         # Context-engineered prompts
+│       ├── analysis/         # Requirements gathering
+│       ├── design-architecture/ # Technical design
+│       ├── planning/         # Implementation planning
+│       ├── implementation/   # Coding phase
+│       └── testing-review/   # QA & validation
 ├── src/
 │   ├── lib/                  # Core implementation
 │   │   ├── execution/        # Workflow execution
@@ -110,19 +115,11 @@ OPENAI_API_KEY=your_api_key    # Required for semantic search
 Available workflows:
 
 **Development**
-- feature-development
-- product-development
-- quick-fix
-- code-refactoring
+- feature-development - Complete feature implementation lifecycle (5 phases: analysis, design-architecture, planning, implementation, testing-review)
+- quick-fix - Fast bug fixes and hotfixes (4 phases: analysis, planning, implementation, testing-review)
+- code-refactoring - Code quality improvements (4 phases: analysis, planning, implementation, testing-review)
 
-**Testing & QA**
-- fix-tests
-- fix-circular-dependencies
-- unit-test-coverage
-
-**Setup & Planning**
-- trd-creation
-- feature-brainstorming
+> 💡 **Tip**: When chatting with AI models, ask them to "use agents-playbook to select workflow" for structured development processes.
 
 ## MCP Integration
 

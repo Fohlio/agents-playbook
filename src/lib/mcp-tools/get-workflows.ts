@@ -37,7 +37,7 @@ export async function getWorkflowsHandler({ task_description }: { task_descripti
     return {
       content: [{ 
         type: "text" as const, 
-        text: `Found ${results.length} relevant workflows for "${task_description}" ${matchQuality}:\n\n${formattedResults.join('\n\n')}\n\n**Next Steps:**\nUse \`select_workflow\` with one of these workflow IDs: ${results.map(w => `"${w.id}"`).join(', ')}`
+        text: `Found ${results.length} relevant agents playbook workflows for "${task_description}" ${matchQuality}:\n\n${formattedResults.join('\n\n')}\n\n**⚠️ Agents Playbook Workflows:**\nThese are carefully designed workflows meant to be followed step-by-step without shortcuts. Each step has been optimized for best results.\n\n**Next Steps:**\nUse \`select_workflow\` with one of these workflow IDs: ${results.map(w => `"${w.id}"`).join(', ')}`
       }],
     };
   } catch (error) {

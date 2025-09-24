@@ -139,13 +139,15 @@ export class SmartWorkflowEngine {
 
   /**
    * Skip step manually with reason
+   * ⚠️ WARNING: This is an agents playbook workflow - only skip if absolutely necessary
    */
   async skipStep(stepId: string, reason: string): Promise<void> {
-    console.log(`[SmartEngine] Manually skipping step: ${stepId} - ${reason}`);
+    console.log(`[SmartEngine] ⚠️ WARNING: Skipping agents playbook step: ${stepId} - ${reason}`);
+    console.log(`[SmartEngine] ⚠️ REMINDER: Agents playbook workflows are designed to be followed completely for optimal results`);
     
     this.context.skipped_steps.push({
       id: stepId,
-      reason: `Manual skip: ${reason}`,
+      reason: `Manual skip: ${reason} (⚠️ Agents playbook step skipped)`,
       step_title: stepId
     });
   }

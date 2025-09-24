@@ -17,47 +17,28 @@ This is a **production-ready workflow automation repository** for AI agents in s
 ### 🎯 Core Architecture
 
 #### 🔧 YAML Workflows (`playbook/workflows/`)
-- **feature-development.yml** - Complete feature development lifecycle (14 steps)
-- **product-development.yml** - Product from idea to launch (15 steps) 
-- **quick-fix.yml** - Bug fixes and hotfixes (4 steps)
-- **code-refactoring.yml** - Code architecture improvements (8 steps)
-- **fix-tests.yml** - Systematic test failure diagnosis and repair with refactoring integration (8 steps)
-- **fix-circular-dependencies.yml** - Comprehensive circular dependency resolution with architectural refactoring (7 steps)
-- **unit-test-coverage.yml** - Comprehensive unit test coverage improvement (7 steps)
-- **trd-creation.yml** - Technical Requirements Document creation (7 steps)
-- **project-initialization.yml** - New project setup (5 steps)
+- **feature-development.yml** - Complete feature development lifecycle (5 phases: analysis, design-architecture, planning, implementation, testing-review)
+- **quick-fix.yml** - Bug fixes and hotfixes (4 phases: analysis, planning, implementation, testing-review)
+- **code-refactoring.yml** - Code architecture improvements (4 phases: analysis, planning, implementation, testing-review)
 
 #### 🧱 Mini-Prompts Library (`playbook/mini-prompts/`)
 
-**Business Phase** (`business/`)
-- `gather-requirements.md` - Requirements collection and analysis
-- `document-decisions.md` - Decision documentation and rationale
-
 **Analysis Phase** (`analysis/`)
-- `feature-analysis.md` - Feature scope and impact analysis
-- `architecture-analysis.md` - System architecture evaluation
-- `code-analysis.md` - Code quality and structure analysis
+- `ask-clarifying-questions.md` - Requirements clarification and scope definition
+- `create-structured-requirements.md` - Requirements collection and analysis
 - `trace-bug-root-cause.md` - Bug investigation and root cause analysis
 
-**Development Phase** (`development/`)
-- `design-architecture.md` - Solution architecture and design
-- `ask-clarifying-questions.md` - Requirements clarification
+**Design-Architecture Phase** (`design-architecture/`)
+- `design-architecture.md` - Solution architecture and technical design
+
+**Planning Phase** (`planning/`)
+- `create-implementation-plan.md` - Implementation planning and strategy
+
+**Implementation Phase** (`implementation/`)
 - `implement-feature.md` - Feature implementation guidance
-- `fix-circular-dependencies.md` - Circular dependency resolution
 
-**Review Phase** (`review/`)
-- `code-review.md` - Code quality assessment and improvement recommendations
-- `trd-review.md` - Technical requirements document review and validation
-- `deliverable-review.md` - Universal deliverable quality assessment
-
-**QA Phase** (`qa/`)
-- `create-test-plan.md` - Test planning and strategy
+**Testing-Review Phase** (`testing-review/`)
 - `execute-tests.md` - Test execution and validation
-- `validate-requirements.md` - Requirements validation and acceptance
-- `analyze-test-failures.md` - Test failure analysis and diagnosis
-- `analyze-test-coverage.md` - Test coverage analysis and improvement
-- `fix-test-issues.md` - Test issue resolution and fixes
-- `write-unit-tests.md` - Unit test creation and implementation
 
 **Handoff System**
 - `handoff-memory-board.md` - Agent context transfer and communication system
@@ -114,8 +95,8 @@ Critical Bug/Hotfix → quick-fix workflow
 
 #### Feature Development
 ```
-Feature Idea → trd-creation → feature-development (with TRD integration [[memory:2316971]])
-Business Requirements → brd-to-trd-translation → feature-development
+Feature Idea → feature-development (with TRD integration [[memory:2316971]])
+Existing Requirements → feature-development
 ```
 
 #### Test Issues
@@ -177,7 +158,7 @@ Legacy Code → code-refactoring → feature-development
 # Generate embeddings for semantic search
 npm run build:embeddings
 
-# Run comprehensive test suite (50+ tests)
+# Run comprehensive test suite (70+ tests)
 npm run test:integration
 
 # Start development server
@@ -217,7 +198,7 @@ npm run dev
 - Workflow produces expected output with smart execution
 - Implementation meets requirements with proper validation
 - Documentation stays current and accurate
-- Test coverage remains comprehensive (50+ tests passing)
+- Test coverage remains comprehensive (70+ tests passing)
 
 ## Emergency Situations
 For urgent bugs or critical issues:

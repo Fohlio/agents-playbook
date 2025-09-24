@@ -37,27 +37,17 @@ const OVERVIEW_CONTENT = {
 } as const;
 
 const STATS: Stat[] = [
-  { value: "9", label: "Workflows", color: "text-blue-600" },
-  { value: "25+", label: "Mini-Prompts", color: "text-green-600" },
-  { value: "65", label: "Tests", color: "text-purple-600" },
+  { value: "3", label: "Workflows", color: "text-blue-600" },
+  { value: "8", label: "Mini-Prompts", color: "text-green-600" },
+  { value: "70", label: "Tests", color: "text-purple-600" },
   { value: "3", label: "MCP Tools", color: "text-orange-600" }
 ] as const;
 
 const WORKFLOW_CATEGORIES: WorkflowCategory[] = [
   {
-    title: "Development",
+    title: "Development Workflows",
     icon: "⚡",
-    workflows: ["feature-development", "product-development", "quick-fix", "code-refactoring"]
-  },
-  {
-    title: "Testing & QA", 
-    icon: "🔧",
-    workflows: ["fix-tests", "fix-circular-dependencies", "unit-test-coverage"]
-  },
-  {
-    title: "Setup & Planning",
-    icon: "📝", 
-    workflows: ["trd-creation", "feature-brainstorming"]
+    workflows: ["feature-development", "quick-fix", "code-refactoring"]
   }
 ] as const;
 
@@ -81,6 +71,12 @@ function OverviewSection() {
               )}
             </p>
           ))}
+        </div>
+        
+        <div className="mt-8 p-4 bg-blue-50 rounded-lg border-l-4 border-blue-500">
+          <p className="text-sm text-blue-800">
+            💡 <strong>Tip:</strong> When chatting with AI models, ask them to "use agents-playbook to select workflow" for structured development processes.
+          </p>
         </div>
       </div>
     </section>
@@ -115,9 +111,9 @@ function WorkflowsSection() {
           Workflows
         </h2>
         
-        <div className="grid md:grid-cols-3 gap-6">
+        <div className="flex justify-center">
           {WORKFLOW_CATEGORIES.map((category, index) => (
-            <article key={index} className="bg-white p-6 rounded-lg shadow-sm">
+            <article key={index} className="bg-white p-6 rounded-lg shadow-sm max-w-md">
               <h3 className="text-lg font-semibold text-gray-900 mb-3">
                 {category.title}
               </h3>

@@ -4,84 +4,86 @@ version: "1.0"
 category: "development"
 tags: ["refactoring", "architecture", "performance", "maintainability", "technical-debt"]
 
+# CRITICAL: VALIDATE ALL STEPS BEFORE STARTING
+agentInstructions:
+  validation:
+    required: true
+    message: "🚨 MANDATORY: Before starting, validate ALL workflow steps, prerequisites, mini-prompts access, and required context. Execute ALL steps completely - no skipping unless explicitly optional."
+
 phases:
-  - phase: "planning-clarification"
-    description: "Requirements gathering, clarification and refactoring scope definition"
+  - phase: "analysis"
+    description: "Requirements gathering and refactoring scope definition - CRITICAL: Ask detailed clarifying questions to fully understand refactoring goals and constraints before proceeding"
     required: true
     steps:
-      - id: "gather-and-clarify-requirements"
-        miniPrompt: "business/gather-requirements"
+      - id: "analyze-refactoring-scope"
+        miniPrompt: "analysis/analyze-refactoring-scope"
         required: true
         prerequisites:
           requiredContext: []
-          optionalContext: ["existing_codebase", "performance_issues", "maintenance_concerns", "technical_debt"]
-        
-      - id: "handoff-to-analysis"
-        miniPrompt: "handoff-memory-board"
-        required: true
-        prerequisites:
-          requiredContext: ["clarified_requirements"]
-          optionalContext: []
-        dependencies: ["gather-and-clarify-requirements"]
-
-  - phase: "analysis"
-    description: "Code analysis and refactoring planning"
-    required: true
-    steps:
-      - id: "code-analysis"
-        miniPrompt: "analysis/code-analysis"
-        required: true
-        prerequisites:
-          requiredContext: ["existing_codebase", "clarified_requirements"]
-          optionalContext: ["performance_metrics", "maintenance_issues"]
-        dependencies: ["handoff-to-analysis"]
-        
-      - id: "architecture-analysis"
-        miniPrompt: "analysis/architecture-analysis"
-        required: true
-        prerequisites:
-          requiredContext: ["code_analysis_results", "system_architecture"]
-          optionalContext: ["scalability_requirements", "performance_targets"]
-        dependencies: ["code-analysis"]
+          optionalContext: ["existing_codebase", "performance_issues", "maintenance_concerns", "technical_debt", "code_smells", "refactoring_motivation"]
+        outputs: ["refactoring_requirements", "scope_definition", "priority_areas"]
         
       - id: "handoff-to-design"
         miniPrompt: "handoff-memory-board"
         required: true
         prerequisites:
-          requiredContext: ["code_analysis_results", "architecture_analysis"]
-          optionalContext: []
-        dependencies: ["architecture-analysis"]
+          requiredContext: ["refactoring_requirements"]
+          optionalContext: ["scope_definition", "priority_areas"]
+        dependencies: ["analyze-refactoring-scope"]
 
   - phase: "design-architecture"
-    description: "Refactoring strategy and design"
+    description: "Technical design and architecture specification for refactoring"
     required: true
     steps:
       - id: "design-architecture"
-        miniPrompt: "development/design-architecture"
-        required: true
+        miniPrompt: "design-architecture/design-architecture"
+        required: false
         prerequisites:
-          requiredContext: ["architecture_analysis", "refactoring_goals"]
-          optionalContext: ["new_requirements", "technical_constraints"]
+          requiredContext: ["refactoring_requirements"]
+          optionalContext: ["existing_architecture", "technical_constraints", "scope_definition"]
         dependencies: ["handoff-to-design"]
+        skipConditions: ["minor_refactoring", "simple_cleanup"]
+        outputs: ["design_specifications", "technical_requirements", "architecture_specifications"]
         
-      - id: "handoff-to-implementation"
+      - id: "handoff-to-planning"
         miniPrompt: "handoff-memory-board"
         required: true
         prerequisites:
-          requiredContext: ["refactoring_design"]
-          optionalContext: []
+          requiredContext: ["refactoring_requirements"]
+          optionalContext: ["design_specifications"]
         dependencies: ["design-architecture"]
+
+  - phase: "planning"
+    description: "Implementation planning and strategy"
+    required: true
+    steps:
+      - id: "create-implementation-plan"
+        miniPrompt: "planning/create-implementation-plan"
+        required: true
+        prerequisites:
+          requiredContext: ["refactoring_requirements", "design_specifications"]
+          optionalContext: ["technical_architecture", "existing_codebase", "scope_definition"]
+        dependencies: ["handoff-to-planning"]
+        outputs: ["implementation_plan", "task_breakdown", "technical_specifications"]
+        
+      - id: "handoff-to-implementation"
+        miniPrompt: "handoff-to-subagent"
+        required: true
+        prerequisites:
+          requiredContext: ["implementation_plan", "refactoring_requirements"]
+          optionalContext: ["design_specifications", "technical_specifications", "task_breakdown"]
+        dependencies: ["create-implementation-plan"]
 
   - phase: "implementation"
     description: "Code refactoring execution"
     required: true
     steps:
-      - id: "implement-feature"
-        miniPrompt: "development/implement-feature"
+      - id: "implement-refactoring"
+        miniPrompt: "implementation/implement-task"
         required: true
         prerequisites:
-          requiredContext: ["refactoring_design", "implementation_plan"]
-          optionalContext: ["migration_strategy", "backward_compatibility"]
+          requiredContext: ["refactoring_requirements"]
+          optionalContext: ["design_specifications", "migration_strategy", "backward_compatibility", "existing_codebase", "scope_definition"]
         dependencies: ["handoff-to-implementation"]
         
       - id: "handoff-to-testing"
@@ -90,55 +92,19 @@ phases:
         prerequisites:
           requiredContext: ["refactored_code"]
           optionalContext: []
-        dependencies: ["implement-feature"]
+        dependencies: ["implement-refactoring"]
 
-  - phase: "testing-validation"
-    description: "Refactoring validation and testing"
+  - phase: "testing-review"
+    description: "Testing, validation, and quality assessment"
     required: true
     steps:
-      - id: "create-test-plan"
-        miniPrompt: "qa/create-test-plan"
+      - id: "execute-tests"
+        miniPrompt: "testing-review/execute-tests"
         required: true
         prerequisites:
           requiredContext: ["refactored_code", "original_functionality"]
-          optionalContext: ["performance_requirements", "compatibility_requirements"]
+          optionalContext: ["automated_tests", "performance_benchmarks", "test_plan"]
         dependencies: ["handoff-to-testing"]
-        
-      - id: "execute-tests"
-        miniPrompt: "qa/execute-tests"
-        required: true
-        prerequisites:
-          requiredContext: ["test_plan", "refactored_system"]
-          optionalContext: ["automated_tests", "performance_benchmarks"]
-        dependencies: ["create-test-plan"]
-        
-      - id: "handoff-to-review"
-        miniPrompt: "handoff-memory-board"
-        required: true
-        prerequisites:
-          requiredContext: ["test_results", "refactored_system"]
-          optionalContext: []
-        dependencies: ["execute-tests"]
-
-  - phase: "review"
-    description: "Refactoring quality assessment and validation"
-    required: true
-    steps:
-      - id: "code-review"
-        miniPrompt: "review/code-review"
-        required: true
-        prerequisites:
-          requiredContext: ["refactored_code", "test_results"]
-          optionalContext: ["original_code_comparison"]
-        dependencies: ["handoff-to-review"]
-        
-      - id: "deliverable-review"
-        miniPrompt: "review/deliverable-review"
-        required: true
-        prerequisites:
-          requiredContext: ["refactored_system", "original_requirements"]
-          optionalContext: ["performance_improvements"]
-        dependencies: ["code-review"]
 
 # Workflow-level configurations
 skipConditions:
@@ -148,21 +114,21 @@ skipConditions:
     message: "Codebase doesn't require significant refactoring"
 
 validationRules:
-  - rule: "requirements_validation_required"
-    phases: ["planning-clarification"]
-    message: "Refactoring requirements and scope must be clearly defined before proceeding to analysis"
+  - rule: "refactoring_scope_validation_required"
+    phases: ["analysis"]
+    message: "Refactoring scope and requirements must be clearly defined before proceeding to planning"
   - rule: "backward_compatibility_required"
     phases: ["implementation"]
-    dependencies: ["design-architecture"]
+    dependencies: ["planning"]
     message: "Refactoring must maintain backward compatibility unless technical requirements specify otherwise"
   - rule: "performance_validation_required"
-    phases: ["testing-validation"]
+    phases: ["testing-review"]
     dependencies: ["implementation"]
     message: "Performance impact must be measured and validated"
 
 notifications:
   - trigger: "phase_completion"
-    phases: ["planning-clarification", "analysis", "implementation"]
+    phases: ["analysis", "design-architecture", "planning", "implementation", "testing-review"]
     message: "Major refactoring phase completed"
   - trigger: "workflow_completion"
     message: "Code refactoring completed successfully"
