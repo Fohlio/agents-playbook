@@ -11,11 +11,6 @@ export default function SetupSection() {
       ),
       gradient: "from-blue-500 to-purple-500",
       codeBlocks: {
-        claude: `"mcpServers": {
-  "agents-playbook": {
-    "url": "https://agents-playbook.vercel.app/api/mcp"
-  }
-}`,
         cursor: `{
   "mcpServers": {
     "agents-playbook": {
@@ -37,9 +32,7 @@ export default function SetupSection() {
       ),
       gradient: "from-green-500 to-emerald-500",
       examples: [
-        "I need help with product development",
-        "Find a workflow for bug fixing",
-        "Show me planning templates"
+        "use agents-playbook to select feature development workflow",
       ]
     }
   ];
@@ -61,8 +54,9 @@ export default function SetupSection() {
             </span>
           </h2>
           <p className="text-xl text-slate-600 max-w-2xl mx-auto">
-            Get started in minutes with Claude Desktop or Cursor
+            Get started in minutes with Cursor
           </p>
+
         </div>
 
         {/* Steps */}
@@ -105,18 +99,8 @@ export default function SetupSection() {
                     <div className="space-y-4">
                       <div className="bg-slate-900 rounded-2xl p-6 overflow-x-auto border border-slate-200">
                         <div className="flex items-center space-x-2 mb-4">
-                          <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
-                          <span className="text-slate-300 font-medium">Claude Desktop</span>
-                        </div>
-                        <pre className="text-slate-300 text-sm font-mono leading-relaxed">
-                          <code>{step.codeBlocks.claude}</code>
-                        </pre>
-                      </div>
-                      
-                      <div className="bg-slate-900 rounded-2xl p-6 overflow-x-auto border border-slate-200">
-                        <div className="flex items-center space-x-2 mb-4">
                           <div className="w-3 h-3 bg-purple-500 rounded-full"></div>
-                          <span className="text-slate-300 font-medium">Cursor</span>
+                          <span className="text-slate-300 font-medium">Cursor MCP Settings</span>
                         </div>
                         <pre className="text-slate-300 text-sm font-mono leading-relaxed">
                           <code>{step.codeBlocks.cursor}</code>
@@ -125,7 +109,7 @@ export default function SetupSection() {
                       
                       {/* Info note */}
                       <div className="px-4 py-3 bg-blue-50 border border-blue-200 rounded-lg text-sm text-blue-800">
-                        <p className="font-medium">💡 Use the "Quick Setup" button below for automatic copying</p>
+                        <p className="font-medium">💡 Add this configuration to your Cursor MCP settings</p>
                       </div>
                     </div>
                   )}

@@ -1,20 +1,20 @@
 # Analyze Data Flow (v1)
 
 ## 🎯 Goal
-Map and document data flow patterns from backend to frontend, including API patterns, state management, and integration points for consistent data handling strategies.
+Map and document comprehensive data storage and flow patterns across all systems, including databases, caches, local storage, API patterns, state management, and integration points for consistent data handling strategies.
 
 ## 📥 Context (ask if missing)
-1. **Project Codebase** – access to source code for analysis
-2. **Backend Architecture** – API structure and data sources
-3. **Frontend Framework** – React, Vue, Angular, or other frontend technology
-4. **State Management** – existing state management solutions in use
-5. **API Documentation** – existing API specs or documentation
-6. **Integration Requirements** – external services and third-party APIs
+1. **Codebase Access** – backend and frontend source available
+2. **Data Stores** – primary databases and caches in use
+3. **API Style & Auth** – REST/GraphQL and authentication method
+4. **Frontend & State** – framework and state management (e.g., Redux, Zustand)
+5. **Client Storage** – use of localStorage/sessionStorage/IndexedDB
+6. **External Integrations** – key third‑party services impacting data
 
 ## ❓ Clarifying Questions (ask before proceeding)
 **IMPORTANT: Ask clarifying questions directly in chat before proceeding.**
 
-Generate concise one-line questions about: API architecture type (REST/GraphQL/etc.), authentication patterns, real-time requirements, data transformation needs, caching strategies, error handling approaches, and performance constraints.
+Generate concise one-line questions about: database systems used, caching layers, local/session storage usage, API architecture type (REST/GraphQL/etc.), authentication patterns, real-time requirements, data transformation needs, error handling approaches, and performance constraints.
 
 ## 🚦 Skip if
 - Data flow is well-documented and recently analyzed (<30 days)
@@ -22,11 +22,13 @@ Generate concise one-line questions about: API architecture type (REST/GraphQL/e
 - Single-page application without external data sources
 
 ## 📋 Analysis Process
-1. **API Pattern Detection** – identify backend communication patterns (REST, GraphQL, WebSocket)
-2. **State Management Analysis** – map client-side state management approaches
-3. **Data Transformation Mapping** – trace data from source to UI components  
-4. **Integration Point Discovery** – identify external service connections
-5. **Flow Documentation** – create visual and textual data flow documentation
+1. **Data Storage System Discovery** – identify all databases, caches, and storage systems
+2. **API Pattern Detection** – identify backend communication patterns (REST, GraphQL, WebSocket)
+3. **State Management Analysis** – map client-side state management approaches
+4. **Client Storage Analysis** – analyze local storage, session storage, IndexedDB usage
+5. **Data Transformation Mapping** – trace data from storage to UI components  
+6. **Integration Point Discovery** – identify external service connections
+7. **Flow Documentation** – create visual and textual data flow documentation
 
 ## 📤 Output
 **File:** `.agents-playbook/data-flow-analysis.md`
@@ -39,7 +41,31 @@ Generate concise one-line questions about: API architecture type (REST/GraphQL/e
 - **Backend Architecture:** [REST/GraphQL/Hybrid/etc.]
 - **Frontend Framework:** [React, Vue, Angular, etc.]
 - **State Management:** [Redux, Zustand, Context API, etc.]
+- **Primary Database:** [PostgreSQL, MySQL, MongoDB, etc.]
+- **Caching Systems:** [Redis, Memcached, in-memory, etc.]
+- **Client Storage:** [localStorage, sessionStorage, IndexedDB, etc.]
 - **Analysis Date:** [Current date]
+
+## Data Storage Systems
+
+### Primary Database
+- **Type:** [SQL/NoSQL/Graph/etc.]
+- **Technology:** [PostgreSQL, MySQL, MongoDB, etc.]
+- **Connection Details:** [Pool size, connection patterns]
+- **Schema Overview:** [Main tables/collections]
+
+### Caching Layers
+- **Server-side Cache:** [Redis, Memcached, application cache]
+- **CDN:** [CloudFlare, AWS CloudFront, etc.]
+- **Database Cache:** [Query result caching]
+- **Application Cache:** [In-memory caching strategies]
+
+### Client-side Storage
+- **Local Storage:** [What data is stored permanently]
+- **Session Storage:** [Temporary data for browser session]
+- **IndexedDB:** [Complex client-side data storage]
+- **Cookies:** [Authentication, preferences, tracking]
+- **Cache API:** [Service worker caching strategies]
 
 ## API Patterns
 
@@ -79,16 +105,18 @@ Generate concise one-line questions about: API architecture type (REST/GraphQL/e
 
 ## Data Transformation Pipeline
 
-### Backend → Frontend
+### Complete Data Pipeline
 ```
-[Data Source] → [API Layer] → [Data Transformation] → [State Store] → [UI Components]
+[Data Storage] → [Cache Layer] → [API Layer] → [Data Transformation] → [State Store] → [UI Components] → [Client Storage]
 ```
 
-1. **Data Source:** [Database, external APIs, files, etc.]
-2. **API Layer:** [Backend controllers, resolvers, etc.]
-3. **Data Transformation:** [Serialization, validation, formatting]
-4. **State Store:** [How data enters application state]
-5. **UI Components:** [How data is consumed in interface]
+1. **Data Storage:** [Primary database, data lakes, file systems]
+2. **Cache Layer:** [Redis, CDN, application-level caches]
+3. **API Layer:** [Backend controllers, resolvers, middleware]
+4. **Data Transformation:** [Serialization, validation, formatting]
+5. **State Store:** [How data enters application state]
+6. **UI Components:** [How data is consumed in interface]
+7. **Client Storage:** [Browser storage for offline/persistence]
 
 ### Key Transformation Points
 - **API Response Processing:** [How responses are handled]

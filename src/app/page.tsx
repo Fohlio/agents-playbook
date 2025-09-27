@@ -5,127 +5,68 @@ import SetupSection from "@/components/SetupSection";
 import WorkflowMatcherGame from "@/components/WorkflowMatcherGame";
 
 // Types
-interface Stat {
-  value: string;
-  label: string;
-  color: string;
-  icon?: string;
-}
-
-interface WorkflowCategory {
-  title: string;
-  icon: string;
-  workflows: string[];
-}
 
 // Data Constants
-const OVERVIEW_CONTENT = {
-  title: "What is this?",
-  descriptions: [
-    {
-      term: "Workflow Engine",
-      definition: "structured development processes with semantic search and validation."
-    },
-    {
-      term: "Context Framework", 
-      definition: "helps AI models follow consistent processes with intelligent workflow discovery."
-    },
-    {
-      summary: "Find workflows through semantic search, validate steps automatically, and transfer context between development phases."
-    }
-  ]
-} as const;
 
-const STATS: Stat[] = [
-  { value: "3", label: "Workflows", color: "text-blue-600" },
-  { value: "8", label: "Mini-Prompts", color: "text-green-600" },
-  { value: "70", label: "Tests", color: "text-purple-600" },
-  { value: "3", label: "MCP Tools", color: "text-orange-600" }
-] as const;
 
-const WORKFLOW_CATEGORIES: WorkflowCategory[] = [
+
+const ROADMAP_FEATURES = [
   {
-    title: "Development Workflows",
-    icon: "⚡",
-    workflows: ["feature-development", "quick-fix", "code-refactoring"]
+    title: "Enhanced MCP Integration",
+    description: "Intelligent MCP server recommendations at each workflow step"
+  },
+  {
+    title: "Cursor Extension + Sub-Agents",
+    description: "Deep Cursor integration with isolated context and multiple agents support"
+  },
+  {
+    title: "Custom Workflows as a Service",
+    description: "Dynamic workflow creation and customization platform"
+  },
+  {
+    title: "Advanced Figma & Layout Workflows",
+    description: "Enhanced UI implementation flows with design system integration"
+  },
+  {
+    title: "Extended Workflow Library",
+    description: "Enhanced bug tracing, refactoring, and integrated testing strategies"
   }
 ] as const;
 
 // Component Definitions
-function OverviewSection() {
+
+
+function RoadmapSection() {
   return (
-    <section className="py-16 bg-white" aria-labelledby="overview-title">
-      <div className="max-w-4xl mx-auto px-4 text-center">
-        <h2 id="overview-title" className="text-3xl font-bold text-gray-900 mb-8">
-          {OVERVIEW_CONTENT.title}
-        </h2>
-        <div className="text-lg text-gray-700 space-y-4">
-          {OVERVIEW_CONTENT.descriptions.map((item, index) => (
-            <p key={index}>
-              {'term' in item ? (
-                <>
-                  <strong>{item.term}</strong> {item.definition}
-                </>
-              ) : (
-                item.summary
-              )}
-            </p>
-          ))}
-        </div>
-        
-        <div className="mt-8 p-4 bg-blue-50 rounded-lg border-l-4 border-blue-500">
-          <p className="text-sm text-blue-800">
-            💡 <strong>Tip:</strong> When chatting with AI models, ask them to "use agents-playbook to select workflow" for structured development processes.
+    <section className="py-20 bg-gradient-to-b from-blue-50 to-indigo-100 border-t border-b border-blue-200" aria-labelledby="roadmap-title">
+      <div className="max-w-4xl mx-auto px-4">
+        <div className="text-center mb-16">
+          <h2 id="roadmap-title" className="text-4xl font-bold text-gray-900 mb-4">
+            Roadmap
+          </h2>
+          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+            Upcoming features to enhance AI-driven development workflows
           </p>
         </div>
-      </div>
-    </section>
-  );
-}
-
-function StatsSection() {
-  return (
-    <section className="py-12 bg-gray-50" aria-labelledby="stats-title">
-      <div className="max-w-4xl mx-auto px-4">
-        <h2 id="stats-title" className="sr-only">Platform Statistics</h2>
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-6 text-center">
-          {STATS.map((stat, index) => (
-            <div key={index} className="p-4" role="group" aria-label={`${stat.value} ${stat.label}`}>
-              <div className={`text-2xl font-bold ${stat.color}`} aria-hidden="true">
-                {stat.value}
-              </div>
-              <div className="text-sm text-gray-600">{stat.label}</div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function WorkflowsSection() {
-  return (
-    <section className="py-16 bg-gray-50" aria-labelledby="workflows-title">
-      <div className="max-w-4xl mx-auto px-4">
-        <h2 id="workflows-title" className="text-3xl font-bold text-gray-900 text-center mb-8">
-          Workflows
-        </h2>
         
-        <div className="flex justify-center">
-          {WORKFLOW_CATEGORIES.map((category, index) => (
-            <article key={index} className="bg-white p-6 rounded-lg shadow-sm max-w-md">
-              <h3 className="text-lg font-semibold text-gray-900 mb-3">
-                {category.title}
-              </h3>
-              <ul className="text-sm text-gray-600 space-y-1" role="list">
-                {category.workflows.map((workflow, workflowIndex) => (
-                  <li key={workflowIndex} role="listitem">
-                    • {workflow}
-                  </li>
-                ))}
-              </ul>
-            </article>
-          ))}
+        <div className="bg-white rounded-xl shadow-lg border border-blue-200 p-8">
+          <ol className="space-y-6">
+            {ROADMAP_FEATURES.map((feature, index) => (
+              <li key={index} className="flex items-start">
+                <div className="flex-shrink-0 w-8 h-8 bg-gradient-to-r from-blue-500 to-indigo-500 text-white rounded-full flex items-center justify-center font-bold text-sm mr-4 mt-1">
+                  {index + 1}
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-xl font-bold text-gray-900 mb-2">
+                    {feature.title}
+                  </h3>
+                  <p className="text-gray-700 leading-relaxed">
+                    {feature.description}
+                  </p>
+                </div>
+              </li>
+            ))}
+          </ol>
         </div>
       </div>
     </section>
@@ -139,12 +80,10 @@ export default function Home() {
       <Header />
       <main role="main">
         <HeroSection />
-        <OverviewSection />
-        <StatsSection />
-        <WorkflowMatcherGame />
-        <WorkflowsSection />
         <FeaturesSection />
         <SetupSection />
+        <RoadmapSection />
+        <WorkflowMatcherGame />
       </main>
     </div>
   );

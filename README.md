@@ -123,12 +123,16 @@ Available workflows:
 
 ## MCP Integration
 
-### Claude Desktop
+### Cursor
+
+Add to your Cursor MCP settings:
+
 ```json
 {
   "mcpServers": {
     "agents-playbook": {
-      "url": "https://agents-playbook.vercel.app/api/mcp"
+      "url": "https://agents-playbook.vercel.app/api/mcp",
+      "description": "AI Agent Workflow Engine"
     }
   }
 }
@@ -153,6 +157,16 @@ vercel --prod
 
 Set environment variables in Vercel dashboard:
 - `OPENAI_API_KEY=your_key_here`
+
+## Roadmap
+
+**Upcoming Features**
+
+1. **Enhanced MCP Integration** - Intelligent MCP server recommendations at each workflow step
+2. **Cursor Extension + Sub-Agents** - Deep Cursor integration with isolated context and workflow merging
+3. **Custom Workflows as a Service** - Dynamic workflow creation and customization platform
+4. **Advanced Figma & Layout Workflows** - Enhanced UI implementation flows with design system integration
+5. **Extended Workflow Library** - Enhanced bug tracing, refactoring, and integrated testing strategies
 
 ## Contributing
 

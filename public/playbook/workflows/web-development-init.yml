@@ -1,4 +1,4 @@
-name: "Web Development Init Workflow"
+name: "Init Playbook for Web"
 description: "Systematic analysis and initialization of web development projects with structure mapping, data flow analysis, and UI component cataloging"
 version: "1.0"
 category: "development" 

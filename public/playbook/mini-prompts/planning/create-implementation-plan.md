@@ -29,7 +29,7 @@ Generate detailed implementation plan (tasks.md) with hierarchical task breakdow
 ### **Task Grouping Principles** (Following Existing Patterns)
 - **Data Layer First** – database, models, migrations following existing data patterns
 - **API Layer Second** – backend endpoints and business logic using established API conventions  
-- **UI Components Third** – user interface and interactions leveraging existing component patterns
+- **UI Components Third** – user interface and interactions leveraging existing component patterns (reference `.agents-playbook/ui.json` if available)
 - **Integration Fourth** – connecting components and systems using current integration approaches
 - **Testing & Polish Fifth** – validation, error handling, optimization following existing standards
 

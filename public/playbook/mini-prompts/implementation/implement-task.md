@@ -23,9 +23,6 @@ Execute any implementation task per specifications with clean, secure, performan
 - Write unit tests for each completed task
 - Mark tasks as ✅ completed in tasks.md
 
-## 🚦 Skip if
-- Implementation already merged **or** change is trivial/config-only.
-
 ## 📋 Preparation Steps
 **Before implementation:** Verify Context7 MCP access and fetch fresh documentation for libraries that may have updates since AI training cutoff (React, Next.js, testing frameworks, etc.) if needed (you can check package.json or any version file)
 
@@ -41,6 +38,7 @@ Execute any implementation task per specifications with clean, secure, performan
   - [ ] Use vertical slice approach: implement complete user scenarios end-to-end
   - [ ] Complete each task's validation and testing before moving to next
   - [ ] Update tasks.md progress as you go
+  - [ ] For UI work, reference `.agents-playbook/ui.json` if it exists
 
 ### Task Categories (from tasks.md):
 1. **Core Logic** – business rules first.  

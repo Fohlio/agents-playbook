@@ -69,11 +69,16 @@ export default function WorkflowMatcherGame() {
   };
 
   return (
-    <section className="py-16 bg-white" aria-labelledby="game-title">
-      <div className="max-w-4xl mx-auto px-4">
-        <h2 id="game-title" className="text-3xl font-bold text-gray-900 text-center mb-8">
-          Workflow Matcher Game
-        </h2>
+    <section className="py-16 bg-gradient-to-br from-slate-50 to-gray-50 border-y border-gray-200" aria-labelledby="game-title">
+      <div className="max-w-3xl mx-auto px-4">
+        <div className="text-center mb-8">
+          <h2 id="game-title" className="text-2xl font-semibold text-gray-800 mb-3">
+            Try the Workflow Matcher
+          </h2>
+          <p className="text-gray-600">
+            Test your knowledge with a quick scenario matching game
+          </p>
+        </div>
         
         {!gameStarted ? (
           <div className="text-center">

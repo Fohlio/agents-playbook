@@ -1,7 +1,7 @@
 # Analyze UI Components (v1)
 
 ## 🎯 Goal
-Discover, catalog, and document UI components systematically, creating comprehensive component inventory with metadata, usage patterns, and design system information.
+Discover and document UI component folder structure and organization, creating a high-level inventory of component directories, categories, and design system information without detailed individual component analysis.
 
 ## 📥 Context (ask if missing)
 1. **Component Directories** – paths to UI component files and folders
@@ -14,7 +14,7 @@ Discover, catalog, and document UI components systematically, creating comprehen
 ## ❓ Clarifying Questions (ask before proceeding)
 **IMPORTANT: Ask clarifying questions directly in chat before proceeding.**
 
-Generate concise one-line questions about: component directory locations, design system usage, styling methodologies, accessibility requirements, component naming conventions, deprecated component identification, and documentation preferences.
+Generate concise one-line questions about: component directory locations, folder organization methodology, design system usage, styling methodologies, component naming conventions, and documentation preferences.
 
 ## 🚦 Skip if
 - UI components are well-documented and recently cataloged (<30 days)
@@ -22,11 +22,11 @@ Generate concise one-line questions about: component directory locations, design
 - Pure backend or API-only application
 
 ## 📋 Analysis Process
-1. **Component Discovery** – scan specified directories for UI component files
-2. **Metadata Extraction** – analyze props, usage patterns, and dependencies
+1. **Directory Discovery** – scan and map component folder structures
+2. **Organization Analysis** – identify folder organization methodology
 3. **Design System Analysis** – identify design libraries and custom systems
-4. **Usage Pattern Mapping** – trace component usage throughout application
-5. **UI Inventory Generation** – create structured ui.json catalog
+4. **Component Category Mapping** – categorize components by folder structure
+5. **UI Structure Documentation** – create structured ui.json folder inventory
 
 ## 📤 Output
 **File:** `.agents-playbook/ui.json`
@@ -44,17 +44,27 @@ Generate concise one-line questions about: component directory locations, design
       "src/shared/ui"
     ]
   },
-  "components": [
+  "directories": [
     {
-      "name": "Button",
-      "location": "src/components/Button/Button.tsx",
-      "description": "Primary button component with variants and states",
-      "deprecated": false,
+      "path": "src/components/forms",
+      "componentCount": 12,
       "category": "Form Controls",
-      "usageLocations": [
-        "src/pages/Dashboard.tsx",
-        "src/components/Modal/Modal.tsx"
-      ],
+      "description": "Input fields, buttons, validation components",
+      "examples": ["Button.tsx", "Input.tsx", "Form.tsx"]
+    },
+    {
+      "path": "src/components/layout",
+      "componentCount": 8,
+      "category": "Layout",
+      "description": "Page structure and positioning components",
+      "examples": ["Header.tsx", "Sidebar.tsx", "Container.tsx"]
+    },
+    {
+      "path": "src/components/navigation",
+      "componentCount": 6,
+      "category": "Navigation",
+      "description": "Menu, breadcrumb, and routing components",
+      "examples": ["Menu.tsx", "Breadcrumb.tsx", "NavItem.tsx"]
     }
   ],
   "designSystem": {
@@ -140,10 +150,10 @@ Generate concise one-line questions about: component directory locations, design
 ```
 
 ## ✅ Quality Checklist
-- [ ] **Complete Component Discovery** – all UI components found and cataloged
+- [ ] **Complete Directory Discovery** – all component directories found and mapped
+- [ ] **Organization Analysis** – folder structure methodology documented
 - [ ] **Design System Documentation** – tokens, themes, and patterns identified
-- [ ] **Usage Analysis** – component relationships and patterns mapped
-- [ ] **Deprecation Status** – outdated components clearly marked
+- [ ] **Component Categorization** – directories categorized by purpose and type
 
 ## 🎯 Focus Areas
 - **Component Reusability** – identifying shared patterns and duplication
@@ -152,10 +162,10 @@ Generate concise one-line questions about: component directory locations, design
 - **Maintenance Burden** – complexity and update frequency of components
 
 ## 💡 Analysis Tips
-- Look for component composition patterns and hierarchies
-- Identify opportunities for component consolidation or abstraction
-- Check for consistent prop naming and API patterns across similar components
-- Consider component documentation and developer experience
-- Evaluate accessibility implementation across component library
-- Assess design token usage and theme compatibility
-- Check for deprecated or rarely used components that could be removed
+- Focus on directory structure and organization patterns rather than individual components
+- Look for folder naming conventions and categorization logic
+- Identify the component hierarchy and nesting patterns
+- Check for consistent folder organization across different component types
+- Consider the scalability of the current folder structure
+- Assess whether the organization supports the design system architecture
+- Note any inconsistencies in directory structure that could be improved

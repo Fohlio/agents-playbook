@@ -27,13 +27,13 @@ export default function FeaturesSection() {
         </svg>
       ),
       title: "MCP Compatible",
-      description: "Seamlessly integrates with Claude Desktop, Cursor, and other MCP-enabled tools for effortless workflow automation.",
+      description: "Seamlessly integrates with Cursor and other MCP-enabled tools for effortless workflow automation.",
       gradient: "from-green-500 to-emerald-500"
     }
   ];
 
   return (
-    <section className="py-24 bg-white relative overflow-hidden">
+    <section className="py-24 bg-gradient-to-br from-slate-50 to-purple-50 border-t border-b border-purple-200 relative overflow-hidden">
       {/* Background decoration */}
       <div className="absolute inset-0">
         <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-100 rounded-full mix-blend-multiply filter blur-3xl opacity-30"></div>
@@ -48,8 +48,8 @@ export default function FeaturesSection() {
               Powerful Features
             </span>
           </h2>
-          <p className="text-xl text-slate-600 max-w-3xl mx-auto">
-            Everything you need to discover, implement, and optimize AI agent workflows
+          <p className="text-xl text-slate-600 max-w-4xl mx-auto leading-relaxed">
+            Discover intelligent workflow recommendations powered by semantic search. Our curated collection of 6 proven AI agent workflows covers every development scenario, seamlessly integrating with Cursor and other MCP-enabled tools for effortless workflow automation.
           </p>
         </div>
 
@@ -100,7 +100,7 @@ export default function FeaturesSection() {
               Ready to explore AI workflows?
             </h3>
             <p className="text-slate-600">
-              Install the MCP server in Claude Desktop or Cursor and start using intelligent workflow recommendations right away.
+              Install the MCP server in Cursor and start using intelligent workflow recommendations right away.
             </p>
           </div>
         </div>
