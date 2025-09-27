@@ -16,7 +16,7 @@ export default function FeaturesSection() {
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
         </svg>
       ),
-      title: "6 Workflows",
+      title: "3 Workflows",
       description: "Curated collection of proven AI agent workflows covering every development scenario and use case.",
       gradient: "from-purple-500 to-pink-500"
     },
@@ -48,9 +48,6 @@ export default function FeaturesSection() {
               Powerful Features
             </span>
           </h2>
-          <p className="text-xl text-slate-600 max-w-4xl mx-auto leading-relaxed">
-            Discover intelligent workflow recommendations powered by semantic search. Our curated collection of 6 proven AI agent workflows covers every development scenario, seamlessly integrating with Cursor and other MCP-enabled tools for effortless workflow automation.
-          </p>
         </div>
 
         {/* Features Grid */}
@@ -79,16 +76,6 @@ export default function FeaturesSection() {
               <p className="text-slate-600 leading-relaxed group-hover:text-slate-700 transition-colors duration-300">
                 {feature.description}
               </p>
-              
-              {/* Hover arrow */}
-              <div className="mt-6 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                <div className="flex items-center text-slate-400 group-hover:text-slate-600">
-                  <span className="text-sm font-medium mr-2">Learn more</span>
-                  <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
-                </div>
-              </div>
             </div>
           ))}
         </div>
