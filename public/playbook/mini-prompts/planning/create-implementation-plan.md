@@ -14,10 +14,7 @@ Generate detailed implementation plan (tasks.md) with hierarchical task breakdow
 2. **Design Spec** – `.agents-playbook/[task-name]/design.md` with technical architecture and system components
 3. **Technology Stack** – frameworks, libraries, and tools to be used
 4. **Development Environment** – existing codebase patterns and standards
-5. **Team Capabilities** – available skills and resources for planning
 
-## 🚦 Skip if
-- Implementation plan already exists (<30 days) or feature is too simple for detailed breakdown
 
 ## 🔍 Task Breakdown Strategy
 
@@ -35,21 +32,15 @@ Generate detailed implementation plan (tasks.md) with hierarchical task breakdow
 
 ### **Task Hierarchy Format**
 ```
-- [ ] 1. Major Task Group
+- [ ] 1. Major Task Group [TASK_TYPE: Backend|Frontend|Data Flow|Integration|Infrastructure]
   - High-level description of what needs to be implemented
   - Key technical considerations and dependencies
   - _Requirements: X.X, X.X_
 
-  - [ ] 1.1 Specific Subtask
+  - [ ] 1.1 Specific Subtask [TASK_TYPE: Backend|Frontend|Data Flow|Integration|Infrastructure]
     - Detailed implementation steps
     - Specific technical requirements and acceptance criteria
     - _Requirements: X.X, X.X_
-    
-    - [ ] 1.1.1 Critical review and write tests
-      - Make critical review of the implementation
-      - Verify all acceptance criteria met
-      - Write unit tests for core logic (optional for simple tasks)
-      - Write integration tests if applicable (optional)
 ```
 
 ## 📋 Implementation Plan Structure
@@ -68,15 +59,18 @@ Generate detailed implementation plan (tasks.md) with hierarchical task breakdow
 ## ✅ Quality Requirements for Each Task
 - [ ] **Clear Scope** – specific, actionable task description
 - [ ] **Technical Details** – implementation approach specified
+- [ ] **Task Type Classification** – clearly labeled with appropriate task type
 - [ ] **Acceptance Criteria** – clear definition of done
 - [ ] **Requirement Traceability** – linked to specific requirements
-- [ ] **Critical Review and Test Step** – explicit critical review and testing subtask after implementation (tests optional)
 - [ ] **Dependencies** – prerequisites and order clearly defined
 
-## 🔄 Mandatory Task Flow
-Each implementation task MUST include:
-1. **Implementation** – core development work
-2. **Critical review and write tests** – verify functionality meets requirements and write tests (tests optional for simple tasks)
+## 📋 Task Type Classifications
+Each task must be labeled with one of the following types:
+- **Backend** – API development, business logic, server-side processing
+- **Frontend** – UI components, user interactions, client-side logic  
+- **Data Flow** – Database operations, data transformations, ETL processes
+- **Integration** – External system connections, third-party APIs, service orchestration
+- **Infrastructure** – Deployment, configuration, environment setup
 
 ## 🔗 Requirement Linking Format
 Each task must include:
@@ -92,40 +86,44 @@ Where numbers refer to specific requirements from structured requirements docume
 ```markdown
 # Implementation Plan
 
-- [ ] 1. Set up database schema and core data models
+- [ ] 1. Set up database schema and core data models [TASK_TYPE: Data Flow]
   - [High-level description of data layer work]
   - _Requirements: X.X, X.X_
 
-  - [ ] 1.1 Create data models
+  - [ ] 1.1 Create data models [TASK_TYPE: Data Flow]
     - [Specific technical implementation details]
     - _Requirements: X.X_
-    
-    - [ ] 1.1.1 Critical review and write tests for data models
-      - Test model relationships and constraints
-      - Verify data integrity and validation rules
-      - Write unit tests for model methods (optional for simple models)
-      - Write database integration tests (optional)
 
-- [ ] 2. Create API endpoints
+  - [ ] 1.2 Create database migrations [TASK_TYPE: Data Flow]
+    - [Database schema setup and migration scripts]
+    - _Requirements: X.X_
+
+- [ ] 2. Create API endpoints [TASK_TYPE: Backend]
   - [API layer description]
   - _Requirements: X.X, X.X_
 
-  - [ ] 2.1 Implement GET endpoints
+  - [ ] 2.1 Implement GET endpoints [TASK_TYPE: Backend]
     - [Detailed implementation steps]
     - _Requirements: X.X_
-    
-    - [ ] 2.1.1 Critical review and write tests for GET endpoints
-      - Test all endpoints return correct data
-      - Verify error handling and edge cases
-      - Write unit tests for endpoint logic (optional for simple endpoints)
-      - Write integration tests for full request/response cycle (optional)
+
+  - [ ] 2.2 Implement POST endpoints [TASK_TYPE: Backend]
+    - [API endpoint implementation details]
+    - _Requirements: X.X_
+
+- [ ] 3. Create frontend components [TASK_TYPE: Frontend]
+  - [UI component development]
+  - _Requirements: X.X, X.X_
+
+  - [ ] 3.1 Build main interface [TASK_TYPE: Frontend]
+    - [Component implementation details]
+    - _Requirements: X.X_
 ```
 
 ## 🎯 Task Planning Guidelines
 
 ### **Task Sizing**
-- **Major Groups (1-10)** – Can take 1-3 days to complete
-- **Subtasks (X.1-X.N)** – Should be completable in 2-6 hours
+- **Major Groups (1-10)** – Comprehensive features with multiple components
+- **Subtasks (X.1-X.N)** – Specific implementation components
 - **Atomic Actions** – Each checkbox represents a specific deliverable
 
 ### **Dependency Management** 
@@ -135,9 +133,9 @@ Where numbers refer to specific requirements from structured requirements docume
 
 ### **Technical Depth**
 - Include specific technology decisions (frameworks, libraries)
-- Specify testing requirements for each component
 - Add error handling and validation requirements
 - Consider performance and scalability needs
+- Specify task type classification for each component
 
 ## 🔄 Integration Notes
 This prompt works with:
@@ -160,6 +158,6 @@ flowchart LR
 ## 💡 Best Practices
 - **Start with MVP core** – prioritize essential functionality first
 - **Consider vertical slices** – complete user workflows before adding features
-- **Plan for testing** – include test requirements in each task
+- **Categorize all tasks** – ensure proper task type classification for clarity
 - **Think about edge cases** – include error handling and validation
 - **Plan for maintainability** – include documentation and code quality tasks

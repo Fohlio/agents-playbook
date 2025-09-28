@@ -26,7 +26,9 @@ Follow this structured approach for comprehensive design:
 Present multiple choice questions to clarify key architectural decisions
 
 ### **UI/Design System Clarifications**
-**If UI implementation is required and no design document is provided, ask in chat:**
+**If UI implementation is required, ask in chat:**
+- Is there a Figma MCP server available for design analysis and code generation?
+- Does an `.agents-playbook/ui.json` file exist that documents the existing design system?
 - What design system or component library should be used? (e.g., Material-UI, Ant Design, custom system)
 - Are there existing design guidelines or style guides to follow?
 - Should new UI components follow specific patterns or frameworks?
@@ -37,8 +39,8 @@ Present multiple choice questions to clarify key architectural decisions
 - **Context Required**: Requirements and analysis results from previous phases
 - **MCP Servers**: 
   - `context7` (for latest documentation)
-  - `figma` (for UI/UX analysis)
-- **Optional**: Existing architecture documentation, design systems, compliance requirements
+  - `figma` (for UI/UX analysis - check availability before use)
+- **Optional**: Existing architecture documentation, design systems (check `.agents-playbook/ui.json`), compliance requirements
 
 ## Your Task
 Design a comprehensive solution architecture that includes:
@@ -55,7 +57,6 @@ Design a comprehensive solution architecture that includes:
    - Existing patterns and conventions to follow
 
 3. **Implementation Approach**
-   - Development phases and milestones
    - Key technical decisions and trade-offs
    - Risk assessment and mitigation strategies
    - Solutions should be scalable following existing patterns
@@ -99,7 +100,7 @@ Design a comprehensive solution architecture that includes:
 - **design.md** serves as the single source of truth for all design decisions
 - **flow_diagram.md** provides clear visualization of data flow and transformations
 - Quality of design directly impacts implementation speed and maintainability
-- Invest time in design to save debugging and refactoring later
+- Thorough design reduces debugging and refactoring later
 - Consider multiple design alternatives and document trade-offs
 - Get design review from senior developers or architects when possible
 - Consider scalability, maintainability, and performance requirements

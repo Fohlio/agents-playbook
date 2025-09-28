@@ -16,10 +16,6 @@ Discover and document UI component folder structure and organization, creating a
 
 Generate concise one-line questions about: component directory locations, folder organization methodology, design system usage, styling methodologies, component naming conventions, and documentation preferences.
 
-## 🚦 Skip if
-- UI components are well-documented and recently cataloged (<30 days)
-- Application has minimal or no custom UI components
-- Pure backend or API-only application
 
 ## 📋 Analysis Process
 1. **Directory Discovery** – scan and map component folder structures

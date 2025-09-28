@@ -61,7 +61,7 @@ phases:
         required: true
         prerequisites:
           requiredContext: ["structured_requirements", "design_specifications"]
-          optionalContext: ["technical_architecture", "development_environment", "team_capabilities"]
+          optionalContext: ["technical_architecture", "development_environment"]
         dependencies: ["handoff-to-planning"]
         outputs: ["implementation_plan", "task_breakdown", "technical_specifications"]
         
@@ -97,13 +97,40 @@ phases:
     description: "Quality assurance, testing, and validation"
     required: true
     steps:
-      - id: "execute-tests"
-        miniPrompt: "testing-review/execute-tests"
+      - id: "implementation-critical-review"
+        miniPrompt: "testing-review/implementation-critical-review"
         required: true
         prerequisites:
-          requiredContext: ["implemented_feature"]
-          optionalContext: ["test_automation", "test_environments", "test_plan"]
+          requiredContext: ["implemented_feature", "structured_requirements", "design_specifications"]
+          optionalContext: ["implementation_plan", "code_standards"]
         dependencies: ["handoff-to-testing"]
+        outputs: ["review_results", "quality_assessment", "issue_list"]
+        
+      - id: "test-cases-planning"
+        miniPrompt: "testing-review/test-cases-planning"
+        required: true
+        prerequisites:
+          requiredContext: ["structured_requirements", "review_results"]
+          optionalContext: ["user_personas", "performance_requirements"]
+        dependencies: ["implementation-critical-review"]
+        outputs: ["test_plan", "test_cases", "test_data_requirements"]
+
+      - id: "handoff-to-execute-tests"
+        miniPrompt: "handoff-memory-board"
+        required: true
+        prerequisites:
+          requiredContext: ["test-cases-planning"]
+          optionalContext: []
+        dependencies: ["test-cases-planning"]
+        
+      - id: "write-execute-tests"
+        miniPrompt: "testing-review/write-execute-tests"
+        required: true
+        prerequisites:
+          requiredContext: ["test_plan", "implemented_feature"]
+          optionalContext: ["testing_framework", "ci_cd_pipeline", "test_environments"]
+        dependencies: ["test-cases-planning"]
+        outputs: ["test_results", "quality_validation", "deployment_recommendation"]
         
 
 # Workflow-level configurations

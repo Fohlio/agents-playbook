@@ -355,7 +355,7 @@ describe('MCP Tools Integration Tests', () => {
       expect(selectResult.content).toBeDefined();
       
       const workflowText = selectResult.content[0].text;
-      expect(workflowText).toContain('Web Development Init Workflow');
+      expect(workflowText).toContain('Init Playbook for Web');
       expect(workflowText).toContain('analyze-project-structure');
       expect(workflowText).toContain('analyze-data-flow');
       expect(workflowText).toContain('analyze-ui-components');
@@ -402,7 +402,7 @@ describe('MCP Tools Integration Tests', () => {
       expect(stepText).toContain('components');
       expect(stepText).toContain('designSystem');
       expect(stepText).toContain('folderStructure');
-      expect(stepText).toContain('deprecated');
+      expect(stepText).toContain('componentCount');
     }, TEST_TIMEOUT);
   });
 }); 
