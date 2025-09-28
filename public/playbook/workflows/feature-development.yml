@@ -115,14 +115,6 @@ phases:
         dependencies: ["implementation-critical-review"]
         outputs: ["test_plan", "test_cases", "test_data_requirements"]
 
-      - id: "handoff-to-execute-tests"
-        miniPrompt: "handoff-memory-board"
-        required: true
-        prerequisites:
-          requiredContext: ["test-cases-planning"]
-          optionalContext: []
-        dependencies: ["test-cases-planning"]
-        
       - id: "write-execute-tests"
         miniPrompt: "testing-review/write-execute-tests"
         required: true
