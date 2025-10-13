@@ -41,6 +41,13 @@ Generate detailed implementation plan (tasks.md) with hierarchical task breakdow
     - Detailed implementation steps
     - Specific technical requirements and acceptance criteria
     - _Requirements: X.X, X.X_
+
+  - [ ] 1.2 Write tests for task 1.1 [TASK_TYPE: Testing]
+    - Write tests covering business cases from requirements for task 1.1
+    - Test all functionality implemented in task 1.1
+    - Validate acceptance criteria from requirements
+    - Cover edge cases and error scenarios
+    - _Requirements: [Same requirements as task 1.1]_
 ```
 
 ## 📋 Implementation Plan Structure
@@ -53,8 +60,10 @@ Generate detailed implementation plan (tasks.md) with hierarchical task breakdow
 5. **User Interface & Experience** – design implementation, responsive
 6. **Integration & Data Flow** – connecting all components
 7. **Error Handling & Validation** – robust error management
-8. **Testing & Quality Assurance** – comprehensive test coverage
+8. **Testing & Quality Assurance** – comprehensive test coverage (add test task after EACH implementation task)
 9. **Performance & Optimization** – responsive, efficient implementation
+
+**CRITICAL**: After each implementation task, add a corresponding test task that covers the business cases from requirements for that specific implementation.
 
 ## ✅ Quality Requirements for Each Task
 - [ ] **Clear Scope** – specific, actionable task description
@@ -98,6 +107,12 @@ Where numbers refer to specific requirements from structured requirements docume
     - [Database schema setup and migration scripts]
     - _Requirements: X.X_
 
+  - [ ] 1.3 Write tests for database layer [TASK_TYPE: Testing]
+    - Test data models validation and constraints
+    - Test database migrations and schema
+    - Validate business rules at data layer
+    - _Requirements: X.X, X.X_
+
 - [ ] 2. Create API endpoints [TASK_TYPE: Backend]
   - [API layer description]
   - _Requirements: X.X, X.X_
@@ -110,6 +125,13 @@ Where numbers refer to specific requirements from structured requirements docume
     - [API endpoint implementation details]
     - _Requirements: X.X_
 
+  - [ ] 2.3 Write tests for API endpoints [TASK_TYPE: Testing]
+    - Test all API endpoints (GET, POST, etc.)
+    - Test request validation and error handling
+    - Test authentication and authorization
+    - Validate business logic in endpoints
+    - _Requirements: X.X, X.X_
+
 - [ ] 3. Create frontend components [TASK_TYPE: Frontend]
   - [UI component development]
   - _Requirements: X.X, X.X_
@@ -117,6 +139,13 @@ Where numbers refer to specific requirements from structured requirements docume
   - [ ] 3.1 Build main interface [TASK_TYPE: Frontend]
     - [Component implementation details]
     - _Requirements: X.X_
+
+  - [ ] 3.2 Write tests for frontend components [TASK_TYPE: Testing]
+    - Test component rendering and interactions
+    - Test user workflows and navigation
+    - Test form validation and submissions
+    - Validate UI matches requirements and acceptance criteria
+    - _Requirements: X.X, X.X_
 ```
 
 ## 🎯 Task Planning Guidelines
@@ -161,3 +190,4 @@ flowchart LR
 - **Categorize all tasks** – ensure proper task type classification for clarity
 - **Think about edge cases** – include error handling and validation
 - **Plan for maintainability** – include documentation and code quality tasks
+- **Test after every task** – ALWAYS add a test task immediately after each implementation task to validate business requirements

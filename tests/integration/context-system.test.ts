@@ -329,8 +329,7 @@ describe('Context System Integration Tests', () => {
     const allWorkflowIds = [
       'code-refactoring',
       'feature-development',
-      'quick-fix',
-      'web-development-init'
+      'quick-fix'
     ];
 
     test.each(allWorkflowIds)('should handle context system for workflow: %s', async (workflowId) => {

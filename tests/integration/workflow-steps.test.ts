@@ -20,7 +20,7 @@ describe('Workflow Steps Integration Tests', () => {
       'code-refactoring',
       'feature-development',
       'quick-fix',
-      'web-development-init'
+      'product-prd-planning'
     ];
 
     test.each(allWorkflowIds)('should progress through all steps in workflow: %s', async (workflowId) => {
@@ -153,6 +153,38 @@ describe('Workflow Steps Integration Tests', () => {
         
         console.log(`   📝 Step ${i}: ${stepResult.content[0].text.includes('100% complete') ? 'Complete' : 'Valid'}`);
       }
+    }, TEST_TIMEOUT);
+
+    test('product-prd-planning workflow step details', async () => {
+      const workflow = 'product-prd-planning';
+      console.log(`\n🔍 Detailed step analysis for ${workflow}`);
+      
+      // Get workflow execution plan
+      const workflowDetails = await selectWorkflowHandler({ workflow_id: workflow });
+      const workflowText = workflowDetails.content[0].text;
+      
+      // Should show workflow overview
+      expect(workflowText).toContain('Workflow Overview');
+      expect(workflowText).toContain('Total Steps');
+      
+      // Should have 4 phases: requirements, design-architecture, planning, finalization
+      expect(workflowText).toContain('requirements');
+      expect(workflowText).toContain('design-architecture');
+      expect(workflowText).toContain('planning');
+      expect(workflowText).toContain('finalization');
+      
+      // Test first few steps
+      for (let i = 0; i < 3; i++) {
+        const stepResult = await getNextStepHandler({ 
+          workflow_id: workflow, 
+          current_step: i 
+        });
+        expect(stepResult.content[0].text).toMatch(/(Step|complete)/);
+        
+        console.log(`   📝 Step ${i}: ${stepResult.content[0].text.includes('100% complete') ? 'Complete' : 'Valid'}`);
+      }
+      
+      console.log(`   ✅ product-prd-planning workflow properly loaded with all phases`);
     }, TEST_TIMEOUT);
 
 

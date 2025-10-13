@@ -1,0 +1,98 @@
+name: "Product PRD Planning"
+description: "Plan and assemble a PRD with requirements, design, features, and a final index"
+version: "1.0"
+category: "product"
+tags: ["prd", "planning", "requirements", "design", "features", "product", "documentation"]
+
+# CRITICAL: VALIDATE ALL STEPS BEFORE STARTING
+agentInstructions:
+  validation:
+    required: true
+    message: "🚨 MANDATORY: Before starting, validate ALL workflow steps, prerequisites, mini-prompts access, and required context. Execute ALL steps completely - no skipping unless explicitly optional."
+
+phases:
+  - phase: "requirements"
+    description: "Gather and structure high-level product requirements"
+    required: true
+    steps:
+      - id: "write-requirements-file"
+        miniPrompt: "documentation/prd/write-requirements-file"
+        required: true
+        prerequisites:
+          requiredContext: ["product_slug", "product_name"]
+          optionalContext: ["product_summary", "stakeholders", "personas", "business_context"]
+        outputs: ["requirements_file_path", "structured_requirements"]
+
+  - phase: "design-architecture"
+    description: "Define overall design architecture (framework, language, methodology, design system)"
+    required: true
+    steps:
+      - id: "write-design-file"
+        miniPrompt: "documentation/prd/write-design-file"
+        required: true
+        prerequisites:
+          requiredContext: ["structured_requirements", "product_slug"]
+          optionalContext: ["technical_constraints", "technology_preferences"]
+        dependencies: ["write-requirements-file"]
+        outputs: ["design_file_path", "design_specifications"]
+        
+      - id: "write-design-system"
+        miniPrompt: "documentation/prd/write-design-system"
+        required: true
+        prerequisites:
+          requiredContext: ["structured_requirements", "product_slug"]
+          optionalContext: ["design_specifications", "brand_guidelines"]
+        dependencies: ["write-design-file"]
+        outputs: ["design_system_file_path", "design_system_specifications"]
+
+  - phase: "planning"
+    description: "Split into phases and features, create feature files"
+    required: true
+    steps:
+      - id: "write-feature-file"
+        miniPrompt: "documentation/prd/write-feature-file"
+        required: true
+        prerequisites:
+          requiredContext: ["structured_requirements", "design_specifications", "product_slug"]
+          optionalContext: ["design_system_specifications", "phase_breakdown"]
+        dependencies: ["write-design-system"]
+        outputs: ["feature_files", "feature_list"]
+
+  - phase: "finalization"
+    description: "Assemble final PRD with links to all created files"
+    required: true
+    steps:
+      - id: "assemble-prd"
+        miniPrompt: "documentation/prd/assemble-prd"
+        required: true
+        prerequisites:
+          requiredContext: ["product_slug", "requirements_file_path", "design_file_path", "feature_files"]
+          optionalContext: ["product_name", "product_summary", "design_system_file_path"]
+        dependencies: ["write-feature-file"]
+        outputs: ["prd_index_file_path"]
+
+# Workflow-level configurations
+skipConditions:
+  - condition: "prd_already_exists"
+    message: "PRD has already been created for this product"
+  - condition: "incomplete_product_context"
+    message: "Product slug and name are required to generate PRD"
+
+validationRules:
+  - rule: "product_context_required"
+    phases: ["requirements"]
+    message: "Product slug and name must be provided before starting"
+
+notifications:
+  - trigger: "phase_completion"
+    phases: ["requirements", "design-architecture", "planning", "finalization"]
+    message: "Phase completed, ready for next phase"
+  - trigger: "workflow_completion"
+    message: "Product PRD planning workflow completed successfully"
+
+# Smart execution settings
+execution:
+  allowSkipping: true
+  requireExplicitApproval: false
+  automaticProgressTracking: true
+

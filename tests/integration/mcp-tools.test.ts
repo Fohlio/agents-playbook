@@ -254,8 +254,7 @@ describe('MCP Tools Integration Tests', () => {
     const allWorkflowIds = [
       'code-refactoring',
       'feature-development',
-      'quick-fix',
-      'web-development-init'
+      'quick-fix'
     ];
 
     test.each(allWorkflowIds)('should handle workflow: %s', async (workflowId) => {
@@ -326,83 +325,4 @@ describe('MCP Tools Integration Tests', () => {
     }, TEST_TIMEOUT);
   });
 
-  describe('Web Development Init Workflow Specific Tests', () => {
-    test('should discover web-development-init workflow with appropriate keywords', async () => {
-      const keywords = [
-        'web development project setup',
-        'project structure analysis', 
-        'ui component catalog',
-        'data flow mapping',
-        'project initialization'
-      ];
-
-      for (const keyword of keywords) {
-        const result = await getWorkflowsHandler({ 
-          task_description: keyword 
-        });
-        
-        expect(result.content).toBeDefined();
-        const resultText = result.content[0].text;
-        expect(resultText).toContain('Web Development Init Workflow');
-      }
-    }, TEST_TIMEOUT);
-
-    test('should execute all analysis phases in web-development-init workflow', async () => {
-      const workflowId = 'web-development-init';
-      
-      // Get workflow structure
-      const selectResult = await selectWorkflowHandler({ workflow_id: workflowId });
-      expect(selectResult.content).toBeDefined();
-      
-      const workflowText = selectResult.content[0].text;
-      expect(workflowText).toContain('Init Playbook for Web');
-      expect(workflowText).toContain('analyze-project-structure');
-      expect(workflowText).toContain('analyze-data-flow');
-      expect(workflowText).toContain('analyze-ui-components');
-      
-      // Test step progression
-      let currentStep = 0;
-      const maxSteps = 4; // Three analysis steps + consolidation
-      
-      while (currentStep < maxSteps) {
-        const stepResult = await getNextStepHandler({
-          workflow_id: workflowId,
-          current_step: currentStep,
-          available_context: []
-        });
-        
-        expect(stepResult.content).toBeDefined();
-        const stepText = stepResult.content[0].text;
-        
-        // Verify step contains analysis instructions
-        if (currentStep < 3) {
-          expect(stepText).toMatch(/(Analyze Project Structure|Analyze Data Flow|Analyze UI Components)/);
-          expect(stepText).toContain('Mini-Prompt Instructions');
-        }
-        
-        currentStep++;
-      }
-    }, TEST_TIMEOUT);
-
-    test('should validate ui.json output format requirements', async () => {
-      const workflowId = 'web-development-init';
-      
-      // Get the UI components analysis step
-      const stepResult = await getNextStepHandler({
-        workflow_id: workflowId,
-        current_step: 2, // analyze-ui-components step
-        available_context: []
-      });
-      
-      expect(stepResult.content).toBeDefined();
-      const stepText = stepResult.content[0].text;
-      
-      // Verify ui.json structure requirements are present
-      expect(stepText).toContain('ui.json');
-      expect(stepText).toContain('components');
-      expect(stepText).toContain('designSystem');
-      expect(stepText).toContain('folderStructure');
-      expect(stepText).toContain('componentCount');
-    }, TEST_TIMEOUT);
-  });
 }); 
