@@ -15,6 +15,38 @@ export interface WorkflowMetadata {
   skillLevel?: string;
 }
 
+// Type guards and helpers
+function isString(value: unknown): value is string {
+  return typeof value === 'string';
+}
+
+function isStringArray(value: unknown): value is string[] {
+  return Array.isArray(value) && value.every(item => typeof item === 'string');
+}
+
+function isComplexity(value: unknown): value is 'Simple' | 'Standard' | 'Complex' {
+  return isString(value) && ['Simple', 'Standard', 'Complex'].includes(value);
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+function getString(obj: Record<string, unknown>, key: string, defaultValue: string): string {
+  const value = obj[key];
+  return isString(value) ? value : defaultValue;
+}
+
+function getStringArray(obj: Record<string, unknown>, key: string): string[] {
+  const value = obj[key];
+  return isStringArray(value) ? value : [];
+}
+
+function getComplexity(obj: Record<string, unknown>, key: string): 'Simple' | 'Standard' | 'Complex' {
+  const value = obj[key];
+  return isComplexity(value) ? value : 'Standard';
+}
+
 export class WorkflowLoader {
   private workflowsPath: string;
   private cache: Map<string, WorkflowConfig> = new Map();
@@ -116,18 +148,24 @@ export class WorkflowLoader {
       
       try {
         const yamlContent = fs.readFileSync(filePath, 'utf-8');
-        const workflowData = yaml.load(yamlContent) as any;
+        const yamlData = yaml.load(yamlContent);
+        
+        if (!isRecord(yamlData)) {
+          throw new Error('Invalid YAML structure: expected object');
+        }
+        
+        const metadataObj = isRecord(yamlData.metadata) ? yamlData.metadata : {};
         
         const metadata: WorkflowMetadata = {
           id: workflowId,
-          title: workflowData.name || workflowId,
-          description: workflowData.description || '',
-          category: workflowData.category || 'general',
-          complexity: workflowData.metadata?.complexity || 'Standard',
-          tags: workflowData.tags || [],
-          estimatedDuration: workflowData.metadata?.estimatedDuration || 'Unknown',
-          teamSize: workflowData.metadata?.teamSize,
-          skillLevel: workflowData.metadata?.skillLevel
+          title: getString(yamlData, 'name', workflowId),
+          description: getString(yamlData, 'description', ''),
+          category: getString(yamlData, 'category', 'general'),
+          complexity: getComplexity(metadataObj, 'complexity'),
+          tags: getStringArray(yamlData, 'tags'),
+          estimatedDuration: getString(metadataObj, 'estimatedDuration', 'Unknown'),
+          teamSize: isString(metadataObj.teamSize) ? metadataObj.teamSize : undefined,
+          skillLevel: isString(metadataObj.skillLevel) ? metadataObj.skillLevel : undefined
         };
 
         this.metadataCache.set(workflowId, metadata);
@@ -157,17 +195,25 @@ export class WorkflowLoader {
 
     try {
       const yamlContent = fs.readFileSync(filePath, 'utf-8');
-      const workflowData = yaml.load(yamlContent) as any;
+      const yamlData = yaml.load(yamlContent);
+      
+      if (!isRecord(yamlData)) {
+        throw new Error('Invalid YAML structure: expected object');
+      }
+      
+      const metadataObj = isRecord(yamlData.metadata) ? yamlData.metadata : {};
+      const executionObj = isRecord(yamlData.execution) ? yamlData.execution : {};
+      const phases = Array.isArray(yamlData.phases) ? yamlData.phases : [];
       
       // Transform YAML structure to WorkflowConfig
       const workflowConfig: WorkflowConfig = {
-        name: workflowData.name || workflowId,
-        description: workflowData.description || '',
-        complexity: workflowData.metadata?.complexity || 'Standard',
-        category: workflowData.category || 'general',
-        phases: this.transformPhases(workflowData.phases || []),
-        execution_strategy: workflowData.execution?.allowSkipping ? 'smart_skip' : 'linear',
-        estimated_duration: workflowData.metadata?.estimatedDuration || 'Unknown'
+        name: getString(yamlData, 'name', workflowId),
+        description: getString(yamlData, 'description', ''),
+        complexity: getComplexity(metadataObj, 'complexity'),
+        category: getString(yamlData, 'category', 'general'),
+        phases: this.transformPhases(phases),
+        execution_strategy: executionObj.allowSkipping ? 'smart_skip' : 'linear',
+        estimated_duration: getString(metadataObj, 'estimatedDuration', 'Unknown')
       };
 
       console.log(`[WorkflowLoader] Successfully loaded workflow: ${workflowId}`);
@@ -181,12 +227,20 @@ export class WorkflowLoader {
   /**
    * Transform YAML phases to PhaseConfig format
    */
-  private transformPhases(yamlPhases: any[]): PhaseConfig[] {
-    return yamlPhases.map(yamlPhase => {
+  private transformPhases(yamlPhases: unknown[]): PhaseConfig[] {
+    return yamlPhases.map((phase) => {
+      if (!isRecord(phase)) {
+        throw new Error('Invalid phase structure: expected object');
+      }
+      
+      const phaseName = isString(phase.phase) ? phase.phase :
+                       isString(phase.name) ? phase.name : 'Unknown Phase';
+      const steps = Array.isArray(phase.steps) ? phase.steps : [];
+      
       const phaseConfig: PhaseConfig = {
-        name: yamlPhase.phase || yamlPhase.name,
-        required: yamlPhase.required !== false,
-        steps: this.transformSteps(yamlPhase.steps || [])
+        name: phaseName,
+        required: phase.required !== false,
+        steps: this.transformSteps(steps)
       };
 
       return phaseConfig;
@@ -196,19 +250,30 @@ export class WorkflowLoader {
   /**
    * Transform YAML steps to StepConfig format
    */
-  private transformSteps(yamlSteps: any[]): StepConfig[] {
-    return yamlSteps.map(yamlStep => {
+  private transformSteps(yamlSteps: unknown[]): StepConfig[] {
+    return yamlSteps.map((step) => {
+      if (!isRecord(step)) {
+        throw new Error('Invalid step structure: expected object');
+      }
+      
+      const stepId = isString(step.id) ? step.id : 'unknown-step';
+      const miniPrompt = isString(step.miniPrompt) ? step.miniPrompt :
+                        isString(step.mini_prompt) ? step.mini_prompt :
+                        stepId;
+      
+      const prereqObj = isRecord(step.prerequisites) ? step.prerequisites : {};
+      
       const stepConfig: StepConfig = {
-        id: yamlStep.id,
-        mini_prompt: yamlStep.miniPrompt || yamlStep.mini_prompt || yamlStep.id,
-        required: yamlStep.required !== false,
-        context: yamlStep.context,
+        id: stepId,
+        mini_prompt: miniPrompt,
+        required: step.required !== false,
+        context: isString(step.context) ? step.context : undefined,
         prerequisites: {
-          mcp_servers: yamlStep.prerequisites?.mcpServers || [],
-          context: yamlStep.prerequisites?.requiredContext || [],
-          optional: yamlStep.prerequisites?.optionalContext || []
+          mcp_servers: getStringArray(prereqObj, 'mcpServers'),
+          context: getStringArray(prereqObj, 'requiredContext'),
+          optional: getStringArray(prereqObj, 'optionalContext')
         },
-        skip_conditions: yamlStep.prerequisites?.skipConditions || []
+        skip_conditions: getStringArray(prereqObj, 'skipConditions')
       };
 
       return stepConfig;

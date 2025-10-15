@@ -123,7 +123,7 @@ export default function SetupSection() {
                           className="flex items-center space-x-3 p-4 bg-gradient-to-r from-slate-50 to-blue-50 rounded-xl border border-slate-200/50"
                         >
                           <div className="w-2 h-2 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full"></div>
-                          <span className="text-slate-700 font-medium">"{example}"</span>
+                          <span className="text-slate-700 font-medium">&quot;{example}&quot;</span>
                         </div>
                       ))}
                     </div>

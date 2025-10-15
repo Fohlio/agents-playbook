@@ -154,12 +154,12 @@ export class MiniPromptLoader {
   /**
    * Extract prerequisites from content and frontmatter
    */
-  private extractPrerequisites(content: string, frontmatter: any): StepPrerequisites {
+  private extractPrerequisites(content: string, frontmatter: Record<string, unknown>): StepPrerequisites {
     // Start with frontmatter prerequisites
     const prerequisites: StepPrerequisites = {
-      mcp_servers: frontmatter.mcp_servers || [],
-      context: frontmatter.context || [],
-      optional: frontmatter.optional || []
+      mcp_servers: Array.isArray(frontmatter.mcp_servers) ? frontmatter.mcp_servers as string[] : [],
+      context: Array.isArray(frontmatter.context) ? frontmatter.context as string[] : [],
+      optional: Array.isArray(frontmatter.optional) ? frontmatter.optional as string[] : []
     };
 
     // Extract from content if not in frontmatter
@@ -199,7 +199,7 @@ export class MiniPromptLoader {
   /**
    * Extract process steps
    */
-  private extractProcess(content: string, frontmatter: any): string[] {
+  private extractProcess(content: string, frontmatter: Record<string, unknown>): string[] {
     if (frontmatter.process && Array.isArray(frontmatter.process)) {
       return frontmatter.process;
     }
@@ -226,7 +226,7 @@ export class MiniPromptLoader {
   /**
    * Extract inputs
    */
-  private extractInputs(content: string, frontmatter: any): string[] {
+  private extractInputs(content: string, frontmatter: Record<string, unknown>): string[] {
     if (frontmatter.inputs && Array.isArray(frontmatter.inputs)) {
       return frontmatter.inputs;
     }
@@ -245,7 +245,7 @@ export class MiniPromptLoader {
   /**
    * Extract outputs
    */
-  private extractOutputs(content: string, frontmatter: any): string[] {
+  private extractOutputs(content: string, frontmatter: Record<string, unknown>): string[] {
     if (frontmatter.outputs && Array.isArray(frontmatter.outputs)) {
       return frontmatter.outputs;
     }
@@ -264,7 +264,7 @@ export class MiniPromptLoader {
   /**
    * Extract success criteria
    */
-  private extractSuccessCriteria(content: string, frontmatter: any): string[] {
+  private extractSuccessCriteria(content: string, frontmatter: Record<string, unknown>): string[] {
     if (frontmatter.success_criteria && Array.isArray(frontmatter.success_criteria)) {
       return frontmatter.success_criteria;
     }
@@ -283,7 +283,7 @@ export class MiniPromptLoader {
   /**
    * Extract skip conditions
    */
-  private extractSkipConditions(content: string, frontmatter: any): string[] {
+  private extractSkipConditions(content: string, frontmatter: Record<string, unknown>): string[] {
     if (frontmatter.skip_conditions && Array.isArray(frontmatter.skip_conditions)) {
       return frontmatter.skip_conditions;
     }

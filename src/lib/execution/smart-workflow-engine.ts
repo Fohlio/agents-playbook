@@ -128,7 +128,7 @@ export class SmartWorkflowEngine {
    */
   async completeStep(
     stepId: string,
-    outputs: Record<string, any>
+    outputs: Record<string, unknown>
   ): Promise<void> {
     console.log(`[SmartEngine] Completing step: ${stepId}`);
     
@@ -155,7 +155,7 @@ export class SmartWorkflowEngine {
   /**
    * Get skip suggestions based on skip conditions
    */
-  getSkipSuggestions(skipConditions: string[], context: ExecutionContext): {
+  getSkipSuggestions(skipConditions: string[]): {
     canSkip: boolean;
     reasons: string[];
   } {
@@ -210,7 +210,15 @@ export class SmartWorkflowEngine {
         phase: currentPhase.name,
         stepNumber: 0,
         totalSteps: 0,
-        validation: {} as any,
+        validation: {
+          hasRequiredMCP: true,
+          hasRequiredContext: true,
+          hasOptionalContext: [],
+          canExecute: false,
+          skipReasons: [],
+          missingMCP: [],
+          missingContext: []
+        },
         prerequisites: stepConfig.prerequisites,
                   skipConditions: stepConfig.skip_conditions || []
       };

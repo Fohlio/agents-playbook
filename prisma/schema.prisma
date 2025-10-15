@@ -1,0 +1,182 @@
+// Prisma Schema for Agents Playbook User Platform
+// Database: Neon PostgreSQL with Row-Level Security
+
+generator client {
+  provider = "prisma-client-js"
+  previewFeatures = ["multiSchema"]
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// ============================================================================
+// Enums
+// ============================================================================
+
+enum UserTier {
+  FREE
+  PREMIUM
+}
+
+enum UserRole {
+  USER
+  ADMIN
+}
+
+enum Visibility {
+  PUBLIC
+  PRIVATE
+}
+
+// Note: Phase is now a string field to allow user-defined phases
+// Common phases: analysis, design-architecture, planning, implementation, testing-review
+
+enum TargetType {
+  WORKFLOW
+  MINI_PROMPT
+}
+
+// ============================================================================
+// Models
+// ============================================================================
+
+model User {
+  id           String      @id @default(uuid())
+  email        String      @unique
+  username     String      @unique
+  passwordHash String      @map("password_hash")
+  tier         UserTier    @default(FREE)
+  role         UserRole    @default(USER)
+  createdAt    DateTime    @default(now()) @map("created_at")
+  updatedAt    DateTime    @updatedAt @map("updated_at")
+  
+  // Relations
+  apiTokens    ApiToken[]
+  workflows    Workflow[]
+  miniPrompts  MiniPrompt[]
+  ratings      Rating[]
+  
+  @@map("users")
+  @@index([email])
+  @@index([tier])
+}
+
+model ApiToken {
+  id         String    @id @default(uuid())
+  userId     String    @map("user_id")
+  tokenHash  String    @map("token_hash")
+  name       String
+  expiresAt  DateTime  @map("expires_at")
+  lastUsedAt DateTime? @map("last_used_at")
+  createdAt  DateTime  @default(now()) @map("created_at")
+  
+  // Relations
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@map("api_tokens")
+  @@index([userId])
+  @@index([tokenHash])
+  @@index([expiresAt])
+}
+
+model Workflow {
+  id          String      @id @default(uuid())
+  userId      String      @map("user_id")
+  name        String      @db.VarChar(255)
+  description String?     @db.Text
+  yamlContent String      @map("yaml_content") @db.Text
+  visibility  Visibility  @default(PRIVATE)
+  isActive    Boolean     @default(false) @map("is_active")
+  createdAt   DateTime    @default(now()) @map("created_at")
+  updatedAt   DateTime    @updatedAt @map("updated_at")
+  
+  // Relations
+  user                User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  workflowMiniPrompts WorkflowMiniPrompt[]
+  
+  @@map("workflows")
+  @@index([userId])
+  @@index([visibility])
+  @@index([isActive])
+  @@index([createdAt])
+}
+
+model MiniPrompt {
+  id          String      @id @default(uuid())
+  userId      String      @map("user_id")
+  name        String      @db.VarChar(255)
+  content     String      @db.Text
+  phase       String      @db.VarChar(100) // User-definable phase
+  visibility  Visibility  @default(PRIVATE)
+  createdAt   DateTime    @default(now()) @map("created_at")
+  updatedAt   DateTime    @updatedAt @map("updated_at")
+  
+  // Relations
+  user                User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  workflowMiniPrompts WorkflowMiniPrompt[]
+  
+  @@map("mini_prompts")
+  @@index([userId])
+  @@index([visibility])
+  @@index([phase])
+  @@index([createdAt])
+}
+
+model WorkflowMiniPrompt {
+  workflowId   String  @map("workflow_id")
+  miniPromptId String  @map("mini_prompt_id")
+  order        Int
+  phase        String  @db.VarChar(50)
+  
+  // Relations
+  workflow     Workflow    @relation(fields: [workflowId], references: [id], onDelete: Cascade)
+  miniPrompt   MiniPrompt  @relation(fields: [miniPromptId], references: [id], onDelete: Restrict)
+  
+  @@id([workflowId, miniPromptId])
+  @@map("workflow_mini_prompts")
+  @@index([workflowId])
+  @@index([miniPromptId])
+}
+
+model Rating {
+  id         String      @id @default(uuid())
+  userId     String      @map("user_id")
+  targetType TargetType  @map("target_type")
+  targetId   String      @map("target_id")
+  rating     Int         // Validated in application layer: 1-5
+  comment    String?     @db.Text
+  createdAt  DateTime    @default(now()) @map("created_at")
+  
+  // Relations
+  user       User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  // Note: targetId is polymorphic (Workflow or MiniPrompt) - handled at application layer
+  
+  @@unique([userId, targetType, targetId])
+  @@map("ratings")
+  @@index([userId])
+  @@index([targetType, targetId])
+  @@index([rating])
+  @@index([createdAt])
+}
+
+model UsageStats {
+  id               String      @id @default(uuid())
+  targetType       TargetType  @map("target_type")
+  targetId         String      @map("target_id")
+  usageCount       Int         @default(0) @map("usage_count")
+  uniqueUsersCount Int         @default(0) @map("unique_users_count")
+  lastUsedAt       DateTime?   @map("last_used_at")
+  updatedAt        DateTime    @updatedAt @map("updated_at")
+  
+  // Note: targetId is polymorphic (Workflow or MiniPrompt) - handled at application layer
+  
+  @@unique([targetType, targetId])
+  @@map("usage_stats")
+  @@index([targetType])
+  @@index([usageCount])
+  @@index([uniqueUsersCount])
+}
+

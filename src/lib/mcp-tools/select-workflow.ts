@@ -58,10 +58,9 @@ export async function selectWorkflowHandler({ workflow_id }: { workflow_id: stri
     // Create detailed step breakdown with context requirements
     const stepBreakdown = workflowConfig.phases.map(phase => {
       const stepDetails = phase.steps.map((step, index) => {
-        // Access the actual YAML structure
-        const stepPrereqs = step.prerequisites as any;
-        const requiredContext = stepPrereqs?.requiredContext || [];
-        const optionalContext = stepPrereqs?.optionalContext || [];
+        // Access prerequisites directly from the typed structure
+        const requiredContext = step.prerequisites.context || [];
+        const optionalContext = step.prerequisites.optional || [];
         
         let contextInfo = '';
         if (requiredContext.length > 0) {

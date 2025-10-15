@@ -113,7 +113,7 @@ export interface PhaseDefinition {
 
 export interface ExecutionContext {
   available_mcp_servers: string[];
-  context_data: Map<string, any>;
+  context_data: Map<string, unknown>;
   workflow_id: string;
   current_phase: string;
   completed_steps: string[];

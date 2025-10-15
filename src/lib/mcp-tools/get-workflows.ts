@@ -31,7 +31,6 @@ export async function getWorkflowsHandler({ task_description }: { task_descripti
       return `${index + 1}. **${workflow.title}** ${complexity} (${similarity}% match)\n   ${workflow.description}\n   📁 ${workflow.category} | 🏷️ ${workflow.tags.join(', ')}`;
     });
 
-    const highestSimilarity = Math.round(results[0].similarity * 100);
     const matchQuality = getMatchQuality(results[0].similarity);
 
     return {

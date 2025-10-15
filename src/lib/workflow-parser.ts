@@ -39,7 +39,7 @@ export class WorkflowParser {
     
     try {
       // Parse playbook/prompt-playbook.md for workflow metadata
-      const mainPlaybook = await this.parseMainPlaybook();
+      await this.parseMainPlaybook();
       
       // Parse individual prompt files
       const directories = ['planning', 'kickoff', 'qa'];
@@ -74,7 +74,7 @@ export class WorkflowParser {
   /**
    * Parse playbook/prompt-playbook.md to extract workflow metadata
    */
-  private async parseMainPlaybook(): Promise<any> {
+  private async parseMainPlaybook(): Promise<Record<string, unknown>> {
     const playbookPath = path.join(this.agentsPlaybookPath, 'prompt-playbook.md');
     
     if (!fs.existsSync(playbookPath)) {
@@ -111,7 +111,7 @@ export class WorkflowParser {
     // Extract description and other metadata
     const description = frontmatter.description || this.extractDescriptionFromContent(content);
     const complexity = frontmatter.complexity || this.inferComplexity(content);
-    const keywords = frontmatter.keywords || this.extractKeywords(title, description, content);
+    const keywords = frontmatter.keywords || this.extractKeywords(title, description);
     
     // Parse workflow steps
     const steps = this.parseSteps(content);
@@ -180,7 +180,7 @@ export class WorkflowParser {
   /**
    * Extract keywords from title and content
    */
-  private extractKeywords(title: string, description: string, content: string): string[] {
+  private extractKeywords(title: string, description: string): string[] {
     const text = `${title} ${description}`.toLowerCase();
     const keywords = new Set<string>();
     
@@ -221,7 +221,7 @@ export class WorkflowParser {
     const stepMatches = workflowContent.match(/(\d+)\.\s*\*\*(.+?)\*\*[:\s]*(.+?)(?=\n\d+\.|$)/gs);
     
     if (stepMatches) {
-      stepMatches.forEach((stepMatch, index) => {
+      stepMatches.forEach((stepMatch) => {
         const match = stepMatch.match(/(\d+)\.\s*\*\*(.+?)\*\*[:\s]*([\s\S]+)/);
         if (match) {
           steps.push({

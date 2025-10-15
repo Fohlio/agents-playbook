@@ -3,7 +3,7 @@ import { WorkflowLoader } from '../loaders/workflow-loader';
 import { SmartWorkflowEngine } from '../execution/smart-workflow-engine';
 import { DefaultMCPRegistry } from '../validation/workflow-validator';
 import { MiniPromptLoader } from '../loaders/mini-prompt-loader';
-import { ExecutionContext, StandardContext } from '../types/workflow-types';
+import { ExecutionContext } from '../types/workflow-types';
 
 export const getNextStepToolSchema = {
   workflow_id: z.string().describe('ID of the workflow'),
@@ -144,7 +144,7 @@ export async function getNextStepHandler({
 
     // Add skip suggestions if applicable
     if (currentStep.miniPrompt.skip_conditions && currentStep.miniPrompt.skip_conditions.length > 0) {
-      const skipSuggestions = smartEngine.getSkipSuggestions(currentStep.miniPrompt.skip_conditions, executionContext);
+      const skipSuggestions = smartEngine.getSkipSuggestions(currentStep.miniPrompt.skip_conditions);
       if (skipSuggestions.canSkip) {
         stepContent += `💡 **Skip Suggestion:**\n`;
         stepContent += `This step can be skipped because:\n`;

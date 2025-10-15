@@ -1,8 +1,8 @@
-import Header from "@/components/Header";
-import HeroSection from "@/components/HeroSection";
-import FeaturesSection from "@/components/FeaturesSection";
-import SetupSection from "@/components/SetupSection";
-import WorkflowMatcherGame from "@/components/WorkflowMatcherGame";
+import Header from "@/shared/ui/landing/Header";
+import HeroSection from "@/shared/ui/landing/HeroSection";
+import FeaturesSection from "@/shared/ui/landing/FeaturesSection";
+import SetupSection from "@/shared/ui/landing/SetupSection";
+import WorkflowMatcherGame from "@/shared/ui/landing/WorkflowMatcherGame";
 
 // Types
 
