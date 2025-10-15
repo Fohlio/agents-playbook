@@ -13,6 +13,7 @@ export interface WorkflowMetadata {
   estimatedDuration: string;
   teamSize?: string;
   skillLevel?: string;
+  similarity?: number; // Added for search results
 }
 
 // Type guards and helpers
@@ -116,14 +117,17 @@ export class WorkflowLoader {
         }
       });
 
-      return { workflow, score };
+      // Normalize score to 0-1 range for similarity
+      const normalizedSimilarity = Math.min(score / (searchTerms.length * 3), 1);
+
+      return { workflow, score, similarity: normalizedSimilarity };
     });
 
     return scored
       .filter(item => item.score > 0)
       .sort((a, b) => b.score - a.score)
       .slice(0, limit)
-      .map(item => item.workflow);
+      .map(item => ({ ...item.workflow, similarity: item.similarity }));
   }
 
   /**

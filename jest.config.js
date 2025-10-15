@@ -46,6 +46,11 @@ const config = {
     '<rootDir>/node_modules/',
   ],
   
+  // Transform node_modules that use ES modules
+  transformIgnorePatterns: [
+    'node_modules/(?!(next-auth|@auth)/)',
+  ],
+  
   // Verbose output
   verbose: true,
   
