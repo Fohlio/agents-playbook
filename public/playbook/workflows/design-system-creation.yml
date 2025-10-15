@@ -1,0 +1,60 @@
+name: "Design System Creation Workflow"
+description: "Create a comprehensive design system by analyzing existing design patterns and implementing a structured design system document"
+version: "1.0"
+category: "documentation"
+tags: ["design-system", "ui", "ux", "components", "design-tokens", "documentation", "branding"]
+
+# CRITICAL: VALIDATE ALL STEPS BEFORE STARTING
+agentInstructions:
+  validation:
+    required: true
+    message: "🚨 MANDATORY: Before starting, validate ALL workflow steps, prerequisites, mini-prompts access, and required context. Execute ALL steps completely - no skipping unless explicitly optional."
+
+phases:
+  - phase: "design-analysis-implementation"
+    description: "Analyze current design system and implement comprehensive design system documentation"
+    required: true
+    steps:
+      - id: "analyze-design-system"
+        miniPrompt: "analysis/analyze-design-system"
+        required: true
+        prerequisites:
+          requiredContext: []
+          optionalContext: ["existing_components", "brand_guidelines", "current_design_patterns", "ui_screenshots", "design_files"]
+          mcpServers: ["figma"]  # Optional: Use if available for design token extraction
+        outputs: ["design_analysis", "design_requirements", "clarified_design_scope", "figma_data", "design_source_of_truth"]
+        
+      - id: "implement-design-system"
+        miniPrompt: "implementation/implement-design-system"
+        required: true
+        prerequisites:
+          requiredContext: ["product_slug", "design_analysis"]
+          optionalContext: ["structured_requirements", "design_specifications", "brand_guidelines", "figma_data", "design_source_of_truth", "design_requirements", "clarified_design_scope"]
+        dependencies: ["analyze-design-system"]
+        outputs: ["design_system_directory", "design_system_file_path", "design_tokens_file_path", "colors_file_path", "typography_file_path", "components_file_path", "implementation_guide_path", "design_system_specifications"]
+
+# Workflow-level configurations
+skipConditions:
+  - condition: "design_system_already_exists"
+    message: "Design system documentation already exists and is comprehensive"
+  - condition: "no_product_slug"
+    message: "Product slug is required to create design system documentation"
+
+validationRules:
+  - rule: "product_slug_required"
+    phases: ["design-analysis-implementation"]
+    message: "Product slug must be provided to create design system documentation"
+
+notifications:
+  - trigger: "phase_completion"
+    phases: ["design-analysis-implementation"]
+    message: "Design system creation completed successfully"
+  - trigger: "workflow_completion"
+    message: "Design system documentation created and ready for use"
+
+# Smart execution settings
+execution:
+  allowSkipping: false
+  requireExplicitApproval: false
+  automaticProgressTracking: true
+
