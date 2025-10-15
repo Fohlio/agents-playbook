@@ -3,6 +3,20 @@
 ## Objective
 Generate only what teams need to start building: a single spec file plus minimal tokens, optionally split docs if requested.
 
+## Universal Implementation Rules
+1. Do not over-engineer and make precise fixes
+2. Use only static imports
+3. Do not add excessive markdown files and console logs
+4. Do not use any work arounds, hacks and fallbacks
+5. Validate and document each step
+6. Do not use "any" or "unknown" types or any fallbacks or hacks
+7. Do not pass functions as dependencies to hooks
+8. Name functions and variables and classes technically or business wise
+9. Follow strict typisation if applicable
+10. Fix lint errors and do not write code which is not used
+11. Locate existing design system or UI components if applicable
+12. Use context7 MCP if available for documentation if applicable
+
 ## Context Required
 - **product_slug**
 - **design_analysis**
