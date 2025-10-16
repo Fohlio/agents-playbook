@@ -26,7 +26,9 @@ Follow this structured approach for comprehensive design:
 Present multiple choice questions to clarify key architectural decisions
 
 ### **UI/Design System Clarifications**
-**If UI implementation is required, ask in chat:**
+**If UI implementation is required, first search codebase for existing UI kit/design-system/component library and reuse it.**
+
+**Then ask in chat:**
 - Is there a Figma MCP server available for design analysis and code generation?
 - Does an `.agents-playbook/ui.json` file exist that documents the existing design system?
 - What design system or component library should be used? (e.g., Material-UI, Ant Design, custom system)
@@ -54,6 +56,7 @@ Design a comprehensive solution architecture that includes:
    - Technology stack recommendations
    - Database design (if applicable)
    - API interfaces (if applicable)
+   - Search for and reuse existing UI kit/design-system/component library (if UI work involved)
    - Existing patterns and conventions to follow
 
 3. **Implementation Approach**
