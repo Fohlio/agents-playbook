@@ -53,7 +53,7 @@ export default function LoginPage() {
         // Generic error message for security (don't reveal if user exists)
         setError("Invalid credentials");
       } else if (result?.ok) {
-        router.push("/dashboard");
+        router.push("/");
       }
     } catch {
       setError("An error occurred during login");
@@ -72,7 +72,7 @@ export default function LoginPage() {
       </div>
 
       {error && (
-        <Alert variant="error">{error}</Alert>
+        <Alert variant="error" testId="login-error-alert">{error}</Alert>
       )}
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
@@ -89,6 +89,7 @@ export default function LoginPage() {
             placeholder="you@example.com"
             error={!!errors.email}
             fullWidth
+            testId="login-email-input"
             {...register("email")}
           />
         </FormField>
@@ -106,6 +107,7 @@ export default function LoginPage() {
             placeholder="••••••••"
             error={!!errors.password}
             fullWidth
+            testId="login-password-input"
             {...register("password")}
           />
         </FormField>
@@ -113,6 +115,7 @@ export default function LoginPage() {
         <Checkbox
           id="rememberMe"
           label="Remember me for 90 days"
+          testId="login-remember-me-checkbox"
           {...register("rememberMe")}
         />
 
@@ -121,6 +124,7 @@ export default function LoginPage() {
           variant="primary"
           fullWidth
           disabled={isLoading}
+          testId="login-submit-button"
         >
           {isLoading ? "Signing in..." : "Sign In"}
         </Button>
@@ -129,7 +133,7 @@ export default function LoginPage() {
       <div className="text-center text-sm">
         <span className="text-gray-600">Don&apos;t have an account? </span>
         <Link
-          href="/auth/register"
+          href="/register"
           className="font-medium text-primary-600 hover:text-primary-700"
         >
           Sign up

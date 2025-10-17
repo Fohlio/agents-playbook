@@ -58,7 +58,7 @@ export default function RegisterPage() {
       });
 
       if (signInResult?.ok) {
-        router.push("/dashboard");
+        router.push("/");
       } else {
         throw new Error("Login failed after registration");
       }
@@ -79,7 +79,7 @@ export default function RegisterPage() {
       </div>
 
       {error && (
-        <Alert variant="error">{error}</Alert>
+        <Alert variant="error" testId="register-error-alert">{error}</Alert>
       )}
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
@@ -96,6 +96,7 @@ export default function RegisterPage() {
             placeholder="you@example.com"
             error={!!errors.email}
             fullWidth
+            testId="register-email-input"
             {...register("email")}
           />
         </FormField>
@@ -113,6 +114,7 @@ export default function RegisterPage() {
             placeholder="johndoe"
             error={!!errors.username}
             fullWidth
+            testId="register-username-input"
             {...register("username")}
           />
         </FormField>
@@ -131,6 +133,7 @@ export default function RegisterPage() {
             placeholder="••••••••"
             error={!!errors.password}
             fullWidth
+            testId="register-password-input"
             {...register("password")}
           />
         </FormField>
@@ -148,6 +151,7 @@ export default function RegisterPage() {
             placeholder="••••••••"
             error={!!errors.confirmPassword}
             fullWidth
+            testId="register-confirm-password-input"
             {...register("confirmPassword")}
           />
         </FormField>
@@ -157,6 +161,7 @@ export default function RegisterPage() {
           variant="primary"
           fullWidth
           disabled={isLoading}
+          testId="register-submit-button"
         >
           {isLoading ? "Creating account..." : "Sign Up"}
         </Button>
@@ -165,7 +170,7 @@ export default function RegisterPage() {
       <div className="text-center text-sm">
         <span className="text-gray-600">Already have an account? </span>
         <Link
-          href="/auth/login"
+          href="/login"
           className="font-medium text-primary-600 hover:text-primary-700"
         >
           Sign in

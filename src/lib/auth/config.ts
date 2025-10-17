@@ -110,8 +110,8 @@ export const authConfig: NextAuthConfig = {
 
   // Custom pages
   pages: {
-    signIn: "/auth/login",
-    error: "/auth/error",
+    signIn: "/login",
+    error: "/login",
   },
 
   // Cookie configuration

@@ -23,7 +23,7 @@ export async function middleware(request: NextRequest) {
 
   // If not authenticated, redirect to login
   if (!isAuthenticated) {
-    const loginUrl = new URL("/auth/login", request.url);
+    const loginUrl = new URL("/login", request.url);
     loginUrl.searchParams.set("callbackUrl", request.url);
     return NextResponse.redirect(loginUrl);
   }

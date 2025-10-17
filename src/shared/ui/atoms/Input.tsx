@@ -4,6 +4,7 @@ import { cn } from "@/shared/lib/utils/cn";
 export interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   error?: boolean;
   fullWidth?: boolean;
+  testId?: string;
 }
 
 /**
@@ -15,10 +16,11 @@ export interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
  * - Integrates with react-hook-form
  */
 const Input = forwardRef<HTMLInputElement, InputProps>(
-  ({ className, error, fullWidth, ...props }, ref) => {
+  ({ className, error, fullWidth, testId, ...props }, ref) => {
     return (
       <input
         ref={ref}
+        data-testid={testId}
         className={cn(
           "rounded-md border px-3 py-2 shadow-sm transition-colors",
           "focus:outline-none focus:ring-2 focus:ring-offset-0",
