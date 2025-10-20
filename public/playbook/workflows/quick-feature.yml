@@ -21,14 +21,14 @@ phases:
         prerequisites:
           requiredContext: []
           optionalContext: ["feature_description", "requirements", "design_guidelines", "technical_constraints"]
-        outputs: ["design_specifications", "technical_requirements", "architecture_specifications"]
+        outputs: ["design_specifications", "technical_requirements", "architecture_specifications", "coding_solution"]
         
       - id: "handoff-to-implementation"
         miniPrompt: "handoff-to-subagent"
         required: true
         prerequisites:
           requiredContext: ["design_specifications"]
-          optionalContext: ["technical_requirements", "architecture_specifications"]
+          optionalContext: ["technical_requirements", "architecture_specifications", "coding_solution"]
         dependencies: ["design-architecture"]
 
   - phase: "implementation"
@@ -40,9 +40,9 @@ phases:
         required: true
         prerequisites:
           requiredContext: ["design_specifications"]
-          optionalContext: ["requirements", "development_environment", "coding_standards"]
+          optionalContext: ["requirements", "development_environment", "coding_standards", "coding_solution"]
         dependencies: ["handoff-to-implementation"]
-
+      
 # Workflow-level configurations
 skipConditions:
   - condition: "feature_already_implemented"

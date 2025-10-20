@@ -43,7 +43,14 @@ DB --> EventBus
 - New abstractions introduced
 - Trade-offs (simplicity vs flexibility, sync vs async, etc.)
 
-#### D) Output Format
+#### D) Coding Solution
+Generate initial code structure:
+- Key interfaces, types, or classes needed
+- Function signatures for main operations
+- Code scaffolding showing how components connect
+- Use existing patterns and conventions from the codebase
+
+#### E) Output Format
 Return:
 - `design.md` — the architecture plan in concise prose
 - `flow_diagram.md` — mermaid diagram of logic/data flow
@@ -61,6 +68,10 @@ Return:
   - Key decisions and rationale
 - `.agents-playbook/[task-name]/flow_diagram.md`
   - Mermaid diagram showing data/control flow
+- `.agents-playbook/[task-name]/solution.md`
+  - Initial code structure and scaffolding
+  - Key interfaces, types, and function signatures
+  - Implementation approach using existing patterns
 
 ---
 
