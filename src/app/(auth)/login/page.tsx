@@ -52,12 +52,15 @@ export default function LoginPage() {
       if (result?.error) {
         // Generic error message for security (don't reveal if user exists)
         setError("Invalid credentials");
+        setIsLoading(false);
       } else if (result?.ok) {
-        router.push("/");
+        // Small delay to ensure cookie is set before navigation
+        await new Promise(resolve => setTimeout(resolve, 200));
+        // Use window.location for full page navigation to ensure cookies are set
+        window.location.href = "/dashboard";
       }
     } catch {
       setError("An error occurred during login");
-    } finally {
       setIsLoading(false);
     }
   };

@@ -74,7 +74,24 @@ export class LoginPage {
     if (rememberMe) {
       await this.setRememberMe(true);
     }
-    await this.submit();
+
+    // Wait for submit button to be ready
+    await this.submitButton.waitFor({ state: 'visible', timeout: 5000 });
+
+    // Click submit - Playwright will automatically scroll into view and handle navigation
+    await this.submitButton.click({ force: false });
+
+    // Wait for navigation to complete (dashboard or login with error)
+    await this.page.waitForLoadState('networkidle', { timeout: 20000 });
+
+    // Check final URL
+    const currentUrl = this.page.url();
+
+    // If we're still on login page (not redirected to dashboard), authentication failed
+    if (currentUrl.includes('/login') && !currentUrl.includes('/dashboard')) {
+      const error = await this.getErrorMessage();
+      throw new Error(`Login failed: ${error || 'Invalid credentials - check database seed'}`);
+    }
   }
 
   /**

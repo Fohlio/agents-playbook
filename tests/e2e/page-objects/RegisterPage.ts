@@ -84,6 +84,11 @@ export class RegisterPage {
     await this.fillPassword(password);
     await this.fillConfirmPassword(confirmPassword || password);
     await this.submit();
+
+    // Wait for redirect after successful registration
+    // The register page uses window.location.href which causes full page navigation
+    await this.page.waitForURL(url => url.pathname.includes('/dashboard'), { timeout: 15000 });
+    await this.page.waitForLoadState('networkidle');
   }
 
   /**

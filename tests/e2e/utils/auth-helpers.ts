@@ -126,3 +126,115 @@ export async function clearSession(page: Page): Promise<void> {
   await page.context().clearPermissions();
 }
 
+/**
+ * Navigate to settings page
+ * Requires user to be authenticated
+ */
+export async function navigateToSettings(page: Page): Promise<void> {
+  await page.goto('/dashboard/settings');
+  await page.waitForLoadState('networkidle');
+}
+
+/**
+ * Update user profile username
+ * Requires user to be authenticated and on settings page
+ */
+export async function updateProfile(
+  page: Page,
+  username: string
+): Promise<void> {
+  const usernameInput = page.getByTestId('profile-username-input');
+  const saveButton = page.getByTestId('profile-save-button');
+
+  await usernameInput.clear();
+  await usernameInput.fill(username);
+  await saveButton.click();
+
+  // Wait for success or error
+  await page.waitForTimeout(2000);
+}
+
+/**
+ * Change user password
+ * Requires user to be authenticated and on settings page
+ */
+export async function changePassword(
+  page: Page,
+  currentPassword: string,
+  newPassword: string,
+  confirmPassword?: string
+): Promise<void> {
+  const currentInput = page.getByTestId('password-current-input');
+  const newInput = page.getByTestId('password-new-input');
+  const confirmInput = page.getByTestId('password-confirm-input');
+  const saveButton = page.getByTestId('password-save-button');
+
+  await currentInput.fill(currentPassword);
+  await newInput.fill(newPassword);
+  await confirmInput.fill(confirmPassword || newPassword);
+  await saveButton.click();
+
+  // Wait for success or error
+  await page.waitForTimeout(2000);
+}
+
+/**
+ * Create API token
+ * Requires user to be authenticated and on settings page
+ * Returns the plain token value (one-time display)
+ */
+export async function createApiToken(
+  page: Page,
+  tokenName: string
+): Promise<string> {
+  const createButton = page.getByTestId('create-token-button');
+  await createButton.click();
+
+  // Wait for modal
+  await page.getByTestId('create-token-modal').waitFor({ state: 'visible' });
+
+  const nameInput = page.getByTestId('token-name-input');
+  const submitButton = page.getByTestId('submit-create-token-button');
+
+  await nameInput.fill(tokenName);
+  await submitButton.click();
+
+  // Wait for token display modal
+  await page.getByTestId('token-display-modal').waitFor({ state: 'visible' });
+
+  // Get plain token
+  const tokenInput = page.getByTestId('token-display-input');
+  const plainToken = await tokenInput.inputValue();
+
+  // Close modal
+  const closeButton = page.getByTestId('close-token-modal-button');
+  await closeButton.click();
+
+  await page.getByTestId('token-display-modal').waitFor({ state: 'hidden' });
+
+  return plainToken;
+}
+
+/**
+ * Revoke API token by ID
+ * Requires user to be authenticated and on settings page
+ */
+export async function revokeApiToken(
+  page: Page,
+  tokenId: string
+): Promise<void> {
+  const revokeButton = page.getByTestId(`revoke-token-button-${tokenId}`);
+  await revokeButton.click();
+
+  // Wait for confirmation modal
+  await page.getByTestId('revoke-token-modal').waitFor({ state: 'visible' });
+
+  const confirmButton = page.getByTestId('confirm-revoke-button');
+  await confirmButton.click();
+
+  await page.getByTestId('revoke-token-modal').waitFor({ state: 'hidden' });
+
+  // Wait for success message
+  await page.waitForTimeout(1000);
+}
+

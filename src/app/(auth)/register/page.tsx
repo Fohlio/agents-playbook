@@ -57,14 +57,14 @@ export default function RegisterPage() {
         redirect: false,
       });
 
-      if (signInResult?.ok) {
-        router.push("/");
-      } else {
+      if (signInResult?.error) {
         throw new Error("Login failed after registration");
+      } else if (signInResult?.ok) {
+        // Use window.location for full page navigation to ensure cookies are set
+        window.location.href = "/dashboard";
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Registration failed");
-    } finally {
       setIsLoading(false);
     }
   };
