@@ -4,8 +4,6 @@ Use established code patterns, libraries, and conventions already present in the
 
 ---
 
-## 🪜 Agent Workflow
-
 ### Step 1 — Context Discovery
 1. **Search the codebase** for:
    - Similar or related features
@@ -26,34 +24,22 @@ Keep it short and multiple-choice when possible.
 Once context is clear, **generate the feature design**:
 
 #### A) High-Level Plan
+Describe the high-level plan for the feature and the overview of the solution.
+
+#### B) Implementation Steps
+List the implementation steps. For each, provide concise code snippets that cover:
+- Essential interfaces, types, or classes to define
+- Function or method signatures for all main operations
+- Example scaffolding code that illustrates how components interact
 - Describe main components and their responsibilities
 - Show how they integrate with existing ones
-- Include only relevant layers (API, service, DB, queue, etc.)
+- Include only relevant layers (API, service, DB, queue, etc.)`
 
-#### B) Data Flow Diagram (Mermaid)
-```mermaid
-flowchart LR
-ComponentA --> ComponentB
-ComponentB --> DB
-DB --> EventBus
-```
+Ensure each step is clear, actionable, and formatted for direct use in the codebase.
 
-#### C) Core Decisions
-- Reused patterns or modules
-- New abstractions introduced
-- Trade-offs (simplicity vs flexibility, sync vs async, etc.)
-
-#### D) Coding Solution
-Generate initial code structure:
-- Key interfaces, types, or classes needed
-- Function signatures for main operations
-- Code scaffolding showing how components connect
-- Use existing patterns and conventions from the codebase
-
-#### E) Output Format
+#### C) Output Format
 Return:
 - `design.md` — the architecture plan in concise prose
-- `flow_diagram.md` — mermaid diagram of logic/data flow
 
 ### ⚙️ Constraints
 - Must align with existing code patterns
@@ -64,14 +50,7 @@ Return:
 ### ✅ Deliverable Format
 - `.agents-playbook/[task-name]/design.md`
   - High-level description of components
-  - Integration points and data flow
-  - Key decisions and rationale
-- `.agents-playbook/[task-name]/flow_diagram.md`
-  - Mermaid diagram showing data/control flow
-- `.agents-playbook/[task-name]/solution.md`
-  - Initial code structure and scaffolding
-  - Key interfaces, types, and function signatures
-  - Implementation approach using existing patterns
+  - Implementation steps with code snippets
 
 ---
 
