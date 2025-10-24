@@ -12,7 +12,7 @@ Use established code patterns, libraries, and conventions already present in the
 2. Identify where this feature logically belongs (domain, service, or module).
 
 ### Step 2 — Clarification
-If context is missing or ambiguous, **ask concise, goal-oriented questions** to refine:
+If context is missing or ambiguous, **ask concise, goal-oriented questions inside the chat before proceeding** to refine:
 - Feature intent and scope
 - Key data inputs/outputs
 - Expected user or system interactions
@@ -39,18 +39,13 @@ Ensure each step is clear, actionable, and formatted for direct use in the codeb
 
 #### C) Output Format
 Return:
-- `design.md` — the architecture plan in concise prose
+- `.agents-playbook/[task-name]/design.md` — the architecture plan
 
 ### ⚙️ Constraints
 - Must align with existing code patterns
 - Prefer reuse over creation
 - Architecture should be scalable, composable, and easy to extend
 - Keep output brief, technical, and actionable
-
-### ✅ Deliverable Format
-- `.agents-playbook/[task-name]/design.md`
-  - High-level description of components
-  - Implementation steps with code snippets
 
 ---
 
