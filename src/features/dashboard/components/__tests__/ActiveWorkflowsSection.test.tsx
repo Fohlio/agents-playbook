@@ -13,13 +13,13 @@ describe('ActiveWorkflowsSection', () => {
       id: 'workflow-1',
       name: 'Test Workflow 1',
       description: 'Description 1',
-      _count: { workflowMiniPrompts: 3 },
+      _count: { stages: 3 },
     },
     {
       id: 'workflow-2',
       name: 'Test Workflow 2',
       description: null,
-      _count: { workflowMiniPrompts: 5 },
+      _count: { stages: 5 },
     },
   ];
 

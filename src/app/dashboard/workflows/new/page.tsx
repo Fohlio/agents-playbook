@@ -1,31 +1,42 @@
-import { redirect } from "next/navigation";
-import { auth } from "@/lib/auth/auth";
-import { ROUTES } from "@/shared/routes";
-import { Card, CardHeader, Link } from "@/shared/ui/atoms";
+import { redirect } from 'next/navigation';
+import { auth } from '@/lib/auth/auth';
+import { prisma } from '@/lib/db/client';
+import { ROUTES } from '@/shared/routes';
+import { WorkflowConstructorWrapper } from '@/features/workflow-constructor/components/WorkflowConstructorWrapper';
 
 export default async function NewWorkflowPage() {
   const session = await auth();
-
-  if (!session?.user) {
+  if (!session?.user?.id) {
     redirect(ROUTES.LOGIN);
   }
 
+  // Verify user exists in database
+  const userExists = await prisma.user.findUnique({
+    where: { id: session.user.id },
+  });
+
+  if (!userExists) {
+    // User session is stale, redirect to login
+    redirect(ROUTES.LOGIN);
+  }
+
+  // Fetch both PUBLIC mini-prompts and user's own mini-prompts
+  const miniPrompts = await prisma.miniPrompt.findMany({
+    where: {
+      OR: [
+        { visibility: 'PUBLIC' },
+        { userId: session.user.id },
+      ],
+    },
+    orderBy: [
+      { createdAt: 'desc' },
+    ],
+  });
+
   return (
-    <div className="max-w-2xl mx-auto">
-      <Card testId="workflow-constructor-placeholder">
-        <CardHeader
-          title="Workflow Constructor"
-          description="Coming in Phase 3"
-        />
-        <div className="text-center py-12">
-          <p className="text-gray-600 mb-4">
-            The visual workflow constructor with drag-and-drop functionality will be available in Phase 3.
-          </p>
-          <Link href={ROUTES.DASHBOARD} variant="primary">
-            Back to Dashboard
-          </Link>
-        </div>
-      </Card>
-    </div>
+    <WorkflowConstructorWrapper
+      userId={session.user.id}
+      miniPrompts={miniPrompts}
+    />
   );
 }

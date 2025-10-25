@@ -70,7 +70,7 @@ describe('Dashboard Service', () => {
           userId: mockUserId,
           name: 'Workflow 1',
           isActive: true,
-          _count: { workflowMiniPrompts: 3 },
+          _count: { stages: 3 },
         },
       ];
 
@@ -108,7 +108,7 @@ describe('Dashboard Service', () => {
         expect.objectContaining({
           include: {
             _count: {
-              select: { workflowMiniPrompts: true },
+              select: { stages: true },
             },
           },
         })
@@ -176,7 +176,7 @@ describe('Dashboard Service', () => {
         expect.objectContaining({
           include: {
             _count: {
-              select: { workflowMiniPrompts: true },
+              select: { stageMiniPrompts: true },
             },
           },
         })

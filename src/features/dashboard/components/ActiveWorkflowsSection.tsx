@@ -61,7 +61,7 @@ export function ActiveWorkflowsSection({ workflows }: ActiveWorkflowsSectionProp
                 <p className="text-sm text-gray-600 mt-1">{workflow.description}</p>
               )}
               <p className="text-xs text-gray-500 mt-1">
-                {workflow._count.workflowMiniPrompts} mini-prompts
+                {workflow._count.stages} stages
               </p>
             </div>
 

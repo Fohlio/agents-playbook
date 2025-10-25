@@ -38,7 +38,7 @@ describe('Mini-Prompt Actions', () => {
 
   describe('deleteMiniPrompt', () => {
     it('succeeds when mini-prompt is not used in workflows', async () => {
-      prismaMock.workflowMiniPrompt.count.mockResolvedValue(0);
+      prismaMock.stageMiniPrompt.count.mockResolvedValue(0);
       prismaMock.miniPrompt.deleteMany.mockResolvedValue({ count: 1 } as any);
 
       const result = await deleteMiniPrompt(mockMiniPromptId);
@@ -51,7 +51,7 @@ describe('Mini-Prompt Actions', () => {
     });
 
     it('fails when mini-prompt is used in workflows', async () => {
-      prismaMock.workflowMiniPrompt.count.mockResolvedValue(3);
+      prismaMock.stageMiniPrompt.count.mockResolvedValue(3);
 
       await expect(deleteMiniPrompt(mockMiniPromptId)).rejects.toThrow(
         'Cannot delete mini-prompt that is used in workflows'
@@ -61,12 +61,12 @@ describe('Mini-Prompt Actions', () => {
     });
 
     it('checks usage count before deletion', async () => {
-      prismaMock.workflowMiniPrompt.count.mockResolvedValue(0);
+      prismaMock.stageMiniPrompt.count.mockResolvedValue(0);
       prismaMock.miniPrompt.deleteMany.mockResolvedValue({ count: 1 } as any);
 
       await deleteMiniPrompt(mockMiniPromptId);
 
-      expect(prismaMock.workflowMiniPrompt.count).toHaveBeenCalledWith({
+      expect(prismaMock.stageMiniPrompt.count).toHaveBeenCalledWith({
         where: { miniPromptId: mockMiniPromptId },
       });
     });
@@ -78,11 +78,11 @@ describe('Mini-Prompt Actions', () => {
         'Unauthorized'
       );
 
-      expect(prismaMock.workflowMiniPrompt.count).not.toHaveBeenCalled();
+      expect(prismaMock.stageMiniPrompt.count).not.toHaveBeenCalled();
     });
 
     it('verifies userId ownership with deleteMany', async () => {
-      prismaMock.workflowMiniPrompt.count.mockResolvedValue(0);
+      prismaMock.stageMiniPrompt.count.mockResolvedValue(0);
       prismaMock.miniPrompt.deleteMany.mockResolvedValue({ count: 1 } as any);
 
       await deleteMiniPrompt(mockMiniPromptId);
@@ -177,7 +177,7 @@ describe('Mini-Prompt Actions', () => {
     });
 
     it('all actions revalidate /dashboard path', async () => {
-      prismaMock.workflowMiniPrompt.count.mockResolvedValue(0);
+      prismaMock.stageMiniPrompt.count.mockResolvedValue(0);
       prismaMock.miniPrompt.deleteMany.mockResolvedValue({ count: 1 } as any);
       prismaMock.miniPrompt.findFirst.mockResolvedValue({
         id: mockMiniPromptId,

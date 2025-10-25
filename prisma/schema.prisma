@@ -31,9 +31,6 @@ enum Visibility {
   PRIVATE
 }
 
-// Note: Phase is now a string field to allow user-defined phases
-// Common phases: analysis, design-architecture, planning, implementation, testing-review
-
 enum TargetType {
   WORKFLOW
   MINI_PROMPT
@@ -82,21 +79,22 @@ model ApiToken {
   @@index([expiresAt])
 }
 
+
 model Workflow {
   id          String      @id @default(uuid())
   userId      String      @map("user_id")
   name        String      @db.VarChar(255)
   description String?     @db.Text
-  yamlContent String      @map("yaml_content") @db.Text
+  yamlContent String?     @map("yaml_content") @db.Text // Made nullable for new workflows
   visibility  Visibility  @default(PRIVATE)
   isActive    Boolean     @default(false) @map("is_active")
   createdAt   DateTime    @default(now()) @map("created_at")
   updatedAt   DateTime    @updatedAt @map("updated_at")
-  
+
   // Relations
-  user                User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
-  workflowMiniPrompts WorkflowMiniPrompt[]
-  
+  user   User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  stages WorkflowStage[]
+
   @@map("workflows")
   @@index([userId])
   @@index([visibility])
@@ -104,40 +102,56 @@ model Workflow {
   @@index([createdAt])
 }
 
+// WorkflowStage represents a stage in a workflow
+model WorkflowStage {
+  id          String   @id @default(uuid())
+  workflowId  String   @map("workflow_id")
+  name        String   @db.VarChar(255)
+  description String?  @db.Text
+  color       String?  @db.VarChar(50) // Stage color for visual identification
+  order       Int
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  // Relations
+  workflow    Workflow          @relation(fields: [workflowId], references: [id], onDelete: Cascade)
+  miniPrompts StageMiniPrompt[]
+
+  @@map("workflow_stages")
+  @@index([workflowId])
+}
+
 model MiniPrompt {
   id          String      @id @default(uuid())
   userId      String      @map("user_id")
   name        String      @db.VarChar(255)
-  content     String      @db.Text
-  phase       String      @db.VarChar(100) // User-definable phase
+  content     String      @db.Text // Markdown content
   visibility  Visibility  @default(PRIVATE)
   createdAt   DateTime    @default(now()) @map("created_at")
   updatedAt   DateTime    @updatedAt @map("updated_at")
-  
+
   // Relations
-  user                User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
-  workflowMiniPrompts WorkflowMiniPrompt[]
-  
+  user              User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  stageMiniPrompts  StageMiniPrompt[]
+
   @@map("mini_prompts")
   @@index([userId])
   @@index([visibility])
-  @@index([phase])
   @@index([createdAt])
 }
 
-model WorkflowMiniPrompt {
-  workflowId   String  @map("workflow_id")
-  miniPromptId String  @map("mini_prompt_id")
+// StageMiniPrompt junction table
+model StageMiniPrompt {
+  stageId      String @map("stage_id")
+  miniPromptId String @map("mini_prompt_id")
   order        Int
-  phase        String  @db.VarChar(50)
-  
+
   // Relations
-  workflow     Workflow    @relation(fields: [workflowId], references: [id], onDelete: Cascade)
-  miniPrompt   MiniPrompt  @relation(fields: [miniPromptId], references: [id], onDelete: Restrict)
-  
-  @@id([workflowId, miniPromptId])
-  @@map("workflow_mini_prompts")
-  @@index([workflowId])
+  stage      WorkflowStage @relation(fields: [stageId], references: [id], onDelete: Cascade)
+  miniPrompt MiniPrompt    @relation(fields: [miniPromptId], references: [id], onDelete: Restrict)
+
+  @@id([stageId, miniPromptId])
+  @@map("stage_mini_prompts")
+  @@index([stageId])
   @@index([miniPromptId])
 }
 

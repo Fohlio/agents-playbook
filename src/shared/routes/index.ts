@@ -18,6 +18,7 @@ export const PUBLIC_ROUTES = {
  * Dashboard workflow routes
  */
 export const WORKFLOW_ROUTES = {
+  LIST: "/dashboard/workflows",
   NEW: "/dashboard/workflows/new",
   EDIT: (id: string) => `/dashboard/workflows/${id}/edit`,
 } as const;
@@ -26,6 +27,7 @@ export const WORKFLOW_ROUTES = {
  * Dashboard mini-prompt routes
  */
 export const MINI_PROMPT_ROUTES = {
+  LIST: "/dashboard/mini-prompts",
   NEW: "/dashboard/mini-prompts/new",
   EDIT: (id: string) => `/dashboard/mini-prompts/${id}/edit`,
 } as const;

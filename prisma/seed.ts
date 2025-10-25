@@ -5,7 +5,7 @@ const prisma = new PrismaClient();
 
 async function main() {
   console.log('🌱 Starting database seed...');
-  
+
   // ============================================================================
   // Admin User
   // ============================================================================
@@ -73,8 +73,8 @@ async function main() {
   console.log('🌱 Database seed completed!');
   console.log('');
   console.log('📋 Seed Data Summary:');
-  console.log('  Admin: admin@agents-playbook.com / Admin@123456');
-  console.log('  Test:  test@agents-playbook.com / Test@123456');
+  console.log('  Admin:  admin@agents-playbook.com / Admin@123456');
+  console.log('  Test:   test@agents-playbook.com / Test@123456');
   console.log('');
   console.log('⚠️  WARNING: Change these passwords in production!');
 }

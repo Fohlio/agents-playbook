@@ -11,7 +11,7 @@ export async function deleteMiniPrompt(miniPromptId: string) {
   }
 
   // Check if used in workflows
-  const usageCount = await prisma.workflowMiniPrompt.count({
+  const usageCount = await prisma.stageMiniPrompt.count({
     where: { miniPromptId },
   });
 

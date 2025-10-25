@@ -10,13 +10,13 @@ export interface DashboardStats {
 
 export interface WorkflowWithUsage extends Workflow {
   _count: {
-    workflowMiniPrompts: number;
+    stages: number;
   };
 }
 
 export interface MiniPromptWithUsage extends MiniPrompt {
   _count: {
-    workflowMiniPrompts: number;
+    stageMiniPrompts: number;
   };
 }
 
@@ -58,7 +58,7 @@ export async function getActiveWorkflows(userId: string): Promise<WorkflowWithUs
     where: { userId, isActive: true },
     include: {
       _count: {
-        select: { workflowMiniPrompts: true },
+        select: { stages: true },
       },
     },
     orderBy: { updatedAt: "desc" },
@@ -77,7 +77,7 @@ export async function getWorkflows(
     where: { userId, ...filters },
     include: {
       _count: {
-        select: { workflowMiniPrompts: true },
+        select: { stages: true },
       },
     },
     orderBy: { updatedAt: "desc" },
@@ -92,7 +92,7 @@ export async function getMiniPrompts(userId: string): Promise<MiniPromptWithUsag
     where: { userId },
     include: {
       _count: {
-        select: { workflowMiniPrompts: true },
+        select: { stageMiniPrompts: true },
       },
     },
     orderBy: { updatedAt: "desc" },
