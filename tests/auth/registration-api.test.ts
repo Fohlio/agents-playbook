@@ -1,7 +1,8 @@
 /**
  * Registration API Tests
- * 
+ *
  * Tests for POST /api/auth/register endpoint
+ * @jest-environment node
  */
 
 import { NextRequest } from "next/server";

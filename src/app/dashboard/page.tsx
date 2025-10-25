@@ -1,32 +1,49 @@
-"use client";
-
-import { useSession } from "next-auth/react";
-import { Link, Badge, Card, CardHeader } from "@/shared/ui/atoms";
+import { redirect } from "next/navigation";
+import { auth } from "@/lib/auth/auth";
 import { ROUTES } from "@/shared/routes";
+import {
+  getDashboardStats,
+  getActiveWorkflows,
+  DashboardStats,
+  ActiveWorkflowsSection,
+  QuickActions,
+} from "@/features/dashboard";
 
 /**
  * Dashboard Page
- * 
+ *
  * Main landing page after user authentication.
- * Displays user information and quick links to key features.
+ * Displays user statistics, active workflows, and quick actions.
  */
-export default function DashboardPage() {
-  const { data: session, status } = useSession();
+export default async function DashboardPage() {
+  const session = await auth();
 
-  if (status === "loading") {
-    return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading...</p>
-        </div>
-      </div>
-    );
+  if (!session?.user) {
+    redirect(ROUTES.LOGIN);
   }
+
+  // Fetch all dashboard data in parallel
+  const [stats, activeWorkflows] = await Promise.all([
+    getDashboardStats(session.user.id),
+    getActiveWorkflows(session.user.id),
+  ]);
 
   return (
     <div className="space-y-8">
+      {/* Quick Actions */}
+      <div className="flex justify-between items-center">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
+          <p className="text-gray-600 mt-1">Manage your workflows and mini-prompts</p>
+        </div>
+        <QuickActions />
+      </div>
+
+      {/* Statistics */}
+      <DashboardStats stats={stats} userTier={session.user.tier || "FREE"} />
+
+      {/* Active Workflows */}
+      <ActiveWorkflowsSection workflows={activeWorkflows} />
     </div>
   );
 }
-

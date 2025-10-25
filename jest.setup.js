@@ -1,5 +1,6 @@
 // Jest setup file
 const { config } = require('dotenv');
+require('@testing-library/jest-dom');
 
 // Load environment variables for tests
 config({ path: '.env.local' });
