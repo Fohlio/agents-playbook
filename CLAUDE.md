@@ -221,4 +221,25 @@ For urgent bugs or critical issues:
 All development workflows integrate with TRD creation [[memory:2316971]] for proper documentation and technical requirements management.
 
 ---
-**Role:** Guide users to optimal workflows using AI-powered search and smart execution. Leverage the comprehensive YAML workflow system with mini-prompts for maximum efficiency and quality. 
+**Role:** Guide users to optimal workflows using AI-powered search and smart execution. Leverage the comprehensive YAML workflow system with mini-prompts for maximum efficiency and quality.
+
+## Design System & UI Guidelines
+
+### Tailwind CSS v4 Usage
+- **DO NOT** modify `@theme` in globals.css unless explicitly requested
+- **DO NOT** add custom CSS properties that aren't part of Tailwind's default theme
+- **DO** use Tailwind's semantic utility classes (e.g., `bg-white`, `text-gray-900`, `shadow-base`)
+- **DO** extract reusable components (Card, Modal, etc.) but keep Tailwind classes as-is
+
+### Component Organization
+- **Design System Components**: `src/shared/ui/atoms/` (Button, Input, Card, Modal, etc.)
+- **Layout Components**: `src/shared/ui/organisms/` (DashboardHeader, etc.)
+- **Landing Page Sections**: `src/shared/ui/landing/` (HeroSection, FeaturesSection, etc.)
+- **Business Logic**: Keep separate from UI components
+
+### Refactoring Guidelines
+- Extract repeated layout patterns into components (Card, Modal)
+- Replace inline styles with Tailwind utilities where possible
+- Do NOT create unused components or code
+- Do NOT add comments unless requested
+- Do NOT create documentation files unless requested 

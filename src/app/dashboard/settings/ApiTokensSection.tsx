@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Button, Alert, Badge, Input, FormField } from "@/shared/ui/atoms";
+import { Button, Alert, Badge, Input, FormField, Card, CardHeader, Modal, ModalHeader, ModalBody, ModalActions } from "@/shared/ui/atoms";
 import { formatDistanceToNow } from "date-fns";
 
 const tokenNameSchema = z.object({
@@ -142,16 +142,15 @@ export default function ApiTokensSection() {
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-base p-6" data-testid="api-tokens-section">
+    <Card testId="api-tokens-section">
       <div className="space-y-6">
-        {/* Header */}
         <div className="flex justify-between items-start">
-          <div>
-            <h2 className="text-xl font-semibold text-gray-900" data-testid="tokens-heading">API Tokens</h2>
-            <p className="mt-1 text-sm text-gray-600" data-testid="tokens-description">
-              Manage API tokens for MCP server integration
-            </p>
-          </div>
+          <CardHeader
+            title="API Tokens"
+            description="Manage API tokens for MCP server integration"
+            testId="tokens-heading"
+            className="mb-0"
+          />
           <Button
             variant="primary"
             onClick={() => setShowCreateModal(true)}
@@ -232,132 +231,123 @@ export default function ApiTokensSection() {
         )}
       </div>
 
-      {/* Create Token Modal */}
-      {showCreateModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" data-testid="create-token-modal">
-          <div className="bg-white rounded-lg p-6 max-w-md w-full">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4" data-testid="create-token-modal-heading">
-              Create API Token
-            </h3>
-            <form onSubmit={handleSubmit(createToken)} className="space-y-4">
-              <FormField
-                label="Token Name"
-                htmlFor="tokenName"
-                required
-                error={errors.name?.message}
-                helperText="A descriptive name for this token"
-              >
-                <Input
-                  id="tokenName"
-                  type="text"
-                  placeholder="My MCP Token"
-                  error={!!errors.name}
-                  fullWidth
-                  testId="token-name-input"
-                  {...register("name")}
-                />
-              </FormField>
-              <div className="flex gap-3 justify-end">
-                <Button
-                  type="button"
-                  variant="secondary"
-                  onClick={() => {
-                    setShowCreateModal(false);
-                    reset();
-                  }}
-                  testId="cancel-create-token-button"
-                >
-                  Cancel
-                </Button>
-                <Button type="submit" variant="primary" testId="submit-create-token-button">
-                  Create Token
-                </Button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
+      <Modal isOpen={showCreateModal} onClose={() => { setShowCreateModal(false); reset(); }} testId="create-token-modal">
+        <ModalHeader title="Create API Token" testId="create-token-modal-heading" />
+        <form onSubmit={handleSubmit(createToken)} className="space-y-4">
+          <FormField
+            label="Token Name"
+            htmlFor="tokenName"
+            required
+            error={errors.name?.message}
+            helperText="A descriptive name for this token"
+          >
+            <Input
+              id="tokenName"
+              type="text"
+              placeholder="My MCP Token"
+              error={!!errors.name}
+              fullWidth
+              testId="token-name-input"
+              {...register("name")}
+            />
+          </FormField>
+          <ModalActions>
+            <Button
+              type="button"
+              variant="secondary"
+              onClick={() => {
+                setShowCreateModal(false);
+                reset();
+              }}
+              testId="cancel-create-token-button"
+            >
+              Cancel
+            </Button>
+            <Button type="submit" variant="primary" testId="submit-create-token-button">
+              Create Token
+            </Button>
+          </ModalActions>
+        </form>
+      </Modal>
 
-      {/* Token Display Modal (One-time) */}
-      {showTokenModal && newPlainToken && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" data-testid="token-display-modal">
-          <div className="bg-white rounded-lg p-6 max-w-lg w-full">
-            <h3 className="text-lg font-semibold text-gray-900 mb-2" data-testid="token-display-modal-heading">
-              Token Created Successfully
-            </h3>
-            <div className="mb-4">
-              <Alert variant="warning" testId="token-display-warning">
-                <strong>Important:</strong> Copy this token now. You won&apos;t be
-                able to see it again!
-              </Alert>
-            </div>
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Your API Token
-              </label>
-              <div className="flex gap-2">
-                <Input
-                  value={newPlainToken}
-                  readOnly
-                  fullWidth
-                  className="font-mono text-sm"
-                  testId="token-display-input"
-                />
-                <Button
-                  variant="secondary"
-                  onClick={() => copyToClipboard(newPlainToken)}
-                  testId="copy-token-button"
-                >
-                  Copy
-                </Button>
-              </div>
-            </div>
-            <div className="flex justify-end">
-              <Button
-                variant="primary"
-                onClick={() => {
-                  setShowTokenModal(false);
-                  setNewPlainToken(null);
-                }}
-                testId="close-token-modal-button"
-              >
-                I&apos;ve Saved My Token
-              </Button>
-            </div>
+      <Modal
+        isOpen={showTokenModal && !!newPlainToken}
+        className="max-w-lg"
+        testId="token-display-modal"
+      >
+        <ModalHeader title="Token Created Successfully" testId="token-display-modal-heading" />
+        <ModalBody>
+          <div className="mb-4">
+            <Alert variant="warning" testId="token-display-warning">
+              <strong>Important:</strong> Copy this token now. You won&apos;t be
+              able to see it again!
+            </Alert>
           </div>
-        </div>
-      )}
-
-      {/* Revoke Confirmation Modal */}
-      {tokenToRevoke && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" data-testid="revoke-token-modal">
-          <div className="bg-white rounded-lg p-6 max-w-md w-full">
-            <h3 className="text-lg font-semibold text-gray-900 mb-2" data-testid="revoke-token-modal-heading">
-              Revoke Token?
-            </h3>
-            <p className="text-sm text-gray-600 mb-4" data-testid="revoke-token-modal-description">
-              This will permanently revoke the token. Any applications using
-              this token will no longer be able to authenticate.
-            </p>
-            <div className="flex gap-3 justify-end">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Your API Token
+            </label>
+            <div className="flex gap-2">
+              <Input
+                value={newPlainToken || ""}
+                readOnly
+                fullWidth
+                className="font-mono text-sm"
+                testId="token-display-input"
+              />
               <Button
                 variant="secondary"
-                onClick={() => setTokenToRevoke(null)}
-                testId="cancel-revoke-button"
+                onClick={() => newPlainToken && copyToClipboard(newPlainToken)}
+                testId="copy-token-button"
               >
-                Cancel
-              </Button>
-              <Button
-                variant="danger"
-                onClick={() => revokeToken(tokenToRevoke)}
-                testId="confirm-revoke-button"
-              >
-                Revoke Token
+                Copy
               </Button>
             </div>
           </div>
-        </div>
-      )}
-    </div>
+        </ModalBody>
+        <ModalActions>
+          <Button
+            variant="primary"
+            onClick={() => {
+              setShowTokenModal(false);
+              setNewPlainToken(null);
+            }}
+            testId="close-token-modal-button"
+          >
+            I&apos;ve Saved My Token
+          </Button>
+        </ModalActions>
+      </Modal>
+
+      <Modal
+        isOpen={!!tokenToRevoke}
+        onClose={() => setTokenToRevoke(null)}
+        testId="revoke-token-modal"
+      >
+        <ModalHeader title="Revoke Token?" testId="revoke-token-modal-heading" />
+        <ModalBody>
+          <p className="text-sm text-gray-600" data-testid="revoke-token-modal-description">
+            This will permanently revoke the token. Any applications using
+            this token will no longer be able to authenticate.
+          </p>
+        </ModalBody>
+        <ModalActions>
+          <Button
+            variant="secondary"
+            onClick={() => setTokenToRevoke(null)}
+            testId="cancel-revoke-button"
+          >
+            Cancel
+          </Button>
+          <Button
+            variant="danger"
+            onClick={() => tokenToRevoke && revokeToken(tokenToRevoke)}
+            testId="confirm-revoke-button"
+          >
+            Revoke Token
+          </Button>
+        </ModalActions>
+      </Modal>
+    </Card>
   );
 }

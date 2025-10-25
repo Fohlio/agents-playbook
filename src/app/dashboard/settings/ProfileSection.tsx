@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Input, Button, FormField, Alert, Badge } from "@/shared/ui/atoms";
+import { Input, Button, FormField, Alert, Badge, Card, CardHeader, CardActions } from "@/shared/ui/atoms";
 import { useSession } from "next-auth/react";
 
 const usernameSchema = z.object({
@@ -87,17 +87,15 @@ export default function ProfileSection({ user }: ProfileSectionProps) {
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-base p-6" data-testid="profile-section">
-      <div className="space-y-6">
-        <div>
-          <h2 className="text-xl font-semibold text-gray-900" data-testid="profile-heading">Profile</h2>
-          <p className="mt-1 text-sm text-gray-600" data-testid="profile-description">
-            Update your profile information
-          </p>
-        </div>
+    <Card testId="profile-section">
+      <CardHeader
+        title="Profile"
+        description="Update your profile information"
+        testId="profile-heading"
+      />
 
-        {error && <Alert variant="error" testId="profile-error-alert">{error}</Alert>}
-        {success && <Alert variant="success" testId="profile-success-alert">{success}</Alert>}
+      {error && <Alert variant="error" testId="profile-error-alert">{error}</Alert>}
+      {success && <Alert variant="success" testId="profile-success-alert">{success}</Alert>}
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           {/* Email (read-only) */}
@@ -142,8 +140,7 @@ export default function ProfileSection({ user }: ProfileSectionProps) {
             </div>
           </FormField>
 
-          {/* Save Button */}
-          <div className="flex justify-end">
+          <CardActions>
             <Button
               type="submit"
               variant="primary"
@@ -152,9 +149,8 @@ export default function ProfileSection({ user }: ProfileSectionProps) {
             >
               {isLoading ? "Saving..." : "Save Changes"}
             </Button>
-          </div>
+          </CardActions>
         </form>
-      </div>
-    </div>
+    </Card>
   );
 }

@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Input, Button, FormField, Alert } from "@/shared/ui/atoms";
+import { Input, Button, FormField, Alert, Card, CardHeader, CardActions } from "@/shared/ui/atoms";
 
 const passwordSchema = z
   .object({
@@ -70,17 +70,15 @@ export default function PasswordSection() {
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-base p-6" data-testid="password-section">
-      <div className="space-y-6">
-        <div>
-          <h2 className="text-xl font-semibold text-gray-900" data-testid="password-heading">Change Password</h2>
-          <p className="mt-1 text-sm text-gray-600" data-testid="password-description">
-            Update your password to keep your account secure
-          </p>
-        </div>
+    <Card testId="password-section">
+      <CardHeader
+        title="Change Password"
+        description="Update your password to keep your account secure"
+        testId="password-heading"
+      />
 
-        {error && <Alert variant="error" testId="password-error-alert">{error}</Alert>}
-        {success && <Alert variant="success" testId="password-success-alert">{success}</Alert>}
+      {error && <Alert variant="error" testId="password-error-alert">{error}</Alert>}
+      {success && <Alert variant="success" testId="password-success-alert">{success}</Alert>}
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           {/* Current Password */}
@@ -141,8 +139,7 @@ export default function PasswordSection() {
             />
           </FormField>
 
-          {/* Save Button */}
-          <div className="flex justify-end">
+          <CardActions>
             <Button
               type="submit"
               variant="primary"
@@ -151,9 +148,8 @@ export default function PasswordSection() {
             >
               {isLoading ? "Changing..." : "Change Password"}
             </Button>
-          </div>
+          </CardActions>
         </form>
-      </div>
-    </div>
+    </Card>
   );
 }
