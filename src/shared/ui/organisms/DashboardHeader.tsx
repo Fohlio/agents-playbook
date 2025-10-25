@@ -37,6 +37,27 @@ export function DashboardHeader() {
                 Dashboard
               </Link>
               <Link
+                href={ROUTES.DISCOVER}
+                variant="secondary"
+                testId="discover-nav-link"
+              >
+                Discover
+              </Link>
+              <Link
+                href={ROUTES.WORKFLOWS.LIST}
+                variant="secondary"
+                testId="workflows-nav-link"
+              >
+                Workflows
+              </Link>
+              <Link
+                href={ROUTES.MINI_PROMPTS.LIST}
+                variant="secondary"
+                testId="mini-prompts-nav-link"
+              >
+                Mini-Prompts
+              </Link>
+              <Link
                 href={ROUTES.SETTINGS}
                 variant="secondary"
                 testId="settings-nav-link"

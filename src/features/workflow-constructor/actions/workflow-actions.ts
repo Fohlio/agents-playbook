@@ -32,10 +32,13 @@ export async function getWorkflowWithStages(
   });
 }
 
-export async function getAllPublicMiniPrompts(): Promise<MiniPrompt[]> {
+export async function getAllAvailableMiniPrompts(userId: string): Promise<MiniPrompt[]> {
   return await prisma.miniPrompt.findMany({
     where: {
-      visibility: 'PUBLIC',
+      OR: [
+        { userId },
+        { visibility: 'PUBLIC' },
+      ],
     },
     orderBy: {
       name: 'asc',
@@ -52,6 +55,7 @@ export async function saveWorkflow(input: SaveWorkflowInput): Promise<WorkflowWi
         name: input.name,
         description: input.description,
         isActive: input.isActive,
+        visibility: input.visibility,
       },
     });
 

@@ -41,6 +41,7 @@ export function WorkflowConstructor({ data }: WorkflowConstructorProps) {
   const [isCreatingStage, setIsCreatingStage] = useState(false);
   const [workflowName, setWorkflowName] = useState(currentWorkflow?.name ?? 'Untitled Workflow');
   const [isActive, setIsActive] = useState(currentWorkflow?.isActive ?? false);
+  const [isPublic, setIsPublic] = useState(currentWorkflow?.visibility === 'PUBLIC');
 
   const handleDragEnd = useCallback(
     (event: DragEndEvent) => {
@@ -145,6 +146,7 @@ export function WorkflowConstructor({ data }: WorkflowConstructorProps) {
       name: workflowName,
       description: currentWorkflow.description ?? undefined,
       isActive: isActive,
+      visibility: isPublic ? 'PUBLIC' : 'PRIVATE',
       stages: localStages.map((stage, index) => ({
         name: stage.name,
         description: stage.description ?? undefined,
@@ -156,7 +158,7 @@ export function WorkflowConstructor({ data }: WorkflowConstructorProps) {
         })),
       })),
     });
-  }, [currentWorkflow, workflowName, localStages, handleSave]);
+  }, [currentWorkflow, workflowName, isPublic, localStages, handleSave]);
 
   if (!currentWorkflow) {
     return (
@@ -192,6 +194,15 @@ export function WorkflowConstructor({ data }: WorkflowConstructorProps) {
             }}
             label={isActive ? 'Active' : 'Inactive'}
             testId="workflow-active-toggle"
+          />
+          <Toggle
+            checked={isPublic}
+            onChange={(checked) => {
+              setIsPublic(checked);
+              markDirty();
+            }}
+            label={isPublic ? 'Public' : 'Private'}
+            testId="workflow-public-toggle"
           />
           <Button
             variant="secondary"

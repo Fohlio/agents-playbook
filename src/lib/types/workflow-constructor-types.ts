@@ -54,6 +54,7 @@ export interface SaveWorkflowInput {
   name?: string;
   description?: string;
   isActive?: boolean;
+  visibility?: 'PUBLIC' | 'PRIVATE';
   stages: Array<{
     name: string;
     description?: string;

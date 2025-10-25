@@ -19,10 +19,16 @@ export default auth((req) => {
   const isAuthenticated = !!req.auth;
   const { pathname } = req.nextUrl;
 
+  // Allow public API routes without authentication
+  const isPublicApiRoute = pathname.startsWith("/api/v1/public");
+
+  // Allow /dashboard/discover without authentication
+  const isPublicDashboardRoute = pathname === "/dashboard/discover";
+
   // Check if accessing protected route
-  const isProtectedRoute = 
-    pathname.startsWith("/dashboard") || 
-    pathname.startsWith("/api/v1");
+  const isProtectedRoute =
+    (pathname.startsWith("/dashboard") && !isPublicDashboardRoute) ||
+    (pathname.startsWith("/api/v1") && !isPublicApiRoute);
 
   // If not authenticated and trying to access protected route, redirect to login
   if (!isAuthenticated && isProtectedRoute) {

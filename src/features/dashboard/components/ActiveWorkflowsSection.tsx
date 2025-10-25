@@ -1,7 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Card, CardHeader, Badge, Button } from "@/shared/ui/atoms";
+import { ROUTES } from "@/shared/routes";
 import { WorkflowWithUsage } from "../lib/dashboard-service";
 import { deactivateWorkflow } from "../actions/workflow-actions";
 
@@ -10,6 +12,7 @@ interface ActiveWorkflowsSectionProps {
 }
 
 export function ActiveWorkflowsSection({ workflows }: ActiveWorkflowsSectionProps) {
+  const router = useRouter();
   const [loading, setLoading] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -65,15 +68,25 @@ export function ActiveWorkflowsSection({ workflows }: ActiveWorkflowsSectionProp
               </p>
             </div>
 
-            <Button
-              variant="secondary"
-              size="sm"
-              onClick={() => handleDeactivate(workflow.id)}
-              disabled={loading === workflow.id}
-              testId={`deactivate-button-${workflow.id}`}
-            >
-              {loading === workflow.id ? "Deactivating..." : "Deactivate"}
-            </Button>
+            <div className="flex gap-2">
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={() => router.push(`/dashboard/workflows/${workflow.id}/constructor`)}
+                testId={`edit-button-${workflow.id}`}
+              >
+                Edit
+              </Button>
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={() => handleDeactivate(workflow.id)}
+                disabled={loading === workflow.id}
+                testId={`deactivate-button-${workflow.id}`}
+              >
+                {loading === workflow.id ? "Deactivating..." : "Deactivate"}
+              </Button>
+            </div>
           </div>
         ))}
       </div>

@@ -51,11 +51,13 @@ model User {
   updatedAt    DateTime    @updatedAt @map("updated_at")
   
   // Relations
-  apiTokens    ApiToken[]
-  workflows    Workflow[]
-  miniPrompts  MiniPrompt[]
-  ratings      Rating[]
-  
+  apiTokens             ApiToken[]
+  workflows             Workflow[]
+  miniPrompts           MiniPrompt[]
+  ratings               Rating[]
+  workflowReferences    WorkflowReference[]
+  miniPromptReferences  MiniPromptReference[]
+
   @@map("users")
   @@index([email])
   @@index([tier])
@@ -92,8 +94,9 @@ model Workflow {
   updatedAt   DateTime    @updatedAt @map("updated_at")
 
   // Relations
-  user   User            @relation(fields: [userId], references: [id], onDelete: Cascade)
-  stages WorkflowStage[]
+  user       User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  stages     WorkflowStage[]
+  references WorkflowReference[]
 
   @@map("workflows")
   @@index([userId])
@@ -130,8 +133,9 @@ model MiniPrompt {
   updatedAt   DateTime    @updatedAt @map("updated_at")
 
   // Relations
-  user              User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user              User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
   stageMiniPrompts  StageMiniPrompt[]
+  references        MiniPromptReference[]
 
   @@map("mini_prompts")
   @@index([userId])
@@ -184,13 +188,45 @@ model UsageStats {
   uniqueUsersCount Int         @default(0) @map("unique_users_count")
   lastUsedAt       DateTime?   @map("last_used_at")
   updatedAt        DateTime    @updatedAt @map("updated_at")
-  
+
   // Note: targetId is polymorphic (Workflow or MiniPrompt) - handled at application layer
-  
+
   @@unique([targetType, targetId])
   @@map("usage_stats")
   @@index([targetType])
   @@index([usageCount])
   @@index([uniqueUsersCount])
+}
+
+model WorkflowReference {
+  id         String   @id @default(uuid())
+  userId     String   @map("user_id")
+  workflowId String   @map("workflow_id")
+  addedAt    DateTime @default(now()) @map("added_at")
+
+  // Relations
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  workflow Workflow @relation(fields: [workflowId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, workflowId])
+  @@map("workflow_references")
+  @@index([userId])
+  @@index([workflowId])
+}
+
+model MiniPromptReference {
+  id           String     @id @default(uuid())
+  userId       String     @map("user_id")
+  miniPromptId String     @map("mini_prompt_id")
+  addedAt      DateTime   @default(now()) @map("added_at")
+
+  // Relations
+  user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  miniPrompt  MiniPrompt @relation(fields: [miniPromptId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, miniPromptId])
+  @@map("mini_prompt_references")
+  @@index([userId])
+  @@index([miniPromptId])
 }
 

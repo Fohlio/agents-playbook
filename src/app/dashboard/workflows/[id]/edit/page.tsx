@@ -1,30 +1,12 @@
-import { auth } from "@/lib/auth/auth";
 import { redirect } from "next/navigation";
 import { ROUTES } from "@/shared/routes";
-import { Card, CardHeader, Link } from "@/shared/ui/atoms";
 
-export default async function WorkflowEditorPage() {
-  const session = await auth();
-  if (!session?.user) {
-    redirect(ROUTES.LOGIN);
-  }
+interface PageProps {
+  params: Promise<{ id: string }>;
+}
 
-  return (
-    <div className="max-w-2xl mx-auto">
-      <Card testId="workflow-editor-placeholder">
-        <CardHeader
-          title="Workflow Editor"
-          description="Coming in Phase 3"
-        />
-        <div className="text-center py-12">
-          <p className="text-gray-600 mb-4">
-            Edit and customize your workflows with a visual editor. This feature will be available in Phase 3.
-          </p>
-          <Link href={ROUTES.DASHBOARD} variant="primary">
-            Back to Dashboard
-          </Link>
-        </div>
-      </Card>
-    </div>
-  );
+export default async function WorkflowEditPage({ params }: PageProps) {
+  const { id } = await params;
+  // Redirect to constructor page (actual workflow editor)
+  redirect(`/dashboard/workflows/${id}/constructor`);
 }

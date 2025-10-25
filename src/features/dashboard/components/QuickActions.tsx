@@ -11,18 +11,18 @@ export function QuickActions() {
     <div className="flex gap-4" data-testid="quick-actions">
       <Button
         variant="primary"
-        onClick={() => router.push(ROUTES.WORKFLOWS.LIST)}
-        testId="workflows-button"
+        onClick={() => router.push(ROUTES.WORKFLOWS.NEW)}
+        testId="new-workflow-button"
       >
-        Workflows
+        New Workflow
       </Button>
 
       <Button
         variant="secondary"
-        onClick={() => router.push(ROUTES.MINI_PROMPTS.LIST)}
-        testId="mini-prompts-button"
+        onClick={() => router.push(ROUTES.MINI_PROMPTS.NEW)}
+        testId="new-mini-prompt-button"
       >
-        Mini Prompts
+        New Mini-Prompt
       </Button>
     </div>
   );

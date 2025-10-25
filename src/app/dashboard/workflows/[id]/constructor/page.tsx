@@ -1,7 +1,6 @@
 import { notFound } from 'next/navigation';
 import { auth } from '@/lib/auth/auth';
-import { getWorkflowWithStages, getAllPublicMiniPrompts } from '@/features/workflow-constructor/actions/workflow-actions';
-import { getAllPhases } from '@/features/workflow-constructor/actions/phase-actions';
+import { getWorkflowWithStages, getAllAvailableMiniPrompts } from '@/features/workflow-constructor/actions/workflow-actions';
 import { WorkflowConstructor } from '@/features/workflow-constructor/components/WorkflowConstructor';
 
 interface PageProps {
@@ -16,10 +15,9 @@ export default async function WorkflowConstructorPage({ params }: PageProps) {
 
   const { id } = await params;
 
-  const [workflow, phases, miniPrompts] = await Promise.all([
+  const [workflow, miniPrompts] = await Promise.all([
     getWorkflowWithStages(id),
-    getAllPhases(),
-    getAllPublicMiniPrompts(),
+    getAllAvailableMiniPrompts(session.user.id),
   ]);
 
   if (!workflow) {
@@ -34,7 +32,6 @@ export default async function WorkflowConstructorPage({ params }: PageProps) {
     <WorkflowConstructor
       data={{
         workflow,
-        phases,
         miniPrompts,
       }}
     />

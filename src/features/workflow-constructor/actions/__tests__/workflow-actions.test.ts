@@ -2,7 +2,7 @@
 import { prismaMock } from '@/lib/db/__mocks__/client';
 import {
   getWorkflowWithStages,
-  getAllPublicMiniPrompts,
+  getAllAvailableMiniPrompts,
   saveWorkflow,
 } from '../workflow-actions';
 import type { SaveWorkflowInput } from '@/lib/types/workflow-constructor-types';
@@ -78,21 +78,24 @@ describe('Workflow Constructor Actions', () => {
     });
   });
 
-  describe('getAllPublicMiniPrompts', () => {
-    it('fetches only PUBLIC mini-prompts', async () => {
+  describe('getAllAvailableMiniPrompts', () => {
+    it('fetches user mini-prompts and public mini-prompts', async () => {
       const mockMiniPrompts = [
-        { id: 'mp-1', name: 'Public Prompt 1', visibility: 'PUBLIC' },
-        { id: 'mp-2', name: 'Public Prompt 2', visibility: 'PUBLIC' },
+        { id: 'mp-1', name: 'User Prompt 1', userId: 'user-1', visibility: 'PRIVATE' },
+        { id: 'mp-2', name: 'Public Prompt 1', userId: 'user-2', visibility: 'PUBLIC' },
       ];
 
       prismaMock.miniPrompt.findMany.mockResolvedValue(mockMiniPrompts as any);
 
-      const result = await getAllPublicMiniPrompts();
+      const result = await getAllAvailableMiniPrompts('user-1');
 
       expect(result).toEqual(mockMiniPrompts);
       expect(prismaMock.miniPrompt.findMany).toHaveBeenCalledWith({
         where: {
-          visibility: 'PUBLIC',
+          OR: [
+            { userId: 'user-1' },
+            { visibility: 'PUBLIC' },
+          ],
         },
         orderBy: {
           name: 'asc',
@@ -100,10 +103,10 @@ describe('Workflow Constructor Actions', () => {
       });
     });
 
-    it('returns empty array when no public prompts exist', async () => {
+    it('returns empty array when no prompts available', async () => {
       prismaMock.miniPrompt.findMany.mockResolvedValue([]);
 
-      const result = await getAllPublicMiniPrompts();
+      const result = await getAllAvailableMiniPrompts('user-1');
 
       expect(result).toEqual([]);
     });
