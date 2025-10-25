@@ -18,71 +18,53 @@ describe('QuickActions', () => {
     });
   });
 
-  it('renders all three action buttons', () => {
+  it('renders both action buttons', () => {
     render(<QuickActions />);
 
-    expect(screen.getByTestId('create-workflow-button')).toBeInTheDocument();
-    expect(screen.getByTestId('create-mini-prompt-button')).toBeInTheDocument();
-    expect(screen.getByTestId('discover-button')).toBeInTheDocument();
+    expect(screen.getByTestId('workflows-button')).toBeInTheDocument();
+    expect(screen.getByTestId('mini-prompts-button')).toBeInTheDocument();
   });
 
   it('displays correct button labels', () => {
     render(<QuickActions />);
 
-    expect(screen.getByText('Create Workflow')).toBeInTheDocument();
-    expect(screen.getByText('Create Mini-Prompt')).toBeInTheDocument();
-    expect(screen.getByText('Discover Public')).toBeInTheDocument();
+    expect(screen.getByText('Workflows')).toBeInTheDocument();
+    expect(screen.getByText('Mini Prompts')).toBeInTheDocument();
   });
 
   describe('Navigation', () => {
-    it('navigates to workflow creation page when Create Workflow clicked', () => {
+    it('navigates to workflows list page when Workflows clicked', () => {
       render(<QuickActions />);
 
-      const createWorkflowButton = screen.getByTestId('create-workflow-button');
-      fireEvent.click(createWorkflowButton);
+      const workflowsButton = screen.getByTestId('workflows-button');
+      fireEvent.click(workflowsButton);
 
-      expect(mockPush).toHaveBeenCalledWith(ROUTES.WORKFLOWS.NEW);
+      expect(mockPush).toHaveBeenCalledWith(ROUTES.WORKFLOWS.LIST);
     });
 
-    it('navigates to mini-prompt creation page when Create Mini-Prompt clicked', () => {
+    it('navigates to mini-prompts list page when Mini Prompts clicked', () => {
       render(<QuickActions />);
 
-      const createMiniPromptButton = screen.getByTestId('create-mini-prompt-button');
-      fireEvent.click(createMiniPromptButton);
+      const miniPromptsButton = screen.getByTestId('mini-prompts-button');
+      fireEvent.click(miniPromptsButton);
 
-      expect(mockPush).toHaveBeenCalledWith(ROUTES.MINI_PROMPTS.NEW);
-    });
-
-    it('navigates to discover page when Discover Public clicked', () => {
-      render(<QuickActions />);
-
-      const discoverButton = screen.getByTestId('discover-button');
-      fireEvent.click(discoverButton);
-
-      expect(mockPush).toHaveBeenCalledWith(ROUTES.DISCOVER);
+      expect(mockPush).toHaveBeenCalledWith(ROUTES.MINI_PROMPTS.LIST);
     });
   });
 
   describe('Button variants', () => {
-    it('uses primary variant for Create Workflow button', () => {
+    it('uses primary variant for Workflows button', () => {
       render(<QuickActions />);
 
-      const createWorkflowButton = screen.getByTestId('create-workflow-button');
-      expect(createWorkflowButton).toHaveClass('bg-primary-600');
+      const workflowsButton = screen.getByTestId('workflows-button');
+      expect(workflowsButton).toHaveClass('bg-primary-600');
     });
 
-    it('uses secondary variant for Create Mini-Prompt button', () => {
+    it('uses secondary variant for Mini Prompts button', () => {
       render(<QuickActions />);
 
-      const createMiniPromptButton = screen.getByTestId('create-mini-prompt-button');
-      expect(createMiniPromptButton).toHaveClass('bg-white');
-    });
-
-    it('uses secondary variant for Discover Public button', () => {
-      render(<QuickActions />);
-
-      const discoverButton = screen.getByTestId('discover-button');
-      expect(discoverButton).toHaveClass('bg-white');
+      const miniPromptsButton = screen.getByTestId('mini-prompts-button');
+      expect(miniPromptsButton).toHaveClass('bg-white');
     });
   });
 

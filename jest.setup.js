@@ -6,6 +6,45 @@ require('@testing-library/jest-dom');
 config({ path: '.env.local' });
 config({ path: '.env' });
 
+// Polyfill Web APIs for Node.js test environment
+global.Request = class Request {
+  method;
+  body;
+
+  constructor(url, init) {
+    this.method = init?.method || 'GET';
+    this.body = init?.body;
+  }
+
+  async json() {
+    return JSON.parse(this.body);
+  }
+};
+
+global.Response = class Response {
+  status;
+  statusText;
+  headers;
+  body;
+
+  constructor(body, init) {
+    this.body = body;
+    this.status = init?.status || 200;
+    this.statusText = init?.statusText || 'OK';
+    this.headers = new Map(Object.entries(init?.headers || {}));
+  }
+
+  async json() {
+    return JSON.parse(this.body);
+  }
+
+  async text() {
+    return this.body;
+  }
+};
+
+global.Headers = class Headers extends Map {};
+
 // Global test configuration
 global.console = {
   ...console,

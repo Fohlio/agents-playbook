@@ -3,6 +3,8 @@
 import { useState, useCallback } from 'react';
 import { DndContext, DragEndEvent } from '@dnd-kit/core';
 import Button from '@/shared/ui/atoms/Button';
+import Input from '@/shared/ui/atoms/Input';
+import Toggle from '@/shared/ui/atoms/Toggle';
 import type {
   WorkflowConstructorData,
   WorkflowStageWithMiniPrompts,
@@ -168,7 +170,7 @@ export function WorkflowConstructor({ data }: WorkflowConstructorProps) {
     <div className="h-screen flex flex-col">
       <div className="bg-surface-base border-b border-border-base px-6 py-4 flex items-center justify-between">
         <div className="flex-1">
-          <input
+          <Input
             type="text"
             value={workflowName}
             onChange={(e) => {
@@ -182,21 +184,15 @@ export function WorkflowConstructor({ data }: WorkflowConstructorProps) {
           />
         </div>
         <div className="flex gap-3 items-center">
-          <label className="relative inline-flex items-center cursor-pointer">
-            <input
-              type="checkbox"
-              checked={isActive}
-              onChange={(e) => {
-                setIsActive(e.target.checked);
-                markDirty();
-              }}
-              className="sr-only peer"
-            />
-            <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-600"></div>
-            <span className="ms-3 text-sm font-medium text-text-primary">
-              {isActive ? 'Active' : 'Inactive'}
-            </span>
-          </label>
+          <Toggle
+            checked={isActive}
+            onChange={(checked) => {
+              setIsActive(checked);
+              markDirty();
+            }}
+            label={isActive ? 'Active' : 'Inactive'}
+            testId="workflow-active-toggle"
+          />
           <Button
             variant="secondary"
             onClick={() => setLocalStages(currentWorkflow.stages)}

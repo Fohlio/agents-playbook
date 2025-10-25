@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { DndContext, DragEndEvent } from '@dnd-kit/core';
 import Button from '@/shared/ui/atoms/Button';
 import Input from '@/shared/ui/atoms/Input';
+import Toggle from '@/shared/ui/atoms/Toggle';
 import type { MiniPrompt } from '@prisma/client';
 import type { WorkflowStageWithMiniPrompts } from '@/lib/types/workflow-constructor-types';
 import { useDragAndDrop } from '../hooks/use-drag-and-drop';
@@ -184,18 +185,12 @@ export function WorkflowConstructorWrapper({ userId, miniPrompts: initialMiniPro
           </p>
         </div>
         <div className="flex gap-3 items-center">
-          <label className="relative inline-flex items-center cursor-pointer">
-            <input
-              type="checkbox"
-              checked={isActive}
-              onChange={(e) => setIsActive(e.target.checked)}
-              className="sr-only peer"
-            />
-            <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-600"></div>
-            <span className="ms-3 text-sm font-medium text-text-primary">
-              {isActive ? 'Active' : 'Inactive'}
-            </span>
-          </label>
+          <Toggle
+            checked={isActive}
+            onChange={setIsActive}
+            label={isActive ? 'Active' : 'Inactive'}
+            testId="workflow-active-toggle"
+          />
           <Button
             variant="primary"
             onClick={handleSaveWorkflow}

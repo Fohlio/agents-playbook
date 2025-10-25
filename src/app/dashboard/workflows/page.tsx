@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { ROUTES } from '@/shared/routes';
 import Button from '@/shared/ui/atoms/Button';
+import IconButton from '@/shared/ui/atoms/IconButton';
+import Toggle from '@/shared/ui/atoms/Toggle';
 import { Card } from '@/shared/ui/atoms/Card';
 import Link from 'next/link';
 import EditIcon from '@mui/icons-material/Edit';
@@ -111,32 +113,36 @@ export default function WorkflowsListPage() {
                     <span>{workflow.visibility}</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <label className="relative inline-flex items-center cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={workflow.isActive}
-                        onChange={() => handleToggleActive(workflow.id, workflow.isActive)}
-                        className="sr-only peer"
-                      />
-                      <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-600"></div>
-                      <span className="ms-3 text-sm font-medium text-text-primary">
-                        {workflow.isActive ? 'Active' : 'Inactive'}
-                      </span>
-                    </label>
+                    <Toggle
+                      checked={workflow.isActive}
+                      onChange={() => handleToggleActive(workflow.id, workflow.isActive)}
+                      label={workflow.isActive ? 'Active' : 'Inactive'}
+                      testId={`workflow-toggle-${workflow.id}`}
+                    />
                   </div>
                 </div>
                 <div className="flex gap-2 mt-4">
                   <Link href={ROUTES.WORKFLOWS.EDIT(workflow.id)}>
-                    <Button variant="primary" size="sm">
-                      <EditIcon fontSize="small" />
-                    </Button>
+                    <IconButton
+                      variant="primary"
+                      size="sm"
+                      icon={<EditIcon fontSize="small" />}
+                      ariaLabel="Edit workflow"
+                    />
                   </Link>
-                  <Button variant="secondary" size="sm">
-                    <ContentCopyIcon fontSize="small" />
-                  </Button>
-                  <Button variant="danger" size="sm" onClick={() => handleDelete(workflow.id)}>
-                    <DeleteIcon fontSize="small" />
-                  </Button>
+                  <IconButton
+                    variant="secondary"
+                    size="sm"
+                    icon={<ContentCopyIcon fontSize="small" />}
+                    ariaLabel="Duplicate workflow"
+                  />
+                  <IconButton
+                    variant="danger"
+                    size="sm"
+                    icon={<DeleteIcon fontSize="small" />}
+                    ariaLabel="Delete workflow"
+                    onClick={() => handleDelete(workflow.id)}
+                  />
                 </div>
               </div>
             </Card>

@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Button from '@/shared/ui/atoms/Button';
+import IconButton from '@/shared/ui/atoms/IconButton';
 import { Card } from '@/shared/ui/atoms/Card';
 import { MiniPromptEditorModal } from '@/features/workflow-constructor/components/MiniPromptEditorModal';
 import { createMiniPrompt, updateMiniPrompt, deleteMiniPrompt } from '@/features/workflow-constructor/actions/mini-prompt-actions';
@@ -126,20 +127,20 @@ export default function MiniPromptsListPage() {
                     </div>
                   </div>
                   <div className="flex gap-2 mt-4">
-                    <Button
+                    <IconButton
                       variant="primary"
                       size="sm"
+                      icon={<EditIcon fontSize="small" />}
+                      ariaLabel="Edit mini-prompt"
                       onClick={() => openEditModal(prompt)}
-                    >
-                      <EditIcon fontSize="small" />
-                    </Button>
-                    <Button
+                    />
+                    <IconButton
                       variant="danger"
                       size="sm"
+                      icon={<DeleteIcon fontSize="small" />}
+                      ariaLabel="Delete mini-prompt"
                       onClick={() => handleDelete(prompt.id)}
-                    >
-                      <DeleteIcon fontSize="small" />
-                    </Button>
+                    />
                   </div>
                 </div>
               </Card>

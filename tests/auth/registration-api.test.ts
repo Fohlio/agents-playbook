@@ -14,6 +14,31 @@ import { validatePasswordComplexity } from "@/lib/auth/password";
 jest.mock("@/lib/db/queries/users");
 jest.mock("@/lib/auth/password");
 
+jest.mock('next/server', () => ({
+  NextRequest: class NextRequest {
+    method: string;
+    body: any;
+
+    constructor(url: string, init?: any) {
+      this.method = init?.method || 'GET';
+      this.body = init?.body;
+    }
+
+    async json() {
+      return JSON.parse(this.body);
+    }
+  },
+  NextResponse: {
+    json: (data: any, init?: any) => {
+      const response = {
+        status: init?.status || 200,
+        json: async () => data,
+      };
+      return response;
+    },
+  },
+}));
+
 const mockCreateUser = createUser as jest.MockedFunction<typeof createUser>;
 const mockValidatePasswordComplexity = validatePasswordComplexity as jest.MockedFunction<
   typeof validatePasswordComplexity

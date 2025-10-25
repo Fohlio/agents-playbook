@@ -45,10 +45,10 @@ describe('ActiveWorkflowsSection', () => {
 
       expect(screen.getByText('Test Workflow 1')).toBeInTheDocument();
       expect(screen.getByText('Description 1')).toBeInTheDocument();
-      expect(screen.getByText('3 mini-prompts')).toBeInTheDocument();
+      expect(screen.getByText('3 stages')).toBeInTheDocument();
 
       expect(screen.getByText('Test Workflow 2')).toBeInTheDocument();
-      expect(screen.getByText('5 mini-prompts')).toBeInTheDocument();
+      expect(screen.getByText('5 stages')).toBeInTheDocument();
     });
 
     it('displays Active badge for each workflow', () => {

@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { Card } from '@/shared/ui/atoms/Card';
-import Button from '@/shared/ui/atoms/Button';
+import IconButton from '@/shared/ui/atoms/IconButton';
 import Input from '@/shared/ui/atoms/Input';
 import type { MiniPrompt } from '@prisma/client';
 import { MiniPromptCard } from './MiniPromptCard';
@@ -40,14 +40,14 @@ export function MiniPromptLibrary({ miniPrompts, onMiniPromptCreated }: MiniProm
           <h2 className="text-lg font-semibold text-text-primary">
             Mini-Prompts
           </h2>
-          <Button
+          <IconButton
             variant="primary"
             size="sm"
+            icon={<AddIcon fontSize="small" />}
+            ariaLabel="Create new mini-prompt"
             onClick={() => setIsModalOpen(true)}
             testId="create-mini-prompt-button"
-          >
-            <AddIcon fontSize="small" />
-          </Button>
+          />
         </div>
 
         <div className="space-y-3 mb-4">
