@@ -1,36 +1,36 @@
-import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
-import { getToken } from "next-auth/jwt";
+import NextAuth from "next-auth";
+import { middlewareAuthConfig } from "@/lib/auth/middleware-config";
+import { ROUTES } from "@/shared/routes";
 
 /**
- * NextAuth Middleware for Route Protection
+ * NextAuth v5 Middleware for Route Protection
+ * 
+ * Uses Edge Runtime-safe configuration (no bcrypt/database dependencies)
  * 
  * Protects routes that require authentication:
  * - /dashboard/* - All dashboard pages
  * - /api/v1/* - All authenticated API routes
  * 
- * Unauthenticated requests are redirected to /auth/login
+ * Unauthenticated requests are redirected to /login
  */
-export async function middleware(request: NextRequest) {
-  // Get token from the request
-  const token = await getToken({
-    req: request,
-    secret: process.env.NEXTAUTH_SECRET,
-  });
+const { auth } = NextAuth(middlewareAuthConfig);
 
-  // Check if user is authenticated
-  const isAuthenticated = !!token;
+export default auth((req) => {
+  const isAuthenticated = !!req.auth;
+  const { pathname } = req.nextUrl;
 
-  // If not authenticated, redirect to login
-  if (!isAuthenticated) {
-    const loginUrl = new URL("/login", request.url);
-    loginUrl.searchParams.set("callbackUrl", request.url);
-    return NextResponse.redirect(loginUrl);
+  // Check if accessing protected route
+  const isProtectedRoute = 
+    pathname.startsWith("/dashboard") || 
+    pathname.startsWith("/api/v1");
+
+  // If not authenticated and trying to access protected route, redirect to login
+  if (!isAuthenticated && isProtectedRoute) {
+    const loginUrl = new URL(ROUTES.LOGIN, req.url);
+    loginUrl.searchParams.set("callbackUrl", req.url);
+    return Response.redirect(loginUrl);
   }
-
-  // User is authenticated, allow request to proceed
-  return NextResponse.next();
-}
+});
 
 /**
  * Matcher configuration

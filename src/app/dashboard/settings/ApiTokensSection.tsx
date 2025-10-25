@@ -71,7 +71,7 @@ export default function ApiTokensSection() {
       } else {
         setError(data.error || "Failed to fetch tokens");
       }
-    } catch (err) {
+    } catch {
       setError("Failed to fetch tokens");
     } finally {
       setLoading(false);
@@ -287,7 +287,7 @@ export default function ApiTokensSection() {
             </h3>
             <div className="mb-4">
               <Alert variant="warning" testId="token-display-warning">
-                <strong>Important:</strong> Copy this token now. You won't be
+                <strong>Important:</strong> Copy this token now. You won&apos;t be
                 able to see it again!
               </Alert>
             </div>
@@ -321,7 +321,7 @@ export default function ApiTokensSection() {
                 }}
                 testId="close-token-modal-button"
               >
-                I've Saved My Token
+                I&apos;ve Saved My Token
               </Button>
             </div>
           </div>

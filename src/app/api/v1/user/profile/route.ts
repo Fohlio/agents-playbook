@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth/config";
+import { auth } from "@/app/api/auth/[...nextauth]/route";
 import { updateUsernameSchema } from "@/lib/validators/auth";
 import { updateUser } from "@/lib/db/queries/users";
+
+// Use Node.js runtime for database operations
+export const runtime = 'nodejs';
 
 /**
  * PATCH /api/v1/user/profile
@@ -25,7 +27,7 @@ import { updateUser } from "@/lib/db/queries/users";
 export async function PATCH(request: NextRequest) {
   try {
     // Verify authentication
-    const session = await getServerSession(authOptions);
+    const session = await auth();
     if (!session?.user?.id) {
       return NextResponse.json(
         { error: "Unauthorized" },
@@ -60,9 +62,9 @@ export async function PATCH(request: NextRequest) {
       },
       { status: 200 }
     );
-  } catch (error: any) {
+  } catch (error) {
     // Handle unique constraint violations (duplicate username)
-    if (error.code === "P2002") {
+    if (error && typeof error === "object" && "code" in error && error.code === "P2002") {
       return NextResponse.json(
         { error: "Username already taken" },
         { status: 409 }

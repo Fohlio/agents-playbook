@@ -24,21 +24,23 @@ if (process.env.NODE_ENV !== 'production') {
   globalForPrisma.prisma = prisma;
 }
 
-// Graceful shutdown handlers
-process.on('beforeExit', async () => {
-  console.log('[Prisma] Disconnecting before exit...');
-  await prisma.$disconnect();
-});
+// Graceful shutdown handlers (only in Node.js runtime, not Edge Runtime)
+if (typeof process !== 'undefined' && typeof process.on === 'function' && typeof process.exit === 'function') {
+  process.on('beforeExit', async () => {
+    console.log('[Prisma] Disconnecting before exit...');
+    await prisma.$disconnect();
+  });
 
-process.on('SIGINT', async () => {
-  console.log('[Prisma] Disconnecting on SIGINT...');
-  await prisma.$disconnect();
-  process.exit(0);
-});
+  process.on('SIGINT', async () => {
+    console.log('[Prisma] Disconnecting on SIGINT...');
+    await prisma.$disconnect();
+    process.exit(0);
+  });
 
-process.on('SIGTERM', async () => {
-  console.log('[Prisma] Disconnecting on SIGTERM...');
-  await prisma.$disconnect();
-  process.exit(0);
-});
+  process.on('SIGTERM', async () => {
+    console.log('[Prisma] Disconnecting on SIGTERM...');
+    await prisma.$disconnect();
+    process.exit(0);
+  });
+}
 

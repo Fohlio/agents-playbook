@@ -1,13 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { signIn } from "next-auth/react";
 import { loginSchema, type LoginInput } from "@/lib/validators/auth";
-import Link from "next/link";
-import { Input, Button, FormField, Alert, Checkbox } from "@/shared/ui/atoms";
+import { Input, Button, FormField, Alert, Checkbox, Link } from "@/shared/ui/atoms";
+import { ROUTES } from "@/shared/routes";
 
 /**
  * Login Page
@@ -20,7 +19,6 @@ import { Input, Button, FormField, Alert, Checkbox } from "@/shared/ui/atoms";
  * - Redirect to /dashboard after login
  */
 export default function LoginPage() {
-  const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -42,6 +40,7 @@ export default function LoginPage() {
     setError(null);
 
     try {
+      // Use signIn with redirect: false to handle the result manually
       const result = await signIn("credentials", {
         email: data.email,
         password: data.password,
@@ -50,16 +49,14 @@ export default function LoginPage() {
       });
 
       if (result?.error) {
-        // Generic error message for security (don't reveal if user exists)
         setError("Invalid credentials");
         setIsLoading(false);
       } else if (result?.ok) {
-        // Small delay to ensure cookie is set before navigation
-        await new Promise(resolve => setTimeout(resolve, 200));
-        // Use window.location for full page navigation to ensure cookies are set
-        window.location.href = "/dashboard";
+        // Successful login - use window.location for full page navigation
+        // This ensures the session cookie is sent with the next request
+        window.location.href = ROUTES.DASHBOARD;
       }
-    } catch {
+    } catch (error) {
       setError("An error occurred during login");
       setIsLoading(false);
     }
@@ -135,10 +132,7 @@ export default function LoginPage() {
 
       <div className="text-center text-sm">
         <span className="text-gray-600">Don&apos;t have an account? </span>
-        <Link
-          href="/register"
-          className="font-medium text-primary-600 hover:text-primary-700"
-        >
+        <Link href={ROUTES.REGISTER}>
           Sign up
         </Link>
       </div>

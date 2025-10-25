@@ -13,6 +13,10 @@ import { authConfig } from "@/lib/auth/config";
  *
  * NextAuth automatically handles these routes with the [...nextauth] catch-all.
  */
-const { handlers } = NextAuth(authConfig);
+
+// Use Node.js runtime for bcrypt support
+export const runtime = 'nodejs';
+
+export const { handlers, auth, signIn, signOut } = NextAuth(authConfig);
 export const { GET, POST } = handlers;
 

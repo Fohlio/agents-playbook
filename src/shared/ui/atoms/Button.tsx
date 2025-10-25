@@ -28,13 +28,13 @@ export default function Button({
   testId,
   ...props
 }: ButtonProps) {
-  const baseStyles = "rounded-md font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2";
+  const baseStyles = "rounded-md font-semibold transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 inline-flex items-center justify-center";
 
   const variantStyles = {
-    primary: "bg-primary-600 text-white hover:bg-primary-700 focus:ring-primary-500 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed",
-    secondary: "bg-white border-2 border-gray-300 text-gray-700 hover:border-gray-400 hover:bg-gray-50 focus:ring-gray-500",
-    danger: "bg-red-600 text-white hover:bg-red-700 focus:ring-red-500 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed",
-    ghost: "text-gray-700 hover:bg-gray-100 focus:ring-gray-500",
+    primary: "bg-primary-600 text-white hover:bg-primary-700 active:bg-primary-800 focus:ring-primary-500 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-primary-400",
+    secondary: "bg-white border-2 border-gray-300 text-gray-700 hover:border-gray-400 hover:bg-gray-50 active:bg-gray-100 focus:ring-gray-500 disabled:opacity-50 disabled:cursor-not-allowed",
+    danger: "bg-red-600 text-white hover:bg-red-700 active:bg-red-800 focus:ring-red-500 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-red-400",
+    ghost: "text-gray-700 hover:bg-gray-100 active:bg-gray-200 focus:ring-gray-500 disabled:opacity-50 disabled:cursor-not-allowed",
   };
 
   const sizeStyles = {
@@ -50,8 +50,7 @@ export default function Button({
         baseStyles,
         variantStyles[variant],
         sizeStyles[size],
-        fullWidth ? "w-full flex justify-center items-center" : "",
-        disabled ? "cursor-not-allowed" : "",
+        fullWidth ? "w-full" : "",
         className
       )}
       disabled={disabled}

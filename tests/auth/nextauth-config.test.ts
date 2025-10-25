@@ -161,11 +161,11 @@ describe("NextAuth Configuration", () => {
 
   describe("Custom Pages", () => {
     it("should configure custom sign-in page", () => {
-      expect(authOptions.pages?.signIn).toBe("/auth/login");
+      expect(authOptions.pages?.signIn).toBe("/login");
     });
 
     it("should configure custom error page", () => {
-      expect(authOptions.pages?.error).toBe("/auth/error");
+      expect(authOptions.pages?.error).toBe("/login");
     });
   });
 

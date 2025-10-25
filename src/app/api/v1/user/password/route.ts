@@ -1,9 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth/config";
+import { auth } from "@/app/api/auth/[...nextauth]/route";
 import { changePasswordSchema } from "@/lib/validators/auth";
 import { getUserById, updateUserPassword } from "@/lib/db/queries/users";
 import { verifyPassword, validatePasswordComplexity } from "@/lib/auth/password";
+
+// Use Node.js runtime for bcrypt support
+export const runtime = 'nodejs';
 
 /**
  * PATCH /api/v1/user/password
@@ -28,7 +30,7 @@ import { verifyPassword, validatePasswordComplexity } from "@/lib/auth/password"
 export async function PATCH(request: NextRequest) {
   try {
     // Verify authentication
-    const session = await getServerSession(authOptions);
+    const session = await auth();
     if (!session?.user?.id) {
       return NextResponse.json(
         { error: "Unauthorized" },
@@ -87,7 +89,7 @@ export async function PATCH(request: NextRequest) {
       { message: "Password changed successfully" },
       { status: 200 }
     );
-  } catch (error: any) {
+  } catch (error) {
     console.error("Error changing password:", error);
     return NextResponse.json(
       { error: "Failed to change password" },

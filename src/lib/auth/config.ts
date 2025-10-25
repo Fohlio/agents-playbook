@@ -3,6 +3,7 @@ import type { UserTier, UserRole } from "@prisma/client";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { getUserByEmail } from "@/lib/db/queries/users";
 import { verifyPassword } from "@/lib/auth/password";
+import { ROUTES } from "@/shared/routes";
 
 /**
  * NextAuth.js v5 Configuration
@@ -15,6 +16,9 @@ import { verifyPassword } from "@/lib/auth/password";
  * - CSRF protection via NextAuth built-in tokens
  */
 export const authConfig: NextAuthConfig = {
+  // Secret for JWT signing - shared with middleware config
+  secret: process.env.AUTH_SECRET,
+  
   providers: [
     CredentialsProvider({
       name: "credentials",
@@ -110,8 +114,8 @@ export const authConfig: NextAuthConfig = {
 
   // Custom pages
   pages: {
-    signIn: "/login",
-    error: "/login",
+    signIn: ROUTES.LOGIN,
+    error: ROUTES.LOGIN,
   },
 
   // Cookie configuration
@@ -130,4 +134,9 @@ export const authConfig: NextAuthConfig = {
   // Enable debug in development
   debug: process.env.NODE_ENV === "development",
 };
+
+/**
+ * Legacy export name for compatibility
+ */
+export const authOptions = authConfig;
 

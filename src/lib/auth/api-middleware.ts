@@ -111,7 +111,7 @@ export async function authenticateApiToken(
         { status: 401 }
       ),
     };
-  } catch (error: any) {
+  } catch (error) {
     console.error("Error authenticating API token:", error);
     return {
       success: false,

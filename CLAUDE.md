@@ -5,6 +5,8 @@
 ## Repository Overview
 This is a **production-ready workflow automation repository** for AI agents in software development. It provides **YAML-based workflows**, **modular mini-prompts**, **AI-powered semantic search**, and **agent handoff system** to help AI agents perform development tasks efficiently with seamless context transfer.
 
+**Tech Stack:** Next.js, Prisma, NextAuth, Tailwind CSS v4 (colors defined via `@theme` in CSS, not config file)
+
 ## Key Files & Structure
 
 ### 📋 Navigation & Discovery
@@ -12,7 +14,7 @@ This is a **production-ready workflow automation repository** for AI agents in s
 - **`README.md`** - Public documentation and MCP server setup guide
 - **MCP Server** - AI-powered workflow discovery
   - **Production**: https://agents-playbook.vercel.app/api/mcp
-  - **Local Dev**: http://localhost:3000/api/mcp
+  - **Local Dev**: http://localhost:3012/api/mcp
 
 ### 🎯 Core Architecture
 
@@ -55,7 +57,7 @@ This is a **production-ready workflow automation repository** for AI agents in s
 npm run dev
 
 # Test with MCP Inspector
-DANGEROUSLY_OMIT_AUTH=true npx @modelcontextprotocol/inspector@latest http://localhost:3000/api/mcp
+DANGEROUSLY_OMIT_AUTH=true npx @modelcontextprotocol/inspector@latest http://localhost:3012/api/mcp
 # OR for production testing:
 # DANGEROUSLY_OMIT_AUTH=true npx @modelcontextprotocol/inspector@latest https://agents-playbook.vercel.app/api/mcp
 ```

@@ -4,6 +4,7 @@ import FeaturesSection from "@/shared/ui/landing/FeaturesSection";
 import SetupSection from "@/shared/ui/landing/SetupSection";
 import WorkflowMatcherGame from "@/shared/ui/landing/WorkflowMatcherGame";
 import Link from "next/link";
+import { ROUTES } from "@/shared/routes";
 
 // Types
 
@@ -48,13 +49,13 @@ function GetStartedSection() {
         </p>
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
           <Link
-            href="/auth/register"
+            href={ROUTES.REGISTER}
             className="px-8 py-4 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg font-semibold text-lg hover:from-blue-600 hover:to-purple-700 transition-all duration-300 hover:scale-105 shadow-lg"
           >
             Create Free Account
           </Link>
           <Link
-            href="/auth/login"
+            href={ROUTES.LOGIN}
             className="px-8 py-4 bg-white border-2 border-gray-300 text-gray-700 rounded-lg font-semibold text-lg hover:border-gray-400 hover:bg-gray-50 transition-all duration-300"
           >
             Already have an account? <span className="text-primary-600">Sign in</span>

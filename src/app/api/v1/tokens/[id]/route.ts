@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth/config";
+import { auth } from "@/app/api/auth/[...nextauth]/route";
 import { prisma } from "@/lib/db/client";
+
+// Use Node.js runtime for database operations
+export const runtime = 'nodejs';
 
 /**
  * DELETE /api/v1/tokens/:id
@@ -22,7 +24,7 @@ export async function DELETE(
 ) {
   try {
     // Verify authentication
-    const session = await getServerSession(authOptions);
+    const session = await auth();
     if (!session?.user?.id) {
       return NextResponse.json(
         { error: "Unauthorized" },
@@ -54,7 +56,7 @@ export async function DELETE(
       { message: "Token revoked successfully" },
       { status: 200 }
     );
-  } catch (error: any) {
+  } catch (error) {
     console.error("Error revoking token:", error);
     return NextResponse.json(
       { error: "Failed to revoke token" },

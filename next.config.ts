@@ -10,11 +10,46 @@ const nextConfig: NextConfig = {
   },
   
   // Webpack configuration for MCP server files
-  webpack: (config, { isServer }) => {
-    if (isServer) {
-      // Copy static files during build
-      config.externals = [...(config.externals || [])];
+  webpack: (config, { isServer, nextRuntime }) => {
+    // Externalize native modules for both server and edge runtime
+    if (isServer || nextRuntime === 'edge') {
+      if (Array.isArray(config.externals)) {
+        config.externals.push('bcrypt', '@mapbox/node-pre-gyp');
+      } else if (typeof config.externals === 'object') {
+        config.externals = {
+          ...config.externals,
+          bcrypt: 'commonjs bcrypt',
+          '@mapbox/node-pre-gyp': 'commonjs @mapbox/node-pre-gyp',
+        };
+      } else {
+        config.externals = ['bcrypt', '@mapbox/node-pre-gyp'];
+      }
     }
+    
+    // Ignore optional native dependencies from node-pre-gyp
+    config.resolve = config.resolve || {};
+    config.resolve.fallback = {
+      ...config.resolve.fallback,
+      'aws-sdk': false,
+      'mock-aws-s3': false,
+      'nock': false,
+    };
+    
+    // Suppress warnings for these missing modules
+    config.ignoreWarnings = [
+      ...(config.ignoreWarnings || []),
+      /Can't resolve 'aws-sdk'/,
+      /Can't resolve 'mock-aws-s3'/,
+      /Can't resolve 'nock'/,
+    ];
+    
+    // Exclude HTML and other files from node-pre-gyp
+    config.module = config.module || {};
+    config.module.rules = config.module.rules || [];
+    config.module.rules.push({
+      test: /node_modules[\\/]@mapbox[\\/]node-pre-gyp[\\/].*\.(html|md|json)$/,
+      type: 'asset/source',
+    });
     
     return config;
   },

@@ -1,9 +1,9 @@
-import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
-import { authOptions } from "@/lib/auth/config";
+import { auth } from "@/app/api/auth/[...nextauth]/route";
 import ProfileSection from "./ProfileSection";
 import PasswordSection from "./PasswordSection";
 import ApiTokensSection from "./ApiTokensSection";
+import { ROUTES } from "@/shared/routes";
 
 /**
  * Settings Page
@@ -12,10 +12,10 @@ import ApiTokensSection from "./ApiTokensSection";
  * Requires authentication - redirects to /login if not authenticated
  */
 export default async function SettingsPage() {
-  const session = await getServerSession(authOptions);
+  const session = await auth();
 
   if (!session) {
-    redirect("/login");
+    redirect(ROUTES.LOGIN);
   }
 
   return (

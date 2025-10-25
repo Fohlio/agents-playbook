@@ -1,47 +1,40 @@
 @import "tailwindcss";
 
-/* CSS Variables for Design System */
-:root {
-  /* Color tokens in RGB format for alpha channel support */
-  --color-primary: 14 165 233; /* RGB of #0ea5e9 */
-  --color-success: 16 185 129;
-  --color-warning: 245 158 11;
-  --color-error: 239 68 68;
-  --color-info: 59 130 246;
-  
-  /* Font families */
-  --font-sans: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --font-mono: 'JetBrains Mono', 'Fira Code', Consolas, monospace;
-  
-  /* Legacy variables for compatibility */
-  --background: #ffffff;
-  --foreground: #171717;
+@theme {
+  --color-primary-50: #f0f9ff;
+  --color-primary-100: #e0f2fe;
+  --color-primary-200: #bae6fd;
+  --color-primary-300: #7dd3fc;
+  --color-primary-400: #38bdf8;
+  --color-primary-500: #0ea5e9;
+  --color-primary-600: #0284c7;
+  --color-primary-700: #0369a1;
+  --color-primary-800: #075985;
+  --color-primary-900: #0c4a6e;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer base {
+  * {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  
+  body {
+    @apply bg-white text-gray-900;
+    font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   }
 }
 
-/* Font smoothing for better text rendering */
-* {
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer components {
+  /* Override Tailwind's button reset that forces color: inherit */
+  button.bg-primary-600,
+  button.bg-primary-700,
+  button.bg-primary-800,
+  button.bg-red-600,
+  button.bg-red-700,
+  button.bg-red-800 {
+    color: white;
+  }
 }
 
 /* Custom scrollbar (webkit browsers) */
@@ -55,17 +48,17 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #d1d5db; /* gray-300 */
+  background: #d1d5db;
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #9ca3af; /* gray-400 */
+  background: #9ca3af;
 }
 
 /* Focus visible styles for accessibility */
 *:focus-visible {
-  outline: 2px solid rgb(var(--color-primary));
+  outline: 2px solid #0284c7;
   outline-offset: 2px;
 }
 

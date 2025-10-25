@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState, useEffect } from "react";
+import { ROUTES } from "@/shared/routes";
 
 interface GitHubStats {
   stargazers_count: number;
@@ -106,17 +107,10 @@ export default function Header() {
             
             {/* Authentication Buttons */}
             <Link 
-              href="/auth/login"
+              href={ROUTES.LOGIN}
               className="px-4 py-2 text-white hover:text-white/80 transition-colors"
             >
               Sign In
-            </Link>
-            
-            <Link 
-              href="/auth/register"
-              className="px-6 py-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg hover:from-blue-600 hover:to-purple-700 transition-all duration-300 hover:scale-105 shadow-lg"
-            >
-              Sign Up
             </Link>
             
             <Link 

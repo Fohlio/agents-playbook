@@ -3,6 +3,9 @@ import { registerSchema } from "@/lib/validators/auth";
 import { createUser } from "@/lib/db/queries/users";
 import { validatePasswordComplexity } from "@/lib/auth/password";
 
+// Use Node.js runtime for bcrypt support
+export const runtime = 'nodejs';
+
 /**
  * POST /api/auth/register
  * 

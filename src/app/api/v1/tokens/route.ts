@@ -1,9 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth/config";
+import { auth } from "@/app/api/auth/[...nextauth]/route";
 import { createTokenSchema } from "@/lib/validators/auth";
 import { generateApiToken } from "@/lib/auth/tokens";
 import { prisma } from "@/lib/db/client";
+
+// Use Node.js runtime for database operations
+export const runtime = 'nodejs';
 
 /**
  * POST /api/v1/tokens
@@ -25,7 +27,7 @@ import { prisma } from "@/lib/db/client";
 export async function POST(request: NextRequest) {
   try {
     // Verify authentication
-    const session = await getServerSession(authOptions);
+    const session = await auth();
     if (!session?.user?.id) {
       return NextResponse.json(
         { error: "Unauthorized" },
@@ -75,7 +77,7 @@ export async function POST(request: NextRequest) {
       },
       { status: 201 }
     );
-  } catch (error: any) {
+  } catch (error) {
     console.error("Error creating token:", error);
     return NextResponse.json(
       { error: "Failed to create token" },
@@ -95,10 +97,10 @@ export async function POST(request: NextRequest) {
  * - 401: Unauthorized
  * - 500: Server error
  */
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     // Verify authentication
-    const session = await getServerSession(authOptions);
+    const session = await auth();
     if (!session?.user?.id) {
       return NextResponse.json(
         { error: "Unauthorized" },
@@ -131,7 +133,7 @@ export async function GET(request: NextRequest) {
     }));
 
     return NextResponse.json({ tokens: maskedTokens }, { status: 200 });
-  } catch (error: any) {
+  } catch (error) {
     console.error("Error fetching tokens:", error);
     return NextResponse.json(
       { error: "Failed to fetch tokens" },

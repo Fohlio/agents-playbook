@@ -1,13 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { signIn } from "next-auth/react";
 import { registerSchema, type RegisterInput } from "@/lib/validators/auth";
-import Link from "next/link";
-import { Input, Button, FormField, Alert } from "@/shared/ui/atoms";
+import { Input, Button, FormField, Alert, Link } from "@/shared/ui/atoms";
+import { ROUTES } from "@/shared/routes";
 
 /**
  * Registration Page
@@ -20,7 +19,6 @@ import { Input, Button, FormField, Alert } from "@/shared/ui/atoms";
  * - Redirect to /dashboard after registration
  */
 export default function RegisterPage() {
-  const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -60,8 +58,8 @@ export default function RegisterPage() {
       if (signInResult?.error) {
         throw new Error("Login failed after registration");
       } else if (signInResult?.ok) {
-        // Use window.location for full page navigation to ensure cookies are set
-        window.location.href = "/dashboard";
+        // Use window.location for full page navigation to ensure session is loaded
+        window.location.href = ROUTES.DASHBOARD;
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Registration failed");
@@ -169,10 +167,7 @@ export default function RegisterPage() {
 
       <div className="text-center text-sm">
         <span className="text-gray-600">Already have an account? </span>
-        <Link
-          href="/login"
-          className="font-medium text-primary-600 hover:text-primary-700"
-        >
+        <Link href={ROUTES.LOGIN}>
           Sign in
         </Link>
       </div>
