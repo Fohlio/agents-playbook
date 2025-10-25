@@ -1,6 +1,7 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { QuickActions } from '../QuickActions';
+import { ROUTES } from '@/shared/routes';
 import { useRouter } from 'next/navigation';
 
 jest.mock('next/navigation', () => ({
@@ -40,7 +41,7 @@ describe('QuickActions', () => {
       const createWorkflowButton = screen.getByTestId('create-workflow-button');
       fireEvent.click(createWorkflowButton);
 
-      expect(mockPush).toHaveBeenCalledWith('/dashboard/workflows/new');
+      expect(mockPush).toHaveBeenCalledWith(ROUTES.WORKFLOWS.NEW);
     });
 
     it('navigates to mini-prompt creation page when Create Mini-Prompt clicked', () => {
@@ -49,7 +50,7 @@ describe('QuickActions', () => {
       const createMiniPromptButton = screen.getByTestId('create-mini-prompt-button');
       fireEvent.click(createMiniPromptButton);
 
-      expect(mockPush).toHaveBeenCalledWith('/dashboard/mini-prompts/new');
+      expect(mockPush).toHaveBeenCalledWith(ROUTES.MINI_PROMPTS.NEW);
     });
 
     it('navigates to discover page when Discover Public clicked', () => {
@@ -58,7 +59,7 @@ describe('QuickActions', () => {
       const discoverButton = screen.getByTestId('discover-button');
       fireEvent.click(discoverButton);
 
-      expect(mockPush).toHaveBeenCalledWith('/dashboard/discover');
+      expect(mockPush).toHaveBeenCalledWith(ROUTES.DISCOVER);
     });
   });
 

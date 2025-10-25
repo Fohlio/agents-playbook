@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@/shared/ui/atoms";
+import { ROUTES } from "@/shared/routes";
 import { useRouter } from "next/navigation";
 
 export function QuickActions() {
@@ -10,7 +11,7 @@ export function QuickActions() {
     <div className="flex gap-4" data-testid="quick-actions">
       <Button
         variant="primary"
-        onClick={() => router.push("/dashboard/workflows/new")}
+        onClick={() => router.push(ROUTES.WORKFLOWS.NEW)}
         testId="create-workflow-button"
       >
         Create Workflow
@@ -18,7 +19,7 @@ export function QuickActions() {
 
       <Button
         variant="secondary"
-        onClick={() => router.push("/dashboard/mini-prompts/new")}
+        onClick={() => router.push(ROUTES.MINI_PROMPTS.NEW)}
         testId="create-mini-prompt-button"
       >
         Create Mini-Prompt
@@ -26,7 +27,7 @@ export function QuickActions() {
 
       <Button
         variant="secondary"
-        onClick={() => router.push("/dashboard/discover")}
+        onClick={() => router.push(ROUTES.DISCOVER)}
         testId="discover-button"
       >
         Discover Public

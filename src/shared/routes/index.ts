@@ -15,11 +15,28 @@ export const PUBLIC_ROUTES = {
 } as const;
 
 /**
+ * Dashboard workflow routes
+ */
+export const WORKFLOW_ROUTES = {
+  NEW: "/dashboard/workflows/new",
+  EDIT: (id: string) => `/dashboard/workflows/${id}/edit`,
+} as const;
+
+/**
+ * Dashboard mini-prompt routes
+ */
+export const MINI_PROMPT_ROUTES = {
+  NEW: "/dashboard/mini-prompts/new",
+  EDIT: (id: string) => `/dashboard/mini-prompts/${id}/edit`,
+} as const;
+
+/**
  * Protected routes (authentication required)
  */
 export const PROTECTED_ROUTES = {
   DASHBOARD: "/dashboard",
   SETTINGS: "/dashboard/settings",
+  DISCOVER: "/dashboard/discover",
 } as const;
 
 /**
@@ -43,6 +60,8 @@ export const API_ROUTES = {
 export const ROUTES = {
   ...PUBLIC_ROUTES,
   ...PROTECTED_ROUTES,
+  WORKFLOWS: WORKFLOW_ROUTES,
+  MINI_PROMPTS: MINI_PROMPT_ROUTES,
   API: API_ROUTES,
 } as const;
 
