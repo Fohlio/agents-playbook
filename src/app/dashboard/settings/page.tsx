@@ -1,8 +1,8 @@
 import { redirect } from "next/navigation";
-import { auth } from "@/app/api/auth/[...nextauth]/route";
+import { auth } from "@/lib/auth/auth";
 import ProfileSection from "./ProfileSection";
 import PasswordSection from "./PasswordSection";
-import ApiTokensSection from "./ApiTokensSection";
+import { ApiTokensSection } from "@/features/api-tokens";
 import { ROUTES } from "@/shared/routes";
 
 /**
@@ -20,13 +20,6 @@ export default async function SettingsPage() {
 
   return (
     <div className="max-w-4xl mx-auto space-y-8" data-testid="settings-page">
-      <div>
-        <h1 className="text-3xl font-bold text-gray-900" data-testid="settings-heading">Settings</h1>
-        <p className="mt-2 text-sm text-gray-600" data-testid="settings-description">
-          Manage your profile, password, and API tokens
-        </p>
-      </div>
-
       {/* Profile Section */}
       <ProfileSection user={session.user} />
 

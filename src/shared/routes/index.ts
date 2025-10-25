@@ -10,8 +10,8 @@
  */
 export const PUBLIC_ROUTES = {
   HOME: "/",
-  LOGIN: "/login",
-  REGISTER: "/register",
+  LOGIN: "/auth/login",
+  REGISTER: "/auth/register",
 } as const;
 
 /**
@@ -19,7 +19,7 @@ export const PUBLIC_ROUTES = {
  */
 export const PROTECTED_ROUTES = {
   DASHBOARD: "/dashboard",
-  SETTINGS: "/settings",
+  SETTINGS: "/dashboard/settings",
 } as const;
 
 /**

@@ -44,9 +44,9 @@ describe("NextAuth Configuration", () => {
       expect(authOptions.session?.strategy).toBe("jwt");
     });
 
-    it("should set default session maxAge to 30 days", () => {
-      const thirtyDaysInSeconds = 30 * 24 * 60 * 60;
-      expect(authOptions.session?.maxAge).toBe(thirtyDaysInSeconds);
+    it("should set session maxAge to 90 days for long-lived sessions", () => {
+      const ninetyDaysInSeconds = 90 * 24 * 60 * 60;
+      expect(authOptions.session?.maxAge).toBe(ninetyDaysInSeconds);
     });
   });
 
@@ -77,8 +77,13 @@ describe("NextAuth Configuration", () => {
         username: "testuser",
         tier: "FREE",
         role: "USER",
-        maxAge: 30 * 24 * 60 * 60, // 30 days
+        rememberMe: false,
       });
+      
+      // Check that exp is set for 30 days
+      const expectedExp = Math.floor((Date.now() + (30 * 24 * 60 * 60 * 1000)) / 1000);
+      expect(result?.exp).toBeGreaterThan(expectedExp - 10); // Allow 10 second tolerance
+      expect(result?.exp).toBeLessThan(expectedExp + 10);
     });
 
     it("should set 90-day maxAge when rememberMe is true", async () => {
@@ -101,8 +106,12 @@ describe("NextAuth Configuration", () => {
         account: undefined,
       });
 
-      expect(result?.maxAge).toBe(90 * 24 * 60 * 60); // 90 days
       expect(result?.rememberMe).toBe(true);
+      
+      // Check that exp is set for 90 days
+      const expectedExp = Math.floor((Date.now() + (90 * 24 * 60 * 60 * 1000)) / 1000);
+      expect(result?.exp).toBeGreaterThan(expectedExp - 10); // Allow 10 second tolerance
+      expect(result?.exp).toBeLessThan(expectedExp + 10);
     });
 
     it("should preserve existing token data when user is undefined", async () => {
@@ -161,11 +170,11 @@ describe("NextAuth Configuration", () => {
 
   describe("Custom Pages", () => {
     it("should configure custom sign-in page", () => {
-      expect(authOptions.pages?.signIn).toBe("/login");
+      expect(authOptions.pages?.signIn).toBe("/auth/login");
     });
 
     it("should configure custom error page", () => {
-      expect(authOptions.pages?.error).toBe("/login");
+      expect(authOptions.pages?.error).toBe("/auth/login");
     });
   });
 

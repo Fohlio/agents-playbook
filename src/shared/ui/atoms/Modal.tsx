@@ -14,13 +14,13 @@ export function Modal({ isOpen, onClose, children, className, testId }: ModalPro
 
   return (
     <div
-      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+      className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
       onClick={onClose}
       data-testid={testId}
     >
       <div
         className={cn(
-          "bg-surface-base rounded-lg p-6 max-w-md w-full",
+          "bg-white rounded-lg shadow-xl p-6 max-w-md w-full mx-auto",
           className
         )}
         onClick={(e) => e.stopPropagation()}
@@ -40,7 +40,7 @@ export interface ModalHeaderProps {
 export function ModalHeader({ title, className, testId }: ModalHeaderProps) {
   return (
     <h3
-      className={cn("text-lg font-semibold text-text-primary mb-4", className)}
+      className={cn("text-lg font-semibold text-gray-900 mb-4", className)}
       data-testid={testId}
     >
       {title}

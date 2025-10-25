@@ -71,7 +71,7 @@ export const authConfig: NextAuthConfig = {
   // JWT session strategy (no database sessions)
   session: {
     strategy: "jwt",
-    maxAge: 30 * 24 * 60 * 60, // 30 days default
+    maxAge: 90 * 24 * 60 * 60, // 90 days maximum (will be limited by cookie maxAge)
   },
 
   // JWT and session callbacks
@@ -85,12 +85,14 @@ export const authConfig: NextAuthConfig = {
         token.tier = user.tier;
         token.role = user.role;
 
-        // Extend session if "Remember me" was checked
+        // Store rememberMe flag and set expiration time
         if (user.rememberMe) {
-          token.maxAge = 90 * 24 * 60 * 60; // 90 days
+          const expiresAt = Date.now() + (90 * 24 * 60 * 60 * 1000); // 90 days
+          token.exp = Math.floor(expiresAt / 1000); // JWT exp is in seconds
           token.rememberMe = true;
         } else {
-          token.maxAge = 30 * 24 * 60 * 60; // 30 days
+          const expiresAt = Date.now() + (30 * 24 * 60 * 60 * 1000); // 30 days
+          token.exp = Math.floor(expiresAt / 1000); // JWT exp is in seconds
           token.rememberMe = false;
         }
       }
@@ -108,6 +110,7 @@ export const authConfig: NextAuthConfig = {
         session.user.role = token.role as UserRole;
       }
 
+      // NextAuth automatically uses token.exp for session expiration
       return session;
     },
   },
@@ -127,6 +130,7 @@ export const authConfig: NextAuthConfig = {
         sameSite: "lax",
         path: "/",
         secure: process.env.NODE_ENV === "production",
+        maxAge: 90 * 24 * 60 * 60, // 90 days - allows long-lived sessions
       },
     },
   },

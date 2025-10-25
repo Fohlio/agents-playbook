@@ -17,6 +17,6 @@ import { authConfig } from "@/lib/auth/config";
 // Use Node.js runtime for bcrypt support
 export const runtime = 'nodejs';
 
-export const { handlers, auth, signIn, signOut } = NextAuth(authConfig);
+const { handlers } = NextAuth(authConfig);
 export const { GET, POST } = handlers;
 

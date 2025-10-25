@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/app/api/auth/[...nextauth]/route";
+import { auth } from "@/lib/auth/auth";
 import { prisma } from "@/lib/db/client";
 
 // Use Node.js runtime for database operations
@@ -20,7 +20,7 @@ export const runtime = 'nodejs';
  */
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
     // Verify authentication
@@ -31,6 +31,9 @@ export async function DELETE(
         { status: 401 }
       );
     }
+
+    // Await params (Next.js 15+)
+    const params = await context.params;
 
     // Verify token belongs to user before deletion
     const token = await prisma.apiToken.findFirst({

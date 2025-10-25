@@ -56,7 +56,7 @@ export default function LoginPage() {
         // This ensures the session cookie is sent with the next request
         window.location.href = ROUTES.DASHBOARD;
       }
-    } catch (error) {
+    } catch {
       setError("An error occurred during login");
       setIsLoading(false);
     }

@@ -22,7 +22,7 @@ export const middlewareAuthConfig: NextAuthConfig = {
   // JWT session strategy (no database sessions)
   session: {
     strategy: "jwt",
-    maxAge: 30 * 24 * 60 * 60, // 30 days default
+    maxAge: 90 * 24 * 60 * 60, // 90 days maximum (matches main config)
   },
 
   // Custom pages
@@ -40,6 +40,7 @@ export const middlewareAuthConfig: NextAuthConfig = {
         sameSite: "lax",
         path: "/",
         secure: process.env.NODE_ENV === "production",
+        maxAge: 90 * 24 * 60 * 60, // 90 days - allows long-lived sessions
       },
     },
   },
@@ -56,8 +57,8 @@ export const middlewareAuthConfig: NextAuthConfig = {
         session.user.id = token.id as string;
         session.user.email = token.email as string;
         session.user.username = token.username as string;
-        session.user.tier = token.tier as any;
-        session.user.role = token.role as any;
+        session.user.tier = token.tier as never; // Edge runtime doesn't have full types
+        session.user.role = token.role as never; // Edge runtime doesn't have full types
       }
       return session;
     },
