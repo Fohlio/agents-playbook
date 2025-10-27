@@ -15,21 +15,13 @@ export const PUBLIC_ROUTES = {
 } as const;
 
 /**
- * Dashboard workflow routes
+ * Library routes (workflows under library)
  */
-export const WORKFLOW_ROUTES = {
-  LIST: "/dashboard/workflows",
-  NEW: "/dashboard/workflows/new",
-  EDIT: (id: string) => `/dashboard/workflows/${id}/edit`,
-} as const;
-
-/**
- * Dashboard mini-prompt routes
- */
-export const MINI_PROMPT_ROUTES = {
-  LIST: "/dashboard/mini-prompts",
-  NEW: "/dashboard/mini-prompts/new",
-  EDIT: (id: string) => `/dashboard/mini-prompts/${id}/edit`,
+export const LIBRARY_ROUTES = {
+  WORKFLOWS: {
+    NEW: "/dashboard/library/workflows/new",
+    EDIT: (id: string) => `/dashboard/library/workflows/${id}/edit`,
+  },
 } as const;
 
 /**
@@ -39,6 +31,15 @@ export const PROTECTED_ROUTES = {
   DASHBOARD: "/dashboard",
   SETTINGS: "/dashboard/settings",
   DISCOVER: "/dashboard/discover",
+  LIBRARY: "/dashboard/library",
+} as const;
+
+/**
+ * Admin routes (require ADMIN role)
+ */
+export const ADMIN_ROUTES = {
+  SYSTEM_WORKFLOWS: "/dashboard/admin/workflows",
+  SYSTEM_MINI_PROMPTS: "/dashboard/admin/mini-prompts",
 } as const;
 
 /**
@@ -52,8 +53,8 @@ export const API_ROUTES = {
   V1: {
     TOKENS: "/api/v1/tokens",
     USER: "/api/v1/user",
+    MCP: "/api/v1/mcp",
   },
-  MCP: "/api/mcp",
 } as const;
 
 /**
@@ -62,8 +63,8 @@ export const API_ROUTES = {
 export const ROUTES = {
   ...PUBLIC_ROUTES,
   ...PROTECTED_ROUTES,
-  WORKFLOWS: WORKFLOW_ROUTES,
-  MINI_PROMPTS: MINI_PROMPT_ROUTES,
+  LIBRARY: LIBRARY_ROUTES,
+  ADMIN: ADMIN_ROUTES,
   API: API_ROUTES,
 } as const;
 

@@ -24,7 +24,11 @@ export default async function WorkflowConstructorPage({ params }: PageProps) {
     notFound();
   }
 
-  if (workflow.userId !== session.user.id) {
+  // Allow access if user owns the workflow OR if user is admin and it's a system workflow
+  const isOwner = workflow.userId === session.user.id;
+  const isAdminEditingSystem = session.user.role === 'ADMIN' && workflow.isSystemWorkflow;
+
+  if (!isOwner && !isAdminEditingSystem) {
     notFound();
   }
 

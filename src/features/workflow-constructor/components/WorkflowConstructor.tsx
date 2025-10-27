@@ -21,12 +21,11 @@ interface WorkflowConstructorProps {
 
 export function WorkflowConstructor({ data }: WorkflowConstructorProps) {
   const { workflow, miniPrompts: initialMiniPrompts } = data;
-  const { workflow: currentWorkflow, isDirty, isSaving, setWorkflow, handleSave, markDirty } =
+  const { workflow: currentWorkflow, isDirty, isSaving, handleSave, markDirty } =
     useWorkflowConstructor(workflow);
 
   const {
     sensors,
-    activeId,
     handleDragStart,
     handleDragOver,
     handleDragEnd: onDragEnd,

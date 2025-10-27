@@ -16,7 +16,6 @@ export function StageDropZone({ stage, onRemoveMiniPrompt }: StageDropZoneProps)
     data: {
       type: 'stage',
       stageId: stage.id,
-      phaseId: stage.phaseId,
     },
   });
 

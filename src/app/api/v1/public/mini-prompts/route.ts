@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth/auth";
 import { getPublicMiniPrompts } from "@/features/public-discovery/lib/discovery-service";
+import type { MiniPromptSortOption } from "@/features/public-discovery/types";
 
 export const runtime = "nodejs";
 
@@ -26,7 +27,7 @@ export async function GET(request: NextRequest) {
     const userId = session?.user?.id;
 
     const result = await getPublicMiniPrompts(
-      { page, limit, search, sort: sort as any, filters },
+      { page, limit, search, sort: sort as MiniPromptSortOption, filters },
       userId
     );
 

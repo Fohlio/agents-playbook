@@ -5,8 +5,6 @@ import {
   PublicMiniPromptWithMeta,
   PaginatedResult,
   DiscoveryQueryParams,
-  WorkflowFilters,
-  MiniPromptFilters,
   WorkflowSortOption,
   MiniPromptSortOption,
 } from "../types";

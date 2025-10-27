@@ -59,7 +59,7 @@ npm run dev
 
 # Server available at:
 # - Web UI: http://localhost:3000
-# - MCP Endpoint: http://localhost:3000/api/mcp
+# - MCP Endpoint: http://localhost:3000/api/v1/mcp
 ```
 
 ## Project Structure
@@ -131,7 +131,7 @@ Add to your Cursor MCP settings:
 {
   "mcpServers": {
     "agents-playbook": {
-      "url": "https://agents-playbook.vercel.app/api/mcp",
+      "url": "https://agents-playbook.vercel.app/api/v1/mcp",
       "description": "AI Agent Workflow Engine"
     }
   }

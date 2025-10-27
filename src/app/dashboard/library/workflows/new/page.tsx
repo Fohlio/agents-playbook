@@ -20,13 +20,10 @@ export default async function NewWorkflowPage() {
     redirect(ROUTES.LOGIN);
   }
 
-  // Fetch both PUBLIC mini-prompts and user's own mini-prompts
+  // Fetch only user's own mini-prompts (their library)
   const miniPrompts = await prisma.miniPrompt.findMany({
     where: {
-      OR: [
-        { visibility: 'PUBLIC' },
-        { userId: session.user.id },
-      ],
+      userId: session.user.id,
     },
     orderBy: [
       { createdAt: 'desc' },

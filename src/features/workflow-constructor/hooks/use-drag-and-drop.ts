@@ -2,8 +2,6 @@
 
 import { useState, useCallback } from 'react';
 import {
-  DndContext,
-  DragEndEvent,
   DragOverEvent,
   DragStartEvent,
   PointerSensor,

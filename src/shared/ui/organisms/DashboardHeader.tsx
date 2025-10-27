@@ -12,6 +12,7 @@ import { ROUTES } from "@/shared/routes";
  */
 export function DashboardHeader() {
   const { data: session } = useSession();
+  const isAdmin = session?.user?.role === 'ADMIN';
 
   return (
     <header className="bg-white border-b border-gray-200">
@@ -44,19 +45,25 @@ export function DashboardHeader() {
                 Discover
               </Link>
               <Link
-                href={ROUTES.WORKFLOWS.LIST}
+                href="/dashboard/library"
                 variant="secondary"
-                testId="workflows-nav-link"
+                testId="library-nav-link"
               >
-                Workflows
+                Library
               </Link>
-              <Link
-                href={ROUTES.MINI_PROMPTS.LIST}
-                variant="secondary"
-                testId="mini-prompts-nav-link"
-              >
-                Mini-Prompts
-              </Link>
+              {isAdmin && (
+                <Link
+                  href={ROUTES.ADMIN.SYSTEM_WORKFLOWS}
+                  variant="secondary"
+                  testId="admin-nav-link"
+                  className="flex items-center gap-1"
+                >
+                  Admin
+                  <Badge variant="primary" testId="admin-badge">
+                    System
+                  </Badge>
+                </Link>
+              )}
               <Link
                 href={ROUTES.SETTINGS}
                 variant="secondary"

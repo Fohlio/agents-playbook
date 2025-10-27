@@ -22,7 +22,7 @@ export function WorkflowDiscoveryCard({
   currentUserId,
 }: WorkflowDiscoveryCardProps) {
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
-  const isOwnWorkflow = currentUserId && workflow.userId === currentUserId;
+  const isOwnWorkflow = Boolean(currentUserId && workflow.userId === currentUserId);
 
   const handleImportClick = () => {
     if (!isAuthenticated) {

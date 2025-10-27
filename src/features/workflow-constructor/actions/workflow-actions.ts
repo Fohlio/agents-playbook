@@ -35,10 +35,7 @@ export async function getWorkflowWithStages(
 export async function getAllAvailableMiniPrompts(userId: string): Promise<MiniPrompt[]> {
   return await prisma.miniPrompt.findMany({
     where: {
-      OR: [
-        { userId },
-        { visibility: 'PUBLIC' },
-      ],
+      userId,
     },
     orderBy: {
       name: 'asc',
@@ -49,7 +46,7 @@ export async function getAllAvailableMiniPrompts(userId: string): Promise<MiniPr
 export async function saveWorkflow(input: SaveWorkflowInput): Promise<WorkflowWithStages> {
   const result = await prisma.$transaction(async (tx) => {
     // Update workflow metadata
-    const workflow = await tx.workflow.update({
+    await tx.workflow.update({
       where: { id: input.workflowId },
       data: {
         name: input.name,

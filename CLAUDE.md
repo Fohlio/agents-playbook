@@ -13,8 +13,8 @@ This is a **production-ready workflow automation repository** for AI agents in s
 - **`playbook/prompt-playbook.md`** - MAIN NAVIGATOR - complete workflow guide and decision matrix
 - **`README.md`** - Public documentation and MCP server setup guide
 - **MCP Server** - AI-powered workflow discovery
-  - **Production**: https://agents-playbook.vercel.app/api/mcp
-  - **Local Dev**: http://localhost:3012/api/mcp
+  - **Production**: https://agents-playbook.vercel.app/api/v1/mcp
+  - **Local Dev**: http://localhost:3012/api/v1/mcp
 
 ### 🎯 Core Architecture
 
@@ -243,3 +243,4 @@ All development workflows integrate with TRD creation [[memory:2316971]] for pro
 - Do NOT create unused components or code
 - Do NOT add comments unless requested
 - Do NOT create documentation files unless requested 
+- Do not run dev server

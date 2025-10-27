@@ -91,7 +91,7 @@ const nextConfig: NextConfig = {
       },
       // MCP server CORS headers
       {
-        source: '/api/mcp',
+        source: '/api/v1/mcp',
         headers: [
           {
             key: 'Access-Control-Allow-Origin',

@@ -273,11 +273,11 @@ describe('Workflow Constructor Actions', () => {
 
     it('deletes existing stages before creating new ones', async () => {
       const callOrder: string[] = [];
-      const deleteManySpy = jest.fn().mockImplementation((args) => {
+      const deleteManySpy = jest.fn().mockImplementation(() => {
         callOrder.push('delete');
         return Promise.resolve({ count: 3 });
       });
-      const createSpy = jest.fn().mockImplementation((args) => {
+      const createSpy = jest.fn().mockImplementation(() => {
         callOrder.push('create');
         return Promise.resolve({ id: 'stage-1' });
       });

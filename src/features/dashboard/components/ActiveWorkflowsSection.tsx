@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Card, CardHeader, Badge, Button } from "@/shared/ui/atoms";
-import { ROUTES } from "@/shared/routes";
 import { WorkflowWithUsage } from "../lib/dashboard-service";
 import { deactivateWorkflow } from "../actions/workflow-actions";
 
@@ -72,7 +71,7 @@ export function ActiveWorkflowsSection({ workflows }: ActiveWorkflowsSectionProp
               <Button
                 variant="secondary"
                 size="sm"
-                onClick={() => router.push(`/dashboard/workflows/${workflow.id}/constructor`)}
+                onClick={() => router.push(`/dashboard/library/workflows/${workflow.id}/constructor`)}
                 testId={`edit-button-${workflow.id}`}
               >
                 Edit

@@ -4,7 +4,7 @@ import { prisma } from '@/lib/db/client';
 
 export async function PATCH(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const session = await auth();
 
@@ -12,9 +12,11 @@ export async function PATCH(
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
+  const { id } = await params;
+
   // Verify ownership
   const workflow = await prisma.workflow.findUnique({
-    where: { id: params.id },
+    where: { id },
     select: { userId: true },
   });
 
@@ -28,7 +30,7 @@ export async function PATCH(
 
   const body = await request.json();
   const updated = await prisma.workflow.update({
-    where: { id: params.id },
+    where: { id },
     data: { isActive: body.isActive },
   });
 
@@ -37,7 +39,7 @@ export async function PATCH(
 
 export async function DELETE(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const session = await auth();
 
@@ -45,9 +47,11 @@ export async function DELETE(
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
+  const { id } = await params;
+
   // Verify ownership
   const workflow = await prisma.workflow.findUnique({
-    where: { id: params.id },
+    where: { id },
     select: { userId: true },
   });
 
@@ -60,7 +64,7 @@ export async function DELETE(
   }
 
   await prisma.workflow.delete({
-    where: { id: params.id },
+    where: { id },
   });
 
   return NextResponse.json({ success: true });

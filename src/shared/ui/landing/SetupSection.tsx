@@ -14,7 +14,7 @@ export default function SetupSection() {
         cursor: `{
   "mcpServers": {
     "agents-playbook": {
-      "url": "https://agents-playbook.vercel.app/api/mcp",
+      "url": "https://agents-playbook.vercel.app/api/v1/mcp",
       "description": "AI Agent Workflow Engine"
     }
   }

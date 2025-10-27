@@ -1,5 +1,4 @@
 import { redirect } from "next/navigation";
-import { ROUTES } from "@/shared/routes";
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -8,5 +7,5 @@ interface PageProps {
 export default async function WorkflowEditPage({ params }: PageProps) {
   const { id } = await params;
   // Redirect to constructor page (actual workflow editor)
-  redirect(`/dashboard/workflows/${id}/constructor`);
+  redirect(`/dashboard/library/workflows/${id}/constructor`);
 }

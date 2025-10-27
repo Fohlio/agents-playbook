@@ -12,7 +12,7 @@ export const runtime = "nodejs";
  */
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await auth();
@@ -20,7 +20,8 @@ export async function POST(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const result = await importWorkflow(params.id, session.user.id);
+    const { id } = await params;
+    const result = await importWorkflow(id, session.user.id);
 
     if (!result.success) {
       return NextResponse.json({ error: result.message }, { status: 400 });

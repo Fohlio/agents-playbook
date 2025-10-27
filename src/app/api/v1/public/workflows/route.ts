@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth/auth";
 import { getPublicWorkflows } from "@/features/public-discovery/lib/discovery-service";
+import type { WorkflowSortOption } from "@/features/public-discovery/types";
 
 export const runtime = "nodejs";
 
@@ -33,7 +34,7 @@ export async function GET(request: NextRequest) {
     const userId = session?.user?.id;
 
     const result = await getPublicWorkflows(
-      { page, limit, search, sort: sort as any, filters },
+      { page, limit, search, sort: sort as WorkflowSortOption, filters },
       userId
     );
 

@@ -83,25 +83,28 @@ model ApiToken {
 
 
 model Workflow {
-  id          String      @id @default(uuid())
-  userId      String      @map("user_id")
-  name        String      @db.VarChar(255)
-  description String?     @db.Text
-  yamlContent String?     @map("yaml_content") @db.Text // Made nullable for new workflows
-  visibility  Visibility  @default(PRIVATE)
-  isActive    Boolean     @default(false) @map("is_active")
-  createdAt   DateTime    @default(now()) @map("created_at")
-  updatedAt   DateTime    @updatedAt @map("updated_at")
+  id                String      @id @default(uuid())
+  userId            String      @map("user_id")
+  name              String      @db.VarChar(255)
+  description       String?     @db.Text
+  yamlContent       String?     @map("yaml_content") @db.Text // Made nullable for new workflows
+  visibility        Visibility  @default(PRIVATE)
+  isActive          Boolean     @default(false) @map("is_active")
+  isSystemWorkflow  Boolean     @default(false) @map("is_system_workflow")
+  createdAt         DateTime    @default(now()) @map("created_at")
+  updatedAt         DateTime    @updatedAt @map("updated_at")
 
   // Relations
-  user       User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user       User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
   stages     WorkflowStage[]
   references WorkflowReference[]
+  embedding  WorkflowEmbedding?
 
   @@map("workflows")
   @@index([userId])
   @@index([visibility])
   @@index([isActive])
+  @@index([isSystemWorkflow])
   @@index([createdAt])
 }
 
@@ -124,13 +127,14 @@ model WorkflowStage {
 }
 
 model MiniPrompt {
-  id          String      @id @default(uuid())
-  userId      String      @map("user_id")
-  name        String      @db.VarChar(255)
-  content     String      @db.Text // Markdown content
-  visibility  Visibility  @default(PRIVATE)
-  createdAt   DateTime    @default(now()) @map("created_at")
-  updatedAt   DateTime    @updatedAt @map("updated_at")
+  id                 String      @id @default(uuid())
+  userId             String      @map("user_id")
+  name               String      @db.VarChar(255)
+  content            String      @db.Text // Markdown content
+  visibility         Visibility  @default(PRIVATE)
+  isSystemMiniPrompt Boolean     @default(false) @map("is_system_mini_prompt")
+  createdAt          DateTime    @default(now()) @map("created_at")
+  updatedAt          DateTime    @updatedAt @map("updated_at")
 
   // Relations
   user              User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -140,6 +144,7 @@ model MiniPrompt {
   @@map("mini_prompts")
   @@index([userId])
   @@index([visibility])
+  @@index([isSystemMiniPrompt])
   @@index([createdAt])
 }
 
@@ -228,5 +233,20 @@ model MiniPromptReference {
   @@map("mini_prompt_references")
   @@index([userId])
   @@index([miniPromptId])
+}
+
+model WorkflowEmbedding {
+  id          String   @id @default(uuid())
+  workflowId  String   @unique @map("workflow_id")
+  embedding   Json     // Vector embedding as JSON array
+  searchText  String   @db.Text // Cached searchable text
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  workflow    Workflow @relation(fields: [workflowId], references: [id], onDelete: Cascade)
+
+  @@map("workflow_embeddings")
+  @@index([workflowId])
 }
 

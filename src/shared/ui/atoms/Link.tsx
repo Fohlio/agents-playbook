@@ -49,7 +49,7 @@ export default function Link({
   );
 
   // External links use regular anchor tag
-  if (external || href.startsWith("http")) {
+  if (external || (typeof href === 'string' && href.startsWith("http"))) {
     return (
       <a
         href={href}

@@ -1,8 +1,10 @@
 "use client";
 
+import { useState } from "react";
 import { Card, Button, Badge } from "@/shared/ui/atoms";
 import { ROUTES } from "@/shared/routes";
 import { PublicMiniPromptWithMeta } from "@/features/public-discovery/types";
+import { MiniPromptEditorModal } from "@/features/workflow-constructor/components/MiniPromptEditorModal";
 
 interface MiniPromptDiscoveryCardProps {
   miniPrompt: PublicMiniPromptWithMeta;
@@ -19,6 +21,7 @@ export function MiniPromptDiscoveryCard({
   isImporting,
   currentUserId,
 }: MiniPromptDiscoveryCardProps) {
+  const [isViewOpen, setIsViewOpen] = useState(false);
   const isOwnMiniPrompt = currentUserId && miniPrompt.userId === currentUserId;
 
   const handleImportClick = () => {
@@ -35,12 +38,13 @@ export function MiniPromptDiscoveryCard({
     (miniPrompt.content.length > 150 ? "..." : "");
 
   return (
-    <Card testId={`mini-prompt-card-${miniPrompt.id}`}>
-      <div className="p-6">
-        <div className="flex items-start justify-between mb-3">
-          <h3 className="text-lg font-semibold text-gray-900">
-            {miniPrompt.name}
-          </h3>
+    <>
+      <Card testId={`mini-prompt-card-${miniPrompt.id}`}>
+        <div className="p-6 cursor-pointer" onClick={() => setIsViewOpen(true)}>
+          <div className="flex items-start justify-between mb-3">
+            <h3 className="text-lg font-semibold text-gray-900">
+              {miniPrompt.name}
+            </h3>
           {miniPrompt.averageRating && (
             <Badge variant="default" testId="rating-badge">
               ★ {miniPrompt.averageRating}
@@ -58,16 +62,16 @@ export function MiniPromptDiscoveryCard({
           <div className="text-xs text-gray-500">
             {/* TODO: Phase 3 - Replace with real usage stats from UsageStats table */}
             <span>Used in {miniPrompt._count.stageMiniPrompts} workflows</span>
-            {miniPrompt.totalRatings && (
-              <span className="ml-2">({miniPrompt.totalRatings} ratings)</span>
-            )}
           </div>
 
           {!isOwnMiniPrompt && (
             <Button
               variant={miniPrompt.isInUserLibrary ? "secondary" : "primary"}
               size="sm"
-              onClick={handleImportClick}
+              onClick={(e) => {
+                e.stopPropagation();
+                handleImportClick();
+              }}
               disabled={miniPrompt.isInUserLibrary || isImporting}
               testId={`import-button-${miniPrompt.id}`}
             >
@@ -79,7 +83,19 @@ export function MiniPromptDiscoveryCard({
             </Button>
           )}
         </div>
-      </div>
-    </Card>
+        </div>
+      </Card>
+
+      <MiniPromptEditorModal
+        isOpen={isViewOpen}
+        onClose={() => setIsViewOpen(false)}
+        initialData={{
+          name: miniPrompt.name,
+          content: miniPrompt.content,
+          visibility: miniPrompt.visibility as 'PUBLIC' | 'PRIVATE',
+        }}
+        viewOnly={true}
+      />
+    </>
   );
 }

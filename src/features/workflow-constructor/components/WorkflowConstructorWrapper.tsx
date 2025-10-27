@@ -13,7 +13,6 @@ import { MiniPromptLibrary } from './MiniPromptLibrary';
 import { StageSection } from './StageSection';
 import { StageCreateForm } from './StageCreateForm';
 import { saveWorkflow } from '../actions/workflow-actions';
-import { ROUTES } from '@/shared/routes';
 
 interface WorkflowConstructorWrapperProps {
   userId: string;
@@ -24,7 +23,6 @@ export function WorkflowConstructorWrapper({ userId, miniPrompts: initialMiniPro
   const router = useRouter();
   const {
     sensors,
-    activeId,
     handleDragStart,
     handleDragOver,
     handleDragEnd: onDragEnd,
@@ -159,8 +157,8 @@ export function WorkflowConstructorWrapper({ userId, miniPrompts: initialMiniPro
         })),
       });
 
-      // Redirect to the workflow list
-      router.push(ROUTES.WORKFLOWS.LIST);
+      // Redirect to the library
+      router.push('/dashboard/library');
     } catch (error) {
       console.error('Failed to save workflow:', error);
       alert('Failed to save workflow');

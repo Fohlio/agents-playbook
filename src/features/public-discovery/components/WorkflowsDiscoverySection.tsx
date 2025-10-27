@@ -21,7 +21,7 @@ export function WorkflowsDiscoverySection({
   const [importing, setImporting] = useState<string | null>(null);
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
-  const [sort, setSort] = useState("recent");
+  const sort = "recent";
 
   useEffect(() => {
     fetchWorkflows();

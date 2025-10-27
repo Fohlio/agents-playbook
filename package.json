@@ -21,6 +21,7 @@
     "db:migrate:status": "prisma migrate status",
     "db:push": "prisma db push",
     "db:seed": "tsx prisma/seed.ts",
+    "db:seed:system": "tsx scripts/seed-system-content.ts",
     "db:studio": "prisma studio",
     "db:generate": "prisma generate",
     "postinstall": "prisma generate"
@@ -70,6 +71,7 @@
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.0",
     "@types/bcrypt": "^5.0.2",
+    "@types/glob": "^9.0.0",
     "@types/jest": "^29.5.14",
     "@types/js-yaml": "^4.0.9",
     "@types/next-auth": "^3.15.0",

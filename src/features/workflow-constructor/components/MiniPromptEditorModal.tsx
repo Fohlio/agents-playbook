@@ -8,12 +8,13 @@ import { Modal } from '@/shared/ui/atoms/Modal';
 interface MiniPromptEditorModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (name: string, content: string, visibility: 'PUBLIC' | 'PRIVATE') => Promise<void>;
+  onSave?: (name: string, content: string, visibility: 'PUBLIC' | 'PRIVATE') => Promise<void>;
   initialData?: {
     name: string;
     content: string;
     visibility: 'PUBLIC' | 'PRIVATE';
   };
+  viewOnly?: boolean;
 }
 
 export function MiniPromptEditorModal({
@@ -21,6 +22,7 @@ export function MiniPromptEditorModal({
   onClose,
   onSave,
   initialData,
+  viewOnly = false,
 }: MiniPromptEditorModalProps) {
   const [name, setName] = useState(initialData?.name ?? '');
   const [content, setContent] = useState(initialData?.content ?? '');
@@ -45,7 +47,7 @@ export function MiniPromptEditorModal({
   }, [initialData, isOpen]);
 
   const handleSave = async () => {
-    if (!name.trim() || !content.trim()) return;
+    if (!name.trim() || !content.trim() || !onSave) return;
 
     setIsSaving(true);
     try {
@@ -73,43 +75,47 @@ export function MiniPromptEditorModal({
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={handleClose} size="xl">
+    <Modal isOpen={isOpen} onClose={handleClose} className="max-w-4xl">
       <div className="p-6">
         <h2 className="text-2xl font-bold text-text-primary mb-6">
-          {initialData ? 'Edit Mini-Prompt' : 'Create New Mini-Prompt'}
+          {viewOnly ? name || 'Mini-Prompt' : initialData ? 'Edit Mini-Prompt' : 'Create New Mini-Prompt'}
         </h2>
 
         <div className="space-y-4 mb-6">
-          <div>
-            <label htmlFor="mini-prompt-name" className="block text-sm font-medium text-text-primary mb-1">
-              Name *
-            </label>
-            <Input
-              id="mini-prompt-name"
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="e.g., Create Implementation Plan"
-              required
-              autoFocus
-            />
-          </div>
-
-          <div>
-            <div className="flex items-center justify-between mb-1">
-              <label htmlFor="mini-prompt-content" className="block text-sm font-medium text-text-primary">
-                Content (Markdown) *
+          {!viewOnly && (
+            <div>
+              <label htmlFor="mini-prompt-name" className="block text-sm font-medium text-text-primary mb-1">
+                Name *
               </label>
-              <button
-                type="button"
-                onClick={() => setShowPreview(!showPreview)}
-                className="text-sm text-accent-primary hover:text-accent-hover"
-              >
-                {showPreview ? 'Edit' : 'Preview'}
-              </button>
+              <Input
+                id="mini-prompt-name"
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="e.g., Create Implementation Plan"
+                required
+                autoFocus
+              />
             </div>
+          )}
 
-            {showPreview ? (
+          <div>
+            {!viewOnly && (
+              <div className="flex items-center justify-between mb-1">
+                <label htmlFor="mini-prompt-content" className="block text-sm font-medium text-text-primary">
+                  Content (Markdown) *
+                </label>
+                <button
+                  type="button"
+                  onClick={() => setShowPreview(!showPreview)}
+                  className="text-sm text-accent-primary hover:text-accent-hover"
+                >
+                  {showPreview ? 'Edit' : 'Preview'}
+                </button>
+              </div>
+            )}
+
+            {viewOnly || showPreview ? (
               <div className="w-full min-h-[300px] max-h-[500px] overflow-y-auto px-4 py-3 border border-border-base rounded-lg bg-surface-base">
                 <div className="prose prose-sm max-w-none text-text-primary">
                   {content.split('\n').map((line, i) => {
@@ -156,52 +162,62 @@ export function MiniPromptEditorModal({
             )}
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-text-primary mb-2">
-              Visibility
-            </label>
-            <div className="flex gap-4">
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input
-                  type="radio"
-                  name="visibility"
-                  value="PRIVATE"
-                  checked={visibility === 'PRIVATE'}
-                  onChange={(e) => setVisibility(e.target.value as 'PRIVATE')}
-                  className="w-4 h-4 text-accent-primary focus:ring-accent-primary"
-                />
-                <span className="text-sm text-text-primary">Private (Only Me)</span>
+          {!viewOnly && (
+            <div>
+              <label className="block text-sm font-medium text-text-primary mb-2">
+                Visibility
               </label>
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input
-                  type="radio"
-                  name="visibility"
-                  value="PUBLIC"
-                  checked={visibility === 'PUBLIC'}
-                  onChange={(e) => setVisibility(e.target.value as 'PUBLIC')}
-                  className="w-4 h-4 text-accent-primary focus:ring-accent-primary"
-                />
-                <span className="text-sm text-text-primary">Public (Everyone)</span>
-              </label>
+              <div className="flex gap-4">
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="radio"
+                    name="visibility"
+                    value="PRIVATE"
+                    checked={visibility === 'PRIVATE'}
+                    onChange={(e) => setVisibility(e.target.value as 'PRIVATE')}
+                    className="w-4 h-4 text-accent-primary focus:ring-accent-primary"
+                  />
+                  <span className="text-sm text-text-primary">Private (Only Me)</span>
+                </label>
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="radio"
+                    name="visibility"
+                    value="PUBLIC"
+                    checked={visibility === 'PUBLIC'}
+                    onChange={(e) => setVisibility(e.target.value as 'PUBLIC')}
+                    className="w-4 h-4 text-accent-primary focus:ring-accent-primary"
+                  />
+                  <span className="text-sm text-text-primary">Public (Everyone)</span>
+                </label>
+              </div>
             </div>
-          </div>
+          )}
         </div>
 
         <div className="flex gap-3 justify-end">
-          <Button
-            variant="secondary"
-            onClick={handleClose}
-            disabled={isSaving}
-          >
-            Cancel
-          </Button>
-          <Button
-            variant="primary"
-            onClick={handleSave}
-            disabled={!name.trim() || !content.trim() || isSaving}
-          >
-            {isSaving ? 'Saving...' : initialData ? 'Update' : 'Create'}
-          </Button>
+          {viewOnly ? (
+            <Button variant="primary" onClick={handleClose}>
+              Close
+            </Button>
+          ) : (
+            <>
+              <Button
+                variant="secondary"
+                onClick={handleClose}
+                disabled={isSaving}
+              >
+                Cancel
+              </Button>
+              <Button
+                variant="primary"
+                onClick={handleSave}
+                disabled={!name.trim() || !content.trim() || isSaving}
+              >
+                {isSaving ? 'Saving...' : initialData ? 'Update' : 'Create'}
+              </Button>
+            </>
+          )}
         </div>
       </div>
     </Modal>
