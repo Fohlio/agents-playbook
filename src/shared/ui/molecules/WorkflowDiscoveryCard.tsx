@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import { Card, Button, Badge } from "@/shared/ui/atoms";
 import { ROUTES } from "@/shared/routes";
 import { PublicWorkflowWithMeta } from "@/features/public-discovery/types";
@@ -109,9 +111,11 @@ export function WorkflowDiscoveryCard({
             )}
           </div>
 
-          <p className="text-sm text-gray-600 mb-4 line-clamp-3 leading-relaxed">
-            {workflow.description || "No description available"}
-          </p>
+          <div className="prose prose-sm max-w-none text-sm text-gray-600 mb-4 line-clamp-3 leading-relaxed">
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+              {workflow.description || "No description available"}
+            </ReactMarkdown>
+          </div>
 
           <div className="flex items-center gap-4 text-xs text-gray-500 mb-4 pb-4 border-b border-gray-100">
             <span className="flex items-center gap-1">

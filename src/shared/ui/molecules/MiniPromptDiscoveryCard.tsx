@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import { Card, Button, Badge } from "@/shared/ui/atoms";
 import { ROUTES } from "@/shared/routes";
 import { PublicMiniPromptWithMeta } from "@/features/public-discovery/types";
@@ -107,7 +109,9 @@ export function MiniPromptDiscoveryCard({
             )}
           </div>
 
-        <p className="text-sm text-gray-600 mb-4 line-clamp-3">{preview}</p>
+        <div className="prose prose-sm max-w-none text-sm text-gray-600 mb-4 line-clamp-3">
+          <ReactMarkdown remarkPlugins={[remarkGfm]}>{preview}</ReactMarkdown>
+        </div>
 
         <div className="flex items-center justify-between text-xs text-gray-500 mb-4">
           <span>By @{miniPrompt.user.username}</span>

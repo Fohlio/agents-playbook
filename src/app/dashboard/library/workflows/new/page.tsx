@@ -20,15 +20,34 @@ export default async function NewWorkflowPage() {
     redirect(ROUTES.LOGIN);
   }
 
-  // Fetch only user's own mini-prompts (their library)
-  const miniPrompts = await prisma.miniPrompt.findMany({
-    where: {
-      userId: session.user.id,
-    },
-    orderBy: [
-      { createdAt: 'desc' },
-    ],
+  // Fetch user's mini-prompts library (owned + referenced + used in workflows)
+  const ownedMiniPrompts = await prisma.miniPrompt.findMany({
+    where: { userId: session.user.id },
   });
+
+  const referencedMiniPrompts = await prisma.miniPromptReference.findMany({
+    where: { userId: session.user.id },
+    include: { miniPrompt: true },
+  });
+
+  const usedInWorkflows = await prisma.stageMiniPrompt.findMany({
+    where: {
+      stage: {
+        workflow: { userId: session.user.id },
+      },
+    },
+    include: { miniPrompt: true },
+  });
+
+  const allMiniPrompts = [
+    ...ownedMiniPrompts,
+    ...referencedMiniPrompts.map((ref) => ref.miniPrompt),
+    ...usedInWorkflows.map((smp) => smp.miniPrompt),
+  ];
+
+  const miniPrompts = Array.from(
+    new Map(allMiniPrompts.map((mp) => [mp.id, mp])).values()
+  ).sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
 
   return (
     <WorkflowConstructorWrapper

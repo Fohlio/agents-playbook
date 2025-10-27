@@ -178,9 +178,6 @@ export function WorkflowConstructorWrapper({ userId, miniPrompts: initialMiniPro
             placeholder="Workflow name"
             className="text-2xl font-bold text-text-primary bg-transparent border-b-2 border-transparent hover:border-border-hover focus:border-accent-primary focus:outline-none transition-colors w-full max-w-md"
           />
-          <p className="text-sm text-text-secondary mt-1">
-            Workflow Constructor
-          </p>
         </div>
         <div className="flex gap-3 items-center">
           <Toggle
