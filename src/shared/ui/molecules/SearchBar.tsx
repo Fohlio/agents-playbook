@@ -33,12 +33,13 @@ export function SearchBar({
   }, [localValue, debounceMs, onChange, value]);
 
   return (
-    <div className="relative">
+    <div className="relative w-full">
       <Input
         value={localValue}
         onChange={(e) => setLocalValue(e.target.value)}
         placeholder={placeholder}
         testId="search-bar"
+        className="w-full"
       />
       {localValue && (
         <button

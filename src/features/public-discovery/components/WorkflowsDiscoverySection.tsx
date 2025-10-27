@@ -5,7 +5,8 @@ import { WorkflowDiscoveryCard } from "@/shared/ui/molecules/WorkflowDiscoveryCa
 import { DiscoveryGrid } from "@/shared/ui/organisms/DiscoveryGrid";
 import { Pagination } from "@/shared/ui/molecules/Pagination";
 import { SearchBar } from "@/shared/ui/molecules/SearchBar";
-import { PublicWorkflowWithMeta, PaginatedResult } from "../types";
+import { DiscoveryFilters } from "./DiscoveryFilters";
+import { PublicWorkflowWithMeta, PaginatedResult, WorkflowSortOption, WorkflowFilters } from "../types";
 
 interface WorkflowsDiscoverySectionProps {
   isAuthenticated: boolean;
@@ -21,11 +22,12 @@ export function WorkflowsDiscoverySection({
   const [importing, setImporting] = useState<string | null>(null);
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
-  const sort = "recent";
+  const [sort, setSort] = useState<WorkflowSortOption>("most_used");
+  const [filters, setFilters] = useState<WorkflowFilters>({});
 
   useEffect(() => {
     fetchWorkflows();
-  }, [page, search, sort]);
+  }, [page, search, sort, filters]);
 
   const fetchWorkflows = async () => {
     setLoading(true);
@@ -35,6 +37,7 @@ export function WorkflowsDiscoverySection({
         limit: "20",
         ...(search && { search }),
         sort,
+        ...(Object.keys(filters).length > 0 && { filters: JSON.stringify(filters) }),
       });
 
       const response = await fetch(`/api/v1/public/workflows?${params}`);
@@ -67,16 +70,30 @@ export function WorkflowsDiscoverySection({
 
   return (
     <div>
-      <div className="mb-6">
+      <div className="mb-4">
         <SearchBar
           value={search}
           onChange={(value) => {
             setSearch(value);
-            setPage(1); // Reset to first page on search
+            setPage(1);
           }}
           placeholder="Search workflows by name, description, or author..."
         />
       </div>
+
+      <DiscoveryFilters
+        type="workflow"
+        currentSort={sort}
+        currentFilters={filters}
+        onSortChange={(newSort) => {
+          setSort(newSort as WorkflowSortOption);
+          setPage(1);
+        }}
+        onFiltersChange={(newFilters) => {
+          setFilters(newFilters as WorkflowFilters);
+          setPage(1);
+        }}
+      />
 
       <DiscoveryGrid
         items={data?.items || []}

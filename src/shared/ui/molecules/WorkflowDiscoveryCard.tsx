@@ -5,6 +5,8 @@ import { Card, Button, Badge } from "@/shared/ui/atoms";
 import { ROUTES } from "@/shared/routes";
 import { PublicWorkflowWithMeta } from "@/features/public-discovery/types";
 import { WorkflowPreviewModal } from "./WorkflowPreviewModal";
+import { RatingDisplay } from "@/features/ratings/ui/RatingDisplay";
+import { RatingDialog } from "@/features/ratings/ui/RatingDialog";
 
 interface WorkflowDiscoveryCardProps {
   workflow: PublicWorkflowWithMeta;
@@ -22,6 +24,12 @@ export function WorkflowDiscoveryCard({
   currentUserId,
 }: WorkflowDiscoveryCardProps) {
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+  const [isRatingDialogOpen, setIsRatingDialogOpen] = useState(false);
+  const [currentRating, setCurrentRating] = useState<number | undefined>();
+  const [localRating, setLocalRating] = useState<{ average: number | null; count: number }>({
+    average: workflow.averageRating,
+    count: workflow.totalRatings,
+  });
   const isOwnWorkflow = Boolean(currentUserId && workflow.userId === currentUserId);
 
   const handleImportClick = () => {
@@ -30,6 +38,50 @@ export function WorkflowDiscoveryCard({
     } else {
       onImport(workflow.id);
     }
+  };
+
+  const handleRateClick = async () => {
+    if (!isAuthenticated) {
+      window.location.href = `${ROUTES.LOGIN}?returnUrl=${ROUTES.DISCOVER}`;
+      return;
+    }
+
+    try {
+      const response = await fetch(
+        `/api/v1/ratings/user?targetType=WORKFLOW&targetId=${workflow.id}`
+      );
+      if (response.ok) {
+        const data = await response.json();
+        setCurrentRating(data.rating?.rating);
+      }
+    } catch (error) {
+      console.error("Failed to fetch user rating:", error);
+    }
+
+    setIsRatingDialogOpen(true);
+  };
+
+  const handleSubmitRating = async (rating: number) => {
+    const response = await fetch("/api/v1/ratings", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        targetType: "WORKFLOW",
+        targetId: workflow.id,
+        rating,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to submit rating");
+    }
+
+    const data = await response.json();
+    setLocalRating({
+      average: data.stats.averageRating,
+      count: data.stats.totalRatings,
+    });
+    setCurrentRating(rating);
   };
 
   return (
@@ -47,10 +99,13 @@ export function WorkflowDiscoveryCard({
             <h3 className="text-xl font-bold text-gray-900 hover:text-blue-600 transition-colors">
               {workflow.name}
             </h3>
-            {workflow.averageRating && (
-              <Badge variant="default" testId="rating-badge">
-                ★ {workflow.averageRating.toFixed(1)}
-              </Badge>
+            {localRating.average !== null && localRating.count > 0 && (
+              <RatingDisplay
+                averageRating={localRating.average}
+                totalRatings={localRating.count}
+                size="sm"
+                showCount={true}
+              />
             )}
           </div>
 
@@ -71,16 +126,30 @@ export function WorkflowDiscoveryCard({
               </svg>
               {workflow._count.stages} {workflow._count.stages === 1 ? 'stage' : 'stages'}
             </span>
-            <span className="flex items-center gap-1">
+            <span
+              className="flex items-center gap-1"
+              title={`${workflow.usageCount} users use this workflow`}
+            >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
               </svg>
-              {workflow._count.references} {workflow._count.references === 1 ? 'user' : 'users'}
+              {workflow.usageCount}
             </span>
           </div>
 
           {!isOwnWorkflow && (
-            <div className="flex items-center justify-end">
+            <div className="flex items-center justify-end gap-2">
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleRateClick();
+                }}
+                className="text-2xl text-gray-300 hover:text-yellow-400 transition-colors"
+                title="Rate this workflow"
+                data-testid={`rate-button-${workflow.id}`}
+              >
+                ☆
+              </button>
               <Button
                 variant={workflow.isInUserLibrary ? "secondary" : "primary"}
                 size="sm"
@@ -111,6 +180,16 @@ export function WorkflowDiscoveryCard({
         isAuthenticated={isAuthenticated}
         isImporting={isImporting}
         isOwnWorkflow={isOwnWorkflow}
+      />
+
+      <RatingDialog
+        isOpen={isRatingDialogOpen}
+        onClose={() => setIsRatingDialogOpen(false)}
+        targetType="WORKFLOW"
+        targetId={workflow.id}
+        targetName={workflow.name}
+        currentRating={currentRating}
+        onSubmit={handleSubmitRating}
       />
     </>
   );

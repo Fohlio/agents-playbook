@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/db/client";
-import { Prisma } from "@prisma/client";
+import { Prisma, TargetType } from "@prisma/client";
 import {
   PublicWorkflowWithMeta,
   PublicMiniPromptWithMeta,
@@ -7,7 +7,10 @@ import {
   DiscoveryQueryParams,
   WorkflowSortOption,
   MiniPromptSortOption,
+  WorkflowFilters,
+  MiniPromptFilters,
 } from "../types";
+import { getRatingStatsForMultiple } from "@/features/ratings/lib/rating-service";
 
 const DEFAULT_PAGE_SIZE = 20;
 
@@ -80,21 +83,67 @@ export async function getPublicWorkflows(
     userReferences = new Set(refs.map((r) => r.workflowId));
   }
 
+  // Fetch rating stats and usage stats
+  const workflowIds = workflows.map((w) => w.id);
+  const [ratingStatsMap, usageStatsMap] = await Promise.all([
+    getRatingStatsForMultiple("WORKFLOW", workflowIds),
+    getUsageStatsForMultiple("WORKFLOW", workflowIds),
+  ]);
+
   // Enrich with metadata
-  const items: PublicWorkflowWithMeta[] = workflows.map((workflow) => ({
+  let items: PublicWorkflowWithMeta[] = workflows.map((workflow) => ({
     ...workflow,
     isInUserLibrary: userId ? userReferences.has(workflow.id) : false,
-    averageRating: 4.5, // TODO: Phase 3 - Replace with real ratings
-    totalRatings: 23, // TODO: Phase 3 - Replace with real ratings
+    averageRating: ratingStatsMap[workflow.id]?.averageRating || null,
+    totalRatings: ratingStatsMap[workflow.id]?.totalRatings || 0,
+    usageCount: usageStatsMap[workflow.id]?.usageCount || workflow._count.references,
   }));
+
+  // Apply post-fetch filters
+  if (params.filters) {
+    const workflowFilters = params.filters as WorkflowFilters;
+    items = items.filter((workflow) => {
+      // Rating filter
+      if (workflowFilters.rating) {
+        const minRating = workflowFilters.rating === "4+" ? 4 : 3;
+        if (!workflow.averageRating || workflow.averageRating < minRating) {
+          return false;
+        }
+      }
+
+      // Usage filter
+      if (workflowFilters.minUsage) {
+        const minUsage = parseInt(workflowFilters.minUsage);
+        if (workflow.usageCount < minUsage) {
+          return false;
+        }
+      }
+
+      // Stage count filter
+      if (workflowFilters.phaseCount) {
+        const stageCount = workflow._count.stages;
+        if (workflowFilters.phaseCount === "1-3" && (stageCount < 1 || stageCount > 3)) {
+          return false;
+        }
+        if (workflowFilters.phaseCount === "4-5" && (stageCount < 4 || stageCount > 5)) {
+          return false;
+        }
+        if (workflowFilters.phaseCount === "6+" && stageCount < 6) {
+          return false;
+        }
+      }
+
+      return true;
+    });
+  }
 
   return {
     items,
     pagination: {
       page,
       limit,
-      total,
-      totalPages: Math.ceil(total / limit),
+      total: items.length,
+      totalPages: Math.ceil(items.length / limit),
     },
   };
 }
@@ -157,21 +206,53 @@ export async function getPublicMiniPrompts(
     userReferences = new Set(refs.map((r) => r.miniPromptId));
   }
 
+  // Fetch rating stats and usage stats
+  const miniPromptIds = miniPrompts.map((m) => m.id);
+  const [ratingStatsMap, usageStatsMap] = await Promise.all([
+    getRatingStatsForMultiple("MINI_PROMPT", miniPromptIds),
+    getUsageStatsForMultiple("MINI_PROMPT", miniPromptIds),
+  ]);
+
   // Enrich with metadata
-  const items: PublicMiniPromptWithMeta[] = miniPrompts.map((miniPrompt) => ({
+  let items: PublicMiniPromptWithMeta[] = miniPrompts.map((miniPrompt) => ({
     ...miniPrompt,
     isInUserLibrary: userId ? userReferences.has(miniPrompt.id) : false,
-    averageRating: 4.5, // TODO: Phase 3 - Replace with real ratings
-    totalRatings: 15, // TODO: Phase 3 - Replace with real ratings
+    averageRating: ratingStatsMap[miniPrompt.id]?.averageRating || null,
+    totalRatings: ratingStatsMap[miniPrompt.id]?.totalRatings || 0,
+    usageCount: usageStatsMap[miniPrompt.id]?.usageCount || miniPrompt._count.stageMiniPrompts,
   }));
+
+  // Apply post-fetch filters
+  if (params.filters) {
+    const miniPromptFilters = params.filters as MiniPromptFilters;
+    items = items.filter((miniPrompt) => {
+      // Rating filter
+      if (miniPromptFilters.rating) {
+        const minRating = miniPromptFilters.rating === "4+" ? 4 : 3;
+        if (!miniPrompt.averageRating || miniPrompt.averageRating < minRating) {
+          return false;
+        }
+      }
+
+      // Usage filter
+      if (miniPromptFilters.minUsage) {
+        const minUsage = parseInt(miniPromptFilters.minUsage);
+        if (miniPrompt.usageCount < minUsage) {
+          return false;
+        }
+      }
+
+      return true;
+    });
+  }
 
   return {
     items,
     pagination: {
       page,
       limit,
-      total,
-      totalPages: Math.ceil(total / limit),
+      total: items.length,
+      totalPages: Math.ceil(items.length / limit),
     },
   };
 }
@@ -208,6 +289,9 @@ export async function importWorkflow(
     data: { userId, workflowId },
   });
 
+  // Update usage stats
+  await incrementUsageStats("WORKFLOW", workflowId, userId);
+
   return { success: true, message: "Workflow added to your library" };
 }
 
@@ -243,6 +327,9 @@ export async function importMiniPrompt(
     data: { userId, miniPromptId },
   });
 
+  // Update usage stats
+  await incrementUsageStats("MINI_PROMPT", miniPromptId, userId);
+
   return { success: true, message: "Mini-prompt added to your library" };
 }
 
@@ -251,14 +338,12 @@ function getWorkflowOrderBy(
   sort?: WorkflowSortOption
 ): Prisma.WorkflowOrderByWithRelationInput {
   switch (sort) {
-    case "popular":
-    case "most_used":
-      // TODO: Phase 3 - Order by actual usage stats
-      return { createdAt: "desc" };
     case "highest_rated":
-      // TODO: Phase 3 - Order by actual ratings
       return { createdAt: "desc" };
     case "recent":
+      return { createdAt: "desc" };
+    case "popular":
+    case "most_used":
     default:
       return { createdAt: "desc" };
   }
@@ -268,15 +353,70 @@ function getMiniPromptOrderBy(
   sort?: MiniPromptSortOption
 ): Prisma.MiniPromptOrderByWithRelationInput {
   switch (sort) {
-    case "popular":
-    case "most_used":
-      // TODO: Phase 3 - Order by actual usage stats
-      return { createdAt: "desc" };
     case "highest_rated":
-      // TODO: Phase 3 - Order by actual ratings
       return { createdAt: "desc" };
     case "recent":
+      return { createdAt: "desc" };
+    case "popular":
+    case "most_used":
     default:
       return { createdAt: "desc" };
   }
+}
+
+async function getUsageStatsForMultiple(
+  targetType: TargetType,
+  targetIds: string[]
+): Promise<Record<string, { usageCount: number }>> {
+  if (targetIds.length === 0) {
+    return {};
+  }
+
+  const usageStats = await prisma.usageStats.findMany({
+    where: {
+      targetType,
+      targetId: {
+        in: targetIds,
+      },
+    },
+    select: {
+      targetId: true,
+      usageCount: true,
+    },
+  });
+
+  const statsMap: Record<string, { usageCount: number }> = {};
+  for (const stat of usageStats) {
+    statsMap[stat.targetId] = {
+      usageCount: stat.usageCount,
+    };
+  }
+
+  return statsMap;
+}
+
+async function incrementUsageStats(
+  targetType: TargetType,
+  targetId: string,
+  userId: string
+): Promise<void> {
+  await prisma.usageStats.upsert({
+    where: {
+      targetType_targetId: {
+        targetType,
+        targetId,
+      },
+    },
+    create: {
+      targetType,
+      targetId,
+      usageCount: 1,
+      uniqueUsersCount: 1,
+      lastUsedAt: new Date(),
+    },
+    update: {
+      usageCount: { increment: 1 },
+      lastUsedAt: new Date(),
+    },
+  });
 }

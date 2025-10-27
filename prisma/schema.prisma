@@ -170,13 +170,12 @@ model Rating {
   targetType TargetType  @map("target_type")
   targetId   String      @map("target_id")
   rating     Int         // Validated in application layer: 1-5
-  comment    String?     @db.Text
   createdAt  DateTime    @default(now()) @map("created_at")
-  
+
   // Relations
   user       User        @relation(fields: [userId], references: [id], onDelete: Cascade)
   // Note: targetId is polymorphic (Workflow or MiniPrompt) - handled at application layer
-  
+
   @@unique([userId, targetType, targetId])
   @@map("ratings")
   @@index([userId])

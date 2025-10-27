@@ -12,19 +12,53 @@ export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const systemOnly = searchParams.get('systemOnly') === 'true';
 
-  const workflows = await prisma.workflow.findMany({
-    where: systemOnly
-      ? { isSystemWorkflow: true }
-      : { userId: session.user.id },
+  if (systemOnly) {
+    const workflows = await prisma.workflow.findMany({
+      where: { isSystemWorkflow: true },
+      include: {
+        _count: {
+          select: { stages: true },
+        },
+      },
+      orderBy: { updatedAt: 'desc' },
+    });
+    return NextResponse.json(workflows);
+  }
+
+  // Get workflows owned by user
+  const ownedWorkflows = await prisma.workflow.findMany({
+    where: { userId: session.user.id },
     include: {
       _count: {
         select: { stages: true },
       },
     },
-    orderBy: { updatedAt: 'desc' },
   });
 
-  return NextResponse.json(workflows);
+  // Get workflow references (imported workflows)
+  const workflowReferences = await prisma.workflowReference.findMany({
+    where: { userId: session.user.id },
+    include: {
+      workflow: {
+        include: {
+          _count: {
+            select: { stages: true },
+          },
+        },
+      },
+    },
+  });
+
+  // Combine owned and referenced workflows
+  const referencedWorkflows = workflowReferences.map((ref) => ref.workflow);
+  const allWorkflows = [...ownedWorkflows, ...referencedWorkflows];
+
+  // Remove duplicates and sort by updatedAt
+  const uniqueWorkflows = Array.from(
+    new Map(allWorkflows.map((w) => [w.id, w])).values()
+  ).sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime());
+
+  return NextResponse.json(uniqueWorkflows);
 }
 
 export async function POST(request: Request) {

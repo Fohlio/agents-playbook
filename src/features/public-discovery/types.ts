@@ -10,23 +10,25 @@ export interface PublicWorkflowWithMeta extends Workflow {
   })[];
   _count: {
     stages: number;
-    references: number; // Usage count placeholder
+    references: number;
   };
   isInUserLibrary?: boolean;
-  averageRating?: number; // TODO: Phase 3 - Replace with real ratings from Rating table
-  totalRatings?: number; // TODO: Phase 3 - Replace with real ratings from Rating table
+  averageRating: number | null;
+  totalRatings: number;
+  usageCount: number;
 }
 
 // Mini-prompt with author and metadata
 export interface PublicMiniPromptWithMeta extends MiniPrompt {
   user: Pick<User, "id" | "username">;
   _count: {
-    stageMiniPrompts: number; // Usage count placeholder
+    stageMiniPrompts: number;
     references: number;
   };
   isInUserLibrary?: boolean;
-  averageRating?: number; // TODO: Phase 3 - Replace with real ratings from Rating table
-  totalRatings?: number; // TODO: Phase 3 - Replace with real ratings from Rating table
+  averageRating: number | null;
+  totalRatings: number;
+  usageCount: number;
 }
 
 // Pagination result
@@ -56,10 +58,12 @@ export type MiniPromptSortOption =
 export interface WorkflowFilters {
   rating?: "4+" | "3+";
   phaseCount?: "1-3" | "4-5" | "6+";
+  minUsage?: "10" | "50";
 }
 
 export interface MiniPromptFilters {
   rating?: "4+" | "3+";
+  minUsage?: "10" | "50";
 }
 
 export interface DiscoveryQueryParams {

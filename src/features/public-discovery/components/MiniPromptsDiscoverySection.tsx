@@ -5,7 +5,8 @@ import { MiniPromptDiscoveryCard } from "@/shared/ui/molecules/MiniPromptDiscove
 import { DiscoveryGrid } from "@/shared/ui/organisms/DiscoveryGrid";
 import { Pagination } from "@/shared/ui/molecules/Pagination";
 import { SearchBar } from "@/shared/ui/molecules/SearchBar";
-import { PublicMiniPromptWithMeta, PaginatedResult } from "../types";
+import { DiscoveryFilters } from "./DiscoveryFilters";
+import { PublicMiniPromptWithMeta, PaginatedResult, MiniPromptSortOption, MiniPromptFilters } from "../types";
 
 interface MiniPromptsDiscoverySectionProps {
   isAuthenticated: boolean;
@@ -21,11 +22,12 @@ export function MiniPromptsDiscoverySection({
   const [importing, setImporting] = useState<string | null>(null);
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
-  const sort = "recent";
+  const [sort, setSort] = useState<MiniPromptSortOption>("most_used");
+  const [filters, setFilters] = useState<MiniPromptFilters>({});
 
   useEffect(() => {
     fetchMiniPrompts();
-  }, [page, search, sort]);
+  }, [page, search, sort, filters]);
 
   const fetchMiniPrompts = async () => {
     setLoading(true);
@@ -35,6 +37,7 @@ export function MiniPromptsDiscoverySection({
         limit: "20",
         ...(search && { search }),
         sort,
+        ...(Object.keys(filters).length > 0 && { filters: JSON.stringify(filters) }),
       });
 
       const response = await fetch(`/api/v1/public/mini-prompts?${params}`);
@@ -70,16 +73,30 @@ export function MiniPromptsDiscoverySection({
 
   return (
     <div>
-      <div className="mb-6">
+      <div className="mb-4">
         <SearchBar
           value={search}
           onChange={(value) => {
             setSearch(value);
-            setPage(1); // Reset to first page on search
+            setPage(1);
           }}
           placeholder="Search mini-prompts by name, content, or author..."
         />
       </div>
+
+      <DiscoveryFilters
+        type="mini-prompt"
+        currentSort={sort}
+        currentFilters={filters}
+        onSortChange={(newSort) => {
+          setSort(newSort as MiniPromptSortOption);
+          setPage(1);
+        }}
+        onFiltersChange={(newFilters) => {
+          setFilters(newFilters as MiniPromptFilters);
+          setPage(1);
+        }}
+      />
 
       <DiscoveryGrid
         items={data?.items || []}

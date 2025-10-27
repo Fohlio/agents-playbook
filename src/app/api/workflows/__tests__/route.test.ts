@@ -40,51 +40,73 @@ describe('/api/workflows', () => {
     it('returns user workflows with stage count', async () => {
       (auth as jest.Mock).mockResolvedValue(mockSession);
 
-      const mockWorkflows = [
+      const mockOwnedWorkflows = [
         {
           id: 'wf-1',
           name: 'Workflow 1',
           description: 'Description 1',
           isActive: true,
           visibility: 'PRIVATE',
-          updatedAt: new Date(),
+          updatedAt: new Date('2024-01-02'),
           _count: { stages: 3 },
-        },
-        {
-          id: 'wf-2',
-          name: 'Workflow 2',
-          description: null,
-          isActive: false,
-          visibility: 'PUBLIC',
-          updatedAt: new Date(),
-          _count: { stages: 1 },
         },
       ];
 
-      prismaMock.workflow.findMany.mockResolvedValue(mockWorkflows as any);
+      const mockReferencedWorkflows = [
+        {
+          id: 'wf-ref-1',
+          userId: 'user-123',
+          workflowId: 'wf-2',
+          workflow: {
+            id: 'wf-2',
+            name: 'Workflow 2',
+            description: null,
+            isActive: false,
+            visibility: 'PUBLIC',
+            updatedAt: new Date('2024-01-01'),
+            _count: { stages: 1 },
+          },
+        },
+      ];
 
-      const response = await GET();
+      prismaMock.workflow.findMany.mockResolvedValue(mockOwnedWorkflows as any);
+      prismaMock.workflowReference.findMany.mockResolvedValue(mockReferencedWorkflows as any);
+
+      const request = { url: 'http://localhost/api/workflows' } as Request;
+      const response = await GET(request);
       const json = await response.json();
 
       expect(response.status).toBe(200);
-      expect(json).toEqual(mockWorkflows);
+      expect(json).toHaveLength(2);
+      expect(json[0].id).toBe('wf-1'); // Most recent first
+      expect(json[1].id).toBe('wf-2');
       expect(prismaMock.workflow.findMany).toHaveBeenCalledWith({
-        where: {
-          userId: 'user-123',
-        },
+        where: { userId: 'user-123' },
         include: {
           _count: {
             select: { stages: true },
           },
         },
-        orderBy: { updatedAt: 'desc' },
+      });
+      expect(prismaMock.workflowReference.findMany).toHaveBeenCalledWith({
+        where: { userId: 'user-123' },
+        include: {
+          workflow: {
+            include: {
+              _count: {
+                select: { stages: true },
+              },
+            },
+          },
+        },
       });
     });
 
     it('returns 401 when not authenticated', async () => {
       (auth as jest.Mock).mockResolvedValue(null);
 
-      const response = await GET();
+      const request = { url: 'http://localhost/api/workflows' } as Request;
+      const response = await GET(request);
       const json = await response.json();
 
       expect(response.status).toBe(401);
@@ -95,8 +117,10 @@ describe('/api/workflows', () => {
     it('returns empty array when user has no workflows', async () => {
       (auth as jest.Mock).mockResolvedValue(mockSession);
       prismaMock.workflow.findMany.mockResolvedValue([]);
+      prismaMock.workflowReference.findMany.mockResolvedValue([]);
 
-      const response = await GET();
+      const request = { url: 'http://localhost/api/workflows' } as Request;
+      const response = await GET(request);
       const json = await response.json();
 
       expect(response.status).toBe(200);
@@ -105,15 +129,62 @@ describe('/api/workflows', () => {
 
     it('orders workflows by updatedAt desc', async () => {
       (auth as jest.Mock).mockResolvedValue(mockSession);
-      prismaMock.workflow.findMany.mockResolvedValue([]);
 
-      await GET();
+      const mockOwnedWorkflows = [
+        {
+          id: 'wf-1',
+          updatedAt: new Date('2024-01-01'),
+          _count: { stages: 1 },
+        },
+        {
+          id: 'wf-2',
+          updatedAt: new Date('2024-01-03'),
+          _count: { stages: 1 },
+        },
+      ];
 
-      expect(prismaMock.workflow.findMany).toHaveBeenCalledWith(
-        expect.objectContaining({
-          orderBy: { updatedAt: 'desc' },
-        })
-      );
+      prismaMock.workflow.findMany.mockResolvedValue(mockOwnedWorkflows as any);
+      prismaMock.workflowReference.findMany.mockResolvedValue([]);
+
+      const request = { url: 'http://localhost/api/workflows' } as Request;
+      const response = await GET(request);
+      const json = await response.json();
+
+      expect(json[0].id).toBe('wf-2'); // Most recent first
+      expect(json[1].id).toBe('wf-1');
+    });
+
+    it('returns system workflows when systemOnly=true', async () => {
+      (auth as jest.Mock).mockResolvedValue(mockSession);
+
+      const mockSystemWorkflows = [
+        {
+          id: 'wf-sys-1',
+          name: 'System Workflow',
+          isSystemWorkflow: true,
+          updatedAt: new Date(),
+          _count: { stages: 2 },
+        },
+      ];
+
+      prismaMock.workflow.findMany.mockResolvedValue(mockSystemWorkflows as any);
+
+      const request = { url: 'http://localhost/api/workflows?systemOnly=true' } as Request;
+      const response = await GET(request);
+      const json = await response.json();
+
+      expect(response.status).toBe(200);
+      expect(json).toEqual(mockSystemWorkflows);
+      expect(prismaMock.workflow.findMany).toHaveBeenCalledWith({
+        where: { isSystemWorkflow: true },
+        include: {
+          _count: {
+            select: { stages: true },
+          },
+        },
+        orderBy: { updatedAt: 'desc' },
+      });
+      expect(prismaMock.workflowReference.findMany).not.toHaveBeenCalled();
     });
   });
 

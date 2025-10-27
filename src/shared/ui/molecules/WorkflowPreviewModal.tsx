@@ -2,6 +2,8 @@
 
 import { Modal, Button, Badge } from "@/shared/ui/atoms";
 import { PublicWorkflowWithMeta } from "@/features/public-discovery/types";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 interface WorkflowPreviewModalProps {
   workflow: PublicWorkflowWithMeta;
@@ -109,9 +111,11 @@ export function WorkflowPreviewModal({
                             <h5 className="font-semibold text-sm text-gray-900 mb-1">
                               {smp.miniPrompt.name}
                             </h5>
-                            <p className="text-xs text-gray-600 leading-relaxed">
-                              {smp.miniPrompt.content || "No prompt text available"}
-                            </p>
+                            <div className="text-xs text-gray-600 leading-relaxed prose prose-sm max-w-none">
+                              <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                                {smp.miniPrompt.content || "No prompt text available"}
+                              </ReactMarkdown>
+                            </div>
                           </div>
                         ))}
                       </div>
