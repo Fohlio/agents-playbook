@@ -99,6 +99,7 @@ model Workflow {
   stages     WorkflowStage[]
   references WorkflowReference[]
   embedding  WorkflowEmbedding?
+  tags       WorkflowTag[]
 
   @@map("workflows")
   @@index([userId])
@@ -141,6 +142,7 @@ model MiniPrompt {
   user              User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
   stageMiniPrompts  StageMiniPrompt[]
   references        MiniPromptReference[]
+  tags              MiniPromptTag[]
 
   @@map("mini_prompts")
   @@index([userId])
@@ -249,5 +251,48 @@ model WorkflowEmbedding {
 
   @@map("workflow_embeddings")
   @@index([workflowId])
+}
+
+model Tag {
+  id        String   @id @default(uuid())
+  name      String   @unique @db.VarChar(50)
+  color     String?  @db.VarChar(20)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  workflowTags    WorkflowTag[]
+  miniPromptTags  MiniPromptTag[]
+
+  @@map("tags")
+  @@index([name])
+}
+
+model WorkflowTag {
+  workflowId String @map("workflow_id")
+  tagId      String @map("tag_id")
+
+  // Relations
+  workflow Workflow @relation(fields: [workflowId], references: [id], onDelete: Cascade)
+  tag      Tag      @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([workflowId, tagId])
+  @@map("workflow_tags")
+  @@index([workflowId])
+  @@index([tagId])
+}
+
+model MiniPromptTag {
+  miniPromptId String @map("mini_prompt_id")
+  tagId        String @map("tag_id")
+
+  // Relations
+  miniPrompt MiniPrompt @relation(fields: [miniPromptId], references: [id], onDelete: Cascade)
+  tag        Tag        @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([miniPromptId, tagId])
+  @@map("mini_prompt_tags")
+  @@index([miniPromptId])
+  @@index([tagId])
 }
 

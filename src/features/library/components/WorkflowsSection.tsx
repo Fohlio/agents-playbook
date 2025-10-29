@@ -5,7 +5,7 @@ import { ROUTES } from '@/shared/routes';
 import Button from '@/shared/ui/atoms/Button';
 import IconButton from '@/shared/ui/atoms/IconButton';
 import Toggle from '@/shared/ui/atoms/Toggle';
-import { Card } from '@/shared/ui/atoms/Card';
+import { Card, Badge } from '@/shared/ui/atoms';
 import Link from 'next/link';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -17,6 +17,8 @@ interface Workflow {
   description: string | null;
   isActive: boolean;
   visibility: string;
+  isOwned?: boolean;
+  referenceId?: string | null;
   _count: {
     stages: number;
   };
@@ -48,6 +50,39 @@ export function WorkflowsSection() {
       setWorkflows(workflows.filter((w) => w.id !== id));
     } catch {
       alert('Failed to delete workflow');
+    }
+  };
+
+  const handleRemoveFromLibrary = async (id: string) => {
+    if (!confirm('Remove this workflow from your library?')) return;
+    try {
+      await fetch(`/api/v1/workflows/remove/${id}`, { method: 'DELETE' });
+      setWorkflows(workflows.filter((w) => w.id !== id));
+    } catch {
+      alert('Failed to remove workflow from library');
+    }
+  };
+
+  const handleDuplicate = async (workflow: Workflow) => {
+    try {
+      const response = await fetch('/api/workflows', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: `${workflow.name} (Copy)`,
+          description: workflow.description,
+          isActive: false,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to duplicate workflow');
+      }
+
+      const duplicated = await response.json();
+      setWorkflows([duplicated, ...workflows]);
+    } catch (error) {
+      alert('Failed to duplicate workflow');
     }
   };
 
@@ -89,9 +124,16 @@ export function WorkflowsSection() {
             <Card key={workflow.id} className="hover:shadow-lg transition-shadow">
               <div className="flex flex-col h-full">
                 <div className="flex-1">
-                  <h3 className="text-lg font-semibold text-text-primary mb-2">
-                    {workflow.name}
-                  </h3>
+                  <div className="flex items-start justify-between mb-2">
+                    <h3 className="text-lg font-semibold text-text-primary flex-1">
+                      {workflow.name}
+                    </h3>
+                    {!workflow.isOwned && (
+                      <Badge variant="secondary" testId={`imported-badge-${workflow.id}`}>
+                        Imported
+                      </Badge>
+                    )}
+                  </div>
                   {workflow.description && (
                     <p className="text-sm text-text-secondary mb-4 line-clamp-2">
                       {workflow.description}
@@ -112,27 +154,49 @@ export function WorkflowsSection() {
                   </div>
                 </div>
                 <div className="flex gap-2 mt-4">
-                  <Link href={ROUTES.LIBRARY.WORKFLOWS.EDIT(workflow.id)}>
-                    <IconButton
-                      variant="primary"
-                      size="sm"
-                      icon={<EditIcon fontSize="small" />}
-                      ariaLabel="Edit workflow"
-                    />
-                  </Link>
-                  <IconButton
-                    variant="secondary"
-                    size="sm"
-                    icon={<ContentCopyIcon fontSize="small" />}
-                    ariaLabel="Duplicate workflow"
-                  />
-                  <IconButton
-                    variant="danger"
-                    size="sm"
-                    icon={<DeleteIcon fontSize="small" />}
-                    ariaLabel="Delete workflow"
-                    onClick={() => handleDelete(workflow.id)}
-                  />
+                  {workflow.isOwned ? (
+                    <>
+                      <Link href={ROUTES.LIBRARY.WORKFLOWS.EDIT(workflow.id)}>
+                        <IconButton
+                          variant="primary"
+                          size="sm"
+                          icon={<EditIcon fontSize="small" />}
+                          ariaLabel="Edit workflow"
+                        />
+                      </Link>
+                      <IconButton
+                        variant="secondary"
+                        size="sm"
+                        icon={<ContentCopyIcon fontSize="small" />}
+                        ariaLabel="Duplicate workflow"
+                        onClick={() => handleDuplicate(workflow)}
+                      />
+                      <IconButton
+                        variant="danger"
+                        size="sm"
+                        icon={<DeleteIcon fontSize="small" />}
+                        ariaLabel="Delete workflow"
+                        onClick={() => handleDelete(workflow.id)}
+                      />
+                    </>
+                  ) : (
+                    <>
+                      <IconButton
+                        variant="secondary"
+                        size="sm"
+                        icon={<ContentCopyIcon fontSize="small" />}
+                        ariaLabel="Duplicate workflow"
+                        onClick={() => handleDuplicate(workflow)}
+                      />
+                      <Button
+                        variant="danger"
+                        size="sm"
+                        onClick={() => handleRemoveFromLibrary(workflow.id)}
+                      >
+                        Remove from Library
+                      </Button>
+                    </>
+                  )}
                 </div>
               </div>
             </Card>

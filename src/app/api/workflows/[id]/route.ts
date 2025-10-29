@@ -29,6 +29,22 @@ export async function PATCH(
   }
 
   const body = await request.json();
+
+  if (body.tagIds !== undefined) {
+    await prisma.workflowTag.deleteMany({
+      where: { workflowId: id }
+    });
+
+    if (body.tagIds.length > 0) {
+      await prisma.workflowTag.createMany({
+        data: body.tagIds.map((tagId: string) => ({
+          workflowId: id,
+          tagId
+        }))
+      });
+    }
+  }
+
   const updated = await prisma.workflow.update({
     where: { id },
     data: { isActive: body.isActive },

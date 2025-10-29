@@ -35,6 +35,13 @@ export async function getPublicWorkflows(
         { user: { username: { contains: params.search, mode: "insensitive" } } },
       ],
     }),
+    ...((params.filters as WorkflowFilters)?.tagIds && (params.filters as WorkflowFilters).tagIds!.length > 0 && {
+      tags: {
+        some: {
+          tagId: { in: (params.filters as WorkflowFilters).tagIds }
+        }
+      }
+    }),
   };
 
   // Build orderBy
@@ -58,6 +65,11 @@ export async function getPublicWorkflows(
             },
           },
           orderBy: { order: 'asc' },
+        },
+        tags: {
+          include: {
+            tag: true
+          }
         },
         _count: {
           select: {
@@ -169,6 +181,13 @@ export async function getPublicMiniPrompts(
         { user: { username: { contains: params.search, mode: "insensitive" } } },
       ],
     }),
+    ...((params.filters as MiniPromptFilters)?.tagIds && (params.filters as MiniPromptFilters).tagIds!.length > 0 && {
+      tags: {
+        some: {
+          tagId: { in: (params.filters as MiniPromptFilters).tagIds }
+        }
+      }
+    }),
   };
 
   // Build orderBy
@@ -181,6 +200,11 @@ export async function getPublicMiniPrompts(
       include: {
         user: {
           select: { id: true, username: true },
+        },
+        tags: {
+          include: {
+            tag: true
+          }
         },
         _count: {
           select: {

@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import Button from '@/shared/ui/atoms/Button';
 import IconButton from '@/shared/ui/atoms/IconButton';
 import Toggle from '@/shared/ui/atoms/Toggle';
-import { Card } from '@/shared/ui/atoms/Card';
+import { Card, Badge } from '@/shared/ui/atoms';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
@@ -17,6 +17,8 @@ interface MiniPrompt {
   content: string;
   visibility: string;
   isActive: boolean;
+  isOwned?: boolean;
+  referenceId?: string | null;
 }
 
 export function MiniPromptsSection() {
@@ -102,6 +104,16 @@ export function MiniPromptsSection() {
     }
   };
 
+  const handleRemoveFromLibrary = async (id: string) => {
+    if (!confirm('Remove this mini-prompt from your library?')) return;
+    try {
+      await fetch(`/api/v1/mini-prompts/remove/${id}`, { method: 'DELETE' });
+      setMiniPrompts(miniPrompts.filter((m) => m.id !== id));
+    } catch {
+      alert('Failed to remove mini-prompt from library');
+    }
+  };
+
   if (isLoading) {
     return <div className="text-center py-12">Loading...</div>;
   }
@@ -128,9 +140,16 @@ export function MiniPromptsSection() {
             <Card key={miniPrompt.id} className="hover:shadow-lg transition-shadow">
               <div className="flex flex-col h-full">
                 <div className="flex-1">
-                  <h3 className="text-lg font-semibold text-text-primary mb-2">
-                    {miniPrompt.name}
-                  </h3>
+                  <div className="flex items-start justify-between mb-2">
+                    <h3 className="text-lg font-semibold text-text-primary flex-1">
+                      {miniPrompt.name}
+                    </h3>
+                    {!miniPrompt.isOwned && (
+                      <Badge variant="secondary" testId={`imported-badge-${miniPrompt.id}`}>
+                        Imported
+                      </Badge>
+                    )}
+                  </div>
                   <p className="text-sm text-text-secondary mb-4 line-clamp-3">
                     {miniPrompt.content.slice(0, 150)}
                     {miniPrompt.content.length > 150 ? '...' : ''}
@@ -150,30 +169,51 @@ export function MiniPromptsSection() {
                   </div>
                 </div>
                 <div className="flex gap-2 mt-4">
-                  <IconButton
-                    variant="primary"
-                    size="sm"
-                    icon={<EditIcon fontSize="small" />}
-                    ariaLabel="Edit mini-prompt"
-                    onClick={() => {
-                      setEditingMiniPrompt(miniPrompt);
-                      setIsEditModalOpen(true);
-                    }}
-                  />
-                  <IconButton
-                    variant="secondary"
-                    size="sm"
-                    icon={<ContentCopyIcon fontSize="small" />}
-                    ariaLabel="Duplicate mini-prompt"
-                    onClick={() => handleDuplicate(miniPrompt)}
-                  />
-                  <IconButton
-                    variant="danger"
-                    size="sm"
-                    icon={<DeleteIcon fontSize="small" />}
-                    ariaLabel="Delete mini-prompt"
-                    onClick={() => handleDelete(miniPrompt.id)}
-                  />
+                  {miniPrompt.isOwned ? (
+                    <>
+                      <IconButton
+                        variant="primary"
+                        size="sm"
+                        icon={<EditIcon fontSize="small" />}
+                        ariaLabel="Edit mini-prompt"
+                        onClick={() => {
+                          setEditingMiniPrompt(miniPrompt);
+                          setIsEditModalOpen(true);
+                        }}
+                      />
+                      <IconButton
+                        variant="secondary"
+                        size="sm"
+                        icon={<ContentCopyIcon fontSize="small" />}
+                        ariaLabel="Duplicate mini-prompt"
+                        onClick={() => handleDuplicate(miniPrompt)}
+                      />
+                      <IconButton
+                        variant="danger"
+                        size="sm"
+                        icon={<DeleteIcon fontSize="small" />}
+                        ariaLabel="Delete mini-prompt"
+                        onClick={() => handleDelete(miniPrompt.id)}
+                      />
+                    </>
+                  ) : (
+                    <>
+                      <IconButton
+                        variant="secondary"
+                        size="sm"
+                        icon={<ContentCopyIcon fontSize="small" />}
+                        ariaLabel="Duplicate mini-prompt"
+                        onClick={() => handleDuplicate(miniPrompt)}
+                      />
+                      <Button
+                        variant="danger"
+                        size="sm"
+                        onClick={() => handleRemoveFromLibrary(miniPrompt.id)}
+                      >
+                        Remove from Library
+                      </Button>
+                    </>
+                  )}
                 </div>
               </div>
             </Card>

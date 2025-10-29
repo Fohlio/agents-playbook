@@ -47,10 +47,20 @@ export async function GET(request: Request) {
     },
   });
 
-  // Combine all mini-prompts
-  const referencedMiniPrompts = miniPromptReferences.map((ref) => ref.miniPrompt);
-  const workflowMiniPrompts = usedInWorkflows.map((smp) => smp.miniPrompt);
-  const allMiniPrompts = [...ownedMiniPrompts, ...referencedMiniPrompts, ...workflowMiniPrompts];
+  // Mark owned vs imported mini-prompts
+  const ownedWithFlag = ownedMiniPrompts.map((m) => ({ ...m, isOwned: true, referenceId: null }));
+  const referencedWithFlag = miniPromptReferences.map((ref) => ({
+    ...ref.miniPrompt,
+    isOwned: false,
+    referenceId: ref.id,
+  }));
+  const workflowMiniPrompts = usedInWorkflows.map((smp) => ({
+    ...smp.miniPrompt,
+    isOwned: smp.miniPrompt.userId === session.user.id,
+    referenceId: null,
+  }));
+
+  const allMiniPrompts = [...ownedWithFlag, ...referencedWithFlag, ...workflowMiniPrompts];
 
   // Remove duplicates and sort by createdAt
   const uniqueMiniPrompts = Array.from(

@@ -9,9 +9,12 @@ import { PublicMiniPromptWithMeta } from "@/features/public-discovery/types";
 import { MiniPromptEditorModal } from "@/features/workflow-constructor/components/MiniPromptEditorModal";
 import { RatingDisplay } from "@/features/ratings/ui/RatingDisplay";
 import { RatingDialog } from "@/features/ratings/ui/RatingDialog";
+import { TagBadgeList } from "./TagBadgeList";
 
 interface MiniPromptDiscoveryCardProps {
-  miniPrompt: PublicMiniPromptWithMeta;
+  miniPrompt: PublicMiniPromptWithMeta & {
+    tags?: { tag: { id: string; name: string; color: string | null } }[];
+  };
   onImport: (id: string) => void;
   isAuthenticated: boolean;
   isImporting?: boolean;
@@ -119,6 +122,12 @@ export function MiniPromptDiscoveryCard({
             <div className="prose prose-sm max-w-none text-sm text-gray-600 mb-4 line-clamp-3 leading-relaxed">
               <ReactMarkdown remarkPlugins={[remarkGfm]}>{preview}</ReactMarkdown>
             </div>
+
+            {miniPrompt.tags && miniPrompt.tags.length > 0 && (
+              <div className="mb-3">
+                <TagBadgeList tags={miniPrompt.tags.map(mt => mt.tag)} />
+              </div>
+            )}
 
             <div className="flex items-center gap-4 text-xs text-gray-500 mb-4 pb-4 border-b border-gray-100">
               <span className="flex items-center gap-1">

@@ -44,6 +44,7 @@ export const PROTECTED_ROUTES = {
 export const ADMIN_ROUTES = {
   SYSTEM_WORKFLOWS: "/dashboard/admin/workflows",
   SYSTEM_MINI_PROMPTS: "/dashboard/admin/mini-prompts",
+  TAGS: "/dashboard/admin/tags",
 } as const;
 
 /**

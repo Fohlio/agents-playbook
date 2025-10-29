@@ -49,9 +49,15 @@ export async function GET(request: Request) {
     },
   });
 
-  // Combine owned and referenced workflows
-  const referencedWorkflows = workflowReferences.map((ref) => ref.workflow);
-  const allWorkflows = [...ownedWorkflows, ...referencedWorkflows];
+  // Mark owned vs imported workflows
+  const ownedWithFlag = ownedWorkflows.map((w) => ({ ...w, isOwned: true, referenceId: null }));
+  const referencedWithFlag = workflowReferences.map((ref) => ({
+    ...ref.workflow,
+    isOwned: false,
+    referenceId: ref.id,
+  }));
+
+  const allWorkflows = [...ownedWithFlag, ...referencedWithFlag];
 
   // Remove duplicates and sort by updatedAt
   const uniqueWorkflows = Array.from(
@@ -80,6 +86,15 @@ export async function POST(request: Request) {
       isActive: body.isActive || false,
     },
   });
+
+  if (body.tagIds && body.tagIds.length > 0) {
+    await prisma.workflowTag.createMany({
+      data: body.tagIds.map((tagId: string) => ({
+        workflowId: workflow.id,
+        tagId
+      }))
+    });
+  }
 
   return NextResponse.json(workflow);
 }

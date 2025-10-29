@@ -70,11 +70,41 @@ async function main() {
     });
   }
   
+  // ============================================================================
+  // Default Tags
+  // ============================================================================
+  const defaultTags = [
+    { name: 'development', color: '#3B82F6' },
+    { name: 'documentation', color: '#10B981' },
+    { name: 'testing', color: '#F59E0B' },
+    { name: 'design', color: '#8B5CF6' },
+    { name: 'refactoring', color: '#EF4444' },
+    { name: 'deployment', color: '#06B6D4' },
+    { name: 'analysis', color: '#EC4899' },
+    { name: 'planning', color: '#6366F1' },
+  ];
+
+  for (const tagData of defaultTags) {
+    const existingTag = await prisma.tag.findUnique({
+      where: { name: tagData.name },
+    });
+
+    if (!existingTag) {
+      const tag = await prisma.tag.create({
+        data: tagData,
+      });
+      console.log(`✅ Created tag: ${tag.name}`);
+    } else {
+      console.log(`ℹ️  Tag already exists: ${tagData.name}`);
+    }
+  }
+
   console.log('🌱 Database seed completed!');
   console.log('');
   console.log('📋 Seed Data Summary:');
   console.log('  Admin:  admin@agents-playbook.com / Admin@123456');
   console.log('  Test:   test@agents-playbook.com / Test@123456');
+  console.log(`  Tags:   ${defaultTags.length} default tags created`);
   console.log('');
   console.log('⚠️  WARNING: Change these passwords in production!');
 }

@@ -33,6 +33,22 @@ export async function PATCH(
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
+    // Update tags if provided
+    if (body.tagIds !== undefined) {
+      await prisma.miniPromptTag.deleteMany({
+        where: { miniPromptId: id }
+      });
+
+      if (body.tagIds.length > 0) {
+        await prisma.miniPromptTag.createMany({
+          data: body.tagIds.map((tagId: string) => ({
+            miniPromptId: id,
+            tagId
+          }))
+        });
+      }
+    }
+
     // Update mini prompt
     const updatedMiniPrompt = await prisma.miniPrompt.update({
       where: { id },

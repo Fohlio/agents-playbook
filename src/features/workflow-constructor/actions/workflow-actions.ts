@@ -33,14 +33,28 @@ export async function getWorkflowWithStages(
 }
 
 export async function getAllAvailableMiniPrompts(userId: string): Promise<MiniPrompt[]> {
-  return await prisma.miniPrompt.findMany({
-    where: {
-      userId,
-    },
-    orderBy: {
-      name: 'asc',
-    },
+  // Fetch owned mini-prompts
+  const ownedMiniPrompts = await prisma.miniPrompt.findMany({
+    where: { userId },
   });
+
+  // Fetch referenced mini-prompts (in library)
+  const referencedMiniPrompts = await prisma.miniPromptReference.findMany({
+    where: { userId },
+    include: { miniPrompt: true },
+  });
+
+  // Combine and deduplicate
+  const allMiniPrompts = [
+    ...ownedMiniPrompts,
+    ...referencedMiniPrompts.map((ref) => ref.miniPrompt),
+  ];
+
+  const uniqueMiniPrompts = Array.from(
+    new Map(allMiniPrompts.map((mp) => [mp.id, mp])).values()
+  );
+
+  return uniqueMiniPrompts.sort((a, b) => a.name.localeCompare(b.name));
 }
 
 export async function saveWorkflow(input: SaveWorkflowInput): Promise<WorkflowWithStages> {

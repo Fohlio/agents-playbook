@@ -1,6 +1,7 @@
 "use client";
 
 import { WorkflowSortOption, MiniPromptSortOption, WorkflowFilters, MiniPromptFilters } from "../types";
+import { TagMultiSelect } from "@/shared/ui/molecules/TagMultiSelect";
 
 interface DiscoveryFiltersProps {
   type: "workflow" | "mini-prompt";
@@ -40,6 +41,13 @@ export function DiscoveryFilters({
     }
   };
 
+  const handleTagFilterChange = (tagIds: string[]) => {
+    onFiltersChange({
+      ...currentFilters,
+      tagIds: tagIds.length > 0 ? tagIds : undefined,
+    });
+  };
+
   return (
     <div className="flex flex-col sm:flex-row gap-3 mb-6">
       <div className="flex-1">
@@ -56,6 +64,16 @@ export function DiscoveryFilters({
           <option value="recent">Most Recent</option>
           <option value="popular">Popular</option>
         </select>
+      </div>
+
+      <div className="flex-1">
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+          Tags
+        </label>
+        <TagMultiSelect
+          selectedTagIds={currentFilters.tagIds || []}
+          onChange={handleTagFilterChange}
+        />
       </div>
 
       <div className="flex-1">

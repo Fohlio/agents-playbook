@@ -9,9 +9,12 @@ import { PublicWorkflowWithMeta } from "@/features/public-discovery/types";
 import { WorkflowPreviewModal } from "./WorkflowPreviewModal";
 import { RatingDisplay } from "@/features/ratings/ui/RatingDisplay";
 import { RatingDialog } from "@/features/ratings/ui/RatingDialog";
+import { TagBadgeList } from "./TagBadgeList";
 
 interface WorkflowDiscoveryCardProps {
-  workflow: PublicWorkflowWithMeta;
+  workflow: PublicWorkflowWithMeta & {
+    tags?: { tag: { id: string; name: string; color: string | null } }[];
+  };
   onImport: (id: string) => void;
   isAuthenticated: boolean;
   isImporting?: boolean;
@@ -116,6 +119,12 @@ export function WorkflowDiscoveryCard({
               {workflow.description || "No description available"}
             </ReactMarkdown>
           </div>
+
+          {workflow.tags && workflow.tags.length > 0 && (
+            <div className="mb-3">
+              <TagBadgeList tags={workflow.tags.map(wt => wt.tag)} />
+            </div>
+          )}
 
           <div className="flex items-center gap-4 text-xs text-gray-500 mb-4 pb-4 border-b border-gray-100">
             <span className="flex items-center gap-1">

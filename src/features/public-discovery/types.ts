@@ -59,11 +59,13 @@ export interface WorkflowFilters {
   rating?: "4+" | "3+";
   phaseCount?: "1-3" | "4-5" | "6+";
   minUsage?: "10" | "50";
+  tagIds?: string[];
 }
 
 export interface MiniPromptFilters {
   rating?: "4+" | "3+";
   minUsage?: "10" | "50";
+  tagIds?: string[];
 }
 
 export interface DiscoveryQueryParams {
