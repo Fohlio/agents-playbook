@@ -132,6 +132,7 @@ model MiniPrompt {
   name               String      @db.VarChar(255)
   content            String      @db.Text // Markdown content
   visibility         Visibility  @default(PRIVATE)
+  isActive           Boolean     @default(false) @map("is_active")
   isSystemMiniPrompt Boolean     @default(false) @map("is_system_mini_prompt")
   createdAt          DateTime    @default(now()) @map("created_at")
   updatedAt          DateTime    @updatedAt @map("updated_at")
@@ -144,6 +145,7 @@ model MiniPrompt {
   @@map("mini_prompts")
   @@index([userId])
   @@index([visibility])
+  @@index([isActive])
   @@index([isSystemMiniPrompt])
   @@index([createdAt])
 }

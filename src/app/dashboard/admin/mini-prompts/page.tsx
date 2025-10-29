@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { ROUTES } from '@/shared/routes';
 import { Button, Card, Badge } from '@/shared/ui/atoms';
 import IconButton from '@/shared/ui/atoms/IconButton';
+import Toggle from '@/shared/ui/atoms/Toggle';
 import Link from 'next/link';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -15,6 +16,7 @@ interface SystemMiniPrompt {
   name: string;
   content: string;
   visibility: string;
+  isActive: boolean;
   isSystemMiniPrompt: boolean;
 }
 
@@ -45,6 +47,21 @@ export default function AdminSystemMiniPromptsPage() {
       console.error('Failed to fetch system mini-prompts:', error);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleToggleActive = async (id: string, isActive: boolean) => {
+    try {
+      await fetch(`/api/mini-prompts/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ isActive: !isActive }),
+      });
+      setMiniPrompts(
+        miniPrompts.map((m) => (m.id === id ? { ...m, isActive: !isActive } : m))
+      );
+    } catch {
+      alert('Failed to update mini-prompt');
     }
   };
 
@@ -124,8 +141,18 @@ export default function AdminSystemMiniPromptsPage() {
                     {miniPrompt.content.slice(0, 150)}
                     {miniPrompt.content.length > 150 ? '...' : ''}
                   </p>
-                  <div className="flex items-center gap-4 text-xs text-text-tertiary">
+                  <div className="flex items-center gap-4 text-xs text-text-tertiary mb-3">
                     <span>{miniPrompt.visibility}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Toggle
+                      checked={miniPrompt.isActive}
+                      onChange={() =>
+                        handleToggleActive(miniPrompt.id, miniPrompt.isActive)
+                      }
+                      label={miniPrompt.isActive ? 'Active' : 'Inactive'}
+                      testId={`mini-prompt-toggle-${miniPrompt.id}`}
+                    />
                   </div>
                 </div>
                 <div className="flex gap-2 mt-4">

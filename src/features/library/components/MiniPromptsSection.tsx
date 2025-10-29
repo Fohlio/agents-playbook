@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Button from '@/shared/ui/atoms/Button';
 import IconButton from '@/shared/ui/atoms/IconButton';
+import Toggle from '@/shared/ui/atoms/Toggle';
 import { Card } from '@/shared/ui/atoms/Card';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -15,6 +16,7 @@ interface MiniPrompt {
   name: string;
   content: string;
   visibility: string;
+  isActive: boolean;
 }
 
 export function MiniPromptsSection() {
@@ -75,6 +77,21 @@ export function MiniPromptsSection() {
     setMiniPrompts([duplicated, ...miniPrompts]);
   };
 
+  const handleToggleActive = async (id: string, isActive: boolean) => {
+    try {
+      await fetch(`/api/mini-prompts/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ isActive: !isActive }),
+      });
+      setMiniPrompts(
+        miniPrompts.map((m) => (m.id === id ? { ...m, isActive: !isActive } : m))
+      );
+    } catch {
+      alert('Failed to update mini-prompt');
+    }
+  };
+
   const handleDelete = async (id: string) => {
     if (!confirm('Are you sure you want to delete this mini-prompt?')) return;
     try {
@@ -118,8 +135,18 @@ export function MiniPromptsSection() {
                     {miniPrompt.content.slice(0, 150)}
                     {miniPrompt.content.length > 150 ? '...' : ''}
                   </p>
-                  <div className="flex items-center gap-4 text-xs text-text-tertiary">
+                  <div className="flex items-center gap-4 text-xs text-text-tertiary mb-3">
                     <span>{miniPrompt.visibility}</span>
+                  </div>
+                  <div className="flex items-center gap-2 mb-3">
+                    <Toggle
+                      checked={miniPrompt.isActive}
+                      onChange={() =>
+                        handleToggleActive(miniPrompt.id, miniPrompt.isActive)
+                      }
+                      label={miniPrompt.isActive ? 'Active' : 'Inactive'}
+                      testId={`mini-prompt-toggle-${miniPrompt.id}`}
+                    />
                   </div>
                 </div>
                 <div className="flex gap-2 mt-4">

@@ -6,7 +6,11 @@ import {
   selectWorkflowToolSchema,
   selectWorkflowHandler,
   getNextStepToolSchema,
-  getNextStepHandler
+  getNextStepHandler,
+  getPromptsToolSchema,
+  getPromptsHandler,
+  getSelectedPromptToolSchema,
+  getSelectedPromptHandler
 } from '@/lib/mcp-tools';
 
 // Load environment variables
@@ -41,6 +45,26 @@ const handler = createMcpHandler(
       getNextStepToolSchema,
       async ({ workflow_id, current_step, available_context }) => {
         return await getNextStepHandler({ workflow_id, current_step, available_context });
+      },
+    );
+
+    // Tool 4: Get active mini prompts
+    server.tool(
+      'get_prompts',
+      'Get all active mini prompts with optional search filtering',
+      getPromptsToolSchema,
+      async ({ search }) => {
+        return await getPromptsHandler({ search });
+      },
+    );
+
+    // Tool 5: Get selected mini prompt details
+    server.tool(
+      'get_selected_prompt',
+      'Get complete details and content for a specific mini prompt',
+      getSelectedPromptToolSchema,
+      async ({ prompt_id }) => {
+        return await getSelectedPromptHandler({ prompt_id });
       },
     );
   },

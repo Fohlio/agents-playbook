@@ -22,6 +22,10 @@ export const LIBRARY_ROUTES = {
     NEW: "/dashboard/library/workflows/new",
     EDIT: (id: string) => `/dashboard/library/workflows/${id}/edit`,
   },
+  MINI_PROMPTS: {
+    NEW: "/dashboard/library/mini-prompts/new",
+    EDIT: (id: string) => `/dashboard/library/mini-prompts/${id}/edit`,
+  },
 } as const;
 
 /**
