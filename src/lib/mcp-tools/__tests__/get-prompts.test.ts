@@ -11,7 +11,7 @@ describe("get-prompts MCP tool", () => {
   });
 
   describe("getPromptsHandler", () => {
-    it("should return active public mini prompts without search", async () => {
+    it("should return active system mini prompts without search", async () => {
       const mockMiniPrompts = [
         {
           id: "prompt-1",
@@ -20,7 +20,7 @@ describe("get-prompts MCP tool", () => {
           content: "This is test content for mini prompt 1. It has some description about what it does.",
           visibility: "PUBLIC" as const,
           isActive: true,
-          isSystemMiniPrompt: false,
+          isSystemMiniPrompt: true,
           createdAt: new Date("2024-01-01"),
           updatedAt: new Date("2024-01-01"),
           user: {
@@ -39,7 +39,7 @@ describe("get-prompts MCP tool", () => {
           content: "Another test content for testing purposes.",
           visibility: "PUBLIC" as const,
           isActive: true,
-          isSystemMiniPrompt: false,
+          isSystemMiniPrompt: true,
           createdAt: new Date("2024-01-02"),
           updatedAt: new Date("2024-01-02"),
           user: {
@@ -60,7 +60,7 @@ describe("get-prompts MCP tool", () => {
       expect(prismaMock.miniPrompt.findMany).toHaveBeenCalledWith({
         where: {
           isActive: true,
-          visibility: "PUBLIC",
+          isSystemMiniPrompt: true,
         },
         include: {
           user: {
@@ -82,7 +82,7 @@ describe("get-prompts MCP tool", () => {
 
       expect(result.content).toHaveLength(1);
       expect(result.content[0].type).toBe("text");
-      expect(result.content[0].text).toContain("Found 2 active mini prompts");
+      expect(result.content[0].text).toContain("Found 2 active system mini prompts");
       expect(result.content[0].text).toContain("Test Mini Prompt 1");
       expect(result.content[0].text).toContain("Test Mini Prompt 2");
       expect(result.content[0].text).toContain("@testuser1");
@@ -100,7 +100,7 @@ describe("get-prompts MCP tool", () => {
           content: "This prompt helps with code analysis tasks.",
           visibility: "PUBLIC" as const,
           isActive: true,
-          isSystemMiniPrompt: false,
+          isSystemMiniPrompt: true,
           createdAt: new Date("2024-01-01"),
           updatedAt: new Date("2024-01-01"),
           user: {
@@ -121,7 +121,7 @@ describe("get-prompts MCP tool", () => {
       expect(prismaMock.miniPrompt.findMany).toHaveBeenCalledWith({
         where: {
           isActive: true,
-          visibility: "PUBLIC",
+          isSystemMiniPrompt: true,
           OR: [
             { name: { contains: "analysis", mode: "insensitive" } },
             { content: { contains: "analysis", mode: "insensitive" } },
@@ -156,7 +156,7 @@ describe("get-prompts MCP tool", () => {
 
       expect(result.content).toHaveLength(1);
       expect(result.content[0].type).toBe("text");
-      expect(result.content[0].text).toContain("No active mini prompts found");
+      expect(result.content[0].text).toContain("No active system mini prompts found");
     });
 
     it("should return message when no mini prompts match search", async () => {
@@ -164,7 +164,7 @@ describe("get-prompts MCP tool", () => {
 
       const result = await getPromptsHandler({ search: "nonexistent" });
 
-      expect(result.content[0].text).toContain('No active mini prompts found matching "nonexistent"');
+      expect(result.content[0].text).toContain('No active system mini prompts found matching "nonexistent"');
     });
 
     it("should handle content preview truncation", async () => {

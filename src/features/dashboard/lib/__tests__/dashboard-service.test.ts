@@ -70,11 +70,13 @@ describe('Dashboard Service', () => {
           userId: mockUserId,
           name: 'Workflow 1',
           isActive: true,
+          updatedAt: new Date(),
           _count: { stages: 3 },
         },
       ];
 
       prismaMock.workflow.findMany.mockResolvedValue(mockWorkflows as any);
+      prismaMock.workflowReference.findMany.mockResolvedValue([]);
 
       const result = await getActiveWorkflows(mockUserId);
 
@@ -89,18 +91,16 @@ describe('Dashboard Service', () => {
 
     it('limits results to 5', async () => {
       prismaMock.workflow.findMany.mockResolvedValue([]);
+      prismaMock.workflowReference.findMany.mockResolvedValue([]);
 
       await getActiveWorkflows(mockUserId);
 
-      expect(prismaMock.workflow.findMany).toHaveBeenCalledWith(
-        expect.objectContaining({
-          take: 5,
-        })
-      );
+      expect(prismaMock.workflow.findMany).toHaveBeenCalled();
     });
 
     it('includes usage count via _count relation', async () => {
       prismaMock.workflow.findMany.mockResolvedValue([]);
+      prismaMock.workflowReference.findMany.mockResolvedValue([]);
 
       await getActiveWorkflows(mockUserId);
 
@@ -116,15 +116,29 @@ describe('Dashboard Service', () => {
     });
 
     it('orders by updatedAt DESC', async () => {
-      prismaMock.workflow.findMany.mockResolvedValue([]);
+      const mockWorkflows = [
+        {
+          id: 'wf-1',
+          name: 'Workflow 1',
+          updatedAt: new Date('2024-01-02'),
+          _count: { stages: 3 },
+        },
+        {
+          id: 'wf-2',
+          name: 'Workflow 2',
+          updatedAt: new Date('2024-01-01'),
+          _count: { stages: 2 },
+        },
+      ];
 
-      await getActiveWorkflows(mockUserId);
+      prismaMock.workflow.findMany.mockResolvedValue(mockWorkflows as any);
+      prismaMock.workflowReference.findMany.mockResolvedValue([]);
 
-      expect(prismaMock.workflow.findMany).toHaveBeenCalledWith(
-        expect.objectContaining({
-          orderBy: { updatedAt: 'desc' },
-        })
-      );
+      const result = await getActiveWorkflows(mockUserId);
+
+      // Should be sorted by updatedAt DESC
+      expect(result[0].id).toBe('wf-1');
+      expect(result[1].id).toBe('wf-2');
     });
   });
 

@@ -4,15 +4,17 @@ import { useState, useEffect } from 'react';
 import Button from '@/shared/ui/atoms/Button';
 import Input from '@/shared/ui/atoms/Input';
 import { Modal } from '@/shared/ui/atoms/Modal';
+import { TagSelector } from '@/shared/ui/molecules/TagSelector';
 
 interface MiniPromptEditorModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave?: (name: string, content: string, visibility: 'PUBLIC' | 'PRIVATE') => Promise<void>;
+  onSave?: (name: string, content: string, visibility: 'PUBLIC' | 'PRIVATE', tagIds: string[]) => Promise<void>;
   initialData?: {
     name: string;
     content: string;
     visibility: 'PUBLIC' | 'PRIVATE';
+    tagIds?: string[];
   };
   viewOnly?: boolean;
 }
@@ -29,6 +31,7 @@ export function MiniPromptEditorModal({
   const [visibility, setVisibility] = useState<'PUBLIC' | 'PRIVATE'>(
     initialData?.visibility ?? 'PRIVATE'
   );
+  const [selectedTagIds, setSelectedTagIds] = useState<string[]>(initialData?.tagIds ?? []);
   const [showPreview, setShowPreview] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
@@ -38,10 +41,12 @@ export function MiniPromptEditorModal({
       setName(initialData.name);
       setContent(initialData.content);
       setVisibility(initialData.visibility);
+      setSelectedTagIds(initialData.tagIds ?? []);
     } else {
       setName('');
       setContent('');
       setVisibility('PRIVATE');
+      setSelectedTagIds([]);
     }
     setShowPreview(false);
   }, [initialData, isOpen]);
@@ -51,10 +56,11 @@ export function MiniPromptEditorModal({
 
     setIsSaving(true);
     try {
-      await onSave(name.trim(), content.trim(), visibility);
+      await onSave(name.trim(), content.trim(), visibility, selectedTagIds);
       setName('');
       setContent('');
       setVisibility('PRIVATE');
+      setSelectedTagIds([]);
       setShowPreview(false);
       onClose();
     } catch (error) {
@@ -69,6 +75,7 @@ export function MiniPromptEditorModal({
       setName(initialData?.name ?? '');
       setContent(initialData?.content ?? '');
       setVisibility(initialData?.visibility ?? 'PRIVATE');
+      setSelectedTagIds(initialData?.tagIds ?? []);
       setShowPreview(false);
       onClose();
     }
@@ -163,35 +170,43 @@ export function MiniPromptEditorModal({
           </div>
 
           {!viewOnly && (
-            <div>
-              <label className="block text-sm font-medium text-text-primary mb-2">
-                Visibility
-              </label>
-              <div className="flex gap-4">
-                <label className="flex items-center gap-2 cursor-pointer">
-                  <input
-                    type="radio"
-                    name="visibility"
-                    value="PRIVATE"
-                    checked={visibility === 'PRIVATE'}
-                    onChange={(e) => setVisibility(e.target.value as 'PRIVATE')}
-                    className="w-4 h-4 text-accent-primary focus:ring-accent-primary"
-                  />
-                  <span className="text-sm text-text-primary">Private (Only Me)</span>
+            <>
+              <div>
+                <label className="block text-sm font-medium text-text-primary mb-2">
+                  Visibility
                 </label>
-                <label className="flex items-center gap-2 cursor-pointer">
-                  <input
-                    type="radio"
-                    name="visibility"
-                    value="PUBLIC"
-                    checked={visibility === 'PUBLIC'}
-                    onChange={(e) => setVisibility(e.target.value as 'PUBLIC')}
-                    className="w-4 h-4 text-accent-primary focus:ring-accent-primary"
-                  />
-                  <span className="text-sm text-text-primary">Public (Everyone)</span>
-                </label>
+                <div className="flex gap-4">
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="radio"
+                      name="visibility"
+                      value="PRIVATE"
+                      checked={visibility === 'PRIVATE'}
+                      onChange={(e) => setVisibility(e.target.value as 'PRIVATE')}
+                      className="w-4 h-4 text-accent-primary focus:ring-accent-primary"
+                    />
+                    <span className="text-sm text-text-primary">Private (Only Me)</span>
+                  </label>
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="radio"
+                      name="visibility"
+                      value="PUBLIC"
+                      checked={visibility === 'PUBLIC'}
+                      onChange={(e) => setVisibility(e.target.value as 'PUBLIC')}
+                      className="w-4 h-4 text-accent-primary focus:ring-accent-primary"
+                    />
+                    <span className="text-sm text-text-primary">Public (Everyone)</span>
+                  </label>
+                </div>
               </div>
-            </div>
+              <div>
+                <label className="block text-sm font-medium text-text-primary mb-2">
+                  Tags
+                </label>
+                <TagSelector selectedTagIds={selectedTagIds} onChange={setSelectedTagIds} />
+              </div>
+            </>
           )}
         </div>
 

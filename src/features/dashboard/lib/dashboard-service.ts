@@ -52,18 +52,48 @@ export async function getDashboardStats(userId: string): Promise<DashboardStats>
 
 /**
  * Get active workflows for user (max 5 for free tier)
+ * Includes both owned and referenced (imported) workflows
  */
 export async function getActiveWorkflows(userId: string): Promise<WorkflowWithUsage[]> {
-  return prisma.workflow.findMany({
+  // Get owned active workflows
+  const ownedWorkflows = await prisma.workflow.findMany({
     where: { userId, isActive: true },
     include: {
       _count: {
         select: { stages: true },
       },
     },
-    orderBy: { updatedAt: "desc" },
-    take: 5,
   });
+
+  // Get referenced active workflows
+  const referencedWorkflows = await prisma.workflowReference.findMany({
+    where: {
+      userId,
+      workflow: { isActive: true }
+    },
+    include: {
+      workflow: {
+        include: {
+          _count: {
+            select: { stages: true },
+          },
+        },
+      },
+    },
+  });
+
+  // Combine and deduplicate
+  const allWorkflows = [
+    ...ownedWorkflows,
+    ...referencedWorkflows.map(ref => ref.workflow),
+  ];
+
+  const uniqueWorkflows = Array.from(
+    new Map(allWorkflows.map((w) => [w.id, w])).values()
+  ).sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime())
+   .slice(0, 5);
+
+  return uniqueWorkflows;
 }
 
 /**

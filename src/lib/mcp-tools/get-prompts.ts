@@ -5,27 +5,78 @@ export const getPromptsToolSchema = {
   search: z.string().optional().describe('Optional search term to filter mini prompts by name or content')
 };
 
-export async function getPromptsHandler({ search }: { search?: string }) {
+export async function getPromptsHandler({ search, userId }: { search?: string; userId?: string }) {
   try {
-    console.log(`[MCP] Getting active mini prompts${search ? ` with search: ${search}` : ''}`);
+    console.log(`[MCP] Getting active mini prompts from library${search ? ` with search: ${search}` : ''}`);
 
-    // Build where clause for active, public mini prompts
-    const whereClause: any = {
-      isActive: true,
-      visibility: 'PUBLIC'
-    };
+    // If userId is not provided, show public system mini-prompts only
+    if (!userId) {
+      const whereClause: any = {
+        isActive: true,
+        isSystemMiniPrompt: true
+      };
 
-    // Add search filter if provided
-    if (search) {
-      whereClause.OR = [
-        { name: { contains: search, mode: 'insensitive' } },
-        { content: { contains: search, mode: 'insensitive' } }
-      ];
+      if (search) {
+        whereClause.OR = [
+          { name: { contains: search, mode: 'insensitive' } },
+          { content: { contains: search, mode: 'insensitive' } }
+        ];
+      }
+
+      const miniPrompts = await prisma.miniPrompt.findMany({
+        where: whereClause,
+        include: {
+          user: {
+            select: {
+              id: true,
+              username: true
+            }
+          },
+          _count: {
+            select: {
+              stageMiniPrompts: true,
+              references: true
+            }
+          }
+        },
+        orderBy: [{ createdAt: 'desc' }],
+        take: 20
+      });
+
+      if (miniPrompts.length === 0) {
+        return {
+          content: [{
+            type: "text" as const,
+            text: `No active system mini prompts found${search ? ` matching "${search}"` : ''}. Try a different search term or authenticate to access your library mini prompts.`
+          }],
+        };
+      }
+
+      const formattedResults = miniPrompts.map((prompt, index: number) => {
+        const workflowsUsed = prompt._count.stageMiniPrompts;
+        const inLibraries = prompt._count.references;
+        const preview = prompt.content.slice(0, 100) + (prompt.content.length > 100 ? '...' : '');
+
+        return `${index + 1}. **${prompt.name}**
+   📝 ${preview}
+   👤 @${prompt.user.username} | 🔄 Used in ${workflowsUsed} workflows | 📚 In ${inLibraries} libraries
+   🆔 ID: ${prompt.id}`;
+      });
+
+      return {
+        content: [{
+          type: "text" as const,
+          text: `Found ${miniPrompts.length} active system mini prompts${search ? ` matching "${search}"` : ''}:\n\n${formattedResults.join('\n\n')}\n\n**Next Steps:**\nUse \`get_selected_prompt\` with one of these mini prompt IDs to view full content and details.\n\n**Tip:** Authenticate to access your personal library mini prompts.`
+        }],
+      };
     }
 
-    // Fetch active mini prompts with metadata
-    const miniPrompts = await prisma.miniPrompt.findMany({
-      where: whereClause,
+    // Get owned active mini prompts
+    const ownedMiniPrompts = await prisma.miniPrompt.findMany({
+      where: {
+        userId,
+        isActive: true
+      },
       include: {
         user: {
           select: {
@@ -39,12 +90,56 @@ export async function getPromptsHandler({ search }: { search?: string }) {
             references: true
           }
         }
-      },
-      orderBy: [
-        { createdAt: 'desc' }
-      ],
-      take: 20 // Limit results
+      }
     });
+
+    // Get referenced active mini prompts
+    const referencedMiniPrompts = await prisma.miniPromptReference.findMany({
+      where: {
+        userId,
+        miniPrompt: { isActive: true }
+      },
+      include: {
+        miniPrompt: {
+          include: {
+            user: {
+              select: {
+                id: true,
+                username: true
+              }
+            },
+            _count: {
+              select: {
+                stageMiniPrompts: true,
+                references: true
+              }
+            }
+          }
+        }
+      }
+    });
+
+    // Combine and deduplicate
+    const allMiniPrompts = [
+      ...ownedMiniPrompts,
+      ...referencedMiniPrompts.map(ref => ref.miniPrompt),
+    ];
+
+    let miniPrompts = Array.from(
+      new Map(allMiniPrompts.map((mp) => [mp.id, mp])).values()
+    ).sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+
+    // Apply search filter if provided
+    if (search) {
+      const searchLower = search.toLowerCase();
+      miniPrompts = miniPrompts.filter(mp =>
+        mp.name.toLowerCase().includes(searchLower) ||
+        mp.content.toLowerCase().includes(searchLower)
+      );
+    }
+
+    // Limit results
+    miniPrompts = miniPrompts.slice(0, 20);
 
     if (miniPrompts.length === 0) {
       return {

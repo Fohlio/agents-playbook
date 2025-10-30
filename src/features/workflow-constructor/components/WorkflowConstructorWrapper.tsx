@@ -13,6 +13,7 @@ import { MiniPromptLibrary } from './MiniPromptLibrary';
 import { StageSection } from './StageSection';
 import { StageCreateForm } from './StageCreateForm';
 import { saveWorkflow } from '../actions/workflow-actions';
+import { TagSelector } from '@/shared/ui/molecules/TagSelector';
 
 interface WorkflowConstructorWrapperProps {
   userId: string;
@@ -34,6 +35,7 @@ export function WorkflowConstructorWrapper({ userId, miniPrompts: initialMiniPro
   const [isCreatingStage, setIsCreatingStage] = useState(false);
   const [workflowName, setWorkflowName] = useState('Untitled Workflow');
   const [isActive, setIsActive] = useState(false);
+  const [selectedTagIds, setSelectedTagIds] = useState<string[]>([]);
   const [isSaving, setIsSaving] = useState(false);
 
   const handleDragEnd = useCallback(
@@ -136,6 +138,7 @@ export function WorkflowConstructorWrapper({ userId, miniPrompts: initialMiniPro
           userId,
           name: workflowName,
           isActive,
+          tagIds: selectedTagIds,
         }),
       });
       const workflow = await response.json();
@@ -165,35 +168,43 @@ export function WorkflowConstructorWrapper({ userId, miniPrompts: initialMiniPro
     } finally {
       setIsSaving(false);
     }
-  }, [userId, workflowName, isActive, localStages, router]);
+  }, [userId, workflowName, isActive, selectedTagIds, localStages, router]);
 
   return (
     <div className="h-screen flex flex-col">
-      <div className="bg-surface-base border-b border-border-base px-6 py-4 flex items-center justify-between">
-        <div className="flex-1">
-          <Input
-            type="text"
-            value={workflowName}
-            onChange={(e) => setWorkflowName(e.target.value)}
-            placeholder="Workflow name"
-            className="text-2xl font-bold text-text-primary bg-transparent border-b-2 border-transparent hover:border-border-hover focus:border-accent-primary focus:outline-none transition-colors w-full max-w-md"
-          />
+      <div className="bg-surface-base border-b border-border-base px-6 py-4">
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex-1">
+            <Input
+              type="text"
+              value={workflowName}
+              onChange={(e) => setWorkflowName(e.target.value)}
+              placeholder="Workflow name"
+              className="text-2xl font-bold text-text-primary bg-transparent border-b-2 border-transparent hover:border-border-hover focus:border-accent-primary focus:outline-none transition-colors w-full max-w-md"
+            />
+          </div>
+          <div className="flex gap-3 items-center">
+            <Toggle
+              checked={isActive}
+              onChange={setIsActive}
+              label={isActive ? 'Active' : 'Inactive'}
+              testId="workflow-active-toggle"
+            />
+            <Button
+              variant="primary"
+              onClick={handleSaveWorkflow}
+              disabled={isSaving || !workflowName.trim()}
+              testId="save-workflow"
+            >
+              {isSaving ? 'Saving...' : 'Save Workflow'}
+            </Button>
+          </div>
         </div>
-        <div className="flex gap-3 items-center">
-          <Toggle
-            checked={isActive}
-            onChange={setIsActive}
-            label={isActive ? 'Active' : 'Inactive'}
-            testId="workflow-active-toggle"
-          />
-          <Button
-            variant="primary"
-            onClick={handleSaveWorkflow}
-            disabled={isSaving || !workflowName.trim()}
-            testId="save-workflow"
-          >
-            {isSaving ? 'Saving...' : 'Save Workflow'}
-          </Button>
+        <div className="max-w-2xl">
+          <label className="block text-sm font-medium text-text-primary mb-2">
+            Tags
+          </label>
+          <TagSelector selectedTagIds={selectedTagIds} onChange={setSelectedTagIds} />
         </div>
       </div>
 

@@ -70,6 +70,21 @@ export async function saveWorkflow(input: SaveWorkflowInput): Promise<WorkflowWi
       },
     });
 
+    // Update tags if provided
+    if (input.tagIds !== undefined) {
+      await tx.workflowTag.deleteMany({
+        where: { workflowId: input.workflowId },
+      });
+      if (input.tagIds.length > 0) {
+        await tx.workflowTag.createMany({
+          data: input.tagIds.map((tagId) => ({
+            workflowId: input.workflowId,
+            tagId,
+          })),
+        });
+      }
+    }
+
     // Delete all existing stages and their mini-prompts (cascade will handle StageMiniPrompt)
     await tx.workflowStage.deleteMany({
       where: { workflowId: input.workflowId },

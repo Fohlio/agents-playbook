@@ -108,6 +108,9 @@ export default function AdminSystemWorkflowsPage() {
           <Link href={ROUTES.ADMIN.SYSTEM_MINI_PROMPTS}>
             <Button variant="secondary">System Mini-Prompts</Button>
           </Link>
+          <Link href={ROUTES.ADMIN.TAGS}>
+            <Button variant="secondary">Tags</Button>
+          </Link>
           <Link href={ROUTES.LIBRARY.WORKFLOWS.NEW}>
             <Button variant="primary">+ Create System Workflow</Button>
           </Link>

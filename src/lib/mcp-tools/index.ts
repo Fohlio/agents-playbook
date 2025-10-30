@@ -21,4 +21,9 @@ export {
 export {
   getSelectedPromptToolSchema,
   getSelectedPromptHandler
-} from './get-selected-prompt'; 
+} from './get-selected-prompt';
+
+export {
+  getUserWorkflowsToolSchema,
+  getUserWorkflowsHandler
+} from './get-user-workflows'; 

@@ -1,5 +1,6 @@
 import { createMcpHandler } from '@vercel/mcp-adapter';
 import { config } from 'dotenv';
+import { auth } from '@/lib/auth/auth';
 import {
   getWorkflowsToolSchema,
   getWorkflowsHandler,
@@ -10,7 +11,9 @@ import {
   getPromptsToolSchema,
   getPromptsHandler,
   getSelectedPromptToolSchema,
-  getSelectedPromptHandler
+  getSelectedPromptHandler,
+  getUserWorkflowsToolSchema,
+  getUserWorkflowsHandler
 } from '@/lib/mcp-tools';
 
 // Load environment variables
@@ -18,27 +21,38 @@ config();
 
 const handler = createMcpHandler(
   (server) => {
-    // Tool 1: Get available workflows using semantic search
+    // Tool 1: Get workflows
+    // - No auth: Returns public system workflows (YAML playbook)
+    // - With auth: Returns active workflows from user's library
     server.tool(
       'get_available_workflows',
-      'Get workflow recommendations based on task description using semantic search',
+      'Get workflow recommendations. Without auth: public system workflows. With auth: active workflows from your library.',
       getWorkflowsToolSchema,
-      async ({ task_description }) => {
-        return await getWorkflowsHandler({ task_description });
+      async ({ task_description }, { request }) => {
+        const session = await auth();
+        const userId = session?.user?.id;
+
+        if (userId) {
+          // Authenticated: return user's library workflows
+          return await getUserWorkflowsHandler({ search: task_description, userId });
+        } else {
+          // Not authenticated: return public system workflows
+          return await getWorkflowsHandler({ task_description });
+        }
       },
     );
 
-    // Tool 2: Select workflow - returns full content from MD file
+    // Tool 2: Select workflow - returns full content
     server.tool(
       'select_workflow',
-      'Get complete workflow details including all steps from the original markdown file',
+      'Get complete workflow details including all steps',
       selectWorkflowToolSchema,
       async ({ workflow_id }) => {
         return await selectWorkflowHandler({ workflow_id });
       },
     );
 
-    // Tool 3: Get next step - parses steps from MD content with context support
+    // Tool 3: Get next step - parses steps with context support
     server.tool(
       'get_next_step',
       'Get the next step in a workflow progression with guided execution',
@@ -48,13 +62,18 @@ const handler = createMcpHandler(
       },
     );
 
-    // Tool 4: Get active mini prompts
+    // Tool 4: Get mini prompts
+    // - No auth: Returns public active mini prompts
+    // - With auth: Returns active mini prompts from user's library
     server.tool(
       'get_prompts',
-      'Get all active mini prompts with optional search filtering',
+      'Get mini prompts. Without auth: public active prompts. With auth: active prompts from your library.',
       getPromptsToolSchema,
-      async ({ search }) => {
-        return await getPromptsHandler({ search });
+      async ({ search }, { request }) => {
+        const session = await auth();
+        const userId = session?.user?.id;
+
+        return await getPromptsHandler({ search, userId });
       },
     );
 
@@ -72,4 +91,4 @@ const handler = createMcpHandler(
   { basePath: '/api' },
 );
 
-export { handler as GET, handler as POST, handler as DELETE }; 
+export { handler as GET, handler as POST, handler as DELETE };

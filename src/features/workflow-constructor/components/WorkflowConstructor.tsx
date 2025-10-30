@@ -14,6 +14,7 @@ import { useWorkflowConstructor } from '../hooks/use-workflow-constructor';
 import { MiniPromptLibrary } from './MiniPromptLibrary';
 import { StageSection } from './StageSection';
 import { StageCreateForm } from './StageCreateForm';
+import { TagSelector } from '@/shared/ui/molecules/TagSelector';
 
 interface WorkflowConstructorProps {
   data: WorkflowConstructorData;
@@ -41,6 +42,9 @@ export function WorkflowConstructor({ data }: WorkflowConstructorProps) {
   const [workflowName, setWorkflowName] = useState(currentWorkflow?.name ?? 'Untitled Workflow');
   const [isActive, setIsActive] = useState(currentWorkflow?.isActive ?? false);
   const [isPublic, setIsPublic] = useState(currentWorkflow?.visibility === 'PUBLIC');
+  const [selectedTagIds, setSelectedTagIds] = useState<string[]>(
+    currentWorkflow?.tags?.map((t: any) => t.tag.id) ?? []
+  );
 
   const handleDragEnd = useCallback(
     (event: DragEndEvent) => {
@@ -146,6 +150,7 @@ export function WorkflowConstructor({ data }: WorkflowConstructorProps) {
       description: currentWorkflow.description ?? undefined,
       isActive: isActive,
       visibility: isPublic ? 'PUBLIC' : 'PRIVATE',
+      tagIds: selectedTagIds,
       stages: localStages.map((stage, index) => ({
         name: stage.name,
         description: stage.description ?? undefined,
@@ -157,7 +162,7 @@ export function WorkflowConstructor({ data }: WorkflowConstructorProps) {
         })),
       })),
     });
-  }, [currentWorkflow, workflowName, isPublic, localStages, handleSave]);
+  }, [currentWorkflow, workflowName, isActive, isPublic, selectedTagIds, localStages, handleSave]);
 
   if (!currentWorkflow) {
     return (
@@ -169,55 +174,69 @@ export function WorkflowConstructor({ data }: WorkflowConstructorProps) {
 
   return (
     <div className="h-screen flex flex-col">
-      <div className="bg-surface-base border-b border-border-base px-6 py-4 flex items-center justify-between">
-        <div className="flex-1">
-          <Input
-            type="text"
-            value={workflowName}
-            onChange={(e) => {
-              setWorkflowName(e.target.value);
-              if (e.target.value !== currentWorkflow.name) {
+      <div className="bg-surface-base border-b border-border-base px-6 py-4">
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex-1">
+            <Input
+              type="text"
+              value={workflowName}
+              onChange={(e) => {
+                setWorkflowName(e.target.value);
+                if (e.target.value !== currentWorkflow.name) {
+                  markDirty();
+                }
+              }}
+              placeholder="Workflow name"
+              className="text-2xl font-bold text-text-primary bg-transparent border-b-2 border-transparent hover:border-border-hover focus:border-accent-primary focus:outline-none transition-colors w-full max-w-md"
+            />
+          </div>
+          <div className="flex gap-3 items-center">
+            <Toggle
+              checked={isActive}
+              onChange={(checked) => {
+                setIsActive(checked);
                 markDirty();
-              }
-            }}
-            placeholder="Workflow name"
-            className="text-2xl font-bold text-text-primary bg-transparent border-b-2 border-transparent hover:border-border-hover focus:border-accent-primary focus:outline-none transition-colors w-full max-w-md"
-          />
-        </div>
-        <div className="flex gap-3 items-center">
-          <Toggle
-            checked={isActive}
-            onChange={(checked) => {
-              setIsActive(checked);
-              markDirty();
-            }}
-            label={isActive ? 'Active' : 'Inactive'}
-            testId="workflow-active-toggle"
-          />
-          <Toggle
-            checked={isPublic}
-            onChange={(checked) => {
-              setIsPublic(checked);
-              markDirty();
-            }}
-            label={isPublic ? 'Public' : 'Private'}
-            testId="workflow-public-toggle"
-          />
-          <Button
-            variant="secondary"
-            onClick={() => setLocalStages(currentWorkflow.stages)}
-            disabled={!isDirty}
-          >
-            Reset
-          </Button>
-          <Button
-            variant="primary"
-            onClick={handleSaveWorkflow}
+              }}
+              label={isActive ? 'Active' : 'Inactive'}
+              testId="workflow-active-toggle"
+            />
+            <Toggle
+              checked={isPublic}
+              onChange={(checked) => {
+                setIsPublic(checked);
+                markDirty();
+              }}
+              label={isPublic ? 'Public' : 'Private'}
+              testId="workflow-public-toggle"
+            />
+            <Button
+              variant="secondary"
+              onClick={() => setLocalStages(currentWorkflow.stages)}
+              disabled={!isDirty}
+            >
+              Reset
+            </Button>
+            <Button
+              variant="primary"
+              onClick={handleSaveWorkflow}
             disabled={!isDirty || isSaving}
             testId="save-workflow"
           >
             {isSaving ? 'Saving...' : 'Save Workflow'}
           </Button>
+        </div>
+        </div>
+        <div className="max-w-2xl">
+          <label className="block text-sm font-medium text-text-primary mb-2">
+            Tags
+          </label>
+          <TagSelector
+            selectedTagIds={selectedTagIds}
+            onChange={(tagIds) => {
+              setSelectedTagIds(tagIds);
+              markDirty();
+            }}
+          />
         </div>
       </div>
 

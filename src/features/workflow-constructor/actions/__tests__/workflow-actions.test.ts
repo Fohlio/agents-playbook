@@ -81,11 +81,12 @@ describe('Workflow Constructor Actions', () => {
   describe('getAllAvailableMiniPrompts', () => {
     it('fetches user mini-prompts only', async () => {
       const mockMiniPrompts = [
-        { id: 'mp-1', name: 'User Prompt 1', userId: 'user-1', visibility: 'PRIVATE' },
-        { id: 'mp-2', name: 'User Prompt 2', userId: 'user-1', visibility: 'PUBLIC' },
+        { id: 'mp-1', name: 'User Prompt 1', userId: 'user-1', visibility: 'PRIVATE', createdAt: new Date() },
+        { id: 'mp-2', name: 'User Prompt 2', userId: 'user-1', visibility: 'PUBLIC', createdAt: new Date() },
       ];
 
       prismaMock.miniPrompt.findMany.mockResolvedValue(mockMiniPrompts as any);
+      prismaMock.miniPromptReference.findMany.mockResolvedValue([]);
 
       const result = await getAllAvailableMiniPrompts('user-1');
 
@@ -93,15 +94,13 @@ describe('Workflow Constructor Actions', () => {
       expect(prismaMock.miniPrompt.findMany).toHaveBeenCalledWith({
         where: {
           userId: 'user-1',
-        },
-        orderBy: {
-          name: 'asc',
-        },
+        }
       });
     });
 
     it('returns empty array when no prompts available', async () => {
       prismaMock.miniPrompt.findMany.mockResolvedValue([]);
+      prismaMock.miniPromptReference.findMany.mockResolvedValue([]);
 
       const result = await getAllAvailableMiniPrompts('user-1');
 

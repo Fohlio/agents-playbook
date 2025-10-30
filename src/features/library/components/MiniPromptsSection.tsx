@@ -19,6 +19,7 @@ interface MiniPrompt {
   isActive: boolean;
   isOwned?: boolean;
   referenceId?: string | null;
+  tags?: { tag: { id: string; name: string; color: string | null } }[];
 }
 
 export function MiniPromptsSection() {
@@ -46,28 +47,43 @@ export function MiniPromptsSection() {
   const handleCreate = async (
     name: string,
     content: string,
-    visibility: 'PUBLIC' | 'PRIVATE'
+    visibility: 'PUBLIC' | 'PRIVATE',
+    tagIds: string[]
   ) => {
-    const newMiniPrompt = await createMiniPrompt({ name, content, visibility });
-    setMiniPrompts([newMiniPrompt, ...miniPrompts]);
+    try {
+      const response = await fetch('/api/mini-prompts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, content, visibility, tagIds }),
+      });
+      const newMiniPrompt = await response.json();
+      setMiniPrompts([newMiniPrompt, ...miniPrompts]);
+    } catch (error) {
+      alert('Failed to create mini-prompt');
+    }
   };
 
   const handleEdit = async (
     name: string,
     content: string,
-    visibility: 'PUBLIC' | 'PRIVATE'
+    visibility: 'PUBLIC' | 'PRIVATE',
+    tagIds: string[]
   ) => {
     if (!editingMiniPrompt) return;
-    const updated = await updateMiniPrompt({
-      id: editingMiniPrompt.id,
-      name,
-      content,
-      visibility,
-    });
-    setMiniPrompts(
-      miniPrompts.map((m) => (m.id === updated.id ? updated : m))
-    );
-    setEditingMiniPrompt(null);
+    try {
+      const response = await fetch(`/api/mini-prompts/${editingMiniPrompt.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, content, visibility, tagIds }),
+      });
+      const updated = await response.json();
+      setMiniPrompts(
+        miniPrompts.map((m) => (m.id === updated.id ? updated : m))
+      );
+      setEditingMiniPrompt(null);
+    } catch (error) {
+      alert('Failed to update mini-prompt');
+    }
   };
 
   const handleDuplicate = async (miniPrompt: MiniPrompt) => {
@@ -241,6 +257,7 @@ export function MiniPromptsSection() {
                 name: editingMiniPrompt.name,
                 content: editingMiniPrompt.content,
                 visibility: editingMiniPrompt.visibility as 'PUBLIC' | 'PRIVATE',
+                tagIds: editingMiniPrompt.tags?.map(t => t.tag.id) ?? [],
               }
             : undefined
         }
