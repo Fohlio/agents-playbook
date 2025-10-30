@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Card, CardHeader, Badge, Button } from "@/shared/ui/atoms";
+import { ShareButton } from "@/features/sharing/ui";
 import { WorkflowWithUsage } from "../lib/dashboard-service";
 import { deactivateWorkflow } from "../actions/workflow-actions";
 
@@ -30,7 +31,11 @@ export function ActiveWorkflowsSection({ workflows }: ActiveWorkflowsSectionProp
   if (workflows.length === 0) {
     return (
       <Card testId="active-workflows-empty">
-        <CardHeader title="Active Workflows" description="No active workflows yet" />
+        <CardHeader
+          title="Active Workflows"
+          description="No active workflows yet"
+          titleHref="/dashboard/library?tab=workflows"
+        />
         <div className="text-center py-8">
           <p className="text-gray-500">Create and activate your first workflow to get started</p>
         </div>
@@ -43,6 +48,7 @@ export function ActiveWorkflowsSection({ workflows }: ActiveWorkflowsSectionProp
       <CardHeader
         title="Active Workflows"
         description={`${workflows.length} of 5 active workflows`}
+        titleHref="/dashboard/library?tab=workflows"
       />
 
       {error && <p className="text-sm text-red-600 mb-4">{error}</p>}
@@ -68,6 +74,11 @@ export function ActiveWorkflowsSection({ workflows }: ActiveWorkflowsSectionProp
             </div>
 
             <div className="flex gap-2">
+              <ShareButton
+                targetType="WORKFLOW"
+                targetId={workflow.id}
+                targetName={workflow.name}
+              />
               <Button
                 variant="secondary"
                 size="sm"

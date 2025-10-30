@@ -54,15 +54,17 @@ export async function GET(
   }
 
   // Check if user has access (owns it or has it in library)
+  const workflowReference = await prisma.workflowReference.findFirst({
+    where: {
+      workflowId: id,
+      userId: session.user.id,
+    },
+  });
+
   const hasAccess =
     workflow.userId === session.user.id ||
     workflow.visibility === 'PUBLIC' ||
-    (await prisma.workflowReference.findFirst({
-      where: {
-        workflowId: id,
-        userId: session.user.id,
-      },
-    }));
+    workflowReference;
 
   if (!hasAccess) {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
@@ -78,11 +80,15 @@ export async function GET(
     _count: { rating: true },
   });
 
+  // Check if workflow is in user's library (either owns it or has a reference)
+  const isInUserLibrary = workflow.userId === session.user.id || !!workflowReference;
+
   // Format response to match PublicWorkflowWithMeta type
   const response = {
     ...workflow,
     averageRating: ratingStats._avg.rating || null,
     ratingCount: ratingStats._count.rating,
+    isInUserLibrary,
   };
 
   return NextResponse.json(response);

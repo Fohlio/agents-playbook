@@ -97,6 +97,51 @@ export async function getActiveWorkflows(userId: string): Promise<WorkflowWithUs
 }
 
 /**
+ * Get active mini-prompts for user
+ * Includes both owned and referenced (imported) mini-prompts
+ */
+export async function getActiveMiniPrompts(userId: string): Promise<MiniPromptWithUsage[]> {
+  // Get owned active mini-prompts
+  const ownedMiniPrompts = await prisma.miniPrompt.findMany({
+    where: { userId, isActive: true },
+    include: {
+      _count: {
+        select: { stageMiniPrompts: true },
+      },
+    },
+  });
+
+  // Get referenced active mini-prompts
+  const referencedMiniPrompts = await prisma.miniPromptReference.findMany({
+    where: {
+      userId,
+      miniPrompt: { isActive: true }
+    },
+    include: {
+      miniPrompt: {
+        include: {
+          _count: {
+            select: { stageMiniPrompts: true },
+          },
+        },
+      },
+    },
+  });
+
+  // Combine and deduplicate
+  const allMiniPrompts = [
+    ...ownedMiniPrompts,
+    ...referencedMiniPrompts.map(ref => ref.miniPrompt),
+  ];
+
+  const uniqueMiniPrompts = Array.from(
+    new Map(allMiniPrompts.map((m) => [m.id, m])).values()
+  ).sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime());
+
+  return uniqueMiniPrompts;
+}
+
+/**
  * Get all workflows for user with optional filters
  */
 export async function getWorkflows(

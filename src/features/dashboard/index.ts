@@ -12,6 +12,7 @@
 // ============================================================================
 export { DashboardStats } from "./components/DashboardStats";
 export { ActiveWorkflowsSection } from "./components/ActiveWorkflowsSection";
+export { ActiveMiniPromptsSection } from "./components/ActiveMiniPromptsSection";
 export { QuickActions } from "./components/QuickActions";
 
 // ============================================================================
@@ -20,6 +21,7 @@ export { QuickActions } from "./components/QuickActions";
 export {
   getDashboardStats,
   getActiveWorkflows,
+  getActiveMiniPrompts,
   getWorkflows,
   getMiniPrompts,
   getRecentActivity,
@@ -37,6 +39,8 @@ export {
 } from "./actions/workflow-actions";
 
 export {
+  activateMiniPrompt,
+  deactivateMiniPrompt,
   deleteMiniPrompt,
   toggleMiniPromptVisibility,
 } from "./actions/mini-prompt-actions";

@@ -216,6 +216,13 @@ export function WorkflowsSection() {
                     </>
                   ) : (
                     <>
+                      {workflow.visibility === 'PUBLIC' && (
+                        <ShareButton
+                          targetType="WORKFLOW"
+                          targetId={workflow.id}
+                          targetName={workflow.name}
+                        />
+                      )}
                       <IconButton
                         variant="secondary"
                         size="sm"

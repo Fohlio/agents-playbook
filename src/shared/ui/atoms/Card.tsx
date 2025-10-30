@@ -1,4 +1,5 @@
 import { ReactNode } from "react";
+import Link from "next/link";
 import { cn } from "@/shared/lib/utils/cn";
 
 export interface CardProps {
@@ -26,12 +27,21 @@ export interface CardHeaderProps {
   description?: string;
   className?: string;
   testId?: string;
+  titleHref?: string;
 }
 
-export function CardHeader({ title, description, className, testId }: CardHeaderProps) {
+export function CardHeader({ title, description, className, testId, titleHref }: CardHeaderProps) {
   return (
     <div className={cn("mb-6", className)} data-testid={testId}>
-      <h2 className="text-xl font-semibold text-text-primary">{title}</h2>
+      {titleHref ? (
+        <Link href={titleHref}>
+          <h2 className="text-xl font-semibold text-text-primary hover:text-primary-600 transition-colors cursor-pointer">
+            {title}
+          </h2>
+        </Link>
+      ) : (
+        <h2 className="text-xl font-semibold text-text-primary">{title}</h2>
+      )}
       {description && (
         <p className="mt-1 text-sm text-text-secondary">{description}</p>
       )}

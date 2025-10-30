@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { signIn } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import { loginSchema, type LoginInput } from "@/lib/validators/auth";
 import { Input, Button, FormField, Alert, Checkbox, Link } from "@/shared/ui/atoms";
 import { ROUTES } from "@/shared/routes";
@@ -21,6 +22,8 @@ import { ROUTES } from "@/shared/routes";
 export default function LoginPage() {
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const { data: session } = useSession();
+  const router = useRouter();
 
   const {
     register,
@@ -34,6 +37,13 @@ export default function LoginPage() {
       rememberMe: false,
     },
   });
+
+  // Redirect to dashboard if already authenticated
+  useEffect(() => {
+    if (session) {
+      router.push(ROUTES.DASHBOARD);
+    }
+  }, [session, router]);
 
   const onSubmit = async (data: LoginInput) => {
     setIsLoading(true);

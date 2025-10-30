@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState, useEffect } from "react";
+import { useSession } from "next-auth/react";
 import { ROUTES } from "@/shared/routes";
 
 interface GitHubStats {
@@ -86,6 +87,8 @@ function GitHubStats() {
 }
 
 export default function Header() {
+  const { data: session, status } = useSession();
+
   return (
     <header className="relative bg-gradient-to-r from-slate-900 via-purple-900 to-slate-900 backdrop-blur-sm">
       <div className="absolute inset-0 bg-gradient-to-r from-blue-600/10 to-purple-600/10"></div>
@@ -104,14 +107,23 @@ export default function Header() {
 
           <div className="flex items-center space-x-4">
             <GitHubStats />
-            
+
             {/* Authentication Buttons */}
-            <Link 
-              href={ROUTES.LOGIN}
-              className="px-4 py-2 text-white hover:text-white/80 transition-colors"
-            >
-              Sign In
-            </Link>
+            {status === 'authenticated' ? (
+              <Link
+                href={ROUTES.DASHBOARD}
+                className="px-4 py-2 text-white hover:text-white/80 transition-colors"
+              >
+                Dashboard
+              </Link>
+            ) : (
+              <Link
+                href={ROUTES.LOGIN}
+                className="px-4 py-2 text-white hover:text-white/80 transition-colors"
+              >
+                Sign In
+              </Link>
+            )}
             
             <Link 
               href="https://github.com/chernobelenkiy/agents-playbook"

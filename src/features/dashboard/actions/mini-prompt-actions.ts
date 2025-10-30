@@ -27,6 +27,44 @@ export async function deleteMiniPrompt(miniPromptId: string) {
   return { success: true };
 }
 
+export async function activateMiniPrompt(miniPromptId: string) {
+  const session = await auth();
+  if (!session?.user?.id) {
+    throw new Error("Unauthorized");
+  }
+
+  const miniPrompt = await prisma.miniPrompt.findFirst({
+    where: { id: miniPromptId, userId: session.user.id },
+  });
+
+  if (!miniPrompt) {
+    throw new Error("Mini-prompt not found");
+  }
+
+  await prisma.miniPrompt.update({
+    where: { id: miniPromptId },
+    data: { isActive: true },
+  });
+
+  revalidatePath("/dashboard");
+  return { success: true };
+}
+
+export async function deactivateMiniPrompt(miniPromptId: string) {
+  const session = await auth();
+  if (!session?.user?.id) {
+    throw new Error("Unauthorized");
+  }
+
+  await prisma.miniPrompt.updateMany({
+    where: { id: miniPromptId, userId: session.user.id },
+    data: { isActive: false },
+  });
+
+  revalidatePath("/dashboard");
+  return { success: true };
+}
+
 export async function toggleMiniPromptVisibility(miniPromptId: string) {
   const session = await auth();
   if (!session?.user?.id) {

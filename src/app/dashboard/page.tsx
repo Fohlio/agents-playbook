@@ -4,8 +4,10 @@ import { ROUTES } from "@/shared/routes";
 import {
   getDashboardStats,
   getActiveWorkflows,
+  getActiveMiniPrompts,
   DashboardStats,
   ActiveWorkflowsSection,
+  ActiveMiniPromptsSection,
   QuickActions,
 } from "@/features/dashboard";
 
@@ -13,7 +15,7 @@ import {
  * Dashboard Page
  *
  * Main landing page after user authentication.
- * Displays user statistics, active workflows, and quick actions.
+ * Displays user statistics, active workflows, active mini-prompts, and quick actions.
  */
 export default async function DashboardPage() {
   const session = await auth();
@@ -23,9 +25,10 @@ export default async function DashboardPage() {
   }
 
   // Fetch all dashboard data in parallel
-  const [stats, activeWorkflows] = await Promise.all([
+  const [stats, activeWorkflows, activeMiniPrompts] = await Promise.all([
     getDashboardStats(session.user.id),
     getActiveWorkflows(session.user.id),
+    getActiveMiniPrompts(session.user.id),
   ]);
 
   return (
@@ -44,6 +47,9 @@ export default async function DashboardPage() {
 
       {/* Active Workflows */}
       <ActiveWorkflowsSection workflows={activeWorkflows} />
+
+      {/* Active Mini-Prompts */}
+      <ActiveMiniPromptsSection miniPrompts={activeMiniPrompts} />
     </div>
   );
 }

@@ -217,6 +217,13 @@ export function MiniPromptsSection() {
                     </>
                   ) : (
                     <>
+                      {miniPrompt.visibility === 'PUBLIC' && (
+                        <ShareButton
+                          targetType="MINI_PROMPT"
+                          targetId={miniPrompt.id}
+                          targetName={miniPrompt.name}
+                        />
+                      )}
                       <IconButton
                         variant="secondary"
                         size="sm"
