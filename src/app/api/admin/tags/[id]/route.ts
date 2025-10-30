@@ -4,7 +4,7 @@ import { prisma } from '@/lib/db/client';
 
 export async function PATCH(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const session = await auth();
 
@@ -12,6 +12,7 @@ export async function PATCH(
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
+  const { id } = await params;
   const body = await request.json();
   const { name, color } = body;
 
@@ -19,7 +20,7 @@ export async function PATCH(
     const existingTag = await prisma.tag.findFirst({
       where: {
         name,
-        NOT: { id: params.id }
+        NOT: { id }
       }
     });
 
@@ -29,7 +30,7 @@ export async function PATCH(
   }
 
   const tag = await prisma.tag.update({
-    where: { id: params.id },
+    where: { id },
     data: {
       ...(name !== undefined && { name }),
       ...(color !== undefined && { color })
@@ -41,7 +42,7 @@ export async function PATCH(
 
 export async function DELETE(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const session = await auth();
 
@@ -49,8 +50,10 @@ export async function DELETE(
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
+  const { id } = await params;
+
   await prisma.tag.delete({
-    where: { id: params.id }
+    where: { id }
   });
 
   return NextResponse.json({ success: true });

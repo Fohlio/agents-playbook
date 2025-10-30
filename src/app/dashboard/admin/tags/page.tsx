@@ -72,7 +72,7 @@ export default function AdminTagsPage() {
 
       setNewTag({ name: '', color: '#3B82F6' });
       fetchTags();
-    } catch (error) {
+    } catch {
       alert('Failed to create tag');
     }
   };
@@ -98,7 +98,7 @@ export default function AdminTagsPage() {
 
       setEditingTag(null);
       fetchTags();
-    } catch (error) {
+    } catch {
       alert('Failed to update tag');
     }
   };
@@ -114,7 +114,7 @@ export default function AdminTagsPage() {
         throw new Error('Failed to delete');
       }
       fetchTags();
-    } catch (error) {
+    } catch {
       alert('Failed to delete tag');
     }
   };

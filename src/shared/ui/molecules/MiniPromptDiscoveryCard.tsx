@@ -3,7 +3,8 @@
 import { useState } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { Card, Button, Badge } from "@/shared/ui/atoms";
+import { Card, Button } from "@/shared/ui/atoms";
+import { ConfirmDialog } from "@/shared/ui/molecules";
 import { ROUTES } from "@/shared/routes";
 import { PublicMiniPromptWithMeta } from "@/features/public-discovery/types";
 import { MiniPromptEditorModal } from "@/features/workflow-constructor/components/MiniPromptEditorModal";
@@ -16,6 +17,7 @@ interface MiniPromptDiscoveryCardProps {
     tags?: { tag: { id: string; name: string; color: string | null } }[];
   };
   onImport: (id: string) => void;
+  onRemove?: (id: string) => void;
   isAuthenticated: boolean;
   isImporting?: boolean;
   currentUserId?: string;
@@ -24,18 +26,39 @@ interface MiniPromptDiscoveryCardProps {
 export function MiniPromptDiscoveryCard({
   miniPrompt,
   onImport,
+  onRemove,
   isAuthenticated,
   isImporting,
   currentUserId,
 }: MiniPromptDiscoveryCardProps) {
   const [isViewOpen, setIsViewOpen] = useState(false);
   const [isRatingDialogOpen, setIsRatingDialogOpen] = useState(false);
+  const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
+  const [isRemoving, setIsRemoving] = useState(false);
   const [currentRating, setCurrentRating] = useState<number | undefined>();
   const [localRating, setLocalRating] = useState<{ average: number | null; count: number }>({
     average: miniPrompt.averageRating,
     count: miniPrompt.totalRatings,
   });
   const isOwnMiniPrompt = currentUserId && miniPrompt.userId === currentUserId;
+
+  const handleRemoveClick = () => {
+    setIsConfirmDialogOpen(true);
+  };
+
+  const handleConfirmRemove = async () => {
+    if (!onRemove) return;
+
+    setIsRemoving(true);
+    try {
+      await onRemove(miniPrompt.id);
+      setIsConfirmDialogOpen(false);
+    } catch (error) {
+      console.error("Failed to remove mini-prompt:", error);
+    } finally {
+      setIsRemoving(false);
+    }
+  };
 
   const handleImportClick = () => {
     if (!isAuthenticated) {
@@ -169,22 +192,33 @@ export function MiniPromptDiscoveryCard({
                 >
                   ☆
                 </button>
-                <Button
-                  variant={miniPrompt.isInUserLibrary ? "secondary" : "primary"}
-                  size="sm"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleImportClick();
-                  }}
-                  disabled={miniPrompt.isInUserLibrary || isImporting}
-                  testId={`import-button-${miniPrompt.id}`}
-                >
-                  {miniPrompt.isInUserLibrary
-                    ? "In Library"
-                    : isAuthenticated
-                      ? "Add to Library"
-                      : "Login to Import"}
-                </Button>
+                {miniPrompt.isInUserLibrary ? (
+                  <Button
+                    variant="danger"
+                    size="sm"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleRemoveClick();
+                    }}
+                    disabled={isRemoving}
+                    testId={`remove-button-${miniPrompt.id}`}
+                  >
+                    {isRemoving ? "Removing..." : "Remove from Library"}
+                  </Button>
+                ) : (
+                  <Button
+                    variant="primary"
+                    size="sm"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleImportClick();
+                    }}
+                    disabled={isImporting}
+                    testId={`import-button-${miniPrompt.id}`}
+                  >
+                    {isAuthenticated ? "Add to Library" : "Login to Import"}
+                  </Button>
+                )}
               </div>
             )}
           </div>
@@ -210,6 +244,18 @@ export function MiniPromptDiscoveryCard({
         targetName={miniPrompt.name}
         currentRating={currentRating}
         onSubmit={handleSubmitRating}
+      />
+
+      <ConfirmDialog
+        isOpen={isConfirmDialogOpen}
+        onClose={() => setIsConfirmDialogOpen(false)}
+        onConfirm={handleConfirmRemove}
+        title="Remove from Library"
+        message={`Are you sure you want to remove "${miniPrompt.name}" from your library?`}
+        confirmLabel="Remove"
+        variant="danger"
+        loading={isRemoving}
+        testId={`confirm-remove-${miniPrompt.id}`}
       />
     </>
   );

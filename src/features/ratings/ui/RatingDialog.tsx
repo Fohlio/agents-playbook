@@ -18,7 +18,6 @@ export function RatingDialog({
   isOpen,
   onClose,
   targetType,
-  targetId,
   targetName,
   currentRating,
   onSubmit,

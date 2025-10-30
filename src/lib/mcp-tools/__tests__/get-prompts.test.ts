@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { prismaMock } from "@/lib/db/__mocks__/client";
 import { getPromptsHandler } from "../get-prompts";
 

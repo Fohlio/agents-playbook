@@ -3,7 +3,8 @@
 import { useState } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { Card, Button, Badge } from "@/shared/ui/atoms";
+import { Card, Button } from "@/shared/ui/atoms";
+import { ConfirmDialog } from "@/shared/ui/molecules";
 import { ROUTES } from "@/shared/routes";
 import { PublicWorkflowWithMeta } from "@/features/public-discovery/types";
 import { WorkflowPreviewModal } from "./WorkflowPreviewModal";
@@ -16,6 +17,7 @@ interface WorkflowDiscoveryCardProps {
     tags?: { tag: { id: string; name: string; color: string | null } }[];
   };
   onImport: (id: string) => void;
+  onRemove?: (id: string) => void;
   isAuthenticated: boolean;
   isImporting?: boolean;
   currentUserId?: string;
@@ -24,12 +26,15 @@ interface WorkflowDiscoveryCardProps {
 export function WorkflowDiscoveryCard({
   workflow,
   onImport,
+  onRemove,
   isAuthenticated,
   isImporting,
   currentUserId,
 }: WorkflowDiscoveryCardProps) {
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [isRatingDialogOpen, setIsRatingDialogOpen] = useState(false);
+  const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
+  const [isRemoving, setIsRemoving] = useState(false);
   const [currentRating, setCurrentRating] = useState<number | undefined>();
   const [localRating, setLocalRating] = useState<{ average: number | null; count: number }>({
     average: workflow.averageRating,
@@ -87,6 +92,24 @@ export function WorkflowDiscoveryCard({
       count: data.stats.totalRatings,
     });
     setCurrentRating(rating);
+  };
+
+  const handleRemoveClick = () => {
+    setIsConfirmDialogOpen(true);
+  };
+
+  const handleConfirmRemove = async () => {
+    if (!onRemove) return;
+
+    setIsRemoving(true);
+    try {
+      await onRemove(workflow.id);
+      setIsConfirmDialogOpen(false);
+    } catch (error) {
+      console.error("Failed to remove workflow:", error);
+    } finally {
+      setIsRemoving(false);
+    }
   };
 
   return (
@@ -163,22 +186,33 @@ export function WorkflowDiscoveryCard({
               >
                 ☆
               </button>
-              <Button
-                variant={workflow.isInUserLibrary ? "secondary" : "primary"}
-                size="sm"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleImportClick();
-                }}
-                disabled={workflow.isInUserLibrary || isImporting}
-                testId={`import-button-${workflow.id}`}
-              >
-                {workflow.isInUserLibrary
-                  ? "In Library"
-                  : isAuthenticated
-                    ? "Add to Library"
-                    : "Login to Import"}
-              </Button>
+              {workflow.isInUserLibrary ? (
+                <Button
+                  variant="danger"
+                  size="sm"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleRemoveClick();
+                  }}
+                  disabled={isRemoving}
+                  testId={`remove-button-${workflow.id}`}
+                >
+                  {isRemoving ? "Removing..." : "Remove from Library"}
+                </Button>
+              ) : (
+                <Button
+                  variant="primary"
+                  size="sm"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleImportClick();
+                  }}
+                  disabled={isImporting}
+                  testId={`import-button-${workflow.id}`}
+                >
+                  {isAuthenticated ? "Add to Library" : "Login to Import"}
+                </Button>
+              )}
             </div>
           )}
         </div>
@@ -203,6 +237,18 @@ export function WorkflowDiscoveryCard({
         targetName={workflow.name}
         currentRating={currentRating}
         onSubmit={handleSubmitRating}
+      />
+
+      <ConfirmDialog
+        isOpen={isConfirmDialogOpen}
+        onClose={() => setIsConfirmDialogOpen(false)}
+        onConfirm={handleConfirmRemove}
+        title="Remove from Library"
+        message={`Are you sure you want to remove "${workflow.name}" from your library?`}
+        confirmLabel="Remove"
+        variant="danger"
+        loading={isRemoving}
+        testId={`confirm-remove-${workflow.id}`}
       />
     </>
   );

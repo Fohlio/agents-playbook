@@ -27,6 +27,7 @@ export function WorkflowsDiscoverySection({
 
   useEffect(() => {
     fetchWorkflows();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page, search, sort, filters]);
 
   const fetchWorkflows = async () => {

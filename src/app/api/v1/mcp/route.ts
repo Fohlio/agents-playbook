@@ -12,7 +12,6 @@ import {
   getPromptsHandler,
   getSelectedPromptToolSchema,
   getSelectedPromptHandler,
-  getUserWorkflowsToolSchema,
   getUserWorkflowsHandler
 } from '@/lib/mcp-tools';
 
@@ -28,7 +27,7 @@ const handler = createMcpHandler(
       'get_available_workflows',
       'Get workflow recommendations. Without auth: public system workflows. With auth: active workflows from your library.',
       getWorkflowsToolSchema,
-      async ({ task_description }, { request }) => {
+      async ({ task_description }) => {
         const session = await auth();
         const userId = session?.user?.id;
 
@@ -69,7 +68,7 @@ const handler = createMcpHandler(
       'get_prompts',
       'Get mini prompts. Without auth: public active prompts. With auth: active prompts from your library.',
       getPromptsToolSchema,
-      async ({ search }, { request }) => {
+      async ({ search }) => {
         const session = await auth();
         const userId = session?.user?.id;
 

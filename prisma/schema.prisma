@@ -49,7 +49,7 @@ model User {
   role         UserRole    @default(USER)
   createdAt    DateTime    @default(now()) @map("created_at")
   updatedAt    DateTime    @updatedAt @map("updated_at")
-  
+
   // Relations
   apiTokens             ApiToken[]
   workflows             Workflow[]
@@ -57,6 +57,7 @@ model User {
   ratings               Rating[]
   workflowReferences    WorkflowReference[]
   miniPromptReferences  MiniPromptReference[]
+  sharedLinks           SharedLink[]
 
   @@map("users")
   @@index([email])
@@ -294,5 +295,29 @@ model MiniPromptTag {
   @@map("mini_prompt_tags")
   @@index([miniPromptId])
   @@index([tagId])
+}
+
+model SharedLink {
+  id         String      @id @default(uuid())
+  userId     String      @map("user_id")
+  targetType TargetType  @map("target_type")
+  targetId   String      @map("target_id")
+  shareToken String      @unique @map("share_token") @db.VarChar(32)
+  isActive   Boolean     @default(true) @map("is_active")
+  expiresAt  DateTime?   @map("expires_at")
+  viewCount  Int         @default(0) @map("view_count")
+  createdAt  DateTime    @default(now()) @map("created_at")
+  updatedAt  DateTime    @updatedAt @map("updated_at")
+
+  // Relations
+  user       User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  // Note: targetId is polymorphic (Workflow or MiniPrompt) - handled at application layer
+
+  @@map("shared_links")
+  @@index([userId])
+  @@index([targetType, targetId])
+  @@index([shareToken])
+  @@index([isActive])
+  @@index([expiresAt])
 }
 

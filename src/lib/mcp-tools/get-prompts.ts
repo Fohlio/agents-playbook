@@ -11,15 +11,19 @@ export async function getPromptsHandler({ search, userId }: { search?: string; u
 
     // If userId is not provided, show public system mini-prompts only
     if (!userId) {
-      const whereClause: any = {
+      const whereClause: {
+        isActive: boolean;
+        isSystemMiniPrompt: boolean;
+        OR?: Array<{ name?: { contains: string; mode: 'insensitive' } } | { content?: { contains: string; mode: 'insensitive' } }>;
+      } = {
         isActive: true,
         isSystemMiniPrompt: true
       };
 
       if (search) {
         whereClause.OR = [
-          { name: { contains: search, mode: 'insensitive' } },
-          { content: { contains: search, mode: 'insensitive' } }
+          { name: { contains: search, mode: 'insensitive' as const } },
+          { content: { contains: search, mode: 'insensitive' as const } }
         ];
       }
 

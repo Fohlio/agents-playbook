@@ -48,7 +48,7 @@ export async function getPublicWorkflows(
   const orderBy = getWorkflowOrderBy(params.sort as WorkflowSortOption);
 
   // Execute query
-  const [workflows, total] = await Promise.all([
+  const [workflows] = await Promise.all([
     prisma.workflow.findMany({
       where,
       include: {
@@ -194,7 +194,7 @@ export async function getPublicMiniPrompts(
   const orderBy = getMiniPromptOrderBy(params.sort as MiniPromptSortOption);
 
   // Execute query
-  const [miniPrompts, total] = await Promise.all([
+  const [miniPrompts] = await Promise.all([
     prisma.miniPrompt.findMany({
       where,
       include: {
@@ -314,7 +314,7 @@ export async function importWorkflow(
   });
 
   // Update usage stats
-  await incrementUsageStats("WORKFLOW", workflowId, userId);
+  await incrementUsageStats("WORKFLOW", workflowId);
 
   return { success: true, message: "Workflow added to your library" };
 }
@@ -352,7 +352,7 @@ export async function importMiniPrompt(
   });
 
   // Update usage stats
-  await incrementUsageStats("MINI_PROMPT", miniPromptId, userId);
+  await incrementUsageStats("MINI_PROMPT", miniPromptId);
 
   return { success: true, message: "Mini-prompt added to your library" };
 }
@@ -421,8 +421,7 @@ async function getUsageStatsForMultiple(
 
 async function incrementUsageStats(
   targetType: TargetType,
-  targetId: string,
-  userId: string
+  targetId: string
 ): Promise<void> {
   await prisma.usageStats.upsert({
     where: {

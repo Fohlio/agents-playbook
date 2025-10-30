@@ -5,11 +5,11 @@ import Button from '@/shared/ui/atoms/Button';
 import IconButton from '@/shared/ui/atoms/IconButton';
 import Toggle from '@/shared/ui/atoms/Toggle';
 import { Card, Badge } from '@/shared/ui/atoms';
-import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
+import { ShareButton } from '@/features/sharing/ui';
 import { MiniPromptEditorModal } from '@/features/workflow-constructor/components/MiniPromptEditorModal';
-import { createMiniPrompt, updateMiniPrompt } from '@/features/workflow-constructor/actions/mini-prompt-actions';
+import { createMiniPrompt } from '@/features/workflow-constructor/actions/mini-prompt-actions';
 
 interface MiniPrompt {
   id: string;
@@ -26,8 +26,8 @@ export function MiniPromptsSection() {
   const [miniPrompts, setMiniPrompts] = useState<MiniPrompt[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [editingMiniPrompt, setEditingMiniPrompt] = useState<MiniPrompt | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedMiniPrompt, setSelectedMiniPrompt] = useState<MiniPrompt | null>(null);
 
   useEffect(() => {
     fetchMiniPrompts();
@@ -58,20 +58,20 @@ export function MiniPromptsSection() {
       });
       const newMiniPrompt = await response.json();
       setMiniPrompts([newMiniPrompt, ...miniPrompts]);
-    } catch (error) {
+    } catch {
       alert('Failed to create mini-prompt');
     }
   };
 
-  const handleEdit = async (
+  const handleSave = async (
     name: string,
     content: string,
     visibility: 'PUBLIC' | 'PRIVATE',
     tagIds: string[]
   ) => {
-    if (!editingMiniPrompt) return;
+    if (!selectedMiniPrompt) return;
     try {
-      const response = await fetch(`/api/mini-prompts/${editingMiniPrompt.id}`, {
+      const response = await fetch(`/api/mini-prompts/${selectedMiniPrompt.id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name, content, visibility, tagIds }),
@@ -80,8 +80,8 @@ export function MiniPromptsSection() {
       setMiniPrompts(
         miniPrompts.map((m) => (m.id === updated.id ? updated : m))
       );
-      setEditingMiniPrompt(null);
-    } catch (error) {
+      setSelectedMiniPrompt(null);
+    } catch {
       alert('Failed to update mini-prompt');
     }
   };
@@ -153,7 +153,15 @@ export function MiniPromptsSection() {
         ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {miniPrompts.map((miniPrompt) => (
-            <Card key={miniPrompt.id} className="hover:shadow-lg transition-shadow">
+            <div
+              key={miniPrompt.id}
+              onClick={() => {
+                setSelectedMiniPrompt(miniPrompt);
+                setIsModalOpen(true);
+              }}
+              className="cursor-pointer"
+            >
+            <Card className="hover:shadow-lg transition-shadow">
               <div className="flex flex-col h-full">
                 <div className="flex-1">
                   <div className="flex items-start justify-between mb-2">
@@ -161,7 +169,7 @@ export function MiniPromptsSection() {
                       {miniPrompt.name}
                     </h3>
                     {!miniPrompt.isOwned && (
-                      <Badge variant="secondary" testId={`imported-badge-${miniPrompt.id}`}>
+                      <Badge variant="default" testId={`imported-badge-${miniPrompt.id}`}>
                         Imported
                       </Badge>
                     )}
@@ -173,7 +181,7 @@ export function MiniPromptsSection() {
                   <div className="flex items-center gap-4 text-xs text-text-tertiary mb-3">
                     <span>{miniPrompt.visibility}</span>
                   </div>
-                  <div className="flex items-center gap-2 mb-3">
+                  <div className="flex items-center gap-2 mb-3" onClick={(e) => e.stopPropagation()}>
                     <Toggle
                       checked={miniPrompt.isActive}
                       onChange={() =>
@@ -184,18 +192,13 @@ export function MiniPromptsSection() {
                     />
                   </div>
                 </div>
-                <div className="flex gap-2 mt-4">
+                <div className="flex gap-2 mt-4" onClick={(e) => e.stopPropagation()}>
                   {miniPrompt.isOwned ? (
                     <>
-                      <IconButton
-                        variant="primary"
-                        size="sm"
-                        icon={<EditIcon fontSize="small" />}
-                        ariaLabel="Edit mini-prompt"
-                        onClick={() => {
-                          setEditingMiniPrompt(miniPrompt);
-                          setIsEditModalOpen(true);
-                        }}
+                      <ShareButton
+                        targetType="MINI_PROMPT"
+                        targetId={miniPrompt.id}
+                        targetName={miniPrompt.name}
                       />
                       <IconButton
                         variant="secondary"
@@ -233,6 +236,7 @@ export function MiniPromptsSection() {
                 </div>
               </div>
             </Card>
+            </div>
           ))}
         </div>
       )}
@@ -244,24 +248,23 @@ export function MiniPromptsSection() {
         onSave={handleCreate}
       />
 
-      <MiniPromptEditorModal
-        isOpen={isEditModalOpen}
-        onClose={() => {
-          setIsEditModalOpen(false);
-          setEditingMiniPrompt(null);
-        }}
-        onSave={handleEdit}
-        initialData={
-          editingMiniPrompt
-            ? {
-                name: editingMiniPrompt.name,
-                content: editingMiniPrompt.content,
-                visibility: editingMiniPrompt.visibility as 'PUBLIC' | 'PRIVATE',
-                tagIds: editingMiniPrompt.tags?.map(t => t.tag.id) ?? [],
-              }
-            : undefined
-        }
-      />
+      {selectedMiniPrompt && (
+        <MiniPromptEditorModal
+          isOpen={isModalOpen}
+          onClose={() => {
+            setIsModalOpen(false);
+            setSelectedMiniPrompt(null);
+          }}
+          onSave={selectedMiniPrompt.isOwned ? handleSave : async () => {}}
+          initialData={{
+            name: selectedMiniPrompt.name,
+            content: selectedMiniPrompt.content,
+            visibility: selectedMiniPrompt.visibility as 'PUBLIC' | 'PRIVATE',
+            tagIds: selectedMiniPrompt.tags?.map(t => t.tag.id) ?? [],
+          }}
+          viewOnly={!selectedMiniPrompt.isOwned}
+        />
+      )}
     </>
   );
 }

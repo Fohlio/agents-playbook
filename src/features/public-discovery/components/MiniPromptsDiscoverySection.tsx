@@ -27,6 +27,7 @@ export function MiniPromptsDiscoverySection({
 
   useEffect(() => {
     fetchMiniPrompts();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page, search, sort, filters]);
 
   const fetchMiniPrompts = async () => {

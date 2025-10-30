@@ -24,21 +24,14 @@ export function TagBadgeList({ tags, maxDisplay = 3 }: TagBadgeListProps) {
       {displayTags.map(tag => (
         <Badge
           key={tag.id}
-          variant="secondary"
-          className="text-xs px-2 py-0.5"
-          style={tag.color ? {
-            backgroundColor: `${tag.color}15`,
-            color: tag.color,
-            borderColor: `${tag.color}40`,
-            borderWidth: '1px'
-          } : undefined}
+          variant="default"
           testId={`tag-badge-${tag.name}`}
         >
           {tag.name}
         </Badge>
       ))}
       {remainingCount > 0 && (
-        <Badge variant="secondary" className="text-xs px-2 py-0.5">
+        <Badge variant="default">
           +{remainingCount}
         </Badge>
       )}

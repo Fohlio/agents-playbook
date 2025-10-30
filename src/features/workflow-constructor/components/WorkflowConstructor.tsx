@@ -43,7 +43,8 @@ export function WorkflowConstructor({ data }: WorkflowConstructorProps) {
   const [isActive, setIsActive] = useState(currentWorkflow?.isActive ?? false);
   const [isPublic, setIsPublic] = useState(currentWorkflow?.visibility === 'PUBLIC');
   const [selectedTagIds, setSelectedTagIds] = useState<string[]>(
-    currentWorkflow?.tags?.map((t: any) => t.tag.id) ?? []
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (currentWorkflow as any)?.tags?.map((t: { tag: { id: string } }) => t.tag.id) ?? []
   );
 
   const handleDragEnd = useCallback(

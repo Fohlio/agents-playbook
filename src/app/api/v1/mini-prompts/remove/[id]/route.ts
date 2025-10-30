@@ -4,7 +4,7 @@ import { prisma } from '@/lib/db/client';
 
 export async function DELETE(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const session = await auth();
 
@@ -12,11 +12,13 @@ export async function DELETE(
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
+  const { id } = await params;
+
   try {
     await prisma.miniPromptReference.deleteMany({
       where: {
         userId: session.user.id,
-        miniPromptId: params.id,
+        miniPromptId: id,
       },
     });
 
