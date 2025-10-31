@@ -6,6 +6,7 @@ import Button from '@/shared/ui/atoms/Button';
 import IconButton from '@/shared/ui/atoms/IconButton';
 import Toggle from '@/shared/ui/atoms/Toggle';
 import { Card, Badge } from '@/shared/ui/atoms';
+import { ComplexityBadge } from '@/shared/ui/atoms/ComplexityBadge';
 import Link from 'next/link';
 import DeleteIcon from '@mui/icons-material/Delete';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
@@ -13,6 +14,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import { ShareButton } from '@/features/sharing/ui';
 import { WorkflowPreviewModal } from '@/shared/ui/molecules/WorkflowPreviewModal';
 import { PublicWorkflowWithMeta } from '@/features/public-discovery/types';
+import { WorkflowComplexity } from '@prisma/client';
 
 interface Workflow {
   id: string;
@@ -22,6 +24,8 @@ interface Workflow {
   visibility: string;
   isOwned?: boolean;
   referenceId?: string | null;
+  complexity?: WorkflowComplexity | null;
+  tags?: Array<{ tag: { id: string; name: string; } }>;
   _count: {
     stages: number;
   };
@@ -154,15 +158,18 @@ export function WorkflowsSection() {
               <Card className="hover:shadow-lg transition-shadow">
               <div className="flex flex-col h-full">
                 <div className="flex-1">
-                  <div className="flex items-start justify-between mb-2">
+                  <div className="flex items-start justify-between gap-2 mb-2">
                     <h3 className="text-lg font-semibold text-text-primary flex-1">
                       {workflow.name}
                     </h3>
-                    {!workflow.isOwned && (
-                      <Badge variant="default" testId={`imported-badge-${workflow.id}`}>
-                        Imported
-                      </Badge>
-                    )}
+                    <div className="flex items-center gap-2">
+                      <ComplexityBadge complexity={workflow.complexity} size="sm" />
+                      {!workflow.isOwned && (
+                        <Badge variant="default" testId={`imported-badge-${workflow.id}`}>
+                          Imported
+                        </Badge>
+                      )}
+                    </div>
                   </div>
                   {workflow.description && (
                     <p className="text-sm text-text-secondary mb-4 line-clamp-2">
@@ -174,6 +181,15 @@ export function WorkflowsSection() {
                     <span>•</span>
                     <span>{workflow.visibility}</span>
                   </div>
+                  {workflow.tags && workflow.tags.length > 0 && (
+                    <div className="flex flex-wrap gap-2 mb-3">
+                      {workflow.tags.map((wt) => (
+                        <Badge key={wt.tag.id} variant="default">
+                          {wt.tag.name}
+                        </Badge>
+                      ))}
+                    </div>
+                  )}
                   <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
                     <Toggle
                       checked={workflow.isActive}

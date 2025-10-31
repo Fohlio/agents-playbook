@@ -1,8 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
 import { Card, Button } from "@/shared/ui/atoms";
 import { ConfirmDialog } from "@/shared/ui/molecules";
 import { ROUTES } from "@/shared/routes";
@@ -112,11 +110,6 @@ export function MiniPromptDiscoveryCard({
     setCurrentRating(rating);
   };
 
-  // Get first 150 chars of content
-  const preview =
-    miniPrompt.content.slice(0, 150) +
-    (miniPrompt.content.length > 150 ? "..." : "");
-
   return (
     <>
       <div
@@ -142,9 +135,11 @@ export function MiniPromptDiscoveryCard({
               )}
             </div>
 
-            <div className="prose prose-sm max-w-none text-sm text-gray-600 mb-4 line-clamp-3 leading-relaxed">
-              <ReactMarkdown remarkPlugins={[remarkGfm]}>{preview}</ReactMarkdown>
-            </div>
+            {miniPrompt.description && (
+              <p className="text-sm text-gray-600 mb-4 line-clamp-3 leading-relaxed">
+                {miniPrompt.description}
+              </p>
+            )}
 
             {miniPrompt.tags && miniPrompt.tags.length > 0 && (
               <div className="mb-3">

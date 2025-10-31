@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
 import { Card, Button } from "@/shared/ui/atoms";
+import { MarkdownContent } from "@/shared/ui/atoms/MarkdownContent";
+import { ComplexityBadge } from "@/shared/ui/atoms/ComplexityBadge";
 import { ConfirmDialog } from "@/shared/ui/molecules";
 import { ROUTES } from "@/shared/routes";
 import { PublicWorkflowWithMeta } from "@/features/public-discovery/types";
@@ -124,24 +124,30 @@ export function WorkflowDiscoveryCard({
         >
           <div className="p-6">
           <div className="flex items-start justify-between mb-3">
-            <h3 className="text-xl font-bold text-gray-900 hover:text-blue-600 transition-colors">
-              {workflow.name}
-            </h3>
-            {localRating.average !== null && localRating.count > 0 && (
-              <RatingDisplay
-                averageRating={localRating.average}
-                totalRatings={localRating.count}
-                size="sm"
-                showCount={true}
-              />
-            )}
+            <div className="flex-1">
+              <h3 className="text-xl font-bold text-gray-900 hover:text-blue-600 transition-colors">
+                {workflow.name}
+              </h3>
+            </div>
+            <div className="flex flex-col items-end gap-1">
+              {localRating.average !== null && localRating.count > 0 && (
+                <RatingDisplay
+                  averageRating={localRating.average}
+                  totalRatings={localRating.count}
+                  size="sm"
+                  showCount={true}
+                />
+              )}
+              {workflow.complexity && (
+                <ComplexityBadge complexity={workflow.complexity} size="sm" />
+              )}
+            </div>
           </div>
 
-          <div className="prose prose-sm max-w-none text-sm text-gray-600 mb-4 line-clamp-3 leading-relaxed">
-            <ReactMarkdown remarkPlugins={[remarkGfm]}>
-              {workflow.description || "No description available"}
-            </ReactMarkdown>
-          </div>
+          <MarkdownContent
+            content={workflow.description || "No description available"}
+            className="text-sm text-gray-600 mb-4 line-clamp-3 leading-relaxed"
+          />
 
           {workflow.tags && workflow.tags.length > 0 && (
             <div className="mb-3">

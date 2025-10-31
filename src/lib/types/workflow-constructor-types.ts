@@ -1,4 +1,4 @@
-import type { Workflow, WorkflowStage, MiniPrompt, StageMiniPrompt } from '@prisma/client';
+import type { Workflow, WorkflowStage, MiniPrompt, StageMiniPrompt, WorkflowComplexity } from '@prisma/client';
 
 export type WorkflowWithStages = Workflow & {
   stages: WorkflowStageWithMiniPrompts[];
@@ -53,6 +53,7 @@ export interface SaveWorkflowInput {
   workflowId: string;
   name?: string;
   description?: string;
+  complexity?: WorkflowComplexity;
   isActive?: boolean;
   visibility?: 'PUBLIC' | 'PRIVATE';
   tagIds?: string[];

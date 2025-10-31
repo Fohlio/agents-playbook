@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Card, CardHeader, Badge, Button } from "@/shared/ui/atoms";
+import { ComplexityBadge } from "@/shared/ui/atoms/ComplexityBadge";
 import { ShareButton } from "@/features/sharing/ui";
 import { WorkflowWithUsage } from "../lib/dashboard-service";
 import { deactivateWorkflow } from "../actions/workflow-actions";
@@ -63,14 +64,29 @@ export function ActiveWorkflowsSection({ workflows }: ActiveWorkflowsSectionProp
             <div className="flex-1">
               <div className="flex items-center gap-2">
                 <h3 className="font-medium text-gray-900">{workflow.name}</h3>
+                <ComplexityBadge complexity={workflow.complexity} size="sm" />
                 <Badge variant="primary" testId="workflow-active-badge">Active</Badge>
               </div>
               {workflow.description && (
                 <p className="text-sm text-gray-600 mt-1">{workflow.description}</p>
               )}
-              <p className="text-xs text-gray-500 mt-1">
-                {workflow._count.stages} stages
-              </p>
+              <div className="flex items-center gap-2 mt-1">
+                <p className="text-xs text-gray-500">
+                  {workflow._count.stages} stages
+                </p>
+                {workflow.tags && workflow.tags.length > 0 && (
+                  <>
+                    <span className="text-xs text-gray-400">•</span>
+                    <div className="flex flex-wrap gap-1">
+                      {workflow.tags.map((wt) => (
+                        <Badge key={wt.tag.id} variant="default">
+                          {wt.tag.name}
+                        </Badge>
+                      ))}
+                    </div>
+                  </>
+                )}
+              </div>
             </div>
 
             <div className="flex gap-2">

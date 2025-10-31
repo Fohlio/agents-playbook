@@ -12,6 +12,7 @@ export interface WorkflowWithUsage extends Workflow {
   _count: {
     stages: number;
   };
+  tags?: Array<{ tag: { id: string; name: string; } }>;
 }
 
 export interface MiniPromptWithUsage extends MiniPrompt {
@@ -62,6 +63,13 @@ export async function getActiveWorkflows(userId: string): Promise<WorkflowWithUs
       _count: {
         select: { stages: true },
       },
+      tags: {
+        select: {
+          tag: {
+            select: { id: true, name: true },
+          },
+        },
+      },
     },
   });
 
@@ -76,6 +84,13 @@ export async function getActiveWorkflows(userId: string): Promise<WorkflowWithUs
         include: {
           _count: {
             select: { stages: true },
+          },
+          tags: {
+            select: {
+              tag: {
+                select: { id: true, name: true },
+              },
+            },
           },
         },
       },

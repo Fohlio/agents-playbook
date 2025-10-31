@@ -13,10 +13,11 @@ export function QuickActions() {
 
   const handleCreateMiniPrompt = async (
     name: string,
+    description: string,
     content: string,
     visibility: 'PUBLIC' | 'PRIVATE'
   ) => {
-    await createMiniPrompt({ name, content, visibility });
+    await createMiniPrompt({ name, description, content, visibility });
     // Redirect to library after creation
     router.push('/dashboard/library?tab=mini-prompts');
   };

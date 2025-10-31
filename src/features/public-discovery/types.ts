@@ -1,4 +1,4 @@
-import { Workflow, MiniPrompt, User, WorkflowStage, StageMiniPrompt } from "@prisma/client";
+import { Workflow, MiniPrompt, User, WorkflowStage, StageMiniPrompt, WorkflowComplexity } from "@prisma/client";
 
 // Workflow with author and metadata
 export interface PublicWorkflowWithMeta extends Workflow {
@@ -58,6 +58,7 @@ export type MiniPromptSortOption =
 export interface WorkflowFilters {
   rating?: "4+" | "3+";
   phaseCount?: "1-3" | "4-5" | "6+";
+  complexity?: WorkflowComplexity;
   minUsage?: "10" | "50";
   tagIds?: string[];
 }

@@ -87,7 +87,7 @@ function GitHubStats() {
 }
 
 export default function Header() {
-  const { data: session, status } = useSession();
+  const { status } = useSession();
 
   return (
     <header className="relative bg-gradient-to-r from-slate-900 via-purple-900 to-slate-900 backdrop-blur-sm">

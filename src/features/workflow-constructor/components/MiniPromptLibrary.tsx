@@ -26,10 +26,11 @@ export function MiniPromptLibrary({ miniPrompts, onMiniPromptCreated }: MiniProm
 
   const handleCreateMiniPrompt = async (
     name: string,
+    description: string,
     content: string,
     visibility: 'PUBLIC' | 'PRIVATE'
   ) => {
-    const newMiniPrompt = await createMiniPrompt({ name, content, visibility });
+    const newMiniPrompt = await createMiniPrompt({ name, description, content, visibility });
     onMiniPromptCreated?.(newMiniPrompt);
   };
 

@@ -106,11 +106,11 @@ describe('Dashboard Service', () => {
 
       expect(prismaMock.workflow.findMany).toHaveBeenCalledWith(
         expect.objectContaining({
-          include: {
+          include: expect.objectContaining({
             _count: {
               select: { stages: true },
             },
-          },
+          }),
         })
       );
     });

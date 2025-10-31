@@ -145,6 +145,13 @@ export async function getPublicWorkflows(
         }
       }
 
+      // Complexity filter
+      if (workflowFilters.complexity) {
+        if (workflow.complexity !== workflowFilters.complexity) {
+          return false;
+        }
+      }
+
       return true;
     });
   }
@@ -177,6 +184,7 @@ export async function getPublicMiniPrompts(
     ...(params.search && {
       OR: [
         { name: { contains: params.search, mode: "insensitive" } },
+        { description: { contains: params.search, mode: "insensitive" } },
         { content: { contains: params.search, mode: "insensitive" } },
         { user: { username: { contains: params.search, mode: "insensitive" } } },
       ],

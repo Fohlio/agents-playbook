@@ -14,6 +14,7 @@ import { createMiniPrompt } from '@/features/workflow-constructor/actions/mini-p
 interface MiniPrompt {
   id: string;
   name: string;
+  description?: string | null;
   content: string;
   visibility: string;
   isActive: boolean;
@@ -46,6 +47,7 @@ export function MiniPromptsSection() {
 
   const handleCreate = async (
     name: string,
+    description: string,
     content: string,
     visibility: 'PUBLIC' | 'PRIVATE',
     tagIds: string[]
@@ -54,7 +56,7 @@ export function MiniPromptsSection() {
       const response = await fetch('/api/mini-prompts', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, content, visibility, tagIds }),
+        body: JSON.stringify({ name, description, content, visibility, tagIds }),
       });
       const newMiniPrompt = await response.json();
       setMiniPrompts([newMiniPrompt, ...miniPrompts]);
@@ -65,6 +67,7 @@ export function MiniPromptsSection() {
 
   const handleSave = async (
     name: string,
+    description: string,
     content: string,
     visibility: 'PUBLIC' | 'PRIVATE',
     tagIds: string[]
@@ -74,7 +77,7 @@ export function MiniPromptsSection() {
       const response = await fetch(`/api/mini-prompts/${selectedMiniPrompt.id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, content, visibility, tagIds }),
+        body: JSON.stringify({ name, description, content, visibility, tagIds }),
       });
       const updated = await response.json();
       setMiniPrompts(
@@ -89,6 +92,7 @@ export function MiniPromptsSection() {
   const handleDuplicate = async (miniPrompt: MiniPrompt) => {
     const duplicated = await createMiniPrompt({
       name: `${miniPrompt.name} (Copy)`,
+      description: '',
       content: miniPrompt.content,
       visibility: miniPrompt.visibility as 'PUBLIC' | 'PRIVATE',
     });
@@ -174,10 +178,11 @@ export function MiniPromptsSection() {
                       </Badge>
                     )}
                   </div>
-                  <p className="text-sm text-text-secondary mb-4 line-clamp-3">
-                    {miniPrompt.content.slice(0, 150)}
-                    {miniPrompt.content.length > 150 ? '...' : ''}
-                  </p>
+                  {miniPrompt.description && (
+                    <p className="text-sm text-text-secondary mb-4 line-clamp-3">
+                      {miniPrompt.description}
+                    </p>
+                  )}
                   <div className="flex items-center gap-4 text-xs text-text-tertiary mb-3">
                     <span>{miniPrompt.visibility}</span>
                   </div>

@@ -2,6 +2,7 @@
 
 import { useState, useCallback } from 'react';
 import { DndContext, DragEndEvent } from '@dnd-kit/core';
+import { WorkflowComplexity } from '@prisma/client';
 import Button from '@/shared/ui/atoms/Button';
 import Input from '@/shared/ui/atoms/Input';
 import Toggle from '@/shared/ui/atoms/Toggle';
@@ -40,6 +41,9 @@ export function WorkflowConstructor({ data }: WorkflowConstructorProps) {
   const [miniPrompts, setMiniPrompts] = useState(initialMiniPrompts);
   const [isCreatingStage, setIsCreatingStage] = useState(false);
   const [workflowName, setWorkflowName] = useState(currentWorkflow?.name ?? 'Untitled Workflow');
+  const [complexity, setComplexity] = useState<WorkflowComplexity | null>(
+    currentWorkflow?.complexity ?? null
+  );
   const [isActive, setIsActive] = useState(currentWorkflow?.isActive ?? false);
   const [isPublic, setIsPublic] = useState(currentWorkflow?.visibility === 'PUBLIC');
   const [selectedTagIds, setSelectedTagIds] = useState<string[]>(
@@ -149,6 +153,7 @@ export function WorkflowConstructor({ data }: WorkflowConstructorProps) {
       workflowId: currentWorkflow.id,
       name: workflowName,
       description: currentWorkflow.description ?? undefined,
+      complexity: complexity ?? undefined,
       isActive: isActive,
       visibility: isPublic ? 'PUBLIC' : 'PRIVATE',
       tagIds: selectedTagIds,
@@ -163,7 +168,7 @@ export function WorkflowConstructor({ data }: WorkflowConstructorProps) {
         })),
       })),
     });
-  }, [currentWorkflow, workflowName, isActive, isPublic, selectedTagIds, localStages, handleSave]);
+  }, [currentWorkflow, workflowName, complexity, isActive, isPublic, selectedTagIds, localStages, handleSave]);
 
   if (!currentWorkflow) {
     return (
@@ -227,17 +232,39 @@ export function WorkflowConstructor({ data }: WorkflowConstructorProps) {
           </Button>
         </div>
         </div>
-        <div className="max-w-2xl">
-          <label className="block text-sm font-medium text-text-primary mb-2">
-            Tags
-          </label>
-          <TagSelector
-            selectedTagIds={selectedTagIds}
-            onChange={(tagIds) => {
-              setSelectedTagIds(tagIds);
-              markDirty();
-            }}
-          />
+        <div className="space-y-4">
+          <div className="max-w-2xl">
+            <label className="block text-sm font-medium text-text-primary mb-2">
+              Complexity (T-Shirt Sizing)
+            </label>
+            <select
+              value={complexity ?? ''}
+              onChange={(e) => {
+                setComplexity(e.target.value ? (e.target.value as WorkflowComplexity) : null);
+                markDirty();
+              }}
+              className="w-full px-3 py-2 border border-border-base rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-text-primary bg-surface-base"
+            >
+              <option value="">No complexity set</option>
+              <option value="XS">XS - Quick (Extra Small)</option>
+              <option value="S">S - Simple (Small)</option>
+              <option value="M">M - Moderate (Medium)</option>
+              <option value="L">L - Complex (Large)</option>
+              <option value="XL">XL - Advanced (Extra Large)</option>
+            </select>
+          </div>
+          <div className="max-w-2xl">
+            <label className="block text-sm font-medium text-text-primary mb-2">
+              Tags
+            </label>
+            <TagSelector
+              selectedTagIds={selectedTagIds}
+              onChange={(tagIds) => {
+                setSelectedTagIds(tagIds);
+                markDirty();
+              }}
+            />
+          </div>
         </div>
       </div>
 

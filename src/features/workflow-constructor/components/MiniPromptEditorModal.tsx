@@ -9,9 +9,10 @@ import { TagSelector } from '@/shared/ui/molecules/TagSelector';
 interface MiniPromptEditorModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave?: (name: string, content: string, visibility: 'PUBLIC' | 'PRIVATE', tagIds: string[]) => Promise<void>;
+  onSave?: (name: string, description: string, content: string, visibility: 'PUBLIC' | 'PRIVATE', tagIds: string[]) => Promise<void>;
   initialData?: {
     name: string;
+    description?: string;
     content: string;
     visibility: 'PUBLIC' | 'PRIVATE';
     tagIds?: string[];
@@ -27,6 +28,7 @@ export function MiniPromptEditorModal({
   viewOnly = false,
 }: MiniPromptEditorModalProps) {
   const [name, setName] = useState(initialData?.name ?? '');
+  const [description, setDescription] = useState(initialData?.description ?? '');
   const [content, setContent] = useState(initialData?.content ?? '');
   const [visibility, setVisibility] = useState<'PUBLIC' | 'PRIVATE'>(
     initialData?.visibility ?? 'PRIVATE'
@@ -39,11 +41,13 @@ export function MiniPromptEditorModal({
   useEffect(() => {
     if (initialData) {
       setName(initialData.name);
+      setDescription(initialData.description ?? '');
       setContent(initialData.content);
       setVisibility(initialData.visibility);
       setSelectedTagIds(initialData.tagIds ?? []);
     } else {
       setName('');
+      setDescription('');
       setContent('');
       setVisibility('PRIVATE');
       setSelectedTagIds([]);
@@ -56,8 +60,9 @@ export function MiniPromptEditorModal({
 
     setIsSaving(true);
     try {
-      await onSave(name.trim(), content.trim(), visibility, selectedTagIds);
+      await onSave(name.trim(), description.trim(), content.trim(), visibility, selectedTagIds);
       setName('');
+      setDescription('');
       setContent('');
       setVisibility('PRIVATE');
       setSelectedTagIds([]);
@@ -73,6 +78,7 @@ export function MiniPromptEditorModal({
   const handleClose = () => {
     if (!isSaving) {
       setName(initialData?.name ?? '');
+      setDescription(initialData?.description ?? '');
       setContent(initialData?.content ?? '');
       setVisibility(initialData?.visibility ?? 'PRIVATE');
       setSelectedTagIds(initialData?.tagIds ?? []);
@@ -90,20 +96,39 @@ export function MiniPromptEditorModal({
 
         <div className="space-y-4 mb-6">
           {!viewOnly && (
-            <div>
-              <label htmlFor="mini-prompt-name" className="block text-sm font-medium text-text-primary mb-1">
-                Name *
-              </label>
-              <Input
-                id="mini-prompt-name"
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="e.g., Create Implementation Plan"
-                required
-                autoFocus
-              />
-            </div>
+            <>
+              <div>
+                <label htmlFor="mini-prompt-name" className="block text-sm font-medium text-text-primary mb-1">
+                  Name *
+                </label>
+                <Input
+                  id="mini-prompt-name"
+                  type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="e.g., Create Implementation Plan"
+                  required
+                  autoFocus
+                />
+              </div>
+              <div>
+                <label htmlFor="mini-prompt-description" className="block text-sm font-medium text-text-primary mb-1">
+                  Description
+                </label>
+                <textarea
+                  id="mini-prompt-description"
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  placeholder="Brief description for search and discovery (optional, max 1000 chars)"
+                  maxLength={1000}
+                  rows={3}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-y"
+                />
+                <p className="text-xs text-gray-500 mt-1">
+                  {description.length}/1000 characters
+                </p>
+              </div>
+            </>
           )}
 
           <div>

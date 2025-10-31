@@ -3,9 +3,11 @@
 import { auth } from '@/lib/auth/auth';
 import { prisma } from '@/lib/db/client';
 import type { MiniPrompt, Visibility } from '@prisma/client';
+import { triggerMiniPromptEmbedding } from '@/features/mini-prompts/lib/embedding-service';
 
 export interface CreateMiniPromptInput {
   name: string;
+  description?: string;
   content: string;
   visibility: Visibility;
 }
@@ -13,6 +15,7 @@ export interface CreateMiniPromptInput {
 export interface UpdateMiniPromptInput {
   id: string;
   name?: string;
+  description?: string;
   content?: string;
   visibility?: Visibility;
 }
@@ -29,10 +32,14 @@ export async function createMiniPrompt(
     data: {
       userId: session.user.id,
       name: input.name,
+      description: input.description,
       content: input.content,
       visibility: input.visibility,
     },
   });
+
+  // Trigger embedding generation asynchronously
+  triggerMiniPromptEmbedding(miniPrompt.id);
 
   return miniPrompt;
 }
@@ -63,10 +70,16 @@ export async function updateMiniPrompt(
     where: { id: input.id },
     data: {
       name: input.name,
+      description: input.description,
       content: input.content,
       visibility: input.visibility,
     },
   });
+
+  // Trigger embedding regeneration if description or content changed
+  if (input.description !== undefined || input.content !== undefined) {
+    triggerMiniPromptEmbedding(miniPrompt.id);
+  }
 
   return miniPrompt;
 }

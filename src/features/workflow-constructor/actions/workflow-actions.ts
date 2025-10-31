@@ -65,6 +65,7 @@ export async function saveWorkflow(input: SaveWorkflowInput): Promise<WorkflowWi
       data: {
         name: input.name,
         description: input.description,
+        complexity: input.complexity,
         isActive: input.isActive,
         visibility: input.visibility,
       },
