@@ -1,6 +1,7 @@
 @import "tailwindcss";
 
 @theme {
+  /* Primary colors */
   --color-primary-50: #f0f9ff;
   --color-primary-100: #e0f2fe;
   --color-primary-200: #bae6fd;
@@ -11,6 +12,34 @@
   --color-primary-700: #0369a1;
   --color-primary-800: #075985;
   --color-primary-900: #0c4a6e;
+
+  /* Accent colors - Purple */
+  --color-accent-purple-50: #faf5ff;
+  --color-accent-purple-100: #f3e8ff;
+  --color-accent-purple-200: #e9d5ff;
+  --color-accent-purple-300: #d8b4fe;
+  --color-accent-purple-400: #c084fc;
+  --color-accent-purple-500: #a855f7;
+  --color-accent-purple-600: #9333ea;
+  --color-accent-purple-700: #7e22ce;
+  --color-accent-purple-800: #6b21a8;
+  --color-accent-purple-900: #581c87;
+
+  /* Accent colors - Emerald */
+  --color-accent-emerald-50: #ecfdf5;
+  --color-accent-emerald-100: #d1fae5;
+  --color-accent-emerald-200: #a7f3d0;
+  --color-accent-emerald-300: #6ee7b7;
+  --color-accent-emerald-400: #34d399;
+  --color-accent-emerald-500: #10b981;
+  --color-accent-emerald-600: #059669;
+  --color-accent-emerald-700: #047857;
+  --color-accent-emerald-800: #065f46;
+  --color-accent-emerald-900: #064e3b;
+
+  /* Border colors - Lighter defaults */
+  --color-border-light: #e5e7eb;
+  --color-border-default: #d1d5db;
 }
 
 @layer base {
@@ -20,7 +49,7 @@
   }
   
   body {
-    @apply bg-white text-gray-900;
+    @apply bg-gradient-to-b from-gray-50 via-white to-gray-50 text-gray-900;
     font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   }
 }
@@ -90,6 +119,65 @@
   animation-delay: 4s;
 }
 
+/* Fade-in scroll animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.8s ease-out forwards;
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.6s ease-out forwards;
+}
+
+/* Stagger delays for sequential animations */
+.animation-delay-100 {
+  animation-delay: 0.1s;
+}
+
+.animation-delay-200 {
+  animation-delay: 0.2s;
+}
+
+.animation-delay-300 {
+  animation-delay: 0.3s;
+}
+
+.animation-delay-400 {
+  animation-delay: 0.4s;
+}
+
+.animation-delay-500 {
+  animation-delay: 0.5s;
+}
+
+.animation-delay-600 {
+  animation-delay: 0.6s;
+}
+
+/* Initial state for animated elements */
+.opacity-0-initial {
+  opacity: 0;
+}
+
 /* Respect prefers-reduced-motion for accessibility */
 @media (prefers-reduced-motion: reduce) {
   *,
@@ -98,5 +186,12 @@
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+  }
+
+  .animate-fade-in-up,
+  .animate-fade-in {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
   }
 }

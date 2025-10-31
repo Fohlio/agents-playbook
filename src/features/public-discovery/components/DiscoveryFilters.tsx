@@ -3,6 +3,7 @@
 import { WorkflowComplexity } from "@prisma/client";
 import { WorkflowSortOption, MiniPromptSortOption, WorkflowFilters, MiniPromptFilters } from "../types";
 import { TagMultiSelect } from "@/shared/ui/molecules/TagMultiSelect";
+import { Tooltip } from "@/shared/ui/molecules";
 
 interface DiscoveryFiltersProps {
   type: "workflow" | "mini-prompt";
@@ -61,9 +62,11 @@ export function DiscoveryFilters({
   return (
     <div className="flex flex-col sm:flex-row gap-3 mb-6">
       <div className="flex-1">
-        <label className="block text-sm font-medium text-gray-700 mb-1">
-          Sort By
-        </label>
+        <Tooltip content="Order results by usage frequency, rating, recency, or popularity">
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Sort By
+          </label>
+        </Tooltip>
         <select
           value={currentSort}
           onChange={(e) => onSortChange(e.target.value as WorkflowSortOption | MiniPromptSortOption)}
@@ -77,9 +80,11 @@ export function DiscoveryFilters({
       </div>
 
       <div className="flex-1">
-        <label className="block text-sm font-medium text-gray-700 mb-1">
-          Tags
-        </label>
+        <Tooltip content="Filter by categories like Testing, Security, Refactoring, etc.">
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Tags
+          </label>
+        </Tooltip>
         <TagMultiSelect
           selectedTagIds={currentFilters.tagIds || []}
           onChange={handleTagFilterChange}
@@ -87,9 +92,11 @@ export function DiscoveryFilters({
       </div>
 
       <div className="flex-1">
-        <label className="block text-sm font-medium text-gray-700 mb-1">
-          Rating
-        </label>
+        <Tooltip content="Show only highly-rated workflows based on community reviews">
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Rating
+          </label>
+        </Tooltip>
         <select
           value={currentFilters.rating || ""}
           onChange={(e) => handleRatingFilterChange(e.target.value)}
@@ -102,9 +109,11 @@ export function DiscoveryFilters({
       </div>
 
       <div className="flex-1">
-        <label className="block text-sm font-medium text-gray-700 mb-1">
-          Usage
-        </label>
+        <Tooltip content="Filter by how many users have adopted this workflow">
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Usage
+          </label>
+        </Tooltip>
         <select
           value={currentFilters.minUsage || ""}
           onChange={(e) => handleUsageFilterChange(e.target.value)}
@@ -119,9 +128,11 @@ export function DiscoveryFilters({
       {type === "workflow" && (
         <>
           <div className="flex-1">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Complexity
-            </label>
+            <Tooltip content="XS=Quick fixes, S=Simple tasks, M=Moderate features, L=Complex projects, XL=Advanced systems">
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Complexity
+              </label>
+            </Tooltip>
             <select
               value={(currentFilters as WorkflowFilters).complexity || ""}
               onChange={(e) => handleComplexityFilterChange(e.target.value)}
@@ -136,9 +147,11 @@ export function DiscoveryFilters({
             </select>
           </div>
           <div className="flex-1">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Stages
-            </label>
+            <Tooltip content="Number of execution phases in the workflow (Analysis, Design, Implementation, etc.)">
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Stages
+              </label>
+            </Tooltip>
             <select
               value={(currentFilters as WorkflowFilters).phaseCount || ""}
               onChange={(e) => handlePhaseCountFilterChange(e.target.value)}

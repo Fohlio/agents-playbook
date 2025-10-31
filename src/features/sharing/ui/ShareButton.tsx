@@ -3,6 +3,7 @@
 import { useState } from "react";
 import ShareIcon from "@mui/icons-material/Share";
 import { IconButton } from "@mui/material";
+import { Tooltip } from "@/shared/ui/molecules";
 import { ShareModal } from "@/features/sharing/components/ShareModal";
 
 // TargetType from Prisma schema
@@ -45,18 +46,20 @@ export function ShareButton({
 
   return (
     <>
-      <IconButton
-        onClick={(e) => {
-          e.stopPropagation();
-          setIsShareModalOpen(true);
-        }}
-        size="small"
-        className={className}
-        data-testid={testId}
-        title="Share"
-      >
-        <ShareIcon fontSize="small" />
-      </IconButton>
+      <Tooltip content="Create a shareable link with expiration date">
+        <IconButton
+          onClick={(e) => {
+            e.stopPropagation();
+            setIsShareModalOpen(true);
+          }}
+          size="small"
+          className={className}
+          data-testid={testId}
+          title="Share"
+        >
+          <ShareIcon fontSize="small" />
+        </IconButton>
+      </Tooltip>
 
       <ShareModal
         isOpen={isShareModalOpen}

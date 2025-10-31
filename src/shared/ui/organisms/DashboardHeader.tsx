@@ -31,6 +31,13 @@ export function DashboardHeader() {
             
             <nav className="hidden md:flex gap-6">
               <Link
+                href={ROUTES.GETTING_STARTED}
+                variant="secondary"
+                testId="getting-started-nav-link"
+              >
+                Getting Started
+              </Link>
+              <Link
                 href={ROUTES.DASHBOARD}
                 variant="secondary"
                 testId="dashboard-nav-link"

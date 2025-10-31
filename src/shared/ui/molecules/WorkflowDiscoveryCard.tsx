@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Card, Button } from "@/shared/ui/atoms";
 import { MarkdownContent } from "@/shared/ui/atoms/MarkdownContent";
 import { ComplexityBadge } from "@/shared/ui/atoms/ComplexityBadge";
-import { ConfirmDialog } from "@/shared/ui/molecules";
+import { ConfirmDialog, Tooltip } from "@/shared/ui/molecules";
 import { ROUTES } from "@/shared/routes";
 import { PublicWorkflowWithMeta } from "@/features/public-discovery/types";
 import { WorkflowPreviewModal } from "./WorkflowPreviewModal";
@@ -181,43 +181,65 @@ export function WorkflowDiscoveryCard({
 
           {!isOwnWorkflow && (
             <div className="flex items-center justify-end gap-2">
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleRateClick();
-                }}
-                className="text-2xl text-gray-300 hover:text-yellow-400 transition-colors"
-                title="Rate this workflow"
-                data-testid={`rate-button-${workflow.id}`}
-              >
-                ☆
-              </button>
+              <Tooltip content="Rate this workflow to help others discover quality content">
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleRateClick();
+                  }}
+                  className="text-2xl text-gray-300 hover:text-yellow-400 transition-colors"
+                  title="Rate this workflow"
+                  data-testid={`rate-button-${workflow.id}`}
+                >
+                  ☆
+                </button>
+              </Tooltip>
               {workflow.isInUserLibrary ? (
-                <Button
-                  variant="danger"
-                  size="sm"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleRemoveClick();
-                  }}
-                  disabled={isRemoving}
-                  testId={`remove-button-${workflow.id}`}
-                >
-                  {isRemoving ? "Removing..." : "Remove from Library"}
-                </Button>
+                <Tooltip content="Remove this workflow from your personal library">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleRemoveClick();
+                    }}
+                    disabled={isRemoving}
+                    className="p-2 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    data-testid={`remove-button-${workflow.id}`}
+                  >
+                    {isRemoving ? (
+                      <svg className="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                    ) : (
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    )}
+                  </button>
+                </Tooltip>
               ) : (
-                <Button
-                  variant="primary"
-                  size="sm"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleImportClick();
-                  }}
-                  disabled={isImporting}
-                  testId={`import-button-${workflow.id}`}
-                >
-                  {isAuthenticated ? "Add to Library" : "Login to Import"}
-                </Button>
+                <Tooltip content={isAuthenticated ? "Add this workflow to your personal library and use it with AI assistants" : "Login to import workflows into your library"}>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleImportClick();
+                    }}
+                    disabled={isImporting || !isAuthenticated}
+                    className="p-2 rounded-lg bg-primary-50 text-primary-600 hover:bg-primary-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    data-testid={`import-button-${workflow.id}`}
+                  >
+                    {isImporting ? (
+                      <svg className="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                    ) : (
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                      </svg>
+                    )}
+                  </button>
+                </Tooltip>
               )}
             </div>
           )}

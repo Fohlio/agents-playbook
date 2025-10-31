@@ -1,4 +1,5 @@
 import { Badge, Button } from "@/shared/ui/atoms";
+import { Tooltip } from "@/shared/ui/molecules";
 import { formatDistanceToNow } from "date-fns";
 import { ApiToken } from "../types";
 
@@ -55,14 +56,16 @@ export function TokenItem({ token, onRevoke }: TokenItemProps) {
             )}
           </div>
         </div>
-        <Button
-          variant="danger"
-          size="sm"
-          onClick={() => onRevoke(token.id)}
-          testId={`revoke-token-button-${token.id}`}
-        >
-          Revoke
-        </Button>
+        <Tooltip content="Permanently revoke this token. AI assistants using it will lose access immediately.">
+          <Button
+            variant="danger"
+            size="sm"
+            onClick={() => onRevoke(token.id)}
+            testId={`revoke-token-button-${token.id}`}
+          >
+            Revoke
+          </Button>
+        </Tooltip>
       </div>
     </div>
   );

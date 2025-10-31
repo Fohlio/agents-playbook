@@ -1,4 +1,5 @@
 import { Card } from "@/shared/ui/atoms";
+import { Tooltip } from "./Tooltip";
 import { ReactNode } from "react";
 
 export interface StatCardProps {
@@ -8,6 +9,7 @@ export interface StatCardProps {
   icon?: ReactNode;
   variant?: "default" | "warning" | "success" | "danger";
   testId?: string;
+  tooltip?: string;
 }
 
 export function StatCard({
@@ -16,7 +18,8 @@ export function StatCard({
   subtext,
   icon,
   variant = "default",
-  testId
+  testId,
+  tooltip
 }: StatCardProps) {
   const variantStyles = {
     default: "text-gray-900",
@@ -25,7 +28,7 @@ export function StatCard({
     danger: "text-red-600",
   };
 
-  return (
+  const cardContent = (
     <Card testId={testId}>
       <div className="text-center">
         {icon && <div className="flex justify-center mb-2">{icon}</div>}
@@ -39,4 +42,10 @@ export function StatCard({
       </div>
     </Card>
   );
+
+  if (tooltip) {
+    return <Tooltip content={tooltip}>{cardContent}</Tooltip>;
+  }
+
+  return cardContent;
 }

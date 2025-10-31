@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Button, Alert, Card, CardHeader } from "@/shared/ui/atoms";
+import { Tooltip } from "@/shared/ui/molecules";
 import { useApiTokens } from "../hooks/useApiTokens";
 import { TokensList } from "./TokensList";
 import { CreateTokenModal } from "./CreateTokenModal";
@@ -51,13 +52,15 @@ export function ApiTokensSection() {
             testId="tokens-heading"
             className="mb-0"
           />
-          <Button
-            variant="primary"
-            onClick={() => setShowCreateModal(true)}
-            testId="create-token-button"
-          >
-            Create New Token
-          </Button>
+          <Tooltip content="Generate a new API token for authenticating MCP server requests from AI assistants">
+            <Button
+              variant="primary"
+              onClick={() => setShowCreateModal(true)}
+              testId="create-token-button"
+            >
+              Create New Token
+            </Button>
+          </Tooltip>
         </div>
 
         {error && <Alert variant="error" testId="tokens-error-alert">{error}</Alert>}

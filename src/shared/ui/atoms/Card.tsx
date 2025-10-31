@@ -13,7 +13,8 @@ export function Card({ children, className, testId }: CardProps) {
     <div
       data-testid={testId}
       className={cn(
-        "bg-surface-base rounded-lg shadow-base p-6",
+        "bg-white rounded-lg border border-gray-200 shadow-sm p-6",
+        "hover:shadow-md transition-shadow duration-200",
         className
       )}
     >

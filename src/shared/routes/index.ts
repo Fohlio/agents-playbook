@@ -36,6 +36,8 @@ export const PROTECTED_ROUTES = {
   SETTINGS: "/dashboard/settings",
   DISCOVER: "/dashboard/discover",
   LIBRARY: "/dashboard/library",
+  GETTING_STARTED: "/dashboard/getting-started",
+  DOCS: "/dashboard/docs",
 } as const;
 
 /**

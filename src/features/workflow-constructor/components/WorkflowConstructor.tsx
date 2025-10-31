@@ -16,6 +16,7 @@ import { MiniPromptLibrary } from './MiniPromptLibrary';
 import { StageSection } from './StageSection';
 import { StageCreateForm } from './StageCreateForm';
 import { TagSelector } from '@/shared/ui/molecules/TagSelector';
+import { Tooltip } from '@/shared/ui/molecules';
 
 interface WorkflowConstructorProps {
   data: WorkflowConstructorData;
@@ -197,46 +198,56 @@ export function WorkflowConstructor({ data }: WorkflowConstructorProps) {
             />
           </div>
           <div className="flex gap-3 items-center">
-            <Toggle
-              checked={isActive}
-              onChange={(checked) => {
-                setIsActive(checked);
-                markDirty();
-              }}
-              label={isActive ? 'Active' : 'Inactive'}
-              testId="workflow-active-toggle"
-            />
-            <Toggle
-              checked={isPublic}
-              onChange={(checked) => {
-                setIsPublic(checked);
-                markDirty();
-              }}
-              label={isPublic ? 'Public' : 'Private'}
-              testId="workflow-public-toggle"
-            />
-            <Button
-              variant="secondary"
-              onClick={() => setLocalStages(currentWorkflow.stages)}
-              disabled={!isDirty}
+            <Tooltip content="Active workflows are available in your MCP server for AI assistants">
+              <Toggle
+                checked={isActive}
+                onChange={(checked) => {
+                  setIsActive(checked);
+                  markDirty();
+                }}
+                label={isActive ? 'Active' : 'Inactive'}
+                testId="workflow-active-toggle"
+              />
+            </Tooltip>
+            <Tooltip content="Public workflows appear in Discovery for all users. Private workflows are only visible to you.">
+              <Toggle
+                checked={isPublic}
+                onChange={(checked) => {
+                  setIsPublic(checked);
+                  markDirty();
+                }}
+                label={isPublic ? 'Public' : 'Private'}
+                testId="workflow-public-toggle"
+              />
+            </Tooltip>
+            <Tooltip content="Discard all unsaved changes and restore original workflow">
+              <Button
+                variant="secondary"
+                onClick={() => setLocalStages(currentWorkflow.stages)}
+                disabled={!isDirty}
+              >
+                Reset
+              </Button>
+            </Tooltip>
+            <Tooltip content="Save workflow changes to database and regenerate embeddings for search">
+              <Button
+                variant="primary"
+                onClick={handleSaveWorkflow}
+              disabled={!isDirty || isSaving}
+              testId="save-workflow"
             >
-              Reset
+              {isSaving ? 'Saving...' : 'Save Workflow'}
             </Button>
-            <Button
-              variant="primary"
-              onClick={handleSaveWorkflow}
-            disabled={!isDirty || isSaving}
-            testId="save-workflow"
-          >
-            {isSaving ? 'Saving...' : 'Save Workflow'}
-          </Button>
+            </Tooltip>
         </div>
         </div>
         <div className="space-y-4">
           <div className="max-w-2xl">
-            <label className="block text-sm font-medium text-text-primary mb-2">
-              Complexity (T-Shirt Sizing)
-            </label>
+            <Tooltip content="T-shirt sizing for workflow scope: XS=Quick fixes, S=Simple tasks, M=Moderate features, L=Complex projects, XL=Advanced systems">
+              <label className="block text-sm font-medium text-text-primary mb-2">
+                Complexity (T-Shirt Sizing)
+              </label>
+            </Tooltip>
             <select
               value={complexity ?? ''}
               onChange={(e) => {
@@ -254,9 +265,11 @@ export function WorkflowConstructor({ data }: WorkflowConstructorProps) {
             </select>
           </div>
           <div className="max-w-2xl">
-            <label className="block text-sm font-medium text-text-primary mb-2">
-              Tags
-            </label>
+            <Tooltip content="Categorize your workflow to help others discover it (e.g., Testing, Security, Refactoring)">
+              <label className="block text-sm font-medium text-text-primary mb-2">
+                Tags
+              </label>
+            </Tooltip>
             <TagSelector
               selectedTagIds={selectedTagIds}
               onChange={(tagIds) => {

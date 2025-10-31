@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Button } from "@/shared/ui/atoms";
+import { Tooltip } from "@/shared/ui/molecules";
 import { ROUTES } from "@/shared/routes";
 import { useRouter } from "next/navigation";
 import { MiniPromptEditorModal } from "@/features/workflow-constructor/components/MiniPromptEditorModal";
@@ -25,21 +26,25 @@ export function QuickActions() {
   return (
     <>
       <div className="flex gap-4" data-testid="quick-actions">
-        <Button
-          variant="primary"
-          onClick={() => router.push(ROUTES.LIBRARY.WORKFLOWS.NEW)}
-          testId="new-workflow-button"
-        >
-          New Workflow
-        </Button>
+        <Tooltip content="Create a new workflow using the visual constructor">
+          <Button
+            variant="primary"
+            onClick={() => router.push(ROUTES.LIBRARY.WORKFLOWS.NEW)}
+            testId="new-workflow-button"
+          >
+            New Workflow
+          </Button>
+        </Tooltip>
 
-        <Button
-          variant="secondary"
-          onClick={() => setIsMiniPromptModalOpen(true)}
-          testId="new-mini-prompt-button"
-        >
-          New Mini-Prompt
-        </Button>
+        <Tooltip content="Create a reusable mini-prompt template">
+          <Button
+            variant="secondary"
+            onClick={() => setIsMiniPromptModalOpen(true)}
+            testId="new-mini-prompt-button"
+          >
+            New Mini-Prompt
+          </Button>
+        </Tooltip>
       </div>
 
       <MiniPromptEditorModal

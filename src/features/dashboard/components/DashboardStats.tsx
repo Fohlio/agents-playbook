@@ -22,6 +22,7 @@ export function DashboardStats({ stats, userTier }: DashboardStatsProps) {
         label="Total Workflows"
         value={stats.totalWorkflows}
         testId="stat-total-workflows"
+        tooltip="Total number of workflows in your library (active and inactive)"
       />
 
       <StatCard
@@ -30,18 +31,25 @@ export function DashboardStats({ stats, userTier }: DashboardStatsProps) {
         subtext={limitReached ? "Limit reached" : undefined}
         variant={limitReached ? "danger" : "default"}
         testId="stat-active-workflows"
+        tooltip={
+          isFreeTier
+            ? "Active workflows available in MCP server. FREE tier limit: 5 workflows. Upgrade to PREMIUM for unlimited."
+            : "Active workflows available in MCP server. PREMIUM tier: unlimited active workflows."
+        }
       />
 
       <StatCard
         label="Mini-Prompts"
         value={stats.totalMiniPrompts}
         testId="stat-mini-prompts"
+        tooltip="Reusable prompt templates that can be used across multiple workflows"
       />
 
       <StatCard
         label="Public Items"
         value={stats.publicItems}
         testId="stat-public-items"
+        tooltip="Number of your workflows and mini-prompts visible to the community"
       />
     </div>
   );

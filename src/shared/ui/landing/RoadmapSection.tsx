@@ -1,15 +1,7 @@
 const ROADMAP_FEATURES = [
   {
-    title: "Enhanced MCP Integration",
-    description: "Intelligent MCP server recommendations at each workflow step"
-  },
-  {
     title: "Cursor Extension + Sub-Agents",
     description: "Deep Cursor integration with isolated context and multiple agents support"
-  },
-  {
-    title: "Custom Workflows as a Service",
-    description: "Dynamic workflow creation and customization platform"
   },
   {
     title: "Advanced Figma & Layout Workflows",
