@@ -13,9 +13,6 @@ interface DashboardStatsProps {
 }
 
 export function DashboardStats({ stats, userTier }: DashboardStatsProps) {
-  const isFreeTier = userTier === "FREE";
-  const limitReached = isFreeTier && stats.activeWorkflows >= 5;
-
   return (
     <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
       <StatCard
@@ -27,15 +24,9 @@ export function DashboardStats({ stats, userTier }: DashboardStatsProps) {
 
       <StatCard
         label="Active Workflows"
-        value={isFreeTier ? `${stats.activeWorkflows} / 5` : stats.activeWorkflows}
-        subtext={limitReached ? "Limit reached" : undefined}
-        variant={limitReached ? "danger" : "default"}
+        value={stats.activeWorkflows}
         testId="stat-active-workflows"
-        tooltip={
-          isFreeTier
-            ? "Active workflows available in MCP server. FREE tier limit: 5 workflows. Upgrade to PREMIUM for unlimited."
-            : "Active workflows available in MCP server. PREMIUM tier: unlimited active workflows."
-        }
+        tooltip="Active workflows available in MCP server"
       />
 
       <StatCard

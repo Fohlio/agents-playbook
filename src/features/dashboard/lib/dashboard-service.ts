@@ -52,7 +52,7 @@ export async function getDashboardStats(userId: string): Promise<DashboardStats>
 }
 
 /**
- * Get active workflows for user (max 5 for free tier)
+ * Get active workflows for user
  * Includes both owned and referenced (imported) workflows
  */
 export async function getActiveWorkflows(userId: string): Promise<WorkflowWithUsage[]> {
@@ -105,8 +105,7 @@ export async function getActiveWorkflows(userId: string): Promise<WorkflowWithUs
 
   const uniqueWorkflows = Array.from(
     new Map(allWorkflows.map((w) => [w.id, w])).values()
-  ).sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime())
-   .slice(0, 5);
+  ).sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime());
 
   return uniqueWorkflows;
 }
@@ -238,15 +237,3 @@ export async function getRecentActivity(userId: string): Promise<ActivityItem[]>
     .slice(0, 10);
 }
 
-/**
- * Check if user can activate more workflows (tier limit check)
- */
-export async function canActivateWorkflow(userId: string, userTier: string): Promise<boolean> {
-  if (userTier === "PREMIUM") return true;
-
-  const activeCount = await prisma.workflow.count({
-    where: { userId, isActive: true },
-  });
-
-  return activeCount < 5; // FREE tier limit
-}

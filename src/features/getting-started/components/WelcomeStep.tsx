@@ -43,8 +43,9 @@ export function WelcomeStep() {
 
       <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 max-w-xl mx-auto mt-8">
         <p className="text-sm text-blue-900">
-          <strong>Why workflows?</strong> Structured workflows reduce AI hallucinations by 95%
-          and ensure consistent, high-quality outputs every time.
+          <strong>Why workflows?</strong> Planning ahead saves time on re-iteration, prevents bugs,
+          ensures consistency in requirements, and helps AI understand context better—reducing wasted effort
+          and improving code quality.
         </p>
       </div>
     </div>

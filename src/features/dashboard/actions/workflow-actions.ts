@@ -3,18 +3,11 @@
 import { revalidatePath } from "next/cache";
 import { auth } from "@/lib/auth/auth";
 import { prisma } from "@/lib/db/client";
-import { canActivateWorkflow } from "../lib/dashboard-service";
 
 export async function activateWorkflow(workflowId: string) {
   const session = await auth();
   if (!session?.user?.id) {
     throw new Error("Unauthorized");
-  }
-
-  // Check tier limit
-  const canActivate = await canActivateWorkflow(session.user.id, session.user.tier || "FREE");
-  if (!canActivate) {
-    throw new Error("Maximum active workflows reached for FREE tier (5)");
   }
 
   // Verify ownership

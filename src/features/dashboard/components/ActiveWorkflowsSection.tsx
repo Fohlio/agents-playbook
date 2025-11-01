@@ -48,7 +48,7 @@ export function ActiveWorkflowsSection({ workflows }: ActiveWorkflowsSectionProp
     <Card testId="active-workflows-section">
       <CardHeader
         title="Active Workflows"
-        description={`${workflows.length} of 5 active workflows`}
+        description={`${workflows.length} active workflows`}
         titleHref="/dashboard/library?tab=workflows"
       />
 

@@ -1,6 +1,7 @@
 "use client";
 
 import { signOut, useSession } from "next-auth/react";
+import { usePathname } from "next/navigation";
 import { Button, Link, Badge } from "@/shared/ui/atoms";
 import { ROUTES } from "@/shared/routes";
 
@@ -12,6 +13,7 @@ import { ROUTES } from "@/shared/routes";
  */
 export function DashboardHeader() {
   const { data: session } = useSession();
+  const pathname = usePathname();
   const isAdmin = session?.user?.role === 'ADMIN';
 
   return (
@@ -34,6 +36,7 @@ export function DashboardHeader() {
                 href={ROUTES.GETTING_STARTED}
                 variant="secondary"
                 testId="getting-started-nav-link"
+                className={pathname === ROUTES.GETTING_STARTED ? 'text-blue-600 font-semibold' : ''}
               >
                 Getting Started
               </Link>
@@ -41,6 +44,7 @@ export function DashboardHeader() {
                 href={ROUTES.DASHBOARD}
                 variant="secondary"
                 testId="dashboard-nav-link"
+                className={pathname === ROUTES.DASHBOARD ? 'text-blue-600 font-semibold' : ''}
               >
                 Dashboard
               </Link>
@@ -48,6 +52,7 @@ export function DashboardHeader() {
                 href={ROUTES.DISCOVER}
                 variant="secondary"
                 testId="discover-nav-link"
+                className={pathname === ROUTES.DISCOVER ? 'text-blue-600 font-semibold' : ''}
               >
                 Discover
               </Link>
@@ -55,6 +60,7 @@ export function DashboardHeader() {
                 href="/dashboard/library"
                 variant="secondary"
                 testId="library-nav-link"
+                className={pathname === '/dashboard/library' ? 'text-blue-600 font-semibold' : ''}
               >
                 Library
               </Link>
@@ -63,7 +69,7 @@ export function DashboardHeader() {
                   href={ROUTES.ADMIN.SYSTEM_WORKFLOWS}
                   variant="secondary"
                   testId="admin-nav-link"
-                  className="flex items-center gap-1"
+                  className={`flex items-center gap-1 ${pathname?.startsWith('/dashboard/admin') ? 'text-blue-600 font-semibold' : ''}`}
                 >
                   Admin
                   <Badge variant="primary" testId="admin-badge">
@@ -75,6 +81,7 @@ export function DashboardHeader() {
                 href={ROUTES.SETTINGS}
                 variant="secondary"
                 testId="settings-nav-link"
+                className={pathname === ROUTES.SETTINGS ? 'text-blue-600 font-semibold' : ''}
               >
                 Settings
               </Link>

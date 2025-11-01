@@ -7,7 +7,7 @@ import { DiscoverStep } from './DiscoverStep';
 import { LibraryStep } from './LibraryStep';
 import { CreateWorkflowStep } from './CreateWorkflowStep';
 import { MCPIntegrationStep } from './MCPIntegrationStep';
-import { DocsStep } from './DocsStep';
+import { WorkflowCombinationsStep } from './WorkflowCombinationsStep';
 import Button from '@/shared/ui/atoms/Button';
 import { ROUTES } from '@/shared/routes';
 
@@ -23,7 +23,7 @@ const TOTAL_STEPS = 6;
  * 3. Library Management
  * 4. Workflow Creation
  * 5. MCP Integration
- * 6. Documentation
+ * 6. Combining Workflows
  */
 export function GettingStartedWizard() {
   const router = useRouter();
@@ -44,7 +44,7 @@ export function GettingStartedWizard() {
     { label: '📚 Library', key: 'library' },
     { label: '🏗️ Create', key: 'create' },
     { label: '🔌 MCP', key: 'mcp' },
-    { label: '📖 Docs', key: 'docs' },
+    { label: '🔗 Combine', key: 'combinations' },
   ];
 
   const steps = [
@@ -53,7 +53,7 @@ export function GettingStartedWizard() {
     <LibraryStep key="library" />,
     <CreateWorkflowStep key="create" />,
     <MCPIntegrationStep key="mcp" />,
-    <DocsStep key="docs" />,
+    <WorkflowCombinationsStep key="combinations" />,
   ];
 
   return (
