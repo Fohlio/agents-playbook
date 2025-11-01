@@ -12,6 +12,7 @@ import { useDragAndDrop } from '../hooks/use-drag-and-drop';
 import { MiniPromptLibrary } from './MiniPromptLibrary';
 import { StageSection } from './StageSection';
 import { StageCreateForm } from './StageCreateForm';
+import { GeneralSettings } from './GeneralSettings';
 import { saveWorkflow } from '../actions/workflow-actions';
 import { TagSelector } from '@/shared/ui/molecules/TagSelector';
 
@@ -33,10 +34,12 @@ export function WorkflowConstructorWrapper({ userId, miniPrompts: initialMiniPro
   const [localStages, setLocalStages] = useState<WorkflowStageWithMiniPrompts[]>([]);
   const [miniPrompts, setMiniPrompts] = useState(initialMiniPrompts);
   const [isCreatingStage, setIsCreatingStage] = useState(false);
+  const [editingStageId, setEditingStageId] = useState<string | null>(null);
   const [workflowName, setWorkflowName] = useState('Untitled Workflow');
   const [isActive, setIsActive] = useState(false);
   const [selectedTagIds, setSelectedTagIds] = useState<string[]>([]);
   const [isSaving, setIsSaving] = useState(false);
+  const [includeMultiAgentChat, setIncludeMultiAgentChat] = useState(false);
 
   const handleDragEnd = useCallback(
     (event: DragEndEvent) => {
@@ -83,7 +86,7 @@ export function WorkflowConstructorWrapper({ userId, miniPrompts: initialMiniPro
   );
 
   const handleCreateStage = useCallback(
-    (name: string, description: string, color: string) => {
+    (name: string, description: string, color: string, withReview: boolean) => {
       const newStage: WorkflowStageWithMiniPrompts = {
         id: `temp-${Date.now()}`,
         workflowId: 'new',
@@ -91,6 +94,7 @@ export function WorkflowConstructorWrapper({ userId, miniPrompts: initialMiniPro
         description: description || null,
         color,
         order: localStages.length,
+        withReview,
         createdAt: new Date(),
         miniPrompts: [],
       };
@@ -127,6 +131,59 @@ export function WorkflowConstructorWrapper({ userId, miniPrompts: initialMiniPro
     [localStages]
   );
 
+  const handleEditMiniPrompt = useCallback((miniPromptId: string) => {
+    // Open mini-prompt in new tab for editing
+    window.open(`/dashboard/library?editMiniPrompt=${miniPromptId}`, '_blank');
+  }, []);
+
+  const handleToggleWithReview = useCallback(
+    (stageId: string, withReview: boolean) => {
+      setLocalStages(
+        localStages.map((stage) => {
+          if (stage.id === stageId) {
+            return {
+              ...stage,
+              withReview,
+            };
+          }
+          return stage;
+        })
+      );
+    },
+    [localStages]
+  );
+
+  const handleEditStage = useCallback(
+    (stageId: string) => {
+      setEditingStageId(stageId);
+      setIsCreatingStage(false);
+    },
+    []
+  );
+
+  const handleUpdateStage = useCallback(
+    (name: string, description: string, color: string, withReview: boolean) => {
+      if (!editingStageId) return;
+
+      setLocalStages(
+        localStages.map((s) => {
+          if (s.id === editingStageId) {
+            return {
+              ...s,
+              name: name.trim(),
+              description: description.trim() || null,
+              color,
+              withReview,
+            };
+          }
+          return s;
+        })
+      );
+      setEditingStageId(null);
+    },
+    [editingStageId, localStages]
+  );
+
   const handleSaveWorkflow = useCallback(async () => {
     setIsSaving(true);
     try {
@@ -148,11 +205,13 @@ export function WorkflowConstructorWrapper({ userId, miniPrompts: initialMiniPro
         workflowId: workflow.id,
         name: workflowName,
         isActive: isActive,
+        includeMultiAgentChat,
         stages: localStages.map((stage, index) => ({
           name: stage.name,
           description: stage.description ?? undefined,
           color: stage.color ?? undefined,
           order: index,
+          withReview: stage.withReview,
           miniPrompts: stage.miniPrompts.map((smp, mpIndex) => ({
             miniPromptId: smp.miniPromptId,
             order: mpIndex,
@@ -168,7 +227,7 @@ export function WorkflowConstructorWrapper({ userId, miniPrompts: initialMiniPro
     } finally {
       setIsSaving(false);
     }
-  }, [userId, workflowName, isActive, selectedTagIds, localStages, router]);
+  }, [userId, workflowName, isActive, selectedTagIds, localStages, router, includeMultiAgentChat]);
 
   return (
     <div className="h-screen flex flex-col">
@@ -184,6 +243,11 @@ export function WorkflowConstructorWrapper({ userId, miniPrompts: initialMiniPro
             />
           </div>
           <div className="flex gap-3 items-center">
+            <GeneralSettings
+              includeMultiAgentChat={includeMultiAgentChat}
+              onChange={setIncludeMultiAgentChat}
+              compact
+            />
             <Toggle
               checked={isActive}
               onChange={setIsActive}
@@ -251,14 +315,36 @@ export function WorkflowConstructorWrapper({ userId, miniPrompts: initialMiniPro
 
             <div className="col-span-3 overflow-y-auto">
               <div className="space-y-4">
-                {localStages.map((stage) => (
-                  <StageSection
-                    key={stage.id}
-                    stage={stage}
-                    onRemoveStage={handleRemoveStage}
-                    onRemoveMiniPrompt={handleRemoveMiniPrompt}
-                  />
-                ))}
+                {localStages.map((stage) => {
+                  if (editingStageId === stage.id) {
+                    return (
+                      <StageCreateForm
+                        key={stage.id}
+                        mode="edit"
+                        initialValues={{
+                          name: stage.name,
+                          description: stage.description,
+                          color: stage.color,
+                          withReview: stage.withReview,
+                        }}
+                        onSubmit={handleUpdateStage}
+                        onCancel={() => setEditingStageId(null)}
+                      />
+                    );
+                  }
+                  return (
+                    <StageSection
+                      key={stage.id}
+                      stage={stage}
+                      onRemoveStage={handleRemoveStage}
+                      onRemoveMiniPrompt={handleRemoveMiniPrompt}
+                      onEditMiniPrompt={handleEditMiniPrompt}
+                      onEditStage={handleEditStage}
+                      onToggleWithReview={handleToggleWithReview}
+                      includeMultiAgentChat={includeMultiAgentChat}
+                    />
+                  );
+                })}
 
                 {isCreatingStage ? (
                   <StageCreateForm

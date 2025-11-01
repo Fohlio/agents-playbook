@@ -81,7 +81,7 @@ export default function CaseStudiesSection() {
 
               <div className="flex flex-wrap gap-2 mb-6">
                 {selectedStudy.tags.map((tag) => (
-                  <Badge key={tag} variant="secondary">
+                  <Badge key={tag} variant="default">
                     {tag}
                   </Badge>
                 ))}

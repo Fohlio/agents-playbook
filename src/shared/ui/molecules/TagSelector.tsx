@@ -62,7 +62,7 @@ export function TagSelector({
   return (
     <div>
       {label && <label className="block text-sm font-medium text-gray-700 mb-2">{label}</label>}
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap gap-2 max-h-32 overflow-y-auto">
         {tags.map(tag => {
           const isSelected = selectedTagIds.includes(tag.id);
           return (

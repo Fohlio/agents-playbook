@@ -118,9 +118,9 @@ export function MiniPromptDiscoveryCard({
       >
         <Card
           testId={`mini-prompt-card-${miniPrompt.id}`}
-          className="hover:shadow-lg transition-shadow"
+          className="hover:shadow-lg transition-shadow h-full flex flex-col"
         >
-          <div className="p-6">
+          <div className="p-6 flex-1 flex flex-col">
             <div className="flex items-start justify-between mb-3">
               <h3 className="text-xl font-bold text-gray-900 hover:text-blue-600 transition-colors">
                 {miniPrompt.name}
@@ -135,11 +135,13 @@ export function MiniPromptDiscoveryCard({
               )}
             </div>
 
-            {miniPrompt.description && (
-              <p className="text-sm text-gray-600 mb-4 line-clamp-3 leading-relaxed">
-                {miniPrompt.description}
-              </p>
-            )}
+            <div className="flex-1">
+              {miniPrompt.description && (
+                <p className="text-sm text-gray-600 mb-4 line-clamp-3 leading-relaxed">
+                  {miniPrompt.description}
+                </p>
+              )}
+            </div>
 
             {miniPrompt.tags && miniPrompt.tags.length > 0 && (
               <div className="mb-3">

@@ -4,17 +4,27 @@ import { Card } from '@/shared/ui/atoms/Card';
 import Button from '@/shared/ui/atoms/Button';
 import type { WorkflowStageWithMiniPrompts } from '@/lib/types/workflow-constructor-types';
 import { StageDropZone } from './StageDropZone';
+import { Tooltip } from '@/shared/ui/molecules';
+import EditIcon from '@mui/icons-material/Edit';
 
 interface StageSectionProps {
   stage: WorkflowStageWithMiniPrompts;
   onRemoveStage: (stageId: string) => void;
   onRemoveMiniPrompt: (stageId: string, miniPromptId: string) => void;
+  onEditMiniPrompt?: (miniPromptId: string) => void;
+  onEditStage?: (stageId: string) => void;
+  onToggleWithReview?: (stageId: string, withReview: boolean) => void;
+  includeMultiAgentChat?: boolean;
 }
 
 export function StageSection({
   stage,
   onRemoveStage,
   onRemoveMiniPrompt,
+  onEditMiniPrompt,
+  onEditStage,
+  onToggleWithReview,
+  includeMultiAgentChat = false,
 }: StageSectionProps) {
   return (
     <Card className="mb-4" testId={`stage-section-${stage.id}`}>
@@ -33,14 +43,43 @@ export function StageSection({
             )}
           </div>
         </div>
-        <Button
-          variant="danger"
-          size="sm"
-          onClick={() => onRemoveStage(stage.id)}
-          testId={`remove-stage-${stage.id}`}
-        >
-          Remove Stage
-        </Button>
+        <div className="flex items-center gap-3">
+          {onToggleWithReview && (
+            <Tooltip content="When enabled, adds a Memory Board review prompt at the end of this stage for handoff context">
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={stage.withReview}
+                  onChange={(e) => onToggleWithReview(stage.id, e.target.checked)}
+                  className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
+                />
+                <span className="text-sm font-medium text-text-primary">
+                  With Review
+                </span>
+              </label>
+            </Tooltip>
+          )}
+          {onEditStage && (
+            <Tooltip content="Edit stage details">
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={() => onEditStage(stage.id)}
+                testId={`edit-stage-${stage.id}`}
+              >
+                <EditIcon sx={{ fontSize: 16 }} />
+              </Button>
+            </Tooltip>
+          )}
+          <Button
+            variant="danger"
+            size="sm"
+            onClick={() => onRemoveStage(stage.id)}
+            testId={`remove-stage-${stage.id}`}
+          >
+            Remove Stage
+          </Button>
+        </div>
       </div>
 
       <StageDropZone
@@ -48,6 +87,8 @@ export function StageSection({
         onRemoveMiniPrompt={(miniPromptId) =>
           onRemoveMiniPrompt(stage.id, miniPromptId)
         }
+        onEditMiniPrompt={onEditMiniPrompt}
+        includeMultiAgentChat={includeMultiAgentChat}
       />
     </Card>
   );

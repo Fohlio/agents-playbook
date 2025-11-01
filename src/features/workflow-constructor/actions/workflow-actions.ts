@@ -68,6 +68,7 @@ export async function saveWorkflow(input: SaveWorkflowInput): Promise<WorkflowWi
         complexity: input.complexity,
         isActive: input.isActive,
         visibility: input.visibility,
+        includeMultiAgentChat: input.includeMultiAgentChat ?? false,
       },
     });
 
@@ -100,6 +101,7 @@ export async function saveWorkflow(input: SaveWorkflowInput): Promise<WorkflowWi
           description: stageInput.description,
           color: stageInput.color ?? '#64748b',
           order: stageInput.order,
+          withReview: stageInput.withReview ?? true,
         },
       });
 

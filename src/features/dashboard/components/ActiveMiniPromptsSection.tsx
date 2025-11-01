@@ -63,6 +63,11 @@ export function ActiveMiniPromptsSection({ miniPrompts }: ActiveMiniPromptsSecti
             <div className="flex-1">
               <div className="flex items-center gap-2">
                 <h3 className="font-medium text-gray-900">{miniPrompt.name}</h3>
+                {miniPrompt.isSystemMiniPrompt && (
+                  <Badge variant="default" testId={`system-badge-${miniPrompt.id}`}>
+                    System
+                  </Badge>
+                )}
                 <Badge variant="primary" testId="mini-prompt-active-badge">Active</Badge>
               </div>
               <p className="text-xs text-gray-500 mt-1">
@@ -76,14 +81,16 @@ export function ActiveMiniPromptsSection({ miniPrompts }: ActiveMiniPromptsSecti
                 targetId={miniPrompt.id}
                 targetName={miniPrompt.name}
               />
-              <Button
-                variant="secondary"
-                size="sm"
-                onClick={() => router.push(`/dashboard/library/mini-prompts/${miniPrompt.id}/edit`)}
-                testId={`edit-button-${miniPrompt.id}`}
-              >
-                Edit
-              </Button>
+              {!miniPrompt.isSystemMiniPrompt && (
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  onClick={() => router.push(`/dashboard/library/mini-prompts/${miniPrompt.id}/edit`)}
+                  testId={`edit-button-${miniPrompt.id}`}
+                >
+                  Edit
+                </Button>
+              )}
               <Button
                 variant="secondary"
                 size="sm"

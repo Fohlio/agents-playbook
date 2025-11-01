@@ -72,6 +72,13 @@ export function WorkflowPreviewModal({
           <p className="text-gray-600 leading-relaxed">
             {workflow.description || "No description available"}
           </p>
+          {workflow.includeMultiAgentChat && (
+            <div className="mt-3">
+              <Badge variant="default">
+                🤖 Multi-Agent Chat Enabled
+              </Badge>
+            </div>
+          )}
         </div>
 
         <div className="mb-6">
@@ -93,6 +100,11 @@ export function WorkflowPreviewModal({
                       <span className="text-xs font-semibold text-gray-400 uppercase tracking-wide">
                         Stage {index + 1}
                       </span>
+                      {stage.withReview && (
+                        <Badge variant="default">
+                          📋 With Review
+                        </Badge>
+                      )}
                     </div>
                     <h4 className="text-lg font-bold text-gray-900 mb-2">{stage.name}</h4>
                     {stage.description && (

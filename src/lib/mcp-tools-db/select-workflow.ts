@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { unifiedWorkflowService } from '../workflows/unified-workflow-service';
 import { tokenAuth } from '../auth/token-auth';
+import { executionPlanBuilder } from './execution-plan-builder';
 
 export const selectWorkflowToolSchema = {
   workflow_id: z.string().describe('ID of the workflow to select'),
@@ -45,13 +46,30 @@ export async function selectWorkflowHandler({
       };
     }
 
+    // Build execution plan with automatic prompts
+    const executionPlan = await executionPlanBuilder.buildExecutionPlan(workflow_id);
+
     // Return workflow details
     const sourceIndicator = workflow.source === 'system' ? '[SYSTEM WORKFLOW]' : '[USER WORKFLOW]';
+
+    let response = `${sourceIndicator}\n\n# ${workflow.name}\n\n${workflow.description || 'No description available.'}\n\n`;
+
+    // Add execution plan if available
+    if (executionPlan) {
+      response += `## Execution Plan\n\n`;
+      response += executionPlanBuilder.formatExecutionPlan(executionPlan);
+      response += `\n\n---\n\n`;
+    }
+
+    // Add YAML content if available
+    if (workflow.yamlContent) {
+      response += `## YAML Content\n\n\`\`\`yaml\n${workflow.yamlContent}\n\`\`\``;
+    }
 
     return {
       content: [{
         type: "text" as const,
-        text: `${sourceIndicator}\n\n# ${workflow.name}\n\n${workflow.description || 'No description available.'}\n\n## YAML Content\n\n\`\`\`yaml\n${workflow.yamlContent || 'No YAML content available.'}\n\`\`\``
+        text: response
       }]
     };
   } catch (error) {

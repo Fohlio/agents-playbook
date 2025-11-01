@@ -120,9 +120,9 @@ export function WorkflowDiscoveryCard({
       >
         <Card
           testId={`workflow-card-${workflow.id}`}
-          className="hover:shadow-lg transition-shadow"
+          className="hover:shadow-lg transition-shadow h-full flex flex-col"
         >
-          <div className="p-6">
+          <div className="p-6 flex-1 flex flex-col">
           <div className="flex items-start justify-between mb-3">
             <div className="flex-1">
               <h3 className="text-xl font-bold text-gray-900 hover:text-blue-600 transition-colors">
@@ -144,10 +144,12 @@ export function WorkflowDiscoveryCard({
             </div>
           </div>
 
-          <MarkdownContent
-            content={workflow.description || "No description available"}
-            className="text-sm text-gray-600 mb-4 line-clamp-3 leading-relaxed"
-          />
+          <div className="flex-1">
+            <MarkdownContent
+              content={workflow.description || "No description available"}
+              className="text-sm text-gray-600 mb-4 line-clamp-3 leading-relaxed"
+            />
+          </div>
 
           {workflow.tags && workflow.tags.length > 0 && (
             <div className="mb-3">

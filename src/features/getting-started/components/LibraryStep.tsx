@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { ROUTES } from '@/shared/routes';
+import { PROTECTED_ROUTES } from '@/shared/routes';
 
 /**
  * Library Step
@@ -101,7 +101,7 @@ export function LibraryStep() {
             </p>
           </div>
           <Link
-            href={ROUTES.LIBRARY}
+            href={PROTECTED_ROUTES.LIBRARY}
             className="px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700 transition-colors text-sm font-medium"
           >
             Go to Library

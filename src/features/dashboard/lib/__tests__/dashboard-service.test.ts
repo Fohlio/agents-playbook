@@ -6,7 +6,6 @@ import {
   getWorkflows,
   getMiniPrompts,
   getRecentActivity,
-  canActivateWorkflow,
 } from '../dashboard-service';
 
 jest.mock('@/lib/db/client', () => ({
@@ -286,31 +285,6 @@ describe('Dashboard Service', () => {
     });
   });
 
-  describe('canActivateWorkflow', () => {
-    it('returns true for PREMIUM tier', async () => {
-      const result = await canActivateWorkflow(mockUserId, 'PREMIUM');
-
-      expect(result).toBe(true);
-      expect(prismaMock.workflow.count).not.toHaveBeenCalled();
-    });
-
-    it('returns false when FREE tier has 5 active workflows', async () => {
-      prismaMock.workflow.count.mockResolvedValue(5);
-
-      const result = await canActivateWorkflow(mockUserId, 'FREE');
-
-      expect(result).toBe(false);
-      expect(prismaMock.workflow.count).toHaveBeenCalledWith({
-        where: { userId: mockUserId, isActive: true },
-      });
-    });
-
-    it('returns true when FREE tier has less than 5 active workflows', async () => {
-      prismaMock.workflow.count.mockResolvedValue(3);
-
-      const result = await canActivateWorkflow(mockUserId, 'FREE');
-
-      expect(result).toBe(true);
-    });
-  });
+  // Note: canActivateWorkflow tests removed as the 5-workflow limit has been removed
+  // Users can now activate unlimited workflows regardless of tier
 });

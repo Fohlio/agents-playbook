@@ -3,10 +3,18 @@
 import { useState } from 'react';
 import Button from '@/shared/ui/atoms/Button';
 import Input from '@/shared/ui/atoms/Input';
+import InfoIcon from '@mui/icons-material/Info';
 
 interface StageCreateFormProps {
-  onSubmit: (name: string, description: string, color: string) => void;
+  onSubmit: (name: string, description: string, color: string, withReview: boolean) => void;
   onCancel: () => void;
+  initialValues?: {
+    name: string;
+    description?: string | null;
+    color: string;
+    withReview: boolean;
+  };
+  mode?: 'create' | 'edit';
 }
 
 const STAGE_COLORS = [
@@ -20,18 +28,20 @@ const STAGE_COLORS = [
   { value: '#14B8A6', label: 'Teal' },
 ];
 
-export function StageCreateForm({ onSubmit, onCancel }: StageCreateFormProps) {
-  const [name, setName] = useState('');
-  const [description, setDescription] = useState('');
-  const [color, setColor] = useState('#3B82F6');
+export function StageCreateForm({ onSubmit, onCancel, initialValues, mode = 'create' }: StageCreateFormProps) {
+  const [name, setName] = useState(initialValues?.name || '');
+  const [description, setDescription] = useState(initialValues?.description || '');
+  const [color, setColor] = useState(initialValues?.color || '#3B82F6');
+  const [withReview, setWithReview] = useState(initialValues?.withReview ?? true);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (name.trim()) {
-      onSubmit(name.trim(), description.trim(), color);
+      onSubmit(name.trim(), description.trim(), color, withReview);
       setName('');
       setDescription('');
       setColor('#3B82F6');
+      setWithReview(true);
     }
   };
 
@@ -40,7 +50,9 @@ export function StageCreateForm({ onSubmit, onCancel }: StageCreateFormProps) {
       onSubmit={handleSubmit}
       className="bg-surface-base border border-border-base rounded-lg p-6"
     >
-      <h3 className="text-lg font-semibold text-text-primary mb-4">Create New Stage</h3>
+      <h3 className="text-lg font-semibold text-text-primary mb-4">
+        {mode === 'edit' ? 'Edit Stage' : 'Create New Stage'}
+      </h3>
 
       <div className="space-y-4">
         <div>
@@ -93,6 +105,30 @@ export function StageCreateForm({ onSubmit, onCancel }: StageCreateFormProps) {
             ))}
           </div>
         </div>
+
+        <div className="pt-2 border-t border-border-base">
+          <div className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              id="with-review"
+              checked={withReview}
+              onChange={(e) => setWithReview(e.target.checked)}
+              className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
+            />
+            <label htmlFor="with-review" className="text-sm font-medium text-text-primary">
+              With Review
+            </label>
+            <div className="group relative inline-block">
+              <InfoIcon className="w-4 h-4 text-text-tertiary cursor-help" />
+              <div className="invisible group-hover:visible absolute left-0 bottom-full mb-2 w-64 p-2 bg-gray-900 text-white text-xs rounded shadow-lg z-10">
+                Add review step after this stage to validate progress before moving forward
+              </div>
+            </div>
+          </div>
+          <p className="text-xs text-text-secondary mt-1 ml-6">
+            Recommended: Add review between stages to prevent context collapse
+          </p>
+        </div>
       </div>
 
       <div className="flex gap-3 mt-6">
@@ -108,7 +144,7 @@ export function StageCreateForm({ onSubmit, onCancel }: StageCreateFormProps) {
           variant="primary"
           disabled={!name.trim()}
         >
-          Create Stage
+          {mode === 'edit' ? 'Save Changes' : 'Create Stage'}
         </Button>
       </div>
     </form>

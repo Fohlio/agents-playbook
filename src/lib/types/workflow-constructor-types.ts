@@ -56,15 +56,26 @@ export interface SaveWorkflowInput {
   complexity?: WorkflowComplexity;
   isActive?: boolean;
   visibility?: 'PUBLIC' | 'PRIVATE';
+  includeMultiAgentChat?: boolean;
   tagIds?: string[];
   stages: Array<{
     name: string;
     description?: string;
     color?: string;
     order: number;
+    withReview?: boolean;
     miniPrompts: Array<{
       miniPromptId: string;
       order: number;
     }>;
   }>;
+}
+
+// Auto-prompt metadata for visualization
+export interface AutoPromptMetadata {
+  id: string;
+  name: string;
+  type: 'memory-board' | 'multi-agent-chat';
+  isAutoAttached: true;
+  position: 'stage-end' | 'after-mini-prompt';
 }

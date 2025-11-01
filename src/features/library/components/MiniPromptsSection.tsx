@@ -19,6 +19,7 @@ interface MiniPrompt {
   visibility: string;
   isActive: boolean;
   isOwned?: boolean;
+  isSystemMiniPrompt?: boolean;
   referenceId?: string | null;
   tags?: { tag: { id: string; name: string; color: string | null } }[];
 }
@@ -172,11 +173,18 @@ export function MiniPromptsSection() {
                     <h3 className="text-lg font-semibold text-text-primary flex-1">
                       {miniPrompt.name}
                     </h3>
-                    {!miniPrompt.isOwned && (
-                      <Badge variant="default" testId={`imported-badge-${miniPrompt.id}`}>
-                        Imported
-                      </Badge>
-                    )}
+                    <div className="flex items-center gap-2">
+                      {miniPrompt.isSystemMiniPrompt && (
+                        <Badge variant="default" testId={`system-badge-${miniPrompt.id}`}>
+                          System
+                        </Badge>
+                      )}
+                      {!miniPrompt.isOwned && (
+                        <Badge variant="default" testId={`imported-badge-${miniPrompt.id}`}>
+                          Imported
+                        </Badge>
+                      )}
+                    </div>
                   </div>
                   {miniPrompt.description && (
                     <p className="text-sm text-text-secondary mb-4 line-clamp-3">
@@ -267,14 +275,14 @@ export function MiniPromptsSection() {
             setIsModalOpen(false);
             setSelectedMiniPrompt(null);
           }}
-          onSave={selectedMiniPrompt.isOwned ? handleSave : async () => {}}
+          onSave={selectedMiniPrompt.isOwned && !selectedMiniPrompt.isSystemMiniPrompt ? handleSave : async () => {}}
           initialData={{
             name: selectedMiniPrompt.name,
             content: selectedMiniPrompt.content,
             visibility: selectedMiniPrompt.visibility as 'PUBLIC' | 'PRIVATE',
             tagIds: selectedMiniPrompt.tags?.map(t => t.tag.id) ?? [],
           }}
-          viewOnly={!selectedMiniPrompt.isOwned}
+          viewOnly={!selectedMiniPrompt.isOwned || selectedMiniPrompt.isSystemMiniPrompt}
         />
       )}
     </>

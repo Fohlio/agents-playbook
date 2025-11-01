@@ -15,6 +15,7 @@ import { useWorkflowConstructor } from '../hooks/use-workflow-constructor';
 import { MiniPromptLibrary } from './MiniPromptLibrary';
 import { StageSection } from './StageSection';
 import { StageCreateForm } from './StageCreateForm';
+import { GeneralSettings } from './GeneralSettings';
 import { TagSelector } from '@/shared/ui/molecules/TagSelector';
 import { Tooltip } from '@/shared/ui/molecules';
 
@@ -41,12 +42,16 @@ export function WorkflowConstructor({ data }: WorkflowConstructorProps) {
 
   const [miniPrompts, setMiniPrompts] = useState(initialMiniPrompts);
   const [isCreatingStage, setIsCreatingStage] = useState(false);
+  const [editingStageId, setEditingStageId] = useState<string | null>(null);
   const [workflowName, setWorkflowName] = useState(currentWorkflow?.name ?? 'Untitled Workflow');
   const [complexity, setComplexity] = useState<WorkflowComplexity | null>(
     currentWorkflow?.complexity ?? null
   );
   const [isActive, setIsActive] = useState(currentWorkflow?.isActive ?? false);
   const [isPublic, setIsPublic] = useState(currentWorkflow?.visibility === 'PUBLIC');
+  const [includeMultiAgentChat, setIncludeMultiAgentChat] = useState(
+    currentWorkflow?.includeMultiAgentChat ?? false
+  );
   const [selectedTagIds, setSelectedTagIds] = useState<string[]>(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (currentWorkflow as any)?.tags?.map((t: { tag: { id: string } }) => t.tag.id) ?? []
@@ -98,7 +103,7 @@ export function WorkflowConstructor({ data }: WorkflowConstructorProps) {
   );
 
   const handleCreateStage = useCallback(
-    (name: string, description: string, color: string) => {
+    (name: string, description: string, color: string, withReview: boolean) => {
       if (!currentWorkflow) return;
 
       const newStage: WorkflowStageWithMiniPrompts = {
@@ -108,6 +113,7 @@ export function WorkflowConstructor({ data }: WorkflowConstructorProps) {
         description: description || null,
         color,
         order: localStages.length,
+        withReview,
         createdAt: new Date(),
         miniPrompts: [],
       };
@@ -147,6 +153,61 @@ export function WorkflowConstructor({ data }: WorkflowConstructorProps) {
     [localStages, markDirty]
   );
 
+  const handleEditMiniPrompt = useCallback((miniPromptId: string) => {
+    // Open mini-prompt in new tab for editing
+    window.open(`/dashboard/library?editMiniPrompt=${miniPromptId}`, '_blank');
+  }, []);
+
+  const handleToggleWithReview = useCallback(
+    (stageId: string, withReview: boolean) => {
+      setLocalStages(
+        localStages.map((stage) => {
+          if (stage.id === stageId) {
+            return {
+              ...stage,
+              withReview,
+            };
+          }
+          return stage;
+        })
+      );
+      markDirty();
+    },
+    [localStages, markDirty]
+  );
+
+  const handleEditStage = useCallback(
+    (stageId: string) => {
+      setEditingStageId(stageId);
+      setIsCreatingStage(false);
+    },
+    []
+  );
+
+  const handleUpdateStage = useCallback(
+    (name: string, description: string, color: string, withReview: boolean) => {
+      if (!editingStageId) return;
+
+      setLocalStages(
+        localStages.map((s) => {
+          if (s.id === editingStageId) {
+            return {
+              ...s,
+              name: name.trim(),
+              description: description.trim() || null,
+              color,
+              withReview,
+            };
+          }
+          return s;
+        })
+      );
+      setEditingStageId(null);
+      markDirty();
+    },
+    [editingStageId, localStages, markDirty]
+  );
+
   const handleSaveWorkflow = useCallback(async () => {
     if (!currentWorkflow) return;
 
@@ -157,19 +218,21 @@ export function WorkflowConstructor({ data }: WorkflowConstructorProps) {
       complexity: complexity ?? undefined,
       isActive: isActive,
       visibility: isPublic ? 'PUBLIC' : 'PRIVATE',
+      includeMultiAgentChat: includeMultiAgentChat,
       tagIds: selectedTagIds,
       stages: localStages.map((stage, index) => ({
         name: stage.name,
         description: stage.description ?? undefined,
         color: stage.color ?? undefined,
         order: index,
+        withReview: stage.withReview,
         miniPrompts: stage.miniPrompts.map((smp, mpIndex) => ({
           miniPromptId: smp.miniPromptId,
           order: mpIndex,
         })),
       })),
     });
-  }, [currentWorkflow, workflowName, complexity, isActive, isPublic, selectedTagIds, localStages, handleSave]);
+  }, [currentWorkflow, workflowName, complexity, isActive, isPublic, includeMultiAgentChat, selectedTagIds, localStages, handleSave]);
 
   if (!currentWorkflow) {
     return (
@@ -209,6 +272,14 @@ export function WorkflowConstructor({ data }: WorkflowConstructorProps) {
                 testId="workflow-active-toggle"
               />
             </Tooltip>
+            <GeneralSettings
+              includeMultiAgentChat={includeMultiAgentChat}
+              onChange={(value) => {
+                setIncludeMultiAgentChat(value);
+                markDirty();
+              }}
+              compact
+            />
             <Tooltip content="Public workflows appear in Discovery for all users. Private workflows are only visible to you.">
               <Toggle
                 checked={isPublic}
@@ -321,14 +392,36 @@ export function WorkflowConstructor({ data }: WorkflowConstructorProps) {
 
             <div className="col-span-3 overflow-y-auto">
               <div className="space-y-4">
-                {localStages.map((stage) => (
-                  <StageSection
-                    key={stage.id}
-                    stage={stage}
-                    onRemoveStage={handleRemoveStage}
-                    onRemoveMiniPrompt={handleRemoveMiniPrompt}
-                  />
-                ))}
+                {localStages.map((stage) => {
+                  if (editingStageId === stage.id) {
+                    return (
+                      <StageCreateForm
+                        key={stage.id}
+                        mode="edit"
+                        initialValues={{
+                          name: stage.name,
+                          description: stage.description,
+                          color: stage.color,
+                          withReview: stage.withReview,
+                        }}
+                        onSubmit={handleUpdateStage}
+                        onCancel={() => setEditingStageId(null)}
+                      />
+                    );
+                  }
+                  return (
+                    <StageSection
+                      key={stage.id}
+                      stage={stage}
+                      onRemoveStage={handleRemoveStage}
+                      onRemoveMiniPrompt={handleRemoveMiniPrompt}
+                      onEditMiniPrompt={handleEditMiniPrompt}
+                      onEditStage={handleEditStage}
+                      onToggleWithReview={handleToggleWithReview}
+                      includeMultiAgentChat={includeMultiAgentChat}
+                    />
+                  );
+                })}
 
                 {isCreatingStage ? (
                   <StageCreateForm

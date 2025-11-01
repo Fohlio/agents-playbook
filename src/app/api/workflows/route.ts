@@ -50,11 +50,17 @@ export async function GET(request: Request) {
   });
 
   // Mark owned vs imported workflows
-  const ownedWithFlag = ownedWorkflows.map((w) => ({ ...w, isOwned: true, referenceId: null }));
+  const ownedWithFlag = ownedWorkflows.map((w) => ({
+    ...w,
+    isOwned: true,
+    referenceId: null,
+    isSystemWorkflow: w.isSystemWorkflow
+  }));
   const referencedWithFlag = workflowReferences.map((ref) => ({
     ...ref.workflow,
     isOwned: false,
     referenceId: ref.id,
+    isSystemWorkflow: ref.workflow.isSystemWorkflow,
   }));
 
   const allWorkflows = [...ownedWithFlag, ...referencedWithFlag];

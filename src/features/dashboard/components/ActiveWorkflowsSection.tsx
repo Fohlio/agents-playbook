@@ -65,6 +65,11 @@ export function ActiveWorkflowsSection({ workflows }: ActiveWorkflowsSectionProp
               <div className="flex items-center gap-2">
                 <h3 className="font-medium text-gray-900">{workflow.name}</h3>
                 <ComplexityBadge complexity={workflow.complexity} size="sm" />
+                {workflow.isSystemWorkflow && (
+                  <Badge variant="default" testId={`system-badge-${workflow.id}`}>
+                    System
+                  </Badge>
+                )}
                 <Badge variant="primary" testId="workflow-active-badge">Active</Badge>
               </div>
               {workflow.description && (
@@ -95,14 +100,16 @@ export function ActiveWorkflowsSection({ workflows }: ActiveWorkflowsSectionProp
                 targetId={workflow.id}
                 targetName={workflow.name}
               />
-              <Button
-                variant="secondary"
-                size="sm"
-                onClick={() => router.push(`/dashboard/library/workflows/${workflow.id}/constructor`)}
-                testId={`edit-button-${workflow.id}`}
-              >
-                Edit
-              </Button>
+              {!workflow.isSystemWorkflow && (
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  onClick={() => router.push(`/dashboard/library/workflows/${workflow.id}/constructor`)}
+                  testId={`edit-button-${workflow.id}`}
+                >
+                  Edit
+                </Button>
+              )}
               <Button
                 variant="secondary"
                 size="sm"

@@ -87,6 +87,16 @@ Workflow (metadata: name, description, complexity, visibility)
 - Mini-prompts are reusable across workflows
 - Embeddings enable AI-powered semantic search
 
+**Automatic Mini-Prompts:**
+- Workflows have `includeMultiAgentChat` boolean flag (default: false)
+- Stages have `withReview` boolean flag (default: true)
+- Two system mini-prompts auto-injected into execution plans:
+  - **Memory Board** (📋): Injected at end of each stage when `withReview: true`
+  - **Internal Agents Chat** (🤖): Injected after each mini-prompt when `includeMultiAgentChat: true`
+- Auto-prompts are visible in workflow constructor but non-draggable
+- Managed via admin panel at `/dashboard/admin/system-prompts`
+- Execution plans built dynamically by `ExecutionPlanBuilder` service
+
 ### Unified Workflow Service
 
 The `UnifiedWorkflowService` (`src/lib/workflows/unified-workflow-service.ts`) provides single database query interface:
@@ -196,10 +206,19 @@ Key models (see `prisma/schema.prisma`):
 **All workflows are created through the web UI:**
 1. Navigate to `/dashboard/library/workflows/new`
 2. Enter workflow metadata (name, description, complexity)
-3. Create stages (e.g., "Analysis", "Implementation")
-4. Drag mini-prompts from library into stages
-5. Set visibility (PUBLIC/PRIVATE) and tags
-6. Save - embeddings are auto-generated
+3. Configure automatic mini-prompts (optional):
+   - Toggle "Include Multi-Agent Chat" to add coordination prompts after each mini-prompt
+   - Each stage has "With Review" checkbox (on by default) to add Memory Board at stage end
+4. Create stages (e.g., "Analysis", "Implementation")
+5. Drag mini-prompts from library into stages
+6. Set visibility (PUBLIC/PRIVATE) and tags
+7. Save - embeddings are auto-generated
+
+**Auto-prompt visualization:**
+- Memory Board cards (📋) appear at stage end when "With Review" enabled
+- Multi-Agent Chat cards (🤖) appear after each mini-prompt when enabled
+- Auto-prompts shown with dashed borders, lock icon, and special badges
+- Non-draggable and non-removable (automatically managed)
 
 **For system workflows (admins only):**
 - Mark `isSystemWorkflow: true` in database
@@ -219,6 +238,27 @@ Key models (see `prisma/schema.prisma`):
 - Mark `isSystemMiniPrompt: true` in database
 - These appear in everyone's library
 - Cannot be edited by regular users
+
+### Managing Automatic System Prompts (Admins Only)
+
+**Admin Panel:** `/dashboard/admin/system-prompts`
+
+The platform includes two special automatic system mini-prompts:
+1. **Handoff Memory Board** - Added at end of stages when `withReview: true`
+2. **Internal Agents Chat** - Added after each mini-prompt when `includeMultiAgentChat: true`
+
+**Editing automatic prompts:**
+- Navigate to admin panel at `/dashboard/admin/system-prompts`
+- Automatic prompts displayed first with special styling (🔧 icon)
+- Click "Edit Content" to modify prompt markdown
+- Changes affect all workflows using these prompts
+- Content updates are immediate (no migration needed)
+
+**Important notes:**
+- Only admins can edit automatic prompts
+- Changes impact ALL workflows that use these prompts
+- Consider running `npm run build:embeddings` after updates for semantic search
+- Automatic prompts cannot be deleted or deactivated
 
 ### Testing Guidelines
 
@@ -368,6 +408,16 @@ Use `WorkflowValidator` for:
 **MCP Implementation:**
 - `src/app/api/v1/mcp/route.ts` - MCP server endpoint
 - `src/lib/mcp-tools-db/` - Database-backed MCP tools
+- `src/lib/mcp-tools-db/execution-plan-builder.ts` - Builds execution plans with auto-prompts
+- `src/lib/mcp-tools-db/select-workflow.ts` - Returns workflow with execution plan
+- `src/lib/mcp-tools-db/get-next-step.ts` - Returns step content from execution plan
+
+**Automatic Mini-Prompts:**
+- `src/features/workflow-constructor/components/AutoPromptCard.tsx` - Visual representation
+- `src/app/dashboard/admin/system-prompts/` - Admin panel for managing prompts
+- `src/app/api/admin/system-prompts/` - API endpoints for prompt management
+- `public/playbook/mini-prompts/automatic/` - Automatic prompt content files
+- `scripts/seed-automatic-prompts.ts` - Seed script for automatic prompts
 
 **Authentication:**
 - `src/lib/auth/auth.ts` - NextAuth configuration

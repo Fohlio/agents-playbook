@@ -23,6 +23,7 @@ interface Workflow {
   isActive: boolean;
   visibility: string;
   isOwned?: boolean;
+  isSystemWorkflow?: boolean;
   referenceId?: string | null;
   complexity?: WorkflowComplexity | null;
   tags?: Array<{ tag: { id: string; name: string; } }>;
@@ -164,6 +165,11 @@ export function WorkflowsSection() {
                     </h3>
                     <div className="flex items-center gap-2">
                       <ComplexityBadge complexity={workflow.complexity} size="sm" />
+                      {workflow.isSystemWorkflow && (
+                        <Badge variant="default" testId={`system-badge-${workflow.id}`}>
+                          System
+                        </Badge>
+                      )}
                       {!workflow.isOwned && (
                         <Badge variant="default" testId={`imported-badge-${workflow.id}`}>
                           Imported
@@ -202,14 +208,16 @@ export function WorkflowsSection() {
                 <div className="flex gap-2 mt-4" onClick={(e) => e.stopPropagation()}>
                   {workflow.isOwned ? (
                     <>
-                      <Link href={ROUTES.LIBRARY.WORKFLOWS.EDIT(workflow.id)}>
-                        <IconButton
-                          variant="secondary"
-                          size="sm"
-                          icon={<EditIcon fontSize="small" />}
-                          ariaLabel="Edit workflow"
-                        />
-                      </Link>
+                      {!workflow.isSystemWorkflow && (
+                        <Link href={ROUTES.LIBRARY.WORKFLOWS.EDIT(workflow.id)}>
+                          <IconButton
+                            variant="secondary"
+                            size="sm"
+                            icon={<EditIcon fontSize="small" />}
+                            ariaLabel="Edit workflow"
+                          />
+                        </Link>
+                      )}
                       <ShareButton
                         targetType="WORKFLOW"
                         targetId={workflow.id}
@@ -222,13 +230,15 @@ export function WorkflowsSection() {
                         ariaLabel="Duplicate workflow"
                         onClick={() => handleDuplicate(workflow)}
                       />
-                      <IconButton
-                        variant="danger"
-                        size="sm"
-                        icon={<DeleteIcon fontSize="small" />}
-                        ariaLabel="Delete workflow"
-                        onClick={() => handleDelete(workflow.id)}
-                      />
+                      {!workflow.isSystemWorkflow && (
+                        <IconButton
+                          variant="danger"
+                          size="sm"
+                          icon={<DeleteIcon fontSize="small" />}
+                          ariaLabel="Delete workflow"
+                          onClick={() => handleDelete(workflow.id)}
+                        />
+                      )}
                     </>
                   ) : (
                     <>

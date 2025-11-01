@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { LIBRARY_ROUTES } from '@/shared/routes';
+import { ROUTES } from '@/shared/routes';
 
 /**
  * Create Workflow Step
@@ -71,6 +71,45 @@ export function CreateWorkflowStep() {
         </div>
       </div>
 
+      <div className="bg-blue-50 border-2 border-blue-300 rounded-lg p-4 mb-4">
+        <div className="flex items-start gap-3">
+          <span className="text-2xl">💡</span>
+          <div>
+            <h4 className="font-semibold text-blue-900 mb-1">Best Practice</h4>
+            <p className="text-sm text-blue-800">
+              Assign <strong>one agent per stage</strong> to prevent context collapse.
+              Use review steps between stages to maintain clarity and allow validation before proceeding.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div className="bg-gradient-to-r from-purple-50 to-pink-50 border-2 border-purple-300 rounded-lg p-4 mb-4">
+        <div className="flex items-start gap-3">
+          <span className="text-2xl">📋</span>
+          <div>
+            <h4 className="font-semibold text-purple-900 mb-2">Context Management</h4>
+            <p className="text-sm text-purple-800 mb-3">
+              Keep AI agents aligned across workflow stages with automatic mini-prompts:
+            </p>
+            <div className="space-y-2">
+              <div className="bg-white rounded p-2 text-xs">
+                <strong className="text-purple-900">Memory Board (📋):</strong>
+                <span className="text-gray-700 ml-1">
+                  Enable &quot;With Review&quot; on stages to add handoff review prompts
+                </span>
+              </div>
+              <div className="bg-white rounded p-2 text-xs">
+                <strong className="text-purple-900">Multi-Agent Chat (🤖):</strong>
+                <span className="text-gray-700 ml-1">
+                  Enable globally to add coordination chat after each mini-prompt
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div className="grid grid-cols-2 gap-3 text-sm">
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
           <p className="font-medium text-blue-900 mb-1">✨ Real-time Preview</p>
@@ -93,7 +132,7 @@ export function CreateWorkflowStep() {
             </p>
           </div>
           <Link
-            href={LIBRARY_ROUTES.WORKFLOWS.NEW}
+            href={ROUTES.LIBRARY.WORKFLOWS.NEW}
             className="px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700 transition-colors text-sm font-medium"
           >
             Create Workflow

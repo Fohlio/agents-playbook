@@ -48,16 +48,23 @@ export async function GET(request: Request) {
   });
 
   // Mark owned vs imported mini-prompts
-  const ownedWithFlag = ownedMiniPrompts.map((m) => ({ ...m, isOwned: true, referenceId: null }));
+  const ownedWithFlag = ownedMiniPrompts.map((m) => ({
+    ...m,
+    isOwned: true,
+    referenceId: null,
+    isSystemMiniPrompt: m.isSystemMiniPrompt
+  }));
   const referencedWithFlag = miniPromptReferences.map((ref) => ({
     ...ref.miniPrompt,
     isOwned: false,
     referenceId: ref.id,
+    isSystemMiniPrompt: ref.miniPrompt.isSystemMiniPrompt,
   }));
   const workflowMiniPrompts = usedInWorkflows.map((smp) => ({
     ...smp.miniPrompt,
     isOwned: smp.miniPrompt.userId === session.user.id,
     referenceId: null,
+    isSystemMiniPrompt: smp.miniPrompt.isSystemMiniPrompt,
   }));
 
   const allMiniPrompts = [...ownedWithFlag, ...referencedWithFlag, ...workflowMiniPrompts];

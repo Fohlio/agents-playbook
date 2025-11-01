@@ -20,13 +20,11 @@ jest.mock('next/cache', () => ({
   revalidatePath: jest.fn(),
 }));
 
-jest.mock('../../lib/dashboard-service', () => ({
-  canActivateWorkflow: jest.fn(),
-}));
+// Note: canActivateWorkflow mock removed - function no longer exists
+// 5-workflow limit has been removed
 
 import { auth } from '@/lib/auth/auth';
 import { revalidatePath } from 'next/cache';
-import { canActivateWorkflow } from '../../lib/dashboard-service';
 
 describe('Workflow Actions', () => {
   const mockUserId = 'user-123';
@@ -45,8 +43,7 @@ describe('Workflow Actions', () => {
   });
 
   describe('activateWorkflow', () => {
-    it('succeeds when under tier limit', async () => {
-      (canActivateWorkflow as jest.Mock).mockResolvedValue(true);
+    it('succeeds for any user', async () => {
       prismaMock.workflow.findFirst.mockResolvedValue({
         id: mockWorkflowId,
         userId: mockUserId,
@@ -64,15 +61,8 @@ describe('Workflow Actions', () => {
       expect(revalidatePath).toHaveBeenCalledWith('/dashboard');
     });
 
-    it('fails when FREE tier limit reached', async () => {
-      (canActivateWorkflow as jest.Mock).mockResolvedValue(false);
-
-      await expect(activateWorkflow(mockWorkflowId)).rejects.toThrow(
-        'Maximum active workflows reached for FREE tier (5)'
-      );
-
-      expect(prismaMock.workflow.update).not.toHaveBeenCalled();
-    });
+    // Note: Test removed - 5-workflow limit has been removed
+    // Users can now activate unlimited workflows regardless of tier
 
     it('fails when unauthenticated', async () => {
       (auth as jest.Mock).mockResolvedValue(null);
@@ -85,7 +75,6 @@ describe('Workflow Actions', () => {
     });
 
     it('fails when user does not own workflow', async () => {
-      (canActivateWorkflow as jest.Mock).mockResolvedValue(true);
       prismaMock.workflow.findFirst.mockResolvedValue(null);
 
       await expect(activateWorkflow(mockWorkflowId)).rejects.toThrow(
@@ -96,7 +85,6 @@ describe('Workflow Actions', () => {
     });
 
     it('verifies ownership before activation', async () => {
-      (canActivateWorkflow as jest.Mock).mockResolvedValue(true);
       prismaMock.workflow.findFirst.mockResolvedValue({
         id: mockWorkflowId,
         userId: mockUserId,
@@ -235,7 +223,6 @@ describe('Workflow Actions', () => {
     });
 
     it('all actions revalidate /dashboard path', async () => {
-      (canActivateWorkflow as jest.Mock).mockResolvedValue(true);
       prismaMock.workflow.findFirst.mockResolvedValue({
         id: mockWorkflowId,
         userId: mockUserId,

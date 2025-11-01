@@ -22,6 +22,7 @@
     "db:push": "prisma db push",
     "db:seed": "tsx prisma/seed.ts",
     "db:seed:system": "tsx scripts/seed-system-content.ts",
+    "db:seed:auto-prompts": "tsx scripts/seed-automatic-prompts.ts",
     "db:studio": "prisma studio",
     "db:generate": "prisma generate",
     "postinstall": "prisma generate"

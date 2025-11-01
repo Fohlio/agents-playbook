@@ -93,17 +93,18 @@ model ApiToken {
 
 
 model Workflow {
-  id                String              @id @default(uuid())
-  userId            String              @map("user_id")
-  name              String              @db.VarChar(255)
-  description       String?             @db.Text
-  yamlContent       String?             @map("yaml_content") @db.Text // Made nullable for new workflows
-  complexity        WorkflowComplexity?
-  visibility        Visibility          @default(PRIVATE)
-  isActive          Boolean             @default(false) @map("is_active")
-  isSystemWorkflow  Boolean             @default(false) @map("is_system_workflow")
-  createdAt         DateTime            @default(now()) @map("created_at")
-  updatedAt         DateTime            @updatedAt @map("updated_at")
+  id                   String              @id @default(uuid())
+  userId               String              @map("user_id")
+  name                 String              @db.VarChar(255)
+  description          String?             @db.Text
+  yamlContent          String?             @map("yaml_content") @db.Text // Made nullable for new workflows
+  complexity           WorkflowComplexity?
+  visibility           Visibility          @default(PRIVATE)
+  isActive             Boolean             @default(false) @map("is_active")
+  isSystemWorkflow     Boolean             @default(false) @map("is_system_workflow")
+  includeMultiAgentChat Boolean            @default(false) @map("include_multi_agent_chat")
+  createdAt            DateTime            @default(now()) @map("created_at")
+  updatedAt            DateTime            @updatedAt @map("updated_at")
 
   // Relations
   user       User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -117,6 +118,7 @@ model Workflow {
   @@index([visibility])
   @@index([isActive])
   @@index([isSystemWorkflow])
+  @@index([includeMultiAgentChat])
   @@index([createdAt])
   @@index([complexity])
 }
@@ -129,6 +131,7 @@ model WorkflowStage {
   description String?  @db.Text
   color       String?  @db.VarChar(50) // Stage color for visual identification
   order       Int
+  withReview  Boolean  @default(true) @map("with_review")
   createdAt   DateTime @default(now()) @map("created_at")
 
   // Relations
@@ -137,6 +140,7 @@ model WorkflowStage {
 
   @@map("workflow_stages")
   @@index([workflowId])
+  @@index([withReview])
 }
 
 model MiniPrompt {
