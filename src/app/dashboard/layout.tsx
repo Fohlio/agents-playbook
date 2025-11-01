@@ -1,9 +1,10 @@
-import { DashboardHeader } from "@/shared/ui/organisms/DashboardHeader";
+import { DashboardLayoutClient } from "@/shared/ui/organisms/DashboardLayoutClient";
+import { SidebarProvider } from "@/shared/ui/organisms/DashboardLayout";
 
 /**
  * Dashboard Layout
  *
- * Authenticated layout with header navigation and sign out button
+ * Authenticated layout with sidebar navigation and sign out button
  * Used for all /dashboard/* routes
  */
 export default function DashboardLayout({
@@ -12,13 +13,10 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 via-white to-gray-50">
-      <DashboardHeader />
-
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <SidebarProvider>
+      <DashboardLayoutClient>
         {children}
-      </main>
-    </div>
+      </DashboardLayoutClient>
+    </SidebarProvider>
   );
 }

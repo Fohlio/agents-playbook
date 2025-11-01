@@ -37,11 +37,6 @@ export function RatingDisplay({
       <span className="text-gray-600 font-medium">
         {averageRating.toFixed(1)}
       </span>
-      {showCount && (
-        <span className="text-gray-500 text-xs">
-          ({totalRatings})
-        </span>
-      )}
     </div>
   );
 }
