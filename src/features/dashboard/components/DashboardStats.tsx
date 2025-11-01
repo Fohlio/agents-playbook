@@ -9,10 +9,10 @@ export interface DashboardStatsData {
 
 interface DashboardStatsProps {
   stats: DashboardStatsData;
-  userTier: string;
+  userTier?: string;
 }
 
-export function DashboardStats({ stats, userTier }: DashboardStatsProps) {
+export function DashboardStats({ stats }: DashboardStatsProps) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
       <StatCard

@@ -73,6 +73,16 @@ async function main() {
   // ============================================================================
   // Default Tags
   // ============================================================================
+
+  // Get admin user for tag creation
+  const adminUser = await prisma.user.findUnique({
+    where: { email: adminEmail },
+  });
+
+  if (!adminUser) {
+    throw new Error('Admin user not found - cannot create tags');
+  }
+
   const defaultTags = [
     { name: 'development', color: '#3B82F6' },
     { name: 'documentation', color: '#10B981' },
@@ -91,7 +101,10 @@ async function main() {
 
     if (!existingTag) {
       const tag = await prisma.tag.create({
-        data: tagData,
+        data: {
+          ...tagData,
+          createdBy: adminUser.id,
+        },
       });
       console.log(`✅ Created tag: ${tag.name}`);
     } else {

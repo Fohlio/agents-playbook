@@ -29,7 +29,7 @@ export function CreateWorkflowStep() {
               <h4 className="font-semibold text-gray-900">Create Stages</h4>
             </div>
             <p className="text-sm text-gray-600 ml-11">
-              Organize your workflow into logical phases like "Analysis", "Design", "Implementation"
+              Organize your workflow into logical phases like &quot;Analysis&quot;, &quot;Design&quot;, &quot;Implementation&quot;
             </p>
           </div>
 

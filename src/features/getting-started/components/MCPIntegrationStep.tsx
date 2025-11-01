@@ -81,7 +81,7 @@ export function MCPIntegrationStep() {
           </li>
           <li className="flex gap-2">
             <span className="font-bold text-emerald-600">2.</span>
-            <span>Click "Create New Token"</span>
+            <span>Click &quot;Create New Token&quot;</span>
           </li>
           <li className="flex gap-2">
             <span className="font-bold text-emerald-600">3.</span>

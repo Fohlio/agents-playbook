@@ -66,6 +66,7 @@ model User {
   workflowReferences    WorkflowReference[]
   miniPromptReferences  MiniPromptReference[]
   sharedLinks           SharedLink[]
+  createdTags           Tag[]
 
   @@map("users")
   @@index([email])
@@ -285,15 +286,20 @@ model Tag {
   id        String   @id @default(uuid())
   name      String   @unique @db.VarChar(50)
   color     String?  @db.VarChar(20)
+  isActive  Boolean  @default(true) @map("is_active")
+  createdBy String   @map("created_by")
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
   // Relations
+  creator         User           @relation(fields: [createdBy], references: [id])
   workflowTags    WorkflowTag[]
   miniPromptTags  MiniPromptTag[]
 
   @@map("tags")
   @@index([name])
+  @@index([isActive])
+  @@index([createdBy])
 }
 
 model WorkflowTag {

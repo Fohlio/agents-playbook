@@ -276,6 +276,26 @@ export function WorkflowConstructor({ data }: WorkflowConstructorProps) {
                 setSelectedTagIds(tagIds);
                 markDirty();
               }}
+              allowCreate
+              onCreateTag={async (name, color) => {
+                try {
+                  const response = await fetch('/api/tags', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, color })
+                  });
+                  if (response.ok) {
+                    return await response.json();
+                  } else {
+                    const error = await response.json();
+                    alert(error.error || 'Failed to create tag');
+                    return null;
+                  }
+                } catch {
+                  alert('Failed to create tag');
+                  return null;
+                }
+              }}
             />
           </div>
         </div>

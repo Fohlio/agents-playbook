@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Card, Button } from "@/shared/ui/atoms";
+import { Card } from "@/shared/ui/atoms";
 import { MarkdownContent } from "@/shared/ui/atoms/MarkdownContent";
 import { ComplexityBadge } from "@/shared/ui/atoms/ComplexityBadge";
 import { ConfirmDialog, Tooltip } from "@/shared/ui/molecules";

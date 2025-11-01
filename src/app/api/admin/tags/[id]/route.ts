@@ -14,12 +14,12 @@ export async function PATCH(
 
   const { id } = await params;
   const body = await request.json();
-  const { name, color } = body;
+  const { name, color, isActive } = body;
 
   if (name !== undefined) {
     const existingTag = await prisma.tag.findFirst({
       where: {
-        name,
+        name: { equals: name, mode: 'insensitive' },
         NOT: { id }
       }
     });
@@ -33,7 +33,8 @@ export async function PATCH(
     where: { id },
     data: {
       ...(name !== undefined && { name }),
-      ...(color !== undefined && { color })
+      ...(color !== undefined && { color }),
+      ...(isActive !== undefined && { isActive })
     }
   });
 
@@ -52,9 +53,11 @@ export async function DELETE(
 
   const { id } = await params;
 
-  await prisma.tag.delete({
-    where: { id }
+  // Soft delete instead of hard delete
+  const tag = await prisma.tag.update({
+    where: { id },
+    data: { isActive: false }
   });
 
-  return NextResponse.json({ success: true });
+  return NextResponse.json({ success: true, tag });
 }

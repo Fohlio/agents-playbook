@@ -25,7 +25,6 @@ export {
   getWorkflows,
   getMiniPrompts,
   getRecentActivity,
-  canActivateWorkflow,
 } from "./lib/dashboard-service";
 
 // ============================================================================

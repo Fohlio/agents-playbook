@@ -229,7 +229,30 @@ export function MiniPromptEditorModal({
                 <label className="block text-sm font-medium text-text-primary mb-2">
                   Tags
                 </label>
-                <TagSelector selectedTagIds={selectedTagIds} onChange={setSelectedTagIds} />
+                <TagSelector
+                  selectedTagIds={selectedTagIds}
+                  onChange={setSelectedTagIds}
+                  allowCreate
+                  onCreateTag={async (name, color) => {
+                    try {
+                      const response = await fetch('/api/tags', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ name, color })
+                      });
+                      if (response.ok) {
+                        return await response.json();
+                      } else {
+                        const error = await response.json();
+                        alert(error.error || 'Failed to create tag');
+                        return null;
+                      }
+                    } catch {
+                      alert('Failed to create tag');
+                      return null;
+                    }
+                  }}
+                />
               </div>
             </>
           )}

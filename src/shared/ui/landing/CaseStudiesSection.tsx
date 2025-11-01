@@ -31,7 +31,7 @@ export default function CaseStudiesSection() {
             Real Results, Real Teams
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            See how engineering teams eliminated AI hallucinations and 10x'd their productivity with structured workflows
+            See how engineering teams eliminated AI hallucinations and 10x&apos;d their productivity with structured workflows
           </p>
         </div>
 
@@ -108,7 +108,7 @@ export default function CaseStudiesSection() {
             {/* Quote */}
             <Card className="bg-gradient-to-br from-primary-50 to-purple-50 border-primary-200">
               <div className="flex gap-4">
-                <span className="text-4xl text-primary-400">"</span>
+                <span className="text-4xl text-primary-400">&quot;</span>
                 <div>
                   <p className="text-gray-800 italic mb-4">{selectedStudy.quote}</p>
                   <div className="flex items-center gap-3">
