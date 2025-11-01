@@ -17,7 +17,6 @@ export function RatingDisplay({
   averageRating,
   totalRatings,
   size = "sm",
-  showCount = true,
 }: RatingDisplayProps) {
   if (totalRatings === 0) {
     return null;

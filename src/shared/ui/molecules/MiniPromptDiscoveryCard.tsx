@@ -130,7 +130,6 @@ export function MiniPromptDiscoveryCard({
                   averageRating={localRating.average}
                   totalRatings={localRating.count}
                   size="sm"
-                  showCount={true}
                 />
               )}
             </div>

@@ -135,7 +135,6 @@ export function WorkflowDiscoveryCard({
                   averageRating={localRating.average}
                   totalRatings={localRating.count}
                   size="sm"
-                  showCount={true}
                 />
               )}
               {workflow.complexity && (
