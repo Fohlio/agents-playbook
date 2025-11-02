@@ -4,13 +4,15 @@ import { useDraggable } from '@dnd-kit/core';
 import { Card } from '@/shared/ui/atoms/Card';
 import { cn } from '@/shared/lib/utils/cn';
 import type { MiniPrompt } from '@prisma/client';
+import EditIcon from '@mui/icons-material/Edit';
 
 interface MiniPromptCardProps {
   miniPrompt: MiniPrompt;
   isDragging?: boolean;
+  onEdit?: (miniPrompt: MiniPrompt) => void;
 }
 
-export function MiniPromptCard({ miniPrompt, isDragging = false }: MiniPromptCardProps) {
+export function MiniPromptCard({ miniPrompt, isDragging = false, onEdit }: MiniPromptCardProps) {
   const { attributes, listeners, setNodeRef, transform } = useDraggable({
     id: miniPrompt.id,
     data: {
@@ -24,6 +26,11 @@ export function MiniPromptCard({ miniPrompt, isDragging = false }: MiniPromptCar
         transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
       }
     : undefined;
+
+  const handleEditClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onEdit?.(miniPrompt);
+  };
 
   return (
     <div
@@ -43,9 +50,21 @@ export function MiniPromptCard({ miniPrompt, isDragging = false }: MiniPromptCar
         )}
         testId={`mini-prompt-${miniPrompt.id}`}
       >
-        <h4 className="text-sm font-medium text-text-primary">
-          {miniPrompt.name}
-        </h4>
+        <div className="flex items-center justify-between gap-2">
+          <h4 className="text-sm font-medium text-text-primary flex-1">
+            {miniPrompt.name}
+          </h4>
+          {onEdit && (
+            <button
+              onClick={handleEditClick}
+              className="p-1 hover:bg-gray-100 rounded transition-colors"
+              aria-label={`Edit ${miniPrompt.name}`}
+              title="Edit mini-prompt"
+            >
+              <EditIcon className="text-gray-500 hover:text-blue-600" sx={{ fontSize: 16 }} />
+            </button>
+          )}
+        </div>
       </Card>
     </div>
   );

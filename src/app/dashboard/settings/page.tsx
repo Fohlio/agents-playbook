@@ -3,6 +3,7 @@ import { auth } from "@/lib/auth/auth";
 import ProfileSection from "./ProfileSection";
 import PasswordSection from "./PasswordSection";
 import { ApiTokensSection } from "@/features/api-tokens";
+import { OpenAIKeySettings } from "@/features/ai-assistant/components/OpenAIKeySettings";
 import { ROUTES } from "@/shared/routes";
 
 /**
@@ -25,6 +26,9 @@ export default async function SettingsPage() {
 
       {/* Password Section */}
       <PasswordSection />
+
+      {/* OpenAI API Key Section */}
+      <OpenAIKeySettings />
 
       {/* API Tokens Section */}
       <ApiTokensSection />

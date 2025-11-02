@@ -18,6 +18,10 @@ import { StageCreateForm } from './StageCreateForm';
 import { GeneralSettings } from './GeneralSettings';
 import { TagSelector } from '@/shared/ui/molecules/TagSelector';
 import { Tooltip } from '@/shared/ui/molecules';
+import { ChatSidebar } from '@/features/ai-assistant/components/ChatSidebar';
+import { ExecutionPlanModal } from '@/features/ai-assistant/components/ExecutionPlanModal';
+import { AIToolResult, ExecutionPlan } from '@/types/ai-chat';
+import { Sparkles } from 'lucide-react';
 
 interface WorkflowConstructorProps {
   data: WorkflowConstructorData;
@@ -56,6 +60,11 @@ export function WorkflowConstructor({ data }: WorkflowConstructorProps) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (currentWorkflow as any)?.tags?.map((t: { tag: { id: string } }) => t.tag.id) ?? []
   );
+
+  // AI Assistant state
+  const [isChatOpen, setIsChatOpen] = useState(false);
+  const [executionPlan, setExecutionPlan] = useState<ExecutionPlan | null>(null);
+  const [showExecutionPlan, setShowExecutionPlan] = useState(false);
 
   const handleDragEnd = useCallback(
     (event: DragEndEvent) => {
@@ -207,6 +216,126 @@ export function WorkflowConstructor({ data }: WorkflowConstructorProps) {
     },
     [editingStageId, localStages, markDirty]
   );
+
+  // AI Assistant handlers
+  const handleToolCall = useCallback((toolResult: AIToolResult) => {
+    // Build execution plan from tool result
+    const plan: ExecutionPlan = {
+      items: [
+        {
+          toolName: toolResult.action || 'unknown',
+          description: toolResult.message,
+          data: toolResult,
+        },
+      ],
+      summary: toolResult.message,
+    };
+
+    setExecutionPlan(plan);
+    setShowExecutionPlan(true);
+  }, []);
+
+  const handleApproveExecutionPlan = useCallback(() => {
+    if (!executionPlan) return;
+
+    // Apply execution plan changes
+    executionPlan.items.forEach((item) => {
+      const { data } = item;
+
+      // Handle createWorkflow
+      if (data.workflow) {
+        setWorkflowName(data.workflow.name);
+        if (data.workflow.complexity) {
+          setComplexity(data.workflow.complexity);
+        }
+        if (data.workflow.includeMultiAgentChat !== undefined) {
+          setIncludeMultiAgentChat(data.workflow.includeMultiAgentChat);
+        }
+        // Create stages from workflow data
+        if (data.workflow.stages && data.workflow.stages.length > 0) {
+          const newStages: WorkflowStageWithMiniPrompts[] = data.workflow.stages.map(
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            (stageData: any, idx: number) => ({
+              id: `temp-${Date.now()}-${idx}`,
+              workflowId: currentWorkflow?.id || '',
+              name: stageData.name,
+              description: stageData.description || null,
+              color: stageData.color || null,
+              order: idx,
+              withReview: stageData.withReview ?? true,
+              createdAt: new Date(),
+              miniPrompts: [],
+            })
+          );
+          setLocalStages(newStages);
+        }
+        markDirty();
+      }
+
+      // Handle addStage
+      if (data.action === 'add_stage' && data.stage) {
+        const newStage: WorkflowStageWithMiniPrompts = {
+          id: `temp-${Date.now()}`,
+          workflowId: currentWorkflow?.id || '',
+          name: data.stage.name,
+          description: data.stage.description || null,
+          color: data.stage.color || null,
+          order: data.stage.position === -1 ? localStages.length : (data.stage.position ?? localStages.length),
+          withReview: data.stage.withReview ?? true,
+          createdAt: new Date(),
+          miniPrompts: [],
+        };
+
+        if (data.stage.position === -1) {
+          setLocalStages([...localStages, newStage]);
+        } else {
+          const updatedStages = [...localStages];
+          updatedStages.splice(data.stage.position ?? localStages.length, 0, newStage);
+          setLocalStages(updatedStages.map((s, i) => ({ ...s, order: i })));
+        }
+        markDirty();
+      }
+
+      // Handle modifyStage
+      if (data.action === 'modify_stage' && data.stageIndex !== undefined && data.updates) {
+        const updates = data.updates; // Capture for TypeScript
+        setLocalStages((prevStages) =>
+          prevStages.map((stage, idx) => {
+            if (idx === data.stageIndex) {
+              return {
+                ...stage,
+                ...(updates.name ? { name: String(updates.name) } : {}),
+                ...(updates.description !== undefined ? { description: updates.description ? String(updates.description) : null } : {}),
+                ...(updates.color !== undefined ? { color: updates.color ? String(updates.color) : null } : {}),
+                ...(updates.withReview !== undefined ? { withReview: Boolean(updates.withReview) } : {}),
+              };
+            }
+            return stage;
+          })
+        );
+        markDirty();
+      }
+
+      // Handle removeStage
+      if (data.action === 'remove_stage' && data.stageIndex !== undefined) {
+        setLocalStages((prevStages) => {
+          const updated = prevStages.filter((_, idx) => idx !== data.stageIndex);
+          return updated.map((s, i) => ({ ...s, order: i }));
+        });
+        markDirty();
+      }
+
+      // Handle createMiniPrompt and modifyMiniPrompt
+      // These would need integration with mini-prompt creation/update actions
+      if (data.miniPrompt) {
+        console.log('Mini-prompt operation:', data);
+        // TODO: Integrate with mini-prompt creation system
+      }
+    });
+
+    setExecutionPlan(null);
+    setShowExecutionPlan(false);
+  }, [executionPlan, localStages, currentWorkflow, markDirty]);
 
   const handleSaveWorkflow = useCallback(async () => {
     if (!currentWorkflow) return;
@@ -387,6 +516,21 @@ export function WorkflowConstructor({ data }: WorkflowConstructorProps) {
                 onMiniPromptCreated={(newMiniPrompt) =>
                   setMiniPrompts([...miniPrompts, newMiniPrompt])
                 }
+                onMiniPromptUpdated={(updatedMiniPrompt) => {
+                  setMiniPrompts(miniPrompts.map(mp =>
+                    mp.id === updatedMiniPrompt.id ? updatedMiniPrompt : mp
+                  ));
+                  // Also update mini-prompts in stages
+                  setLocalStages(localStages.map(stage => ({
+                    ...stage,
+                    miniPrompts: stage.miniPrompts.map(smp =>
+                      smp.miniPromptId === updatedMiniPrompt.id
+                        ? { ...smp, miniPrompt: updatedMiniPrompt }
+                        : smp
+                    )
+                  })));
+                  markDirty();
+                }}
               />
             </div>
 
@@ -400,8 +544,8 @@ export function WorkflowConstructor({ data }: WorkflowConstructorProps) {
                         mode="edit"
                         initialValues={{
                           name: stage.name,
-                          description: stage.description,
-                          color: stage.color,
+                          description: stage.description || undefined,
+                          color: stage.color || '',
                           withReview: stage.withReview,
                         }}
                         onSubmit={handleUpdateStage}
@@ -440,6 +584,67 @@ export function WorkflowConstructor({ data }: WorkflowConstructorProps) {
             </div>
           </div>
         </DndContext>
+
+        {/* AI Assistant Chat Sidebar */}
+        <ChatSidebar
+          isOpen={isChatOpen}
+          onClose={() => setIsChatOpen(false)}
+          mode="workflow"
+          workflowContext={{
+            workflow: currentWorkflow
+              ? {
+                  id: currentWorkflow.id,
+                  name: workflowName,
+                  description: currentWorkflow.description,
+                  complexity: complexity,
+                  includeMultiAgentChat,
+                  stages: localStages.map((stage) => ({
+                    id: stage.id,
+                    name: stage.name,
+                    description: stage.description,
+                    color: stage.color,
+                    withReview: stage.withReview,
+                    order: stage.order,
+                    miniPrompts: stage.miniPrompts.map((smp) => ({
+                      miniPrompt: {
+                        id: smp.miniPrompt.id,
+                        name: smp.miniPrompt.name,
+                        description: smp.miniPrompt.description,
+                        content: smp.miniPrompt.content,
+                      },
+                      order: smp.order,
+                    })),
+                  })),
+                }
+              : undefined,
+            availableMiniPrompts: miniPrompts.map((mp) => ({
+              id: mp.id,
+              name: mp.name,
+              description: mp.description,
+            })),
+          }}
+          onToolCall={handleToolCall}
+        />
+
+        {/* Execution Plan Modal */}
+        <ExecutionPlanModal
+          isOpen={showExecutionPlan}
+          onClose={() => setShowExecutionPlan(false)}
+          onApprove={handleApproveExecutionPlan}
+          executionPlan={executionPlan}
+        />
+
+        {/* Floating AI Assistant Button */}
+        <Tooltip content="Get AI help to create or modify this workflow">
+          <Button
+            variant="primary"
+            onClick={() => setIsChatOpen(true)}
+            className="!fixed bottom-8 right-8 !rounded-full !p-4 !w-14 !h-14 shadow-2xl hover:shadow-primary-500/50 z-50 transition-all hover:scale-110"
+            aria-label="Open AI Assistant"
+          >
+            <Sparkles className="w-6 h-6" />
+          </Button>
+        </Tooltip>
       </div>
     </div>
   );

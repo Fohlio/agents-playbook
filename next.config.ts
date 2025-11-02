@@ -50,7 +50,13 @@ const nextConfig: NextConfig = {
       test: /node_modules[\\/]@mapbox[\\/]node-pre-gyp[\\/].*\.(html|md|json)$/,
       type: 'asset/source',
     });
-    
+
+    // Add rule for .txt files to load as raw strings
+    config.module.rules.push({
+      test: /\.txt$/,
+      type: 'asset/source',
+    });
+
     return config;
   },
   

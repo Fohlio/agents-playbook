@@ -38,6 +38,8 @@ export async function createUser(data: CreateUserData): Promise<Omit<User, 'pass
         username: true,
         tier: true,
         role: true,
+        openaiApiKey: true,
+        openaiApiKeyUpdatedAt: true,
         createdAt: true,
         updatedAt: true,
       },
@@ -72,11 +74,13 @@ export async function getUserById(
         username: true,
         tier: true,
         role: true,
+        openaiApiKey: true,
+        openaiApiKeyUpdatedAt: true,
         createdAt: true,
         updatedAt: true,
       },
     });
-    
+
     return user as User | null;
   });
 }
@@ -109,11 +113,13 @@ export async function getUserByUsername(username: string): Promise<User | null> 
         username: true,
         tier: true,
         role: true,
+        openaiApiKey: true,
+        openaiApiKeyUpdatedAt: true,
         createdAt: true,
         updatedAt: true,
       },
     });
-    
+
     return user as User | null;
   });
 }
@@ -138,11 +144,13 @@ export async function updateUser(
         username: true,
         tier: true,
         role: true,
+        openaiApiKey: true,
+        openaiApiKeyUpdatedAt: true,
         createdAt: true,
         updatedAt: true,
       },
     });
-    
+
     return user;
   });
 }

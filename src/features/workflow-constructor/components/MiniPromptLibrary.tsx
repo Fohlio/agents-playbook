@@ -7,17 +7,19 @@ import Input from '@/shared/ui/atoms/Input';
 import type { MiniPrompt } from '@prisma/client';
 import { MiniPromptCard } from './MiniPromptCard';
 import { MiniPromptEditorModal } from './MiniPromptEditorModal';
-import { createMiniPrompt } from '../actions/mini-prompt-actions';
+import { createMiniPrompt, updateMiniPrompt } from '../actions/mini-prompt-actions';
 import AddIcon from '@mui/icons-material/Add';
 
 interface MiniPromptLibraryProps {
   miniPrompts: MiniPrompt[];
   onMiniPromptCreated?: (miniPrompt: MiniPrompt) => void;
+  onMiniPromptUpdated?: (miniPrompt: MiniPrompt) => void;
 }
 
-export function MiniPromptLibrary({ miniPrompts, onMiniPromptCreated }: MiniPromptLibraryProps) {
+export function MiniPromptLibrary({ miniPrompts, onMiniPromptCreated, onMiniPromptUpdated }: MiniPromptLibraryProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingMiniPrompt, setEditingMiniPrompt] = useState<MiniPrompt | null>(null);
 
   const filteredMiniPrompts = miniPrompts.filter((mp) => {
     const matchesSearch = mp.name.toLowerCase().includes(searchQuery.toLowerCase());
@@ -32,6 +34,34 @@ export function MiniPromptLibrary({ miniPrompts, onMiniPromptCreated }: MiniProm
   ) => {
     const newMiniPrompt = await createMiniPrompt({ name, description, content, visibility });
     onMiniPromptCreated?.(newMiniPrompt);
+  };
+
+  const handleUpdateMiniPrompt = async (
+    name: string,
+    description: string,
+    content: string,
+    visibility: 'PUBLIC' | 'PRIVATE'
+  ) => {
+    if (!editingMiniPrompt) return;
+    const updated = await updateMiniPrompt({
+      id: editingMiniPrompt.id,
+      name,
+      description,
+      content,
+      visibility,
+    });
+    onMiniPromptUpdated?.(updated);
+    setEditingMiniPrompt(null);
+  };
+
+  const handleEdit = (miniPrompt: MiniPrompt) => {
+    setEditingMiniPrompt(miniPrompt);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setEditingMiniPrompt(null);
   };
 
   return (
@@ -63,7 +93,7 @@ export function MiniPromptLibrary({ miniPrompts, onMiniPromptCreated }: MiniProm
 
         <div className="flex-1 overflow-y-auto space-y-2">
           {filteredMiniPrompts.map((mp) => (
-            <MiniPromptCard key={mp.id} miniPrompt={mp} />
+            <MiniPromptCard key={mp.id} miniPrompt={mp} onEdit={handleEdit} />
           ))}
           {filteredMiniPrompts.length === 0 && (
             <p className="text-sm text-text-tertiary text-center py-8">
@@ -75,8 +105,14 @@ export function MiniPromptLibrary({ miniPrompts, onMiniPromptCreated }: MiniProm
 
       <MiniPromptEditorModal
         isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        onSave={handleCreateMiniPrompt}
+        onClose={handleCloseModal}
+        onSave={editingMiniPrompt ? handleUpdateMiniPrompt : handleCreateMiniPrompt}
+        initialData={editingMiniPrompt ? {
+          name: editingMiniPrompt.name,
+          description: editingMiniPrompt.description || '',
+          content: editingMiniPrompt.content,
+          visibility: editingMiniPrompt.visibility,
+        } : undefined}
       />
     </>
   );

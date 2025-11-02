@@ -15,6 +15,11 @@ import { StageCreateForm } from './StageCreateForm';
 import { GeneralSettings } from './GeneralSettings';
 import { saveWorkflow } from '../actions/workflow-actions';
 import { TagSelector } from '@/shared/ui/molecules/TagSelector';
+import { Tooltip } from '@/shared/ui/molecules';
+import { ChatSidebar } from '@/features/ai-assistant/components/ChatSidebar';
+import { ExecutionPlanModal } from '@/features/ai-assistant/components/ExecutionPlanModal';
+import { AIToolResult, ExecutionPlan } from '@/types/ai-chat';
+import { Sparkles } from 'lucide-react';
 
 interface WorkflowConstructorWrapperProps {
   userId: string;
@@ -40,6 +45,116 @@ export function WorkflowConstructorWrapper({ userId, miniPrompts: initialMiniPro
   const [selectedTagIds, setSelectedTagIds] = useState<string[]>([]);
   const [isSaving, setIsSaving] = useState(false);
   const [includeMultiAgentChat, setIncludeMultiAgentChat] = useState(false);
+
+  // AI Assistant state
+  const [isChatOpen, setIsChatOpen] = useState(false);
+  const [showExecutionPlan, setShowExecutionPlan] = useState(false);
+  const [executionPlan, setExecutionPlan] = useState<ExecutionPlan | null>(null);
+
+  // AI Assistant handlers
+  const handleToolCall = useCallback((result: AIToolResult) => {
+    // Handle different tool actions
+    if (result.action === 'add_stage' && result.stage) {
+      // Add a new stage
+      const newStage: WorkflowStageWithMiniPrompts = {
+        id: `temp-${Date.now()}`,
+        workflowId: 'new',
+        name: result.stage.name,
+        description: result.stage.description || null,
+        color: result.stage.color || '#6366f1',
+        order: result.stage.position === -1 ? localStages.length : (result.stage.position ?? localStages.length),
+        withReview: result.stage.withReview ?? true,
+        createdAt: new Date(),
+        miniPrompts: [],
+      };
+
+      // Insert at position
+      const newStages = [...localStages];
+      if (result.stage.position === -1 || result.stage.position === undefined) {
+        newStages.push(newStage);
+      } else {
+        newStages.splice(result.stage.position, 0, newStage);
+      }
+
+      setLocalStages(newStages);
+    } else if (result.action === 'modify_stage' && typeof result.stageIndex === 'number' && result.updates) {
+      // Modify an existing stage
+      setLocalStages(localStages.map((stage, idx) => {
+        if (idx === result.stageIndex) {
+          return {
+            ...stage,
+            ...(result.updates?.name ? { name: result.updates.name as string } : {}),
+            ...(result.updates?.description !== undefined ? { description: result.updates.description as string | null } : {}),
+            ...(result.updates?.color ? { color: result.updates.color as string } : {}),
+            ...(result.updates?.withReview !== undefined ? { withReview: result.updates.withReview as boolean } : {}),
+          };
+        }
+        return stage;
+      }));
+    } else if (result.action === 'remove_stage' && typeof result.stageIndex === 'number') {
+      // Remove a stage
+      setLocalStages(localStages.filter((_, idx) => idx !== result.stageIndex));
+    } else if (result.workflow) {
+      // Create complete workflow structure
+      setWorkflowName(result.workflow.name);
+      setIncludeMultiAgentChat(result.workflow.includeMultiAgentChat ?? false);
+
+      const newStages: WorkflowStageWithMiniPrompts[] = result.workflow.stages.map((stage, stageIdx) => ({
+        id: `temp-${Date.now()}-${stageIdx}`,
+        workflowId: 'new',
+        name: stage.name,
+        description: stage.description || null,
+        color: stage.color || '#6366f1',
+        order: stageIdx,
+        withReview: stage.withReview ?? true,
+        createdAt: new Date(),
+        miniPrompts: stage.miniPrompts.map((mp, mpIdx) => {
+          // Check if this is an existing mini-prompt
+          const existingMp = mp.id ? miniPrompts.find(m => m.id === mp.id) : null;
+
+          if (existingMp) {
+            return {
+              stageId: `temp-${Date.now()}-${stageIdx}`,
+              miniPromptId: existingMp.id,
+              order: mpIdx,
+              miniPrompt: existingMp,
+            };
+          } else {
+            // Create new mini-prompt placeholder
+            const newMp = {
+              id: `new-${Date.now()}-${mpIdx}`,
+              name: mp.name,
+              description: mp.description || null,
+              content: mp.content || '',
+              userId,
+              visibility: 'PRIVATE' as const,
+              isActive: true,
+              isSystemMiniPrompt: false,
+              createdAt: new Date(),
+              updatedAt: new Date(),
+            };
+
+            // Add to mini-prompts list
+            setMiniPrompts(prev => [...prev, newMp]);
+
+            return {
+              stageId: `temp-${Date.now()}-${stageIdx}`,
+              miniPromptId: newMp.id,
+              order: mpIdx,
+              miniPrompt: newMp,
+            };
+          }
+        }),
+      }));
+
+      setLocalStages(newStages);
+    }
+  }, [localStages, miniPrompts, userId]);
+
+  const handleApproveExecutionPlan = useCallback(() => {
+    setShowExecutionPlan(false);
+    setExecutionPlan(null);
+  }, []);
 
   const handleDragEnd = useCallback(
     (event: DragEndEvent) => {
@@ -323,8 +438,8 @@ export function WorkflowConstructorWrapper({ userId, miniPrompts: initialMiniPro
                         mode="edit"
                         initialValues={{
                           name: stage.name,
-                          description: stage.description,
-                          color: stage.color,
+                          description: stage.description || undefined,
+                          color: stage.color || '',
                           withReview: stage.withReview,
                         }}
                         onSubmit={handleUpdateStage}
@@ -364,6 +479,34 @@ export function WorkflowConstructorWrapper({ userId, miniPrompts: initialMiniPro
           </div>
         </DndContext>
       </div>
+
+      {/* AI Assistant Chat Sidebar */}
+      <ChatSidebar
+        isOpen={isChatOpen}
+        onClose={() => setIsChatOpen(false)}
+        mode="workflow"
+        onToolCall={handleToolCall}
+      />
+
+      {/* Execution Plan Modal */}
+      <ExecutionPlanModal
+        isOpen={showExecutionPlan}
+        onClose={() => setShowExecutionPlan(false)}
+        onApprove={handleApproveExecutionPlan}
+        executionPlan={executionPlan}
+      />
+
+      {/* Floating AI Assistant Button */}
+      <Tooltip content="Get AI help to create this workflow">
+        <Button
+          variant="primary"
+          onClick={() => setIsChatOpen(true)}
+          className="!fixed bottom-8 right-8 !rounded-full !p-4 !w-14 !h-14 shadow-2xl hover:shadow-primary-500/50 z-50 transition-all hover:scale-110"
+          aria-label="Open AI Assistant"
+        >
+          <Sparkles className="w-6 h-6" />
+        </Button>
+      </Tooltip>
     </div>
   );
 }

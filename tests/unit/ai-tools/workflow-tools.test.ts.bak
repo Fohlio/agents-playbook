@@ -1,0 +1,322 @@
+import { describe, it, expect } from '@jest/globals';
+import { workflowTools } from '@/lib/ai-tools/workflow-tools';
+
+describe('Workflow AI Tools', () => {
+  describe('createWorkflow', () => {
+    it('should validate and execute workflow creation', async () => {
+      const input = {
+        name: 'Test Workflow',
+        description: 'A test workflow',
+        complexity: 'M' as const,
+        includeMultiAgentChat: false,
+        stages: [
+          {
+            name: 'Analysis',
+            description: 'Analyze requirements',
+            color: '#3B82F6',
+            withReview: true,
+            miniPrompts: [
+              {
+                name: 'Requirements Gathering',
+                description: 'Gather all requirements',
+                content: '# Requirements\n\nList all requirements here.',
+              },
+            ],
+          },
+        ],
+      };
+
+      const result = await workflowTools.createWorkflow.execute(input, {
+        messages: [],
+        toolCallId: 'test-1',
+        toolName: 'createWorkflow',
+      });
+
+      expect(result.success).toBe(true);
+      expect(result.workflow).toEqual(input);
+      expect(result.message).toContain('Test Workflow');
+      expect(result.message).toContain('1 stage');
+    });
+
+    it('should handle workflow with multiple stages', async () => {
+      const input = {
+        name: 'Multi-Stage Workflow',
+        complexity: 'L' as const,
+        includeMultiAgentChat: true,
+        stages: [
+          {
+            name: 'Stage 1',
+            withReview: true,
+            miniPrompts: [{ name: 'Prompt 1', content: 'Content 1' }],
+          },
+          {
+            name: 'Stage 2',
+            withReview: false,
+            miniPrompts: [{ name: 'Prompt 2', content: 'Content 2' }],
+          },
+          {
+            name: 'Stage 3',
+            withReview: true,
+            miniPrompts: [{ name: 'Prompt 3', content: 'Content 3' }],
+          },
+        ],
+      };
+
+      const result = await workflowTools.createWorkflow.execute(input, {
+        messages: [],
+        toolCallId: 'test-2',
+        toolName: 'createWorkflow',
+      });
+
+      expect(result.success).toBe(true);
+      expect(result.workflow.stages).toHaveLength(3);
+      expect(result.message).toContain('3 stage');
+    });
+
+    it('should handle reusing existing mini-prompts by ID', async () => {
+      const input = {
+        name: 'Workflow with Existing Prompts',
+        stages: [
+          {
+            name: 'Stage 1',
+            withReview: true,
+            miniPrompts: [
+              {
+                id: 'existing-prompt-123',
+                name: 'Existing Prompt',
+              },
+            ],
+          },
+        ],
+      };
+
+      const result = await workflowTools.createWorkflow.execute(input, {
+        messages: [],
+        toolCallId: 'test-3',
+        toolName: 'createWorkflow',
+      });
+
+      expect(result.success).toBe(true);
+      expect(result.workflow.stages[0].miniPrompts[0].id).toBe('existing-prompt-123');
+    });
+  });
+
+  describe('addStage', () => {
+    it('should add stage at specified position', async () => {
+      const input = {
+        name: 'New Stage',
+        description: 'A new stage to add',
+        color: '#10B981',
+        withReview: true,
+        position: 1,
+        miniPrompts: [
+          {
+            name: 'New Prompt',
+            content: 'New prompt content',
+          },
+        ],
+      };
+
+      const result = await workflowTools.addStage.execute(input, {
+        messages: [],
+        toolCallId: 'test-4',
+        toolName: 'addStage',
+      });
+
+      expect(result.success).toBe(true);
+      expect(result.action).toBe('add_stage');
+      expect(result.stage).toEqual(input);
+      expect(result.message).toContain('position 1');
+    });
+
+    it('should handle adding stage at the end', async () => {
+      const input = {
+        name: 'Final Stage',
+        position: -1,
+        withReview: false,
+        miniPrompts: [{ name: 'Last Prompt', content: 'Last content' }],
+      };
+
+      const result = await workflowTools.addStage.execute(input, {
+        messages: [],
+        toolCallId: 'test-5',
+        toolName: 'addStage',
+      });
+
+      expect(result.success).toBe(true);
+      expect(result.message).toContain('end');
+    });
+  });
+
+  describe('modifyStage', () => {
+    it('should modify stage properties', async () => {
+      const input = {
+        stageIndex: 0,
+        updates: {
+          name: 'Updated Stage Name',
+          description: 'Updated description',
+          withReview: false,
+        },
+      };
+
+      const result = await workflowTools.modifyStage.execute(input, {
+        messages: [],
+        toolCallId: 'test-6',
+        toolName: 'modifyStage',
+      });
+
+      expect(result.success).toBe(true);
+      expect(result.action).toBe('modify_stage');
+      expect(result.stageIndex).toBe(0);
+      expect(result.updates).toEqual(input.updates);
+    });
+
+    it('should replace mini-prompts in stage', async () => {
+      const input = {
+        stageIndex: 2,
+        updates: {
+          miniPrompts: [
+            { name: 'Replacement 1', content: 'New content 1' },
+            { name: 'Replacement 2', content: 'New content 2' },
+          ],
+        },
+      };
+
+      const result = await workflowTools.modifyStage.execute(input, {
+        messages: [],
+        toolCallId: 'test-7',
+        toolName: 'modifyStage',
+      });
+
+      expect(result.success).toBe(true);
+      expect(result.updates.miniPrompts).toHaveLength(2);
+    });
+  });
+
+  describe('removeStage', () => {
+    it('should remove stage at specified index', async () => {
+      const input = {
+        stageIndex: 1,
+      };
+
+      const result = await workflowTools.removeStage.execute(input, {
+        messages: [],
+        toolCallId: 'test-8',
+        toolName: 'removeStage',
+      });
+
+      expect(result.success).toBe(true);
+      expect(result.action).toBe('remove_stage');
+      expect(result.stageIndex).toBe(1);
+      expect(result.message).toContain('index 1');
+    });
+  });
+
+  describe('createMiniPrompt', () => {
+    it('should create standalone mini-prompt', async () => {
+      const input = {
+        name: 'Standalone Prompt',
+        description: 'A reusable prompt',
+        content: '# Prompt Content\n\nThis is the prompt content.',
+        tags: ['analysis', 'planning'],
+      };
+
+      const result = await workflowTools.createMiniPrompt.execute(input, {
+        messages: [],
+        toolCallId: 'test-9',
+        toolName: 'createMiniPrompt',
+      });
+
+      expect(result.success).toBe(true);
+      expect(result.miniPrompt).toEqual(input);
+      expect(result.message).toContain('Standalone Prompt');
+    });
+
+    it('should handle mini-prompt without tags', async () => {
+      const input = {
+        name: 'Simple Prompt',
+        content: 'Simple content',
+      };
+
+      const result = await workflowTools.createMiniPrompt.execute(input, {
+        messages: [],
+        toolCallId: 'test-10',
+        toolName: 'createMiniPrompt',
+      });
+
+      expect(result.success).toBe(true);
+      expect(result.miniPrompt.tags).toBeUndefined();
+    });
+  });
+
+  describe('modifyMiniPrompt', () => {
+    it('should modify mini-prompt with ID', async () => {
+      const input = {
+        miniPromptId: 'prompt-456',
+        updates: {
+          name: 'Updated Prompt Name',
+          content: 'Updated content',
+        },
+      };
+
+      const result = await workflowTools.modifyMiniPrompt.execute(input, {
+        messages: [],
+        toolCallId: 'test-11',
+        toolName: 'modifyMiniPrompt',
+      });
+
+      expect(result.success).toBe(true);
+      expect(result.action).toBe('modify_mini_prompt');
+      expect(result.miniPromptId).toBe('prompt-456');
+      expect(result.message).toContain('prompt-456');
+    });
+
+    it('should modify mini-prompt without ID', async () => {
+      const input = {
+        updates: {
+          description: 'Updated description',
+          tags: ['updated', 'tags'],
+        },
+      };
+
+      const result = await workflowTools.modifyMiniPrompt.execute(input, {
+        messages: [],
+        toolCallId: 'test-12',
+        toolName: 'modifyMiniPrompt',
+      });
+
+      expect(result.success).toBe(true);
+      expect(result.miniPromptId).toBeUndefined();
+      expect(result.message).toBe('Mini-prompt will be updated.');
+    });
+  });
+
+  describe('workflowTools export', () => {
+    it('should export all 6 tools', () => {
+      expect(workflowTools).toHaveProperty('createWorkflow');
+      expect(workflowTools).toHaveProperty('addStage');
+      expect(workflowTools).toHaveProperty('modifyStage');
+      expect(workflowTools).toHaveProperty('removeStage');
+      expect(workflowTools).toHaveProperty('createMiniPrompt');
+      expect(workflowTools).toHaveProperty('modifyMiniPrompt');
+    });
+
+    it('should have tool descriptions', () => {
+      expect(workflowTools.createWorkflow.description).toBeTruthy();
+      expect(workflowTools.addStage.description).toBeTruthy();
+      expect(workflowTools.modifyStage.description).toBeTruthy();
+      expect(workflowTools.removeStage.description).toBeTruthy();
+      expect(workflowTools.createMiniPrompt.description).toBeTruthy();
+      expect(workflowTools.modifyMiniPrompt.description).toBeTruthy();
+    });
+
+    it('should have Zod parameter schemas', () => {
+      expect(workflowTools.createWorkflow.parameters).toBeTruthy();
+      expect(workflowTools.addStage.parameters).toBeTruthy();
+      expect(workflowTools.modifyStage.parameters).toBeTruthy();
+      expect(workflowTools.removeStage.parameters).toBeTruthy();
+      expect(workflowTools.createMiniPrompt.parameters).toBeTruthy();
+      expect(workflowTools.modifyMiniPrompt.parameters).toBeTruthy();
+    });
+  });
+});

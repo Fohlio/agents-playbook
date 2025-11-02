@@ -28,6 +28,7 @@
     "postinstall": "prisma generate"
   },
   "dependencies": {
+    "@ai-sdk/openai": "^2.0.59",
     "@dnd-kit/core": "6.3.1",
     "@dnd-kit/sortable": "10.0.0",
     "@dnd-kit/utilities": "3.2.2",
@@ -47,12 +48,13 @@
     "@radix-ui/react-tooltip": "1.2.8",
     "@vercel/edge-config": "^1.4.0",
     "@vercel/mcp-adapter": "^0.11.1",
+    "ai": "^5.0.86",
     "bcrypt": "^5.1.1",
     "clsx": "2.1.1",
     "date-fns": "4.1.0",
     "gray-matter": "^4.0.3",
     "js-yaml": "^4.1.0",
-    "lucide-react": "0.545.0",
+    "lucide-react": "^0.545.0",
     "next": "15.3.5",
     "next-auth": "^5.0.0-beta.29",
     "openai": "^5.8.2",

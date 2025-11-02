@@ -45,6 +45,23 @@ global.Response = class Response {
 
 global.Headers = class Headers extends Map {};
 
+// Polyfill TransformStream for AI SDK
+global.TransformStream = class TransformStream {
+  readable;
+  writable;
+
+  constructor() {
+    const chunks = [];
+    this.writable = {
+      write: (chunk) => chunks.push(chunk),
+      close: () => {},
+    };
+    this.readable = {
+      read: () => chunks.shift(),
+    };
+  }
+};
+
 // Global test configuration
 global.console = {
   ...console,

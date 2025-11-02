@@ -134,7 +134,7 @@ export function DashboardSidebar() {
                 return (
                   <li key={item.href}>
                     {isCollapsed ? (
-                      <Tooltip content={item.label} placement="right">
+                      <Tooltip content={item.label}>
                         {linkContent}
                       </Tooltip>
                     ) : (

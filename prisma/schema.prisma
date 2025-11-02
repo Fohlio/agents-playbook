@@ -44,19 +44,27 @@ enum WorkflowComplexity {
   XL
 }
 
+enum MessageRole {
+  USER
+  ASSISTANT
+  SYSTEM
+}
+
 // ============================================================================
 // Models
 // ============================================================================
 
 model User {
-  id           String      @id @default(uuid())
-  email        String      @unique
-  username     String      @unique
-  passwordHash String      @map("password_hash")
-  tier         UserTier    @default(FREE)
-  role         UserRole    @default(USER)
-  createdAt    DateTime    @default(now()) @map("created_at")
-  updatedAt    DateTime    @updatedAt @map("updated_at")
+  id                    String      @id @default(uuid())
+  email                 String      @unique
+  username              String      @unique
+  passwordHash          String      @map("password_hash")
+  tier                  UserTier    @default(FREE)
+  role                  UserRole    @default(USER)
+  openaiApiKey          String?     @map("openai_api_key") @db.Text
+  openaiApiKeyUpdatedAt DateTime?   @map("openai_api_key_updated_at")
+  createdAt             DateTime    @default(now()) @map("created_at")
+  updatedAt             DateTime    @updatedAt @map("updated_at")
 
   // Relations
   apiTokens             ApiToken[]
@@ -67,6 +75,8 @@ model User {
   miniPromptReferences  MiniPromptReference[]
   sharedLinks           SharedLink[]
   createdTags           Tag[]
+  aiChatSessions        AIChatSession[]
+  chatMessages          ChatMessage[]
 
   @@map("users")
   @@index([email])
@@ -107,11 +117,12 @@ model Workflow {
   updatedAt            DateTime            @updatedAt @map("updated_at")
 
   // Relations
-  user       User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
-  stages     WorkflowStage[]
-  references WorkflowReference[]
-  embedding  WorkflowEmbedding?
-  tags       WorkflowTag[]
+  user          User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  stages        WorkflowStage[]
+  references    WorkflowReference[]
+  embedding     WorkflowEmbedding?
+  tags          WorkflowTag[]
+  aiChatSessions AIChatSession[]
 
   @@map("workflows")
   @@index([userId])
@@ -161,6 +172,7 @@ model MiniPrompt {
   references        MiniPromptReference[]
   tags              MiniPromptTag[]
   embedding         MiniPromptEmbedding?
+  aiChatSessions    AIChatSession[]
 
   @@map("mini_prompts")
   @@index([userId])
@@ -357,4 +369,54 @@ model SharedLink {
   @@index([isActive])
   @@index([expiresAt])
 }
+
+model AIChatSession {
+  id               String        @id @default(uuid())
+  userId           String        @map("user_id")
+  workflowId       String?       @map("workflow_id")
+  miniPromptId     String?       @map("mini_prompt_id")
+  mode             String        @db.VarChar(50) // 'workflow' or 'mini-prompt'
+  totalTokens      Int           @default(0) @map("total_tokens")
+  archivedAt       DateTime?     @map("archived_at")
+  lastMessageAt    DateTime      @default(now()) @map("last_message_at")
+  createdAt        DateTime      @default(now()) @map("created_at")
+  updatedAt        DateTime      @updatedAt @map("updated_at")
+
+  // Relations
+  user       User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  workflow   Workflow?      @relation(fields: [workflowId], references: [id], onDelete: Cascade)
+  miniPrompt MiniPrompt?    @relation(fields: [miniPromptId], references: [id], onDelete: Cascade)
+  messages   ChatMessage[]
+
+  @@map("ai_chat_sessions")
+  @@index([userId])
+  @@index([workflowId])
+  @@index([miniPromptId])
+  @@index([mode])
+  @@index([lastMessageAt])
+  @@index([updatedAt])
+  @@index([archivedAt])
+}
+
+model ChatMessage {
+  id                 String      @id @default(uuid())
+  chatId             String      @map("chat_id")
+  userId             String      @map("user_id")
+  role               MessageRole
+  content            String      @db.Text
+  previousResponseId String?     @map("previous_response_id") @db.VarChar(255)
+  tokenCount         Int         @default(0) @map("token_count")
+  toolInvocations    Json?       @map("tool_invocations")
+  createdAt          DateTime    @default(now()) @map("created_at")
+
+  // Relations
+  chatSession AIChatSession @relation(fields: [chatId], references: [id], onDelete: Cascade)
+  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("chat_messages")
+  @@index([chatId, createdAt])
+  @@index([previousResponseId])
+  @@index([userId])
+}
+
 
