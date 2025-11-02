@@ -1,5 +1,7 @@
 import type { Workflow, WorkflowStage, MiniPrompt, StageMiniPrompt, WorkflowComplexity } from '@prisma/client';
 
+export type { WorkflowComplexity };
+
 export type WorkflowWithStages = Workflow & {
   stages: WorkflowStageWithMiniPrompts[];
 };

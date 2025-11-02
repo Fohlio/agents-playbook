@@ -23,7 +23,7 @@ export default function SetupSection() {
     },
     {
       number: "2",
-      title: "Start Using", 
+      title: "Start Using",
       description: "Ask your AI assistant for intelligent workflow recommendations",
       icon: (
         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -33,6 +33,22 @@ export default function SetupSection() {
       gradient: "from-green-500 to-emerald-500",
       examples: [
         "use agents-playbook to select feature development workflow",
+      ]
+    },
+    {
+      number: "3",
+      title: "Create Custom Workflows",
+      description: "Use the built-in AI assistant to design workflows tailored to your team",
+      icon: (
+        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+        </svg>
+      ),
+      gradient: "from-violet-500 to-fuchsia-500",
+      examples: [
+        "Help me create a workflow for implementing authentication with OAuth",
+        "Create a mini-prompt for writing API documentation",
+        "What's the best workflow structure for a microservices project?",
       ]
     }
   ];

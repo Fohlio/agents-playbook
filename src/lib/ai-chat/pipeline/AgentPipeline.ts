@@ -6,7 +6,7 @@
  * the context and passes it to the next step.
  */
 
-import type { PipelineContext, PipelineStep, PipelineResult } from './types';
+import type { PipelineContext, PipelineStep, PipelineResult, ToolInvocation } from './types';
 import { PrepareDataStep } from './steps/PrepareDataStep';
 import { DetermineSessionStep } from './steps/DetermineSessionStep';
 import { CheckAutoResetStep } from './steps/CheckAutoResetStep';
@@ -66,8 +66,32 @@ export class AgentPipeline {
       throw new Error('Pipeline execution incomplete - missing required results');
     }
 
-    // Use toolResults if available (AI SDK v5), otherwise fall back to toolCalls
-    const toolInvocations = context.completionResult.toolResults || context.completionResult.toolCalls || [];
+    // Convert toolResults or toolCalls to ToolInvocation format
+    const toolInvocations: ToolInvocation[] = [];
+
+    if (context.completionResult.toolResults) {
+      context.completionResult.toolResults.forEach(tr => {
+        toolInvocations.push({
+          type: 'tool-result',
+          toolCallId: tr.toolCallId,
+          toolName: tr.toolName,
+          args: {},
+          output: tr.result,
+          state: 'result',
+        });
+      });
+    } else if (context.completionResult.toolCalls) {
+      context.completionResult.toolCalls.forEach(tc => {
+        toolInvocations.push({
+          type: 'tool-call',
+          toolCallId: tc.toolCallId,
+          toolName: tc.toolName,
+          args: tc.args,
+          output: null,
+          state: 'pending',
+        });
+      });
+    }
 
     return {
       sessionId: context.chatId,

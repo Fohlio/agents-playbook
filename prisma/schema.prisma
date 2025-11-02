@@ -113,6 +113,7 @@ model Workflow {
   isActive             Boolean             @default(false) @map("is_active")
   isSystemWorkflow     Boolean             @default(false) @map("is_system_workflow")
   includeMultiAgentChat Boolean            @default(false) @map("include_multi_agent_chat")
+  position             Int                 @default(0) @map("position")
   createdAt            DateTime            @default(now()) @map("created_at")
   updatedAt            DateTime            @updatedAt @map("updated_at")
 
@@ -132,6 +133,7 @@ model Workflow {
   @@index([includeMultiAgentChat])
   @@index([createdAt])
   @@index([complexity])
+  @@index([userId, position])
 }
 
 // WorkflowStage represents a stage in a workflow
@@ -163,6 +165,8 @@ model MiniPrompt {
   visibility         Visibility  @default(PRIVATE)
   isActive           Boolean     @default(false) @map("is_active")
   isSystemMiniPrompt Boolean     @default(false) @map("is_system_mini_prompt")
+  isAutomatic        Boolean     @default(false) @map("is_automatic") // Auto-injected prompts (Memory Board, Multi-Agent Chat)
+  position           Int         @default(0) @map("position")
   createdAt          DateTime    @default(now()) @map("created_at")
   updatedAt          DateTime    @updatedAt @map("updated_at")
 
@@ -179,7 +183,9 @@ model MiniPrompt {
   @@index([visibility])
   @@index([isActive])
   @@index([isSystemMiniPrompt])
+  @@index([isAutomatic])
   @@index([createdAt])
+  @@index([userId, position])
 }
 
 // StageMiniPrompt junction table

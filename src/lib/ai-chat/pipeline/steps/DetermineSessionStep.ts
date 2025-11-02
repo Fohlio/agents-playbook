@@ -18,10 +18,14 @@ export class DetermineSessionStep implements PipelineStep {
     if (!chatId) {
       console.log('[DetermineSession] Creating new session');
 
+      // Only set workflowId if it's a valid database ID (not 'new' or temporary)
+      const workflowId = context.workflowContext?.workflow?.id;
+      const isValidWorkflowId = workflowId && workflowId !== 'new' && !workflowId.startsWith('temp-');
+
       const newSession = await prisma.aIChatSession.create({
         data: {
           userId: context.userId,
-          workflowId: context.workflowContext?.workflow?.id || null,
+          workflowId: isValidWorkflowId ? workflowId : null,
           miniPromptId: null,
           mode: context.mode,
           totalTokens: 0,

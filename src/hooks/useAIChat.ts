@@ -110,19 +110,60 @@ export function useAIChat({
 
         // Process tool invocations if callback provided
         if (onToolCall && assistantMsg.toolInvocations && assistantMsg.toolInvocations.length > 0) {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          assistantMsg.toolInvocations.forEach((invocation: any) => {
+          interface ToolInvocation {
+            type?: string;
+            output?: unknown;
+            state?: string;
+            result?: unknown;
+            success?: boolean;
+            workflow?: unknown;
+            action?: string;
+          }
+          assistantMsg.toolInvocations.forEach((invocation: ToolInvocation, index: number) => {
+            console.log(`[useAIChat] Processing tool invocation ${index}:`, invocation);
+            console.log(`[useAIChat] Invocation type:`, invocation.type);
+            console.log(`[useAIChat] Invocation.output type:`, typeof invocation.output);
+            console.log(`[useAIChat] Invocation.output value:`, invocation.output);
+
             // AI SDK v5 format: type: 'tool-result' with output property
-            if (invocation.type === 'tool-result' && invocation.output) {
-              onToolCall(invocation.output);
+            if (invocation.type === 'tool-result' && invocation.output !== undefined) {
+              // Check if output is a string error message - don't spread it
+              if (typeof invocation.output === 'string') {
+                console.warn('[useAIChat] Tool output is a string (likely an error), wrapping:', invocation.output);
+                const wrappedError = {
+                  success: false,
+                  error: invocation.output,
+                  message: invocation.output
+                };
+                console.log('[useAIChat] Calling onToolCall with wrapped error:', wrappedError);
+                onToolCall(wrappedError);
+              } else if (invocation.output && typeof invocation.output === 'object') {
+                console.log('[useAIChat] Calling onToolCall with invocation.output:', invocation.output);
+                onToolCall(invocation.output as AIToolResult);
+              }
             }
             // Legacy format: state: 'result' with result property
-            else if (invocation.state === 'result' && invocation.result) {
-              onToolCall(invocation.result);
+            else if (invocation.state === 'result' && invocation.result !== undefined) {
+              if (typeof invocation.result === 'string') {
+                console.warn('[useAIChat] Tool result is a string (likely an error), wrapping:', invocation.result);
+                const wrappedError = {
+                  success: false,
+                  error: invocation.result,
+                  message: invocation.result
+                };
+                console.log('[useAIChat] Calling onToolCall with wrapped error:', wrappedError);
+                onToolCall(wrappedError);
+              } else if (invocation.result && typeof invocation.result === 'object') {
+                console.log('[useAIChat] Calling onToolCall with invocation.result:', invocation.result);
+                onToolCall(invocation.result as AIToolResult);
+              }
             }
             // Fallback: try to call with the invocation itself if it has expected properties
             else if (invocation.success !== undefined && (invocation.workflow || invocation.action)) {
-              onToolCall(invocation);
+              console.log('[useAIChat] Calling onToolCall with invocation itself:', invocation);
+              onToolCall(invocation as AIToolResult);
+            } else {
+              console.warn('[useAIChat] Invocation format not recognized, skipping:', invocation);
             }
           });
         }

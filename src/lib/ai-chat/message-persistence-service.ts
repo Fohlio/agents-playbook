@@ -93,16 +93,30 @@ export class MessagePersistenceService {
    * Get last assistant message's previousResponseId for chain continuity
    *
    * @param chatId - Chat session ID
-   * @returns previousResponseId or undefined if no messages exist
+   * @returns previousResponseId or undefined if no messages exist or if last message had tool calls
    */
   static async getLastResponseId(chatId: string): Promise<string | undefined> {
     const lastMessage = await prisma.chatMessage.findFirst({
       where: { chatId, role: 'ASSISTANT' },
       orderBy: { createdAt: 'desc' },
-      select: { previousResponseId: true },
+      select: { previousResponseId: true, toolInvocations: true },
     });
 
-    return lastMessage?.previousResponseId || undefined;
+    if (!lastMessage) {
+      return undefined;
+    }
+
+    // If the last message had tool calls, we cannot chain responses
+    // because OpenAI Responses API requires tool outputs to be provided
+    if (lastMessage.toolInvocations) {
+      const toolInvocations = lastMessage.toolInvocations as unknown;
+      if (Array.isArray(toolInvocations) && toolInvocations.length > 0) {
+        console.log('[MessagePersistence] Last message had tool calls, breaking chain to avoid API error');
+        return undefined;
+      }
+    }
+
+    return lastMessage.previousResponseId || undefined;
   }
 
   /**

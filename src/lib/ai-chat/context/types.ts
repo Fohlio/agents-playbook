@@ -95,6 +95,16 @@ export interface WorkflowContext {
   }>;
 
   /**
+   * Currently viewing/editing mini-prompt
+   */
+  currentMiniPrompt?: {
+    id: string;
+    name: string;
+    description?: string | null;
+    content: string;
+  };
+
+  /**
    * Current mode context
    */
   mode?: 'workflow' | 'mini-prompt';

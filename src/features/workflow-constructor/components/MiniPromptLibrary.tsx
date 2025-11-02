@@ -1,12 +1,11 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card } from '@/shared/ui/atoms/Card';
 import IconButton from '@/shared/ui/atoms/IconButton';
-import Input from '@/shared/ui/atoms/Input';
 import type { MiniPrompt } from '@prisma/client';
-import { MiniPromptCard } from './MiniPromptCard';
 import { MiniPromptEditorModal } from './MiniPromptEditorModal';
+import { MiniPromptMultiSelect } from './MiniPromptMultiSelect';
 import { createMiniPrompt, updateMiniPrompt } from '../actions/mini-prompt-actions';
 import AddIcon from '@mui/icons-material/Add';
 
@@ -17,14 +16,25 @@ interface MiniPromptLibraryProps {
 }
 
 export function MiniPromptLibrary({ miniPrompts, onMiniPromptCreated, onMiniPromptUpdated }: MiniPromptLibraryProps) {
-  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedMiniPromptIds, setSelectedMiniPromptIds] = useState<string[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingMiniPrompt, setEditingMiniPrompt] = useState<MiniPrompt | null>(null);
 
-  const filteredMiniPrompts = miniPrompts.filter((mp) => {
-    const matchesSearch = mp.name.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesSearch;
-  });
+  // Sync editingMiniPrompt when miniPrompts array changes (e.g., AI updates it)
+  useEffect(() => {
+    if (editingMiniPrompt) {
+      const updated = miniPrompts.find(mp => mp.id === editingMiniPrompt.id);
+      if (updated && (
+        updated.name !== editingMiniPrompt.name ||
+        updated.description !== editingMiniPrompt.description ||
+        updated.content !== editingMiniPrompt.content
+      )) {
+        console.log('[MiniPromptLibrary] Detected external update to editing mini-prompt, refreshing modal');
+        setEditingMiniPrompt(updated);
+      }
+    }
+  }, [miniPrompts, editingMiniPrompt]);
+
 
   const handleCreateMiniPrompt = async (
     name: string,
@@ -43,20 +53,34 @@ export function MiniPromptLibrary({ miniPrompts, onMiniPromptCreated, onMiniProm
     visibility: 'PUBLIC' | 'PRIVATE'
   ) => {
     if (!editingMiniPrompt) return;
-    const updated = await updateMiniPrompt({
-      id: editingMiniPrompt.id,
-      name,
-      description,
-      content,
-      visibility,
-    });
-    onMiniPromptUpdated?.(updated);
-    setEditingMiniPrompt(null);
-  };
 
-  const handleEdit = (miniPrompt: MiniPrompt) => {
-    setEditingMiniPrompt(miniPrompt);
-    setIsModalOpen(true);
+    // Check if this is a temp mini-prompt (not saved to database yet)
+    const isTempMiniPrompt = editingMiniPrompt.id.startsWith('temp-');
+
+    if (isTempMiniPrompt) {
+      // For temp mini-prompts, just update locally
+      const updated: MiniPrompt = {
+        ...editingMiniPrompt,
+        name,
+        description,
+        content,
+        visibility,
+        updatedAt: new Date(),
+      };
+      onMiniPromptUpdated?.(updated);
+      setEditingMiniPrompt(null);
+    } else {
+      // For saved mini-prompts, update in database
+      const updated = await updateMiniPrompt({
+        id: editingMiniPrompt.id,
+        name,
+        description,
+        content,
+        visibility,
+      });
+      onMiniPromptUpdated?.(updated);
+      setEditingMiniPrompt(null);
+    }
   };
 
   const handleCloseModal = () => {
@@ -81,25 +105,12 @@ export function MiniPromptLibrary({ miniPrompts, onMiniPromptCreated, onMiniProm
           />
         </div>
 
-        <div className="space-y-3 mb-4">
-          <Input
-            type="text"
-            placeholder="Search mini-prompts..."
-            value={searchQuery}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value)}
-            testId="search-mini-prompts"
+        <div className="flex-1 overflow-y-auto">
+          <MiniPromptMultiSelect
+            miniPrompts={miniPrompts}
+            selectedMiniPromptIds={selectedMiniPromptIds}
+            onChange={setSelectedMiniPromptIds}
           />
-        </div>
-
-        <div className="flex-1 overflow-y-auto space-y-2">
-          {filteredMiniPrompts.map((mp) => (
-            <MiniPromptCard key={mp.id} miniPrompt={mp} onEdit={handleEdit} />
-          ))}
-          {filteredMiniPrompts.length === 0 && (
-            <p className="text-sm text-text-tertiary text-center py-8">
-              No mini-prompts found
-            </p>
-          )}
         </div>
       </Card>
 

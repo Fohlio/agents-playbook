@@ -71,6 +71,17 @@ export default function FeaturesSection() {
       description: "Visual workflow constructor with drag-and-drop. Create custom workflows for your team's unique patterns.",
       gradient: "from-teal-500 to-emerald-500",
       audience: "For Power Users"
+    },
+    {
+      icon: (
+        <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+        </svg>
+      ),
+      title: "AI Chat Assistant",
+      description: "Built-in AI assistant helps you create workflows, find mini-prompts, and optimize your processes in real-time.",
+      gradient: "from-violet-500 to-fuchsia-500",
+      audience: "For All Users"
     }
   ];
 

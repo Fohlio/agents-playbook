@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import Button from '@/shared/ui/atoms/Button';
 import Input from '@/shared/ui/atoms/Input';
 import { Modal } from '@/shared/ui/atoms/Modal';
-import { TagSelector } from '@/shared/ui/molecules/TagSelector';
+import { TagMultiSelect } from '@/shared/ui/molecules';
 
 interface MiniPromptEditorModalProps {
   isOpen: boolean;
@@ -88,7 +88,7 @@ export function MiniPromptEditorModal({
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={handleClose} className="max-w-4xl">
+    <Modal isOpen={isOpen} onClose={handleClose} className="max-w-4xl max-h-[85vh] overflow-y-auto">
       <div className="p-6">
         <h2 className="text-2xl font-bold text-text-primary mb-6">
           {viewOnly ? name || 'Mini-Prompt' : initialData ? 'Edit Mini-Prompt' : 'Create New Mini-Prompt'}
@@ -188,8 +188,8 @@ export function MiniPromptEditorModal({
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
                 placeholder="Enter markdown content for this mini-prompt...&#10;&#10;Supported formatting:&#10;# Heading 1&#10;## Heading 2&#10;### Heading 3&#10;**bold text**&#10;*italic text*&#10;`code`&#10;- bullet point"
-                rows={15}
-                className="w-full px-3 py-2 border border-border-base rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-text-primary bg-surface-base font-mono text-sm"
+                rows={10}
+                className="w-full px-3 py-2 border border-border-base rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-text-primary bg-surface-base font-mono text-sm resize-y min-h-[200px] max-h-[400px]"
               />
             )}
           </div>
@@ -229,29 +229,9 @@ export function MiniPromptEditorModal({
                 <label className="block text-sm font-medium text-text-primary mb-2">
                   Tags
                 </label>
-                <TagSelector
+                <TagMultiSelect
                   selectedTagIds={selectedTagIds}
                   onChange={setSelectedTagIds}
-                  allowCreate
-                  onCreateTag={async (name, color) => {
-                    try {
-                      const response = await fetch('/api/tags', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ name, color })
-                      });
-                      if (response.ok) {
-                        return await response.json();
-                      } else {
-                        const error = await response.json();
-                        alert(error.error || 'Failed to create tag');
-                        return null;
-                      }
-                    } catch {
-                      alert('Failed to create tag');
-                      return null;
-                    }
-                  }}
                 />
               </div>
             </>

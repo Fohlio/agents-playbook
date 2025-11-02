@@ -10,12 +10,26 @@ import { prisma } from '@/lib/db/client';
  */
 export const getCurrentWorkflow = tool({
   description:
-    'Get the current workflow details including all stages and mini-prompts. ' +
-    'Use this tool to understand the current workflow structure before suggesting modifications.',
+    'IMPORTANT: DO NOT USE THIS TOOL if the workflow context is already in the system prompt under "Current Workflow Context". ' +
+    'Only use this to fetch a DIFFERENT workflow by ID (not the one currently being edited). ' +
+    'This tool CANNOT fetch unsaved workflows (id="new" or temp-* IDs). ' +
+    'For the current workflow being edited, ALL details are already provided in the system prompt.',
   inputSchema: z.object({
-    workflowId: z.string().describe('The ID of the workflow to fetch'),
+    workflowId: z.string().describe('Database ID of a SAVED workflow to fetch (not "new" or temp-* IDs)'),
   }),
   execute: async ({ workflowId }) => {
+    console.log('[getCurrentWorkflow] Called with workflowId:', workflowId);
+
+    // Cannot fetch unsaved workflows
+    if (workflowId === 'new' || workflowId.startsWith('temp-')) {
+      console.log('[getCurrentWorkflow] Unsaved workflow, returning error');
+      return {
+        error: 'Cannot fetch unsaved workflow. The workflow context is already provided in the system prompt.',
+        message: 'This workflow has not been saved yet. Please refer to the workflow context in the system prompt for current details.',
+      };
+    }
+
+    console.log('[getCurrentWorkflow] Fetching workflow from database');
     const workflow = await prisma.workflow.findUnique({
       where: { id: workflowId },
       include: {
@@ -41,19 +55,43 @@ export const getCurrentWorkflow = tool({
     });
 
     if (!workflow) {
-      return 'Workflow not found';
+      console.log('[getCurrentWorkflow] Workflow not found in database for ID:', workflowId);
+      return {
+        error: 'Workflow not found',
+        message: `Workflow with ID "${workflowId}" was not found in the database. The workflow context is already provided in the system prompt.`
+      };
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const stages = workflow.stages.map((stage: any) => ({
+    console.log('[getCurrentWorkflow] Workflow found:', workflow.name);
+
+    interface StageMiniPromptData {
+      miniPrompt: {
+        id: string;
+        name: string;
+        description: string | null;
+        content: string;
+      };
+      order: number;
+    }
+
+    interface StageData {
+      id: string;
+      name: string;
+      description: string | null;
+      color: string | null;
+      withReview: boolean;
+      order: number;
+      miniPrompts: StageMiniPromptData[];
+    }
+
+    const stages = workflow.stages.map((stage: StageData) => ({
       id: stage.id,
       name: stage.name,
       description: stage.description,
       color: stage.color,
       withReview: stage.withReview,
       order: stage.order,
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      miniPrompts: stage.miniPrompts.map((smp: any) => ({
+      miniPrompts: stage.miniPrompts.map((smp) => ({
         id: smp.miniPrompt.id,
         name: smp.miniPrompt.name,
         description: smp.miniPrompt.description,
@@ -115,8 +153,7 @@ export const getAvailableMiniPrompts = tool({
       take: 50,
     });
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    return miniPrompts.map((mp: any) => ({
+    return miniPrompts.map((mp) => ({
       id: mp.id,
       name: mp.name,
       description: mp.description,
@@ -154,6 +191,10 @@ export const createWorkflow = tool({
       .boolean()
       .default(false)
       .describe('Whether to include multi-agent chat coordination after each mini-prompt'),
+    tags: z
+      .array(z.string())
+      .optional()
+      .describe('Array of tag names to categorize the workflow (e.g., ["frontend", "testing", "documentation"]). Tags will be created if they don\'t exist.'),
     stages: z
       .array(
         z.object({
@@ -287,17 +328,23 @@ export const addStage = tool({
  * AI Tool: Modify an existing stage
  *
  * Updates stage properties or reorders/adds/removes mini-prompts within a stage.
+ * Supports identification by stageId (for database-saved stages) or stagePosition (for local temporary stages).
  */
 export const modifyStage = tool({
   description:
     'Modify an existing workflow stage: update name, description, color, review settings, or change mini-prompts. ' +
-    'Use this for targeted edits to a specific stage.',
+    'Use this for targeted edits to a specific stage. Identify stage by stageId (database ID) or stagePosition (0-based index).',
   inputSchema: z.object({
-    stageIndex: z
+    stageId: z
+      .string()
+      .optional()
+      .describe('Database ID of the stage to modify (use this for saved stages)'),
+    stagePosition: z
       .number()
       .int()
       .min(0)
-      .describe('Index of the stage to modify (0-based)'),
+      .optional()
+      .describe('Position/index of the stage to modify (0-based, use this for temporary stages)'),
     updates: z.object({
       name: z
         .string()
@@ -331,13 +378,20 @@ export const modifyStage = tool({
     }),
   }),
   execute: async (input) => {
+    // Validate that at least one identifier is provided
+    if (!input.stageId && input.stagePosition === undefined) {
+      throw new Error('Either stageId or stagePosition must be provided');
+    }
 
     return {
       success: true,
       action: 'modify_stage',
-      stageIndex: input.stageIndex,
+      stageId: input.stageId,
+      stagePosition: input.stagePosition,
       updates: input.updates,
-      message: `Stage at index ${input.stageIndex} will be updated.`,
+      message: input.stageId
+        ? `Stage ${input.stageId} will be updated.`
+        : `Stage at position ${input.stagePosition} will be updated.`,
     };
   },
 });
@@ -412,16 +466,29 @@ export const createMiniPrompt = tool({
  * AI Tool: Modify an existing mini-prompt
  *
  * Updates the content, name, or description of an existing mini-prompt.
+ * Supports identification by miniPromptId (for saved prompts) or by stage/mini-prompt position (for temporary prompts in workflow constructor).
  */
 export const modifyMiniPrompt = tool({
   description:
     'Modify an existing mini-prompt: update name, description, or content. ' +
-    'Use this when editing a mini-prompt in the library or within a workflow context.',
+    'Identify by miniPromptId (database ID) or by stagePosition + miniPromptPosition (0-based indexes in workflow constructor).',
   inputSchema: z.object({
     miniPromptId: z
       .string()
       .optional()
-      .describe('ID of the mini-prompt to modify (if known)'),
+      .describe('Database ID of the mini-prompt to modify (use this for saved mini-prompts)'),
+    stagePosition: z
+      .number()
+      .int()
+      .min(0)
+      .optional()
+      .describe('Position of the stage containing the mini-prompt (0-based, use with miniPromptPosition)'),
+    miniPromptPosition: z
+      .number()
+      .int()
+      .min(0)
+      .optional()
+      .describe('Position of the mini-prompt within the stage (0-based, use with stagePosition)'),
     updates: z.object({
       name: z
         .string()
@@ -446,15 +513,79 @@ export const modifyMiniPrompt = tool({
     }),
   }),
   execute: async (input) => {
+    // Validate that proper identification is provided
+    if (!input.miniPromptId && (input.stagePosition === undefined || input.miniPromptPosition === undefined)) {
+      throw new Error('Either miniPromptId or both stagePosition and miniPromptPosition must be provided');
+    }
+
+    // Build a descriptive message including the new name if being updated
+    let message = '';
+    if (input.updates.name) {
+      message = `Mini-prompt "${input.updates.name}" will be updated`;
+    } else {
+      message = `Mini-prompt will be updated`;
+    }
+
+    if (input.miniPromptId) {
+      message += ` (ID: ${input.miniPromptId})`;
+    } else {
+      message += ` at stage ${input.stagePosition}, position ${input.miniPromptPosition}`;
+    }
+
+    message += '.';
 
     return {
       success: true,
       action: 'modify_mini_prompt',
       miniPromptId: input.miniPromptId,
+      stagePosition: input.stagePosition,
+      miniPromptPosition: input.miniPromptPosition,
       updates: input.updates,
-      message: input.miniPromptId
-        ? `Mini-prompt ${input.miniPromptId} will be updated.`
-        : 'Mini-prompt will be updated.',
+      message,
+    };
+  },
+});
+
+/**
+ * AI Tool: Update workflow settings
+ *
+ * Updates global workflow settings like name, description, complexity, multi-agent chat, and visibility.
+ * All parameters are optional - only provide the settings you want to update.
+ */
+export const updateWorkflowSettings = tool({
+  description:
+    'Update workflow-level settings: name, description, complexity, multi-agent chat, or visibility. ' +
+    'Use this when the user wants to change workflow metadata without modifying stages or mini-prompts.',
+  inputSchema: z.object({
+    name: z
+      .string()
+      .min(1)
+      .max(255)
+      .optional()
+      .describe('New workflow name (1-255 characters)'),
+    description: z
+      .string()
+      .optional()
+      .describe('New workflow description'),
+    complexity: z
+      .enum(['XS', 'S', 'M', 'L', 'XL'])
+      .optional()
+      .describe('New complexity level: XS (very simple), S (simple), M (medium), L (large), XL (very large)'),
+    includeMultiAgentChat: z
+      .boolean()
+      .optional()
+      .describe('Whether to include multi-agent chat coordination after each mini-prompt'),
+    visibility: z
+      .enum(['PUBLIC', 'PRIVATE'])
+      .optional()
+      .describe('Workflow visibility: PUBLIC (discoverable by all) or PRIVATE (user-only)'),
+  }),
+  execute: async (input) => {
+    return {
+      success: true,
+      action: 'update_workflow_settings',
+      updates: input,
+      message: 'Workflow settings will be updated.',
     };
   },
 });
@@ -476,4 +607,5 @@ export const workflowTools = {
   removeStage,
   createMiniPrompt,
   modifyMiniPrompt,
+  updateWorkflowSettings,
 };

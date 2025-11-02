@@ -181,6 +181,7 @@ export async function getPublicMiniPrompts(
   // Build where clause
   const where: Prisma.MiniPromptWhereInput = {
     visibility: "PUBLIC",
+    isAutomatic: false, // Exclude automatic mini-prompts (Memory Board, Internal Agents Chat)
     ...(params.search && {
       OR: [
         { name: { contains: params.search, mode: "insensitive" } },

@@ -47,10 +47,13 @@ export interface AIToolResult {
   workflow?: WorkflowToolData;
   stage?: StageToolData;
   miniPrompt?: MiniPromptToolData;
-  stageIndex?: number;
+  stageIndex?: number; // Deprecated: use stagePosition
+  stageId?: string; // Database ID of stage (for saved stages)
+  stagePosition?: number; // Position/index of stage (for temporary stages)
   updates?: Record<string, unknown>;
   miniPromptId?: string;
-  message: string;
+  miniPromptPosition?: number; // Position of mini-prompt within stage
+  message?: string;
 }
 
 /**
@@ -131,6 +134,12 @@ export interface WorkflowContext {
     name: string;
     description?: string | null;
   }>;
+  currentMiniPrompt?: {
+    id: string;
+    name: string;
+    description?: string | null;
+    content: string;
+  };
   mode?: AIChatMode;
 }
 

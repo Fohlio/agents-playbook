@@ -121,6 +121,41 @@ export function CreateWorkflowStep() {
         </div>
       </div>
 
+      <div className="bg-gradient-to-r from-violet-50 to-fuchsia-50 border-2 border-violet-300 rounded-lg p-4 mb-4">
+        <div className="flex items-start gap-3">
+          <span className="text-2xl">🤖</span>
+          <div>
+            <h4 className="font-semibold text-violet-900 mb-2">AI Assistant</h4>
+            <p className="text-sm text-violet-800 mb-3">
+              Need help creating your workflow? Use the built-in AI assistant to:
+            </p>
+            <div className="space-y-2">
+              <div className="bg-white rounded p-2 text-xs">
+                <strong className="text-violet-900">Generate Workflows:</strong>
+                <span className="text-gray-700 ml-1">
+                  Describe your task and get a complete workflow structure
+                </span>
+              </div>
+              <div className="bg-white rounded p-2 text-xs">
+                <strong className="text-violet-900">Create Mini-Prompts:</strong>
+                <span className="text-gray-700 ml-1">
+                  Ask AI to write custom prompts for specific tasks
+                </span>
+              </div>
+              <div className="bg-white rounded p-2 text-xs">
+                <strong className="text-violet-900">Get Recommendations:</strong>
+                <span className="text-gray-700 ml-1">
+                  Receive suggestions for improving workflow structure
+                </span>
+              </div>
+            </div>
+            <p className="text-xs text-violet-700 mt-3 italic">
+              💡 The AI assistant is available in the workflow constructor and library sections
+            </p>
+          </div>
+        </div>
+      </div>
+
       <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
         <div className="flex items-center justify-between">
           <div>
@@ -128,7 +163,7 @@ export function CreateWorkflowStep() {
               Try the workflow constructor
             </p>
             <p className="text-xs text-gray-600 mt-1">
-              Create your first custom workflow
+              Create your first custom workflow with AI assistance
             </p>
           </div>
           <Link

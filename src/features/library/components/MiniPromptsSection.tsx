@@ -1,18 +1,18 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { Card } from '@/shared/ui/atoms';
 import Button from '@/shared/ui/atoms/Button';
-import IconButton from '@/shared/ui/atoms/IconButton';
-import Toggle from '@/shared/ui/atoms/Toggle';
-import { Card, Badge } from '@/shared/ui/atoms';
-import DeleteIcon from '@mui/icons-material/Delete';
-import ContentCopyIcon from '@mui/icons-material/ContentCopy';
-import { ShareButton } from '@/features/sharing/ui';
+import { MiniPromptDiscoveryCard } from '@/shared/ui/molecules/MiniPromptDiscoveryCard';
 import { MiniPromptEditorModal } from '@/features/workflow-constructor/components/MiniPromptEditorModal';
-import { createMiniPrompt } from '@/features/workflow-constructor/actions/mini-prompt-actions';
+import { SortableItem } from '@/shared/ui/organisms/SortableItem';
+import { DndContext, closestCenter } from '@dnd-kit/core';
+import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
+import { useLibraryReorder } from '../hooks/use-library-reorder';
 
 interface MiniPrompt {
   id: string;
+  userId: string;
   name: string;
   description?: string | null;
   content: string;
@@ -21,15 +21,33 @@ interface MiniPrompt {
   isOwned?: boolean;
   isSystemMiniPrompt?: boolean;
   referenceId?: string | null;
+  position: number;
   tags?: { tag: { id: string; name: string; color: string | null } }[];
+  user: {
+    id: string;
+    username: string | null;
+    email: string;
+  };
+  _count: {
+    references: number;
+    stageMiniPrompts: number;
+  };
+  averageRating: number | null;
+  totalRatings: number;
+  isInUserLibrary?: boolean;
 }
 
 export function MiniPromptsSection() {
   const [miniPrompts, setMiniPrompts] = useState<MiniPrompt[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedMiniPrompt, setSelectedMiniPrompt] = useState<MiniPrompt | null>(null);
+  const [currentUserId, setCurrentUserId] = useState<string | undefined>();
+  const [isCreating, setIsCreating] = useState(false);
+
+  const { sensors, handleDragEnd } = useLibraryReorder<MiniPrompt>(
+    miniPrompts,
+    setMiniPrompts,
+    '/api/mini-prompts/reorder'
+  );
 
   useEffect(() => {
     fetchMiniPrompts();
@@ -38,101 +56,50 @@ export function MiniPromptsSection() {
   const fetchMiniPrompts = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch('/api/mini-prompts');
-      const data = await response.json();
-      setMiniPrompts(data);
+      const [miniPromptsRes, sessionRes] = await Promise.all([
+        fetch('/api/mini-prompts'),
+        fetch('/api/auth/session')
+      ]);
+
+      const data = await miniPromptsRes.json();
+      const session = await sessionRes.json();
+
+      if (session?.user?.id) {
+        setCurrentUserId(session.user.id);
+      }
+
+      // Map data to include fields expected by MiniPromptDiscoveryCard
+      const mapped = data.map((mp: MiniPrompt) => ({
+        ...mp,
+        user: {
+          id: mp.user?.id || '',
+          username: mp.user?.username || mp.user?.email?.split('@')[0] || 'Unknown User',
+        },
+        _count: mp._count || { references: 0, stageMiniPrompts: 0 },
+        averageRating: mp.averageRating || null,
+        totalRatings: mp.totalRatings || 0,
+        isInUserLibrary: true, // All mini-prompts in library are already in user's library
+      }));
+
+      // Sort by position ascending
+      const sorted = [...mapped].sort((a, b) => a.position - b.position);
+      setMiniPrompts(sorted);
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleCreate = async (
-    name: string,
-    description: string,
-    content: string,
-    visibility: 'PUBLIC' | 'PRIVATE',
-    tagIds: string[]
-  ) => {
-    try {
-      const response = await fetch('/api/mini-prompts', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, description, content, visibility, tagIds }),
-      });
-      const newMiniPrompt = await response.json();
-      setMiniPrompts([newMiniPrompt, ...miniPrompts]);
-    } catch {
-      alert('Failed to create mini-prompt');
-    }
-  };
+  const handleRemove = async (id: string) => {
+    const miniPrompt = miniPrompts.find(m => m.id === id);
+    if (!miniPrompt) return;
 
-  const handleSave = async (
-    name: string,
-    description: string,
-    content: string,
-    visibility: 'PUBLIC' | 'PRIVATE',
-    tagIds: string[]
-  ) => {
-    if (!selectedMiniPrompt) return;
-    try {
-      const response = await fetch(`/api/mini-prompts/${selectedMiniPrompt.id}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, description, content, visibility, tagIds }),
-      });
-      const updated = await response.json();
-      setMiniPrompts(
-        miniPrompts.map((m) => (m.id === updated.id ? updated : m))
-      );
-      setSelectedMiniPrompt(null);
-    } catch {
-      alert('Failed to update mini-prompt');
-    }
-  };
-
-  const handleDuplicate = async (miniPrompt: MiniPrompt) => {
-    const duplicated = await createMiniPrompt({
-      name: `${miniPrompt.name} (Copy)`,
-      description: '',
-      content: miniPrompt.content,
-      visibility: miniPrompt.visibility as 'PUBLIC' | 'PRIVATE',
-    });
-    setMiniPrompts([duplicated, ...miniPrompts]);
-  };
-
-  const handleToggleActive = async (id: string, isActive: boolean) => {
-    try {
-      await fetch(`/api/mini-prompts/${id}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ isActive: !isActive }),
-      });
-      setMiniPrompts(
-        miniPrompts.map((m) => (m.id === id ? { ...m, isActive: !isActive } : m))
-      );
-    } catch {
-      alert('Failed to update mini-prompt');
-    }
-  };
-
-  const handleDelete = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this mini-prompt?')) return;
-    try {
+    // If owned and not system mini-prompt, delete; otherwise remove from library
+    if (miniPrompt.isOwned && !miniPrompt.isSystemMiniPrompt) {
       await fetch(`/api/mini-prompts/${id}`, { method: 'DELETE' });
-      setMiniPrompts(miniPrompts.filter((m) => m.id !== id));
-    } catch {
-      alert('Failed to delete mini-prompt');
-    }
-  };
-
-  const handleRemoveFromLibrary = async (id: string) => {
-    if (!confirm('Remove this mini-prompt from your library?')) return;
-    try {
+    } else {
       await fetch(`/api/v1/mini-prompts/remove/${id}`, { method: 'DELETE' });
-      setMiniPrompts(miniPrompts.filter((m) => m.id !== id));
-    } catch {
-      alert('Failed to remove mini-prompt from library');
     }
+    setMiniPrompts(miniPrompts.filter((m) => m.id !== id));
   };
 
   if (isLoading) {
@@ -140,151 +107,60 @@ export function MiniPromptsSection() {
   }
 
   return (
-    <>
-      <div className="space-y-4">
-        <div className="flex justify-end">
-          <Button variant="primary" onClick={() => setIsCreateModalOpen(true)}>
-            + Create Mini-Prompt
-          </Button>
-        </div>
-
-        {miniPrompts.length === 0 ? (
-          <Card className="text-center py-12">
-            <p className="text-text-secondary mb-4">No mini-prompts yet</p>
-            <Button variant="primary" onClick={() => setIsCreateModalOpen(true)}>
-              Create Your First Mini-Prompt
-            </Button>
-          </Card>
-        ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {miniPrompts.map((miniPrompt) => (
-            <div
-              key={miniPrompt.id}
-              onClick={() => {
-                setSelectedMiniPrompt(miniPrompt);
-                setIsModalOpen(true);
-              }}
-              className="cursor-pointer"
-            >
-            <Card className="hover:shadow-lg transition-shadow">
-              <div className="flex flex-col h-full">
-                <div className="flex-1">
-                  <div className="flex items-start justify-between mb-2">
-                    <h3 className="text-lg font-semibold text-text-primary flex-1">
-                      {miniPrompt.name}
-                    </h3>
-                    <div className="flex items-center gap-2">
-                      {miniPrompt.isSystemMiniPrompt && (
-                        <Badge variant="default" testId={`system-badge-${miniPrompt.id}`}>
-                          System
-                        </Badge>
-                      )}
-                      {!miniPrompt.isOwned && (
-                        <Badge variant="default" testId={`imported-badge-${miniPrompt.id}`}>
-                          Imported
-                        </Badge>
-                      )}
-                    </div>
-                  </div>
-                  {miniPrompt.description && (
-                    <p className="text-sm text-text-secondary mb-4 line-clamp-3">
-                      {miniPrompt.description}
-                    </p>
-                  )}
-                  <div className="flex items-center gap-4 text-xs text-text-tertiary mb-3">
-                    <span>{miniPrompt.visibility}</span>
-                  </div>
-                  <div className="flex items-center gap-2 mb-3" onClick={(e) => e.stopPropagation()}>
-                    <Toggle
-                      checked={miniPrompt.isActive}
-                      onChange={() =>
-                        handleToggleActive(miniPrompt.id, miniPrompt.isActive)
-                      }
-                      label={miniPrompt.isActive ? 'Active' : 'Inactive'}
-                      testId={`mini-prompt-toggle-${miniPrompt.id}`}
-                    />
-                  </div>
-                </div>
-                <div className="flex gap-2 mt-4" onClick={(e) => e.stopPropagation()}>
-                  {miniPrompt.isOwned ? (
-                    <>
-                      <ShareButton
-                        targetType="MINI_PROMPT"
-                        targetId={miniPrompt.id}
-                        targetName={miniPrompt.name}
-                      />
-                      <IconButton
-                        variant="secondary"
-                        size="sm"
-                        icon={<ContentCopyIcon fontSize="small" />}
-                        ariaLabel="Duplicate mini-prompt"
-                        onClick={() => handleDuplicate(miniPrompt)}
-                      />
-                      <IconButton
-                        variant="danger"
-                        size="sm"
-                        icon={<DeleteIcon fontSize="small" />}
-                        ariaLabel="Delete mini-prompt"
-                        onClick={() => handleDelete(miniPrompt.id)}
-                      />
-                    </>
-                  ) : (
-                    <>
-                      {miniPrompt.visibility === 'PUBLIC' && (
-                        <ShareButton
-                          targetType="MINI_PROMPT"
-                          targetId={miniPrompt.id}
-                          targetName={miniPrompt.name}
-                        />
-                      )}
-                      <IconButton
-                        variant="secondary"
-                        size="sm"
-                        icon={<ContentCopyIcon fontSize="small" />}
-                        ariaLabel="Duplicate mini-prompt"
-                        onClick={() => handleDuplicate(miniPrompt)}
-                      />
-                      <Button
-                        variant="danger"
-                        size="sm"
-                        onClick={() => handleRemoveFromLibrary(miniPrompt.id)}
-                      >
-                        Remove from Library
-                      </Button>
-                    </>
-                  )}
-                </div>
-              </div>
-            </Card>
-            </div>
-          ))}
-        </div>
-      )}
+    <div className="space-y-4">
+      <div className="flex justify-end">
+        <Button variant="primary" onClick={() => setIsCreating(true)}>
+          + Create Mini-Prompt
+        </Button>
       </div>
 
-      <MiniPromptEditorModal
-        isOpen={isCreateModalOpen}
-        onClose={() => setIsCreateModalOpen(false)}
-        onSave={handleCreate}
-      />
+      {miniPrompts.length === 0 ? (
+        <Card className="text-center py-12">
+          <p className="text-text-secondary mb-4">No mini-prompts yet</p>
+          <Button variant="primary" onClick={() => setIsCreating(true)}>
+            Create Your First Mini-Prompt
+          </Button>
+        </Card>
+      ) : (
+        <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+          <SortableContext items={miniPrompts.map((m) => m.id)} strategy={verticalListSortingStrategy}>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 auto-rows-fr">
+              {miniPrompts.map((miniPrompt) => (
+                <SortableItem key={miniPrompt.id} id={miniPrompt.id}>
+                  <MiniPromptDiscoveryCard
+                    miniPrompt={miniPrompt as unknown as import('@/features/public-discovery/types').PublicMiniPromptWithMeta & { tags?: { tag: { id: string; name: string; color: string | null } }[] }}
+                    onImport={() => {}}
+                    onRemove={handleRemove}
+                    isAuthenticated={true}
+                    currentUserId={currentUserId}
+                  />
+                </SortableItem>
+                ))}
+              </div>
+            </SortableContext>
+          </DndContext>
+        )}
 
-      {selectedMiniPrompt && (
-        <MiniPromptEditorModal
-          isOpen={isModalOpen}
-          onClose={() => {
-            setIsModalOpen(false);
-            setSelectedMiniPrompt(null);
-          }}
-          onSave={selectedMiniPrompt.isOwned && !selectedMiniPrompt.isSystemMiniPrompt ? handleSave : async () => {}}
-          initialData={{
-            name: selectedMiniPrompt.name,
-            content: selectedMiniPrompt.content,
-            visibility: selectedMiniPrompt.visibility as 'PUBLIC' | 'PRIVATE',
-            tagIds: selectedMiniPrompt.tags?.map(t => t.tag.id) ?? [],
-          }}
-          viewOnly={!selectedMiniPrompt.isOwned || selectedMiniPrompt.isSystemMiniPrompt}
-        />
-      )}
-    </>
+      <MiniPromptEditorModal
+        isOpen={isCreating}
+        onClose={() => setIsCreating(false)}
+        onSave={async (name, description, content, visibility, tagIds) => {
+          // Create the mini-prompt
+          await fetch('/api/mini-prompts', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              name,
+              description,
+              content,
+              visibility,
+              tagIds,
+            }),
+          });
+          setIsCreating(false);
+          fetchMiniPrompts();
+        }}
+      />
+    </div>
   );
 }

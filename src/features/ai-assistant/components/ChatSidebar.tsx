@@ -7,6 +7,7 @@ import { useLoadChatSession } from '@/hooks/useLoadChatSession';
 import { AIChatMode, WorkflowContext, AIToolResult } from '@/types/ai-chat';
 import { X, Send, Sparkles, AlertCircle, Loader2, History, Clock } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
+import { BetaBadge, Badge } from '@/shared/ui/atoms';
 
 interface ChatSidebarProps {
   isOpen: boolean;
@@ -39,6 +40,7 @@ export function ChatSidebar({
     handleSubmit,
     tokenCount,
     loadSession,
+    sessionId: currentSessionId,
   } = useAIChat({
     mode,
     workflowContext,
@@ -87,8 +89,9 @@ export function ChatSidebar({
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  // Focus input when sidebar opens
+  // Focus input when sidebar opens and track open/close state
   useEffect(() => {
+    console.log('[ChatSidebar] isOpen changed to:', isOpen);
     if (isOpen) {
       inputRef.current?.focus();
     }
@@ -110,9 +113,10 @@ export function ChatSidebar({
       <div className="flex items-center justify-between p-4 border-b border-gray-200">
         <div className="flex items-center gap-2">
           <Sparkles className="w-5 h-5 text-blue-600" />
-          <h2 className="font-semibold text-gray-900">
+          <h2 className="font-semibold text-gray-900 flex items-center gap-2">
             AI Assistant
-            <span className="text-sm text-gray-500 ml-2">
+            <BetaBadge size="sm" />
+            <span className="text-sm text-gray-500">
               ({mode === 'workflow' ? 'Workflow' : 'Mini-Prompt'})
             </span>
           </h2>
@@ -127,11 +131,19 @@ export function ChatSidebar({
             <History className="w-5 h-5 text-gray-500" />
           </button>
           <button
-            onClick={onClose}
+            onClick={() => {
+              // Prevent closing while AI is thinking/responding
+              if (isLoading) {
+                console.warn('[ChatSidebar] Prevented close during AI processing');
+                return;
+              }
+              onClose();
+            }}
             className="p-1 hover:bg-gray-100 rounded-md transition-colors"
             aria-label="Close chat"
+            disabled={isLoading}
           >
-            <X className="w-5 h-5 text-gray-500" />
+            <X className={`w-5 h-5 ${isLoading ? 'text-gray-300' : 'text-gray-500'}`} />
           </button>
         </div>
       </div>
@@ -164,26 +176,39 @@ export function ChatSidebar({
             </div>
           ) : (
             <div className="divide-y divide-gray-200">
-              {sessions.map((session) => (
-                <button
-                  key={session.id}
-                  onClick={() => handleSelectSession(session.id)}
-                  disabled={isLoadingSession}
-                  className="w-full p-3 hover:bg-white transition-colors text-left"
-                >
-                  <div className="flex items-start justify-between gap-2">
-                    <div className="flex-1 min-w-0">
-                      <p className="text-xs text-gray-500 flex items-center gap-1">
-                        <Clock className="w-3 h-3" />
-                        {new Date(session.lastMessageAt).toLocaleString()}
-                      </p>
-                      <p className="text-xs text-gray-600 mt-1">
-                        {session.messageCount} message{session.messageCount !== 1 ? 's' : ''} · {session.tokenUsage.total.toLocaleString()} tokens
-                      </p>
+              {sessions.map((session) => {
+                const isActive = session.id === currentSessionId;
+                return (
+                  <button
+                    key={session.id}
+                    onClick={() => handleSelectSession(session.id)}
+                    disabled={isLoadingSession}
+                    className={`w-full p-3 hover:bg-white transition-colors text-left ${
+                      isActive ? 'bg-blue-50 border-l-4 border-blue-600' : ''
+                    }`}
+                    data-testid={isActive ? 'active-session' : 'inactive-session'}
+                  >
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1">
+                          <p className="text-xs text-gray-500 flex items-center gap-1">
+                            <Clock className="w-3 h-3" />
+                            {new Date(session.lastMessageAt).toLocaleString()}
+                          </p>
+                          {isActive && (
+                            <Badge variant="primary" testId="active-badge">
+                              Active
+                            </Badge>
+                          )}
+                        </div>
+                        <p className="text-xs text-gray-600">
+                          {session.messageCount} message{session.messageCount !== 1 ? 's' : ''} · {session.tokenUsage.total.toLocaleString()} tokens
+                        </p>
+                      </div>
                     </div>
-                  </div>
-                </button>
-              ))}
+                  </button>
+                );
+              })}
             </div>
           )}
         </div>
@@ -236,16 +261,16 @@ export function ChatSidebar({
             }`}
           >
             <div
-              className={`max-w-[85%] rounded-lg px-4 py-2 ${
+              className={`max-w-[85%] rounded-lg px-4 py-2 break-words overflow-wrap-anywhere ${
                 message.role === 'user'
                   ? 'bg-blue-600 text-white'
                   : 'bg-gray-100 text-gray-900'
               }`}
             >
               {message.role === 'user' ? (
-                <p className="text-sm whitespace-pre-wrap">{message.content}</p>
+                <p className="text-sm whitespace-pre-wrap break-words">{message.content}</p>
               ) : (
-                <div className="text-sm prose prose-sm max-w-none prose-p:my-1 prose-headings:my-2 prose-ul:my-1 prose-ol:my-1 prose-li:my-0.5 prose-pre:my-2 prose-code:text-xs prose-code:bg-gray-200 prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-pre:bg-gray-800 prose-pre:text-white">
+                <div className="text-sm prose prose-sm max-w-none break-words prose-p:my-1 prose-headings:my-2 prose-ul:my-1 prose-ol:my-1 prose-li:my-0.5 prose-pre:my-2 prose-code:text-xs prose-code:bg-gray-200 prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-pre:bg-gray-800 prose-pre:text-white prose-pre:break-words prose-code:break-words">
                   <ReactMarkdown>{message.content}</ReactMarkdown>
                 </div>
               )}
@@ -274,7 +299,7 @@ export function ChatSidebar({
 
       {/* Input */}
       <div className="p-4 border-t border-gray-200">
-        <form onSubmit={handleSubmit} className="flex gap-2">
+        <form onSubmit={(e) => { e.preventDefault(); handleSubmit(e); }} className="flex gap-2">
           <textarea
             ref={inputRef}
             value={input}

@@ -4,6 +4,7 @@ import { Modal, Button, Badge } from "@/shared/ui/atoms";
 import { PublicWorkflowWithMeta } from "@/features/public-discovery/types";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import { useEffect, useState } from "react";
 
 interface WorkflowPreviewModalProps {
   workflow: PublicWorkflowWithMeta;
@@ -24,35 +25,55 @@ export function WorkflowPreviewModal({
   isImporting,
   isOwnWorkflow,
 }: WorkflowPreviewModalProps) {
+  const [fullWorkflow, setFullWorkflow] = useState(workflow);
+  const [isLoadingDetails, setIsLoadingDetails] = useState(false);
+
+  useEffect(() => {
+    if (isOpen && (!workflow.stages || workflow.stages.length === 0) && workflow._count.stages > 0) {
+      setIsLoadingDetails(true);
+      fetch(`/api/workflows/${workflow.id}/details`)
+        .then(res => res.json())
+        .then(data => {
+          setFullWorkflow({ ...workflow, ...data });
+          setIsLoadingDetails(false);
+        })
+        .catch(err => {
+          console.error('Failed to fetch workflow details:', err);
+          setIsLoadingDetails(false);
+        });
+    } else {
+      setFullWorkflow(workflow);
+    }
+  }, [isOpen, workflow]);
   return (
     <Modal
       isOpen={isOpen}
       onClose={onClose}
       className="max-w-4xl"
-      testId="workflow-preview-modal"
+      testId="fullWorkflow-preview-modal"
     >
       <div className="max-h-[80vh] overflow-y-auto">
         <div className="flex items-start justify-between mb-6">
           <div className="flex-1">
             <h2 className="text-2xl font-bold text-gray-900 mb-2">
-              {workflow.name}
+              {fullWorkflow.name}
             </h2>
             <div className="flex items-center gap-4 text-sm text-gray-600">
               <span className="flex items-center gap-1">
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                 </svg>
-                @{workflow.user.username}
+                @{fullWorkflow.user.username}
               </span>
               <span className="flex items-center gap-1">
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                 </svg>
-                {workflow._count.references} {workflow._count.references === 1 ? 'user' : 'users'}
+                {fullWorkflow._count.references} {fullWorkflow._count.references === 1 ? 'user' : 'users'}
               </span>
-              {workflow.averageRating && (
+              {fullWorkflow.averageRating && (
                 <Badge variant="default">
-                  ★ {workflow.averageRating.toFixed(1)}
+                  ★ {fullWorkflow.averageRating.toFixed(1)}
                 </Badge>
               )}
             </div>
@@ -70,9 +91,9 @@ export function WorkflowPreviewModal({
         <div className="mb-6">
           <h3 className="text-sm font-semibold text-gray-700 mb-2">Description</h3>
           <p className="text-gray-600 leading-relaxed">
-            {workflow.description || "No description available"}
+            {fullWorkflow.description || "No description available"}
           </p>
-          {workflow.includeMultiAgentChat && (
+          {fullWorkflow.includeMultiAgentChat && (
             <div className="mt-3">
               <Badge variant="default">
                 🤖 Multi-Agent Chat Enabled
@@ -83,13 +104,15 @@ export function WorkflowPreviewModal({
 
         <div className="mb-6">
           <h3 className="text-sm font-semibold text-gray-700 mb-3">
-            Stages ({workflow._count.stages})
+            Stages ({fullWorkflow._count.stages})
           </h3>
-          {!workflow.stages || workflow.stages.length === 0 ? (
+          {isLoadingDetails ? (
+            <p className="text-sm text-gray-500 italic">Loading stages...</p>
+          ) : !fullWorkflow.stages || fullWorkflow.stages.length === 0 ? (
             <p className="text-sm text-gray-500 italic">No stages defined yet</p>
           ) : (
             <div className="space-y-4">
-              {workflow.stages.map((stage, index) => (
+              {fullWorkflow.stages.map((stage, index) => (
                 <div
                   key={stage.id}
                   className="p-5 rounded-lg border border-gray-200 bg-white shadow-sm"
@@ -145,14 +168,14 @@ export function WorkflowPreviewModal({
           </Button>
           {!isOwnWorkflow && (
             <Button
-              variant={workflow.isInUserLibrary ? "secondary" : "primary"}
+              variant={fullWorkflow.isInUserLibrary ? "secondary" : "primary"}
               onClick={() => {
                 onImport();
                 onClose();
               }}
-              disabled={workflow.isInUserLibrary || isImporting}
+              disabled={fullWorkflow.isInUserLibrary || isImporting}
             >
-              {workflow.isInUserLibrary
+              {fullWorkflow.isInUserLibrary
                 ? "In Library"
                 : isAuthenticated
                   ? "Add to Library"

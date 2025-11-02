@@ -40,16 +40,21 @@ export interface PipelineContext extends AgentContext {
   includeExtendedContext?: boolean;
 
   // Step 5: Request preparation results
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  tools?: any;
+  tools?: unknown;
 
   // Step 6: Execution results
   completionResult?: {
     text: string;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    toolCalls?: any[];
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    toolResults?: any[];
+    toolCalls?: Array<{
+      toolCallId: string;
+      toolName: string;
+      args: unknown;
+    }>;
+    toolResults?: Array<{
+      toolCallId: string;
+      toolName: string;
+      result: unknown;
+    }>;
     usage: {
       inputTokens: number;
       outputTokens: number;
@@ -63,6 +68,18 @@ export interface PipelineContext extends AgentContext {
 }
 
 /**
+ * Tool invocation data structure
+ */
+export interface ToolInvocation {
+  type: string;
+  toolCallId: string;
+  toolName: string;
+  args: unknown;
+  output: unknown;
+  state: string;
+}
+
+/**
  * Pipeline execution result
  */
 export interface PipelineResult {
@@ -70,8 +87,7 @@ export interface PipelineResult {
   message: {
     role: 'assistant';
     content: string;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    toolInvocations: any[];
+    toolInvocations: ToolInvocation[];
   };
   tokenUsage: {
     input: number;

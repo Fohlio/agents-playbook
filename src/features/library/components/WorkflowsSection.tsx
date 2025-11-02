@@ -3,21 +3,18 @@
 import { useState, useEffect } from 'react';
 import { ROUTES } from '@/shared/routes';
 import Button from '@/shared/ui/atoms/Button';
-import IconButton from '@/shared/ui/atoms/IconButton';
-import Toggle from '@/shared/ui/atoms/Toggle';
-import { Card, Badge } from '@/shared/ui/atoms';
-import { ComplexityBadge } from '@/shared/ui/atoms/ComplexityBadge';
+import { Card } from '@/shared/ui/atoms';
+import { WorkflowDiscoveryCard } from '@/shared/ui/molecules/WorkflowDiscoveryCard';
 import Link from 'next/link';
-import DeleteIcon from '@mui/icons-material/Delete';
-import ContentCopyIcon from '@mui/icons-material/ContentCopy';
-import EditIcon from '@mui/icons-material/Edit';
-import { ShareButton } from '@/features/sharing/ui';
-import { WorkflowPreviewModal } from '@/shared/ui/molecules/WorkflowPreviewModal';
-import { PublicWorkflowWithMeta } from '@/features/public-discovery/types';
+import { SortableItem } from '@/shared/ui/organisms/SortableItem';
 import { WorkflowComplexity } from '@prisma/client';
+import { DndContext, closestCenter } from '@dnd-kit/core';
+import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
+import { useLibraryReorder } from '../hooks/use-library-reorder';
 
 interface Workflow {
   id: string;
+  userId: string;
   name: string;
   description: string | null;
   isActive: boolean;
@@ -26,17 +23,32 @@ interface Workflow {
   isSystemWorkflow?: boolean;
   referenceId?: string | null;
   complexity?: WorkflowComplexity | null;
-  tags?: Array<{ tag: { id: string; name: string; } }>;
+  position: number;
+  tags?: Array<{ tag: { id: string; name: string; color: string | null; } }>;
+  user: {
+    id: string;
+    username: string | null;
+    email: string;
+  };
   _count: {
     stages: number;
   };
+  averageRating: number | null;
+  totalRatings: number;
+  usageCount: number;
+  isInUserLibrary?: boolean;
 }
 
 export function WorkflowsSection() {
   const [workflows, setWorkflows] = useState<Workflow[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [previewWorkflow, setPreviewWorkflow] = useState<PublicWorkflowWithMeta | null>(null);
-  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+  const [currentUserId, setCurrentUserId] = useState<string | undefined>();
+
+  const { sensors, handleDragEnd } = useLibraryReorder<Workflow>(
+    workflows,
+    setWorkflows,
+    '/api/workflows/reorder'
+  );
 
   useEffect(() => {
     fetchWorkflows();
@@ -45,89 +57,52 @@ export function WorkflowsSection() {
   const fetchWorkflows = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch('/api/workflows');
-      const data = await response.json();
-      setWorkflows(data);
+      const [workflowsRes, sessionRes] = await Promise.all([
+        fetch('/api/workflows'),
+        fetch('/api/auth/session')
+      ]);
+
+      const data = await workflowsRes.json();
+      const session = await sessionRes.json();
+
+      if (session?.user?.id) {
+        setCurrentUserId(session.user.id);
+      }
+
+      // Map data to include fields expected by WorkflowDiscoveryCard
+      const mapped = data.map((w: Workflow) => ({
+        ...w,
+        user: {
+          id: w.user?.id || '',
+          username: w.user?.username || w.user?.email?.split('@')[0] || 'Unknown User',
+        },
+        averageRating: w.averageRating || null,
+        totalRatings: w.totalRatings || 0,
+        usageCount: w.usageCount || 0,
+        isInUserLibrary: true, // All workflows in library are already in user's library
+      }));
+
+      // Sort by position ascending
+      const sorted = [...mapped].sort((a, b) => a.position - b.position);
+      setWorkflows(sorted);
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this workflow?')) return;
-    try {
+  const handleRemove = async (id: string) => {
+    const workflow = workflows.find(w => w.id === id);
+    if (!workflow) return;
+
+    // If owned and not system workflow, delete; otherwise remove from library
+    if (workflow.isOwned && !workflow.isSystemWorkflow) {
       await fetch(`/api/workflows/${id}`, { method: 'DELETE' });
-      setWorkflows(workflows.filter((w) => w.id !== id));
-    } catch {
-      alert('Failed to delete workflow');
-    }
-  };
-
-  const handleRemoveFromLibrary = async (id: string) => {
-    if (!confirm('Remove this workflow from your library?')) return;
-    try {
+    } else {
       await fetch(`/api/v1/workflows/remove/${id}`, { method: 'DELETE' });
-      setWorkflows(workflows.filter((w) => w.id !== id));
-    } catch {
-      alert('Failed to remove workflow from library');
     }
+    setWorkflows(workflows.filter((w) => w.id !== id));
   };
 
-  const handleDuplicate = async (workflow: Workflow) => {
-    try {
-      const response = await fetch('/api/workflows', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: `${workflow.name} (Copy)`,
-          description: workflow.description,
-          isActive: false,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to duplicate workflow');
-      }
-
-      const duplicated = await response.json();
-      setWorkflows([duplicated, ...workflows]);
-    } catch {
-      alert('Failed to duplicate workflow');
-    }
-  };
-
-  const handleToggleActive = async (id: string, isActive: boolean) => {
-    try {
-      await fetch(`/api/workflows/${id}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ isActive: !isActive }),
-      });
-      setWorkflows(workflows.map((w) => (w.id === id ? { ...w, isActive: !isActive } : w)));
-    } catch {
-      alert('Failed to update workflow');
-    }
-  };
-
-  const handleWorkflowClick = async (workflowId: string) => {
-    try {
-      // Fetch full workflow details
-      const response = await fetch(`/api/workflows/${workflowId}/details`);
-      if (!response.ok) throw new Error('Failed to fetch workflow details');
-
-      const workflow = await response.json();
-      setPreviewWorkflow(workflow);
-      setIsPreviewOpen(true);
-    } catch (error) {
-      console.error('Error fetching workflow:', error);
-      alert('Failed to load workflow details');
-    }
-  };
-
-  const handleClosePreview = () => {
-    setIsPreviewOpen(false);
-    setPreviewWorkflow(null);
-  };
 
   if (isLoading) {
     return <div className="text-center py-12">Loading...</div>;
@@ -149,140 +124,23 @@ export function WorkflowsSection() {
           </Link>
         </Card>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {workflows.map((workflow) => (
-            <div
-              key={workflow.id}
-              onClick={() => handleWorkflowClick(workflow.id)}
-              className="cursor-pointer"
-            >
-              <Card className="hover:shadow-lg transition-shadow">
-              <div className="flex flex-col h-full">
-                <div className="flex-1">
-                  <div className="flex items-start justify-between gap-2 mb-2">
-                    <h3 className="text-lg font-semibold text-text-primary flex-1">
-                      {workflow.name}
-                    </h3>
-                    <div className="flex items-center gap-2">
-                      <ComplexityBadge complexity={workflow.complexity} size="sm" />
-                      {workflow.isSystemWorkflow && (
-                        <Badge variant="default" testId={`system-badge-${workflow.id}`}>
-                          System
-                        </Badge>
-                      )}
-                      {!workflow.isOwned && (
-                        <Badge variant="default" testId={`imported-badge-${workflow.id}`}>
-                          Imported
-                        </Badge>
-                      )}
-                    </div>
-                  </div>
-                  {workflow.description && (
-                    <p className="text-sm text-text-secondary mb-4 line-clamp-2">
-                      {workflow.description}
-                    </p>
-                  )}
-                  <div className="flex items-center gap-4 text-xs text-text-tertiary mb-3">
-                    <span>{workflow._count.stages} stages</span>
-                    <span>•</span>
-                    <span>{workflow.visibility}</span>
-                  </div>
-                  {workflow.tags && workflow.tags.length > 0 && (
-                    <div className="flex flex-wrap gap-2 mb-3">
-                      {workflow.tags.map((wt) => (
-                        <Badge key={wt.tag.id} variant="default">
-                          {wt.tag.name}
-                        </Badge>
-                      ))}
-                    </div>
-                  )}
-                  <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
-                    <Toggle
-                      checked={workflow.isActive}
-                      onChange={() => handleToggleActive(workflow.id, workflow.isActive)}
-                      label={workflow.isActive ? 'Active' : 'Inactive'}
-                      testId={`workflow-toggle-${workflow.id}`}
-                    />
-                  </div>
-                </div>
-                <div className="flex gap-2 mt-4" onClick={(e) => e.stopPropagation()}>
-                  {workflow.isOwned ? (
-                    <>
-                      {!workflow.isSystemWorkflow && (
-                        <Link href={ROUTES.LIBRARY.WORKFLOWS.EDIT(workflow.id)}>
-                          <IconButton
-                            variant="secondary"
-                            size="sm"
-                            icon={<EditIcon fontSize="small" />}
-                            ariaLabel="Edit workflow"
-                          />
-                        </Link>
-                      )}
-                      <ShareButton
-                        targetType="WORKFLOW"
-                        targetId={workflow.id}
-                        targetName={workflow.name}
-                      />
-                      <IconButton
-                        variant="secondary"
-                        size="sm"
-                        icon={<ContentCopyIcon fontSize="small" />}
-                        ariaLabel="Duplicate workflow"
-                        onClick={() => handleDuplicate(workflow)}
-                      />
-                      {!workflow.isSystemWorkflow && (
-                        <IconButton
-                          variant="danger"
-                          size="sm"
-                          icon={<DeleteIcon fontSize="small" />}
-                          ariaLabel="Delete workflow"
-                          onClick={() => handleDelete(workflow.id)}
-                        />
-                      )}
-                    </>
-                  ) : (
-                    <>
-                      {workflow.visibility === 'PUBLIC' && (
-                        <ShareButton
-                          targetType="WORKFLOW"
-                          targetId={workflow.id}
-                          targetName={workflow.name}
-                        />
-                      )}
-                      <IconButton
-                        variant="secondary"
-                        size="sm"
-                        icon={<ContentCopyIcon fontSize="small" />}
-                        ariaLabel="Duplicate workflow"
-                        onClick={() => handleDuplicate(workflow)}
-                      />
-                      <Button
-                        variant="danger"
-                        size="sm"
-                        onClick={() => handleRemoveFromLibrary(workflow.id)}
-                      >
-                        Remove from Library
-                      </Button>
-                    </>
-                  )}
-                </div>
-              </div>
-            </Card>
+        <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+          <SortableContext items={workflows.map((w) => w.id)} strategy={verticalListSortingStrategy}>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 auto-rows-fr">
+              {workflows.map((workflow) => (
+                <SortableItem key={workflow.id} id={workflow.id}>
+                  <WorkflowDiscoveryCard
+                    workflow={workflow as unknown as import('@/features/public-discovery/types').PublicWorkflowWithMeta & { tags?: { tag: { id: string; name: string; color: string | null } }[] }}
+                    onImport={() => {}}
+                    onRemove={handleRemove}
+                    isAuthenticated={true}
+                    currentUserId={currentUserId}
+                  />
+                </SortableItem>
+              ))}
             </div>
-          ))}
-        </div>
-      )}
-
-      {/* Workflow Preview Modal */}
-      {previewWorkflow && (
-        <WorkflowPreviewModal
-          workflow={previewWorkflow}
-          isOpen={isPreviewOpen}
-          onClose={handleClosePreview}
-          onImport={() => {}}
-          isAuthenticated={true}
-          isOwnWorkflow={workflows.find((w) => w.id === previewWorkflow.id)?.isOwned ?? false}
-        />
+          </SortableContext>
+        </DndContext>
       )}
     </div>
   );

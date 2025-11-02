@@ -54,6 +54,7 @@ export async function PATCH(
       where: { id },
       data: {
         ...(body.name !== undefined && { name: body.name }),
+        ...(body.description !== undefined && { description: body.description }),
         ...(body.content !== undefined && { content: body.content }),
         ...(body.visibility !== undefined && { visibility: body.visibility }),
         ...(body.isActive !== undefined && { isActive: body.isActive }),
@@ -100,9 +101,10 @@ export async function DELETE(
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
-    // Delete mini prompt
-    await prisma.miniPrompt.delete({
+    // Soft delete: mark as inactive (keeps in workflows but hides from library)
+    await prisma.miniPrompt.update({
       where: { id },
+      data: { isActive: false },
     });
 
     return NextResponse.json({ success: true });

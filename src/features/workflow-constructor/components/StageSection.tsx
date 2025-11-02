@@ -2,10 +2,12 @@
 
 import { Card } from '@/shared/ui/atoms/Card';
 import Button from '@/shared/ui/atoms/Button';
+import { BetaBadge } from '@/shared/ui/atoms';
 import type { WorkflowStageWithMiniPrompts } from '@/lib/types/workflow-constructor-types';
 import { StageDropZone } from './StageDropZone';
 import { Tooltip } from '@/shared/ui/molecules';
 import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 interface StageSectionProps {
   stage: WorkflowStageWithMiniPrompts;
@@ -56,6 +58,7 @@ export function StageSection({
                 <span className="text-sm font-medium text-text-primary">
                   With Review
                 </span>
+                <BetaBadge size="sm" />
               </label>
             </Tooltip>
           )}
@@ -71,14 +74,16 @@ export function StageSection({
               </Button>
             </Tooltip>
           )}
-          <Button
-            variant="danger"
-            size="sm"
-            onClick={() => onRemoveStage(stage.id)}
-            testId={`remove-stage-${stage.id}`}
-          >
-            Remove Stage
-          </Button>
+          <Tooltip content="Remove this stage">
+            <Button
+              variant="danger"
+              size="sm"
+              onClick={() => onRemoveStage(stage.id)}
+              testId={`remove-stage-${stage.id}`}
+            >
+              <DeleteIcon sx={{ fontSize: 16 }} />
+            </Button>
+          </Tooltip>
         </div>
       </div>
 

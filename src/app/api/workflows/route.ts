@@ -29,6 +29,18 @@ export async function GET(request: Request) {
   const ownedWorkflows = await prisma.workflow.findMany({
     where: { userId: session.user.id },
     include: {
+      user: {
+        select: {
+          id: true,
+          username: true,
+          email: true,
+        },
+      },
+      tags: {
+        include: {
+          tag: true,
+        },
+      },
       _count: {
         select: { stages: true },
       },
@@ -41,6 +53,18 @@ export async function GET(request: Request) {
     include: {
       workflow: {
         include: {
+          user: {
+            select: {
+              id: true,
+              username: true,
+              email: true,
+            },
+          },
+          tags: {
+            include: {
+              tag: true,
+            },
+          },
           _count: {
             select: { stages: true },
           },
@@ -65,12 +89,42 @@ export async function GET(request: Request) {
 
   const allWorkflows = [...ownedWithFlag, ...referencedWithFlag];
 
-  // Remove duplicates and sort by updatedAt
+  // Remove duplicates and sort by position (for reordering support)
   const uniqueWorkflows = Array.from(
     new Map(allWorkflows.map((w) => [w.id, w])).values()
-  ).sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime());
+  ).sort((a, b) => a.position - b.position);
 
-  return NextResponse.json(uniqueWorkflows);
+  // Add rating and usage stats for each workflow
+  const workflowsWithMeta = await Promise.all(
+    uniqueWorkflows.map(async (workflow) => {
+      const ratingStats = await prisma.rating.aggregate({
+        where: {
+          targetType: 'WORKFLOW',
+          targetId: workflow.id,
+        },
+        _avg: { rating: true },
+        _count: { rating: true },
+      });
+
+      const usageStats = await prisma.usageStats.findUnique({
+        where: {
+          targetType_targetId: {
+            targetType: 'WORKFLOW',
+            targetId: workflow.id,
+          },
+        },
+      });
+
+      return {
+        ...workflow,
+        averageRating: ratingStats._avg.rating || null,
+        totalRatings: ratingStats._count.rating,
+        usageCount: usageStats?.usageCount || 0,
+      };
+    })
+  );
+
+  return NextResponse.json(workflowsWithMeta);
 }
 
 export async function POST(request: Request) {
