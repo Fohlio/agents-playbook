@@ -133,6 +133,7 @@ export function WorkflowsSection() {
                     workflow={workflow as unknown as import('@/features/public-discovery/types').PublicWorkflowWithMeta & { tags?: { tag: { id: string; name: string; color: string | null } }[] }}
                     onImport={() => {}}
                     onRemove={handleRemove}
+                    onDuplicate={fetchWorkflows}
                     isAuthenticated={true}
                     currentUserId={currentUserId}
                   />

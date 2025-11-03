@@ -1,56 +1,57 @@
 import { describe, it, expect } from '@jest/globals';
 import {
   encryptApiKey,
-  verifyApiKey,
+  decryptApiKey,
   validateOpenAIKeyFormat,
   testOpenAIKey,
 } from '@/lib/auth/openai-key';
 
 describe('OpenAI Key Encryption', () => {
-  describe('encryptApiKey', () => {
-    it('should encrypt an API key using bcrypt', async () => {
+  describe('encryptApiKey and decryptApiKey', () => {
+    it('should encrypt an API key using AES-256-GCM', async () => {
       const plainKey = 'sk-proj-test1234567890abcdefghijklmnopqrstuvwxyz1234567890';
       const encrypted = await encryptApiKey(plainKey);
 
       expect(encrypted).toBeTruthy();
       expect(encrypted).not.toBe(plainKey);
-      expect(encrypted.length).toBe(60); // bcrypt hash length
-      expect(encrypted).toMatch(/^\$2[aby]\$/); // bcrypt format
+      expect(typeof encrypted).toBe('string');
+      // Should be base64 encoded
+      expect(encrypted).toMatch(/^[A-Za-z0-9+/]+=*$/);
     });
 
-    it('should generate different hashes for the same key', async () => {
+    it('should decrypt back to original key', async () => {
+      const plainKey = 'sk-proj-test1234567890abcdefghijklmnopqrstuvwxyz1234567890';
+      const encrypted = await encryptApiKey(plainKey);
+      const decrypted = await decryptApiKey(encrypted);
+
+      expect(decrypted).toBe(plainKey);
+    });
+
+    it('should generate different encrypted values for the same key', async () => {
       const plainKey = 'sk-proj-test1234567890abcdefghijklmnopqrstuvwxyz1234567890';
       const encrypted1 = await encryptApiKey(plainKey);
       const encrypted2 = await encryptApiKey(plainKey);
 
-      expect(encrypted1).not.toBe(encrypted2); // bcrypt uses salt
-    });
-  });
+      // Different due to random IV
+      expect(encrypted1).not.toBe(encrypted2);
 
-  describe('verifyApiKey', () => {
-    it('should verify a correct API key', async () => {
-      const plainKey = 'sk-proj-test1234567890abcdefghijklmnopqrstuvwxyz1234567890';
-      const encrypted = await encryptApiKey(plainKey);
-
-      const isValid = await verifyApiKey(plainKey, encrypted);
-      expect(isValid).toBe(true);
+      // But both should decrypt to the same value
+      const decrypted1 = await decryptApiKey(encrypted1);
+      const decrypted2 = await decryptApiKey(encrypted2);
+      expect(decrypted1).toBe(plainKey);
+      expect(decrypted2).toBe(plainKey);
     });
 
-    it('should reject an incorrect API key', async () => {
-      const plainKey = 'sk-proj-test1234567890abcdefghijklmnopqrstuvwxyz1234567890';
-      const wrongKey = 'sk-proj-wrong1234567890abcdefghijklmnopqrstuvwxyz1234567890';
-      const encrypted = await encryptApiKey(plainKey);
+    it('should handle old format keys', async () => {
+      const oldFormatKey = 'sk-' + 'a'.repeat(48);
+      const encrypted = await encryptApiKey(oldFormatKey);
+      const decrypted = await decryptApiKey(encrypted);
 
-      const isValid = await verifyApiKey(wrongKey, encrypted);
-      expect(isValid).toBe(false);
+      expect(decrypted).toBe(oldFormatKey);
     });
 
-    it('should handle empty strings gracefully', async () => {
-      const plainKey = 'sk-proj-test1234567890abcdefghijklmnopqrstuvwxyz1234567890';
-      const encrypted = await encryptApiKey(plainKey);
-
-      const isValid = await verifyApiKey('', encrypted);
-      expect(isValid).toBe(false);
+    it('should throw error for invalid encrypted data', async () => {
+      await expect(decryptApiKey('invalid-base64')).rejects.toThrow();
     });
   });
 
@@ -98,25 +99,54 @@ describe('OpenAI Key Encryption', () => {
   });
 
   describe('testOpenAIKey', () => {
+    const originalFetch = global.fetch;
+
+    beforeEach(() => {
+      // Reset fetch mock for these tests
+      global.fetch = jest.fn();
+    });
+
+    afterEach(() => {
+      // Restore original fetch
+      global.fetch = originalFetch;
+    });
+
     it('should reject invalid key format without making API call', async () => {
+      (global.fetch as jest.Mock).mockResolvedValueOnce({
+        ok: false,
+        status: 401,
+        json: async () => ({
+          error: { message: 'Invalid API key' }
+        })
+      });
+
       const result = await testOpenAIKey('invalid-key');
 
-      // The function should still make the call, but OpenAI will reject it
       expect(result.valid).toBe(false);
       expect(result.error).toBeTruthy();
     });
 
     it('should handle network errors gracefully', async () => {
-      // This test will fail if there's no network, but that's expected
+      (global.fetch as jest.Mock).mockRejectedValueOnce(new Error('Network error'));
+
       const fakeKey = 'sk-' + 'x'.repeat(48);
       const result = await testOpenAIKey(fakeKey);
 
       expect(result).toHaveProperty('valid');
       expect(result).toHaveProperty('error');
       expect(typeof result.valid).toBe('boolean');
+      expect(result.valid).toBe(false);
     });
 
     it('should return error message for invalid keys', async () => {
+      (global.fetch as jest.Mock).mockResolvedValueOnce({
+        ok: false,
+        status: 401,
+        json: async () => ({
+          error: { message: 'Incorrect API key provided' }
+        })
+      });
+
       const invalidKey = 'sk-' + 'invalid'.repeat(10);
       const result = await testOpenAIKey(invalidKey);
 

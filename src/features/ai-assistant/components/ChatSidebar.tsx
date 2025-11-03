@@ -8,6 +8,7 @@ import { AIChatMode, WorkflowContext, AIToolResult } from '@/types/ai-chat';
 import { X, Send, Sparkles, AlertCircle, Loader2, History, Clock } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import { BetaBadge, Badge } from '@/shared/ui/atoms';
+import { ApiKeyModal } from './ApiKeyModal';
 
 interface ChatSidebarProps {
   isOpen: boolean;
@@ -28,6 +29,7 @@ export function ChatSidebar({
 }: ChatSidebarProps) {
   const [showError, setShowError] = useState(false);
   const [showSessionSelector, setShowSessionSelector] = useState(false);
+  const [showApiKeyModal, setShowApiKeyModal] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
@@ -230,12 +232,22 @@ export function ChatSidebar({
           <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
           <div className="flex-1">
             <p className="text-sm text-red-800">{error.message}</p>
-            <button
-              onClick={() => setShowError(false)}
-              className="text-xs text-red-600 hover:text-red-700 mt-1"
-            >
-              Dismiss
-            </button>
+            <div className="flex items-center gap-2 mt-2">
+              {(error.message.toLowerCase().includes('api key') || error.message.toLowerCase().includes('apikey')) && (
+                <button
+                  onClick={() => setShowApiKeyModal(true)}
+                  className="text-xs px-3 py-1.5 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+                >
+                  Add API Key
+                </button>
+              )}
+              <button
+                onClick={() => setShowError(false)}
+                className="text-xs text-red-600 hover:text-red-700"
+              >
+                Dismiss
+              </button>
+            </div>
           </div>
         </div>
       )}
@@ -326,6 +338,16 @@ export function ChatSidebar({
           Press Enter to send, Shift+Enter for new line
         </p>
       </div>
+
+      {/* API Key Modal */}
+      <ApiKeyModal
+        isOpen={showApiKeyModal}
+        onClose={() => setShowApiKeyModal(false)}
+        onSave={() => {
+          // Clear error after saving API key
+          setShowError(false);
+        }}
+      />
     </div>
   );
 }

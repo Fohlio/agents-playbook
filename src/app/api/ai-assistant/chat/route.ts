@@ -3,6 +3,7 @@ import { auth } from '@/lib/auth/auth';
 import { prisma } from '@/lib/db/client';
 import { AgentPipeline } from '@/lib/ai-chat/pipeline/AgentPipeline';
 import type { AgentContext } from '@/lib/ai-chat/pipeline/types';
+import { decryptApiKey } from '@/lib/auth/openai-key';
 import { z } from 'zod';
 
 // Force Node.js runtime for database operations
@@ -29,7 +30,7 @@ export async function POST(request: NextRequest) {
     });
 
     // For admin users, use system OpenAI API key from environment
-    // For regular users, require their own API key
+    // For regular users, require their own API key (decrypt from database)
     let apiKey: string | undefined;
     if (user?.role === 'ADMIN') {
       apiKey = process.env.OPENAI_API_KEY;
@@ -43,14 +44,28 @@ export async function POST(request: NextRequest) {
         );
       }
     } else {
-      apiKey = user?.openaiApiKey || undefined;
-      if (!apiKey) {
+      const encryptedKey = user?.openaiApiKey;
+      if (!encryptedKey) {
         return Response.json(
           {
             error: 'OpenAI API key not configured',
             message: 'Please add your OpenAI API key in settings',
           },
           { status: 400 }
+        );
+      }
+
+      try {
+        // Decrypt the API key before using it
+        apiKey = await decryptApiKey(encryptedKey);
+      } catch (error) {
+        console.error('Failed to decrypt API key:', error);
+        return Response.json(
+          {
+            error: 'Failed to decrypt API key',
+            message: 'Your API key may be corrupted. Please re-enter it in settings.',
+          },
+          { status: 500 }
         );
       }
     }

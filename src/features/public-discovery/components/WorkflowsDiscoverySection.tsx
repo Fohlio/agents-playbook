@@ -103,6 +103,7 @@ export function WorkflowsDiscoverySection({
             key={workflow.id}
             workflow={workflow}
             onImport={handleImport}
+            onDuplicate={fetchWorkflows}
             isAuthenticated={isAuthenticated}
             isImporting={importing === workflow.id}
             currentUserId={currentUserId}

@@ -1,6 +1,7 @@
 import React from 'react';
 import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import { MiniPromptsSection } from '../MiniPromptsSection';
+import { TooltipProvider } from "@/shared/ui/providers/TooltipProvider";
 import '@testing-library/jest-dom';
 
 // Mock fetch
@@ -119,6 +120,14 @@ const mockMiniPrompts = [
 ];
 
 describe('MiniPromptsSection', () => {
+  const renderWithProviders = (component: React.ReactElement) => {
+    return render(
+      <TooltipProvider>
+        {component}
+      </TooltipProvider>
+    );
+  };
+
   beforeEach(() => {
     jest.clearAllMocks();
     (global.fetch as jest.Mock).mockResolvedValue({
@@ -128,12 +137,12 @@ describe('MiniPromptsSection', () => {
   });
 
   it('should render loading state initially', () => {
-    render(<MiniPromptsSection />);
+    renderWithProviders(<MiniPromptsSection />);
     expect(screen.getByText('Loading...')).toBeInTheDocument();
   });
 
   it('should fetch and display mini-prompts sorted by position', async () => {
-    render(<MiniPromptsSection />);
+    renderWithProviders(<MiniPromptsSection />);
 
     await waitFor(() => {
       expect(screen.getByText('Test Mini-Prompt 1')).toBeInTheDocument();
@@ -150,7 +159,7 @@ describe('MiniPromptsSection', () => {
       json: async () => [],
     });
 
-    render(<MiniPromptsSection />);
+    renderWithProviders(<MiniPromptsSection />);
 
     await waitFor(() => {
       expect(screen.getByText('No mini-prompts yet')).toBeInTheDocument();
@@ -159,7 +168,7 @@ describe('MiniPromptsSection', () => {
   });
 
   it('should render Create Mini-Prompt button', async () => {
-    render(<MiniPromptsSection />);
+    renderWithProviders(<MiniPromptsSection />);
 
     await waitFor(() => {
       expect(screen.getByText('+ Create Mini-Prompt')).toBeInTheDocument();
@@ -167,7 +176,7 @@ describe('MiniPromptsSection', () => {
   });
 
   it('should use MiniPromptCard component for each mini-prompt', async () => {
-    render(<MiniPromptsSection />);
+    renderWithProviders(<MiniPromptsSection />);
 
     await waitFor(() => {
       expect(screen.getByTestId('mini-prompt-card-mp1')).toBeInTheDocument();
@@ -177,7 +186,7 @@ describe('MiniPromptsSection', () => {
   });
 
   it('should render metadata with visibility', async () => {
-    render(<MiniPromptsSection />);
+    renderWithProviders(<MiniPromptsSection />);
 
     await waitFor(() => {
       expect(screen.getAllByText('PUBLIC').length).toBeGreaterThan(0);
@@ -186,7 +195,7 @@ describe('MiniPromptsSection', () => {
   });
 
   it('should render toggle for active/inactive state', async () => {
-    render(<MiniPromptsSection />);
+    renderWithProviders(<MiniPromptsSection />);
 
     await waitFor(() => {
       const activeToggle = screen.getByTestId('mini-prompt-toggle-mp1');
@@ -197,7 +206,7 @@ describe('MiniPromptsSection', () => {
   });
 
   it('should render action buttons for owned mini-prompts', async () => {
-    render(<MiniPromptsSection />);
+    renderWithProviders(<MiniPromptsSection />);
 
     await waitFor(() => {
       const duplicateButtons = screen.queryAllByLabelText('Duplicate mini-prompt');
@@ -209,7 +218,7 @@ describe('MiniPromptsSection', () => {
   });
 
   it('should render Remove from Library button for imported mini-prompts', async () => {
-    render(<MiniPromptsSection />);
+    renderWithProviders(<MiniPromptsSection />);
 
     await waitFor(() => {
       expect(screen.getByText('Remove from Library')).toBeInTheDocument();
@@ -217,7 +226,7 @@ describe('MiniPromptsSection', () => {
   });
 
   it('should handle mini-prompt click and open editor modal', async () => {
-    render(<MiniPromptsSection />);
+    renderWithProviders(<MiniPromptsSection />);
 
     await waitFor(() => {
       const miniPromptCard = screen.getByTestId('mini-prompt-card-mp1');
@@ -241,7 +250,7 @@ describe('MiniPromptsSection', () => {
         json: async () => ({}),
       });
 
-    render(<MiniPromptsSection />);
+    renderWithProviders(<MiniPromptsSection />);
 
     await waitFor(() => {
       const deleteButton = screen.getAllByLabelText('Delete mini-prompt')[0];
@@ -259,7 +268,7 @@ describe('MiniPromptsSection', () => {
     const miniPromptActions = await import('@/features/workflow-constructor/actions/mini-prompt-actions');
     const { createMiniPrompt } = miniPromptActions;
 
-    render(<MiniPromptsSection />);
+    renderWithProviders(<MiniPromptsSection />);
 
     await waitFor(() => {
       const duplicateButtons = screen.getAllByLabelText('Duplicate mini-prompt');
@@ -277,7 +286,7 @@ describe('MiniPromptsSection', () => {
   });
 
   it('should wrap mini-prompts in DndContext and SortableContext', async () => {
-    render(<MiniPromptsSection />);
+    renderWithProviders(<MiniPromptsSection />);
 
     await waitFor(() => {
       expect(screen.getByTestId('mini-prompt-card-mp1')).toBeInTheDocument();
@@ -291,7 +300,7 @@ describe('MiniPromptsSection', () => {
     const libraryReorderModule = await import('../../hooks/use-library-reorder');
     const { useLibraryReorder } = libraryReorderModule;
 
-    render(<MiniPromptsSection />);
+    renderWithProviders(<MiniPromptsSection />);
 
     await waitFor(() => {
       expect(useLibraryReorder).toHaveBeenCalledWith(
@@ -303,7 +312,7 @@ describe('MiniPromptsSection', () => {
   });
 
   it('should open create modal when Create button clicked', async () => {
-    render(<MiniPromptsSection />);
+    renderWithProviders(<MiniPromptsSection />);
 
     await waitFor(() => {
       const createButton = screen.getByText('+ Create Mini-Prompt');
@@ -326,7 +335,7 @@ describe('MiniPromptsSection', () => {
         json: async () => ({}),
       });
 
-    render(<MiniPromptsSection />);
+    renderWithProviders(<MiniPromptsSection />);
 
     await waitFor(() => {
       const toggle = screen.getByTestId('mini-prompt-toggle-mp1');

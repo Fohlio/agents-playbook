@@ -30,12 +30,10 @@ describe('WorkflowConstructor - TagMultiSelect Integration', () => {
     expect(componentCode).not.toContain('<TagSelector');
   });
 
-  it('should pass label="Tags" prop to TagMultiSelect', () => {
-    expect(componentCode).toContain('label="Tags"');
-  });
-
-  it('should pass placeholder prop to TagMultiSelect', () => {
-    expect(componentCode).toMatch(/placeholder=".*?"/);
+  it('should pass selectedTagIds and onChange props to TagMultiSelect', () => {
+    // TagMultiSelect doesn't require label/placeholder props - they have defaults
+    expect(componentCode).toContain('selectedTagIds={selectedTagIds}');
+    expect(componentCode).toContain('onChange={(tagIds) => {');
   });
 
   it('should pass selectedTagIds prop to TagMultiSelect', () => {
@@ -65,18 +63,19 @@ describe('WorkflowConstructor - TagMultiSelect Integration', () => {
   });
 
   it('should use simpler API with fewer props than TagSelector', () => {
-    // TagMultiSelect should have: selectedTagIds, onChange, label, placeholder
+    // TagMultiSelect should have: selectedTagIds, onChange (label and placeholder are optional with defaults)
     // TagSelector had: selectedTagIds, onChange, allowCreate, onCreateTag
     const tagMultiSelectMatch = componentCode.match(/<TagMultiSelect[\s\S]*?\/>/);
     expect(tagMultiSelectMatch).toBeTruthy();
 
     if (tagMultiSelectMatch) {
       const tagMultiSelectBlock = tagMultiSelectMatch[0];
-      // Should have the 4 props
+      // Should have the required props
       expect(tagMultiSelectBlock).toContain('selectedTagIds');
       expect(tagMultiSelectBlock).toContain('onChange');
-      expect(tagMultiSelectBlock).toContain('label');
-      expect(tagMultiSelectBlock).toContain('placeholder');
+      // Should NOT have the old TagSelector props
+      expect(tagMultiSelectBlock).not.toContain('allowCreate');
+      expect(tagMultiSelectBlock).not.toContain('onCreateTag');
     }
   });
 });

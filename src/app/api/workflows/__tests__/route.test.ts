@@ -48,7 +48,11 @@ describe('/api/workflows', () => {
           isActive: true,
           visibility: 'PRIVATE',
           updatedAt: new Date('2024-01-02'),
+          position: 0,
+          isSystemWorkflow: false,
           _count: { stages: 3 },
+          tags: [],
+          user: { id: 'user-123', username: 'testuser', email: 'test@example.com' },
         },
       ];
 
@@ -64,13 +68,35 @@ describe('/api/workflows', () => {
             isActive: false,
             visibility: 'PUBLIC',
             updatedAt: new Date('2024-01-01'),
+            position: 1,
+            isSystemWorkflow: false,
             _count: { stages: 1 },
+            tags: [],
+            user: { id: 'user-456', username: 'otheruser', email: 'other@example.com' },
           },
         },
       ];
 
       prismaMock.workflow.findMany.mockResolvedValue(mockOwnedWorkflows as any);
       prismaMock.workflowReference.findMany.mockResolvedValue(mockReferencedWorkflows as any);
+      
+      // Mock rating aggregates for each workflow
+      prismaMock.rating.aggregate.mockResolvedValue({
+        _avg: { rating: null },
+        _count: { rating: 0 },
+        _sum: null,
+        _min: null,
+        _max: null,
+      } as any);
+      
+      // Mock usage stats
+      prismaMock.workflowReference.aggregate.mockResolvedValue({
+        _count: { userId: 0 },
+        _sum: null,
+        _avg: null,
+        _min: null,
+        _max: null,
+      } as any);
 
       const request = { url: 'http://localhost/api/workflows' } as Request;
       const response = await GET(request);
@@ -86,6 +112,18 @@ describe('/api/workflows', () => {
           _count: {
             select: { stages: true },
           },
+          tags: {
+            include: {
+              tag: true,
+            },
+          },
+          user: {
+            select: {
+              id: true,
+              username: true,
+              email: true,
+            },
+          },
         },
       });
       expect(prismaMock.workflowReference.findMany).toHaveBeenCalledWith({
@@ -95,6 +133,18 @@ describe('/api/workflows', () => {
             include: {
               _count: {
                 select: { stages: true },
+              },
+              tags: {
+                include: {
+                  tag: true,
+                },
+              },
+              user: {
+                select: {
+                  id: true,
+                  username: true,
+                  email: true,
+                },
               },
             },
           },
@@ -127,31 +177,57 @@ describe('/api/workflows', () => {
       expect(json).toEqual([]);
     });
 
-    it('orders workflows by updatedAt desc', async () => {
+    it('orders workflows by position', async () => {
       (auth as jest.Mock).mockResolvedValue(mockSession);
 
       const mockOwnedWorkflows = [
         {
           id: 'wf-1',
-          updatedAt: new Date('2024-01-01'),
+          updatedAt: new Date('2024-01-03'),
+          position: 1,
+          isSystemWorkflow: false,
           _count: { stages: 1 },
+          tags: [],
+          user: { id: 'user-123', username: 'testuser', email: 'test@example.com' },
         },
         {
           id: 'wf-2',
-          updatedAt: new Date('2024-01-03'),
+          updatedAt: new Date('2024-01-01'),
+          position: 0,
+          isSystemWorkflow: false,
           _count: { stages: 1 },
+          tags: [],
+          user: { id: 'user-123', username: 'testuser', email: 'test@example.com' },
         },
       ];
 
       prismaMock.workflow.findMany.mockResolvedValue(mockOwnedWorkflows as any);
       prismaMock.workflowReference.findMany.mockResolvedValue([]);
+      
+      // Mock rating aggregates
+      prismaMock.rating.aggregate.mockResolvedValue({
+        _avg: { rating: null },
+        _count: { rating: 0 },
+        _sum: null,
+        _min: null,
+        _max: null,
+      } as any);
+      
+      // Mock usage stats
+      prismaMock.workflowReference.aggregate.mockResolvedValue({
+        _count: { userId: 0 },
+        _sum: null,
+        _avg: null,
+        _min: null,
+        _max: null,
+      } as any);
 
       const request = { url: 'http://localhost/api/workflows' } as Request;
       const response = await GET(request);
       const json = await response.json();
 
-      expect(json[0].id).toBe('wf-2'); // Most recent first
-      expect(json[1].id).toBe('wf-1');
+      expect(json[0].id).toBe('wf-2'); // Position 0 first
+      expect(json[1].id).toBe('wf-1'); // Position 1 second
     });
 
     it('returns system workflows when systemOnly=true', async () => {

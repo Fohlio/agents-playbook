@@ -1,30 +1,84 @@
-import * as bcrypt from 'bcrypt';
+import * as crypto from 'crypto';
 
 /**
- * Salt rounds for bcrypt (cost factor 12 = OWASP recommended for 2024+)
+ * Encryption configuration
  */
-const SALT_ROUNDS = 12;
+const ALGORITHM = 'aes-256-gcm';
+const IV_LENGTH = 16;
+const AUTH_TAG_LENGTH = 16;
 
 /**
- * Encrypt an OpenAI API key using bcrypt
- * @param apiKey - Plain text OpenAI API key
- * @returns Promise<string> - Bcrypt hash (60 characters)
+ * Get encryption key from environment
+ * Falls back to a deterministic key derived from NEXTAUTH_SECRET if ENCRYPTION_KEY is not set
  */
-export async function encryptApiKey(apiKey: string): Promise<string> {
-  return bcrypt.hash(apiKey, SALT_ROUNDS);
+function getEncryptionKey(): Buffer {
+  const envKey = process.env.ENCRYPTION_KEY || process.env.NEXTAUTH_SECRET;
+  
+  if (!envKey) {
+    throw new Error('ENCRYPTION_KEY or NEXTAUTH_SECRET must be set in environment variables');
+  }
+
+  // Use PBKDF2 to derive a 32-byte key from the secret
+  return crypto.pbkdf2Sync(envKey, 'openai-key-salt', 100000, 32, 'sha256');
 }
 
 /**
- * Verify an OpenAI API key against an encrypted hash
- * @param plainKey - Plain text API key provided by user
- * @param encryptedKey - Encrypted key from database
- * @returns Promise<boolean> - true if key matches hash
+ * Encrypt an OpenAI API key using AES-256-GCM
+ * @param apiKey - Plain text OpenAI API key
+ * @returns Promise<string> - Encrypted key (base64 encoded with IV and auth tag)
  */
-export async function verifyApiKey(
-  plainKey: string,
-  encryptedKey: string
-): Promise<boolean> {
-  return bcrypt.compare(plainKey, encryptedKey);
+export async function encryptApiKey(apiKey: string): Promise<string> {
+  try {
+    const key = getEncryptionKey();
+    const iv = crypto.randomBytes(IV_LENGTH);
+    
+    const cipher = crypto.createCipheriv(ALGORITHM, key, iv);
+    
+    let encrypted = cipher.update(apiKey, 'utf8', 'base64');
+    encrypted += cipher.final('base64');
+    
+    const authTag = cipher.getAuthTag();
+    
+    // Combine IV + auth tag + encrypted data
+    const combined = Buffer.concat([
+      iv,
+      authTag,
+      Buffer.from(encrypted, 'base64')
+    ]);
+    
+    return combined.toString('base64');
+  } catch (error) {
+    console.error('Error encrypting API key:', error);
+    throw new Error('Failed to encrypt API key');
+  }
+}
+
+/**
+ * Decrypt an OpenAI API key
+ * @param encryptedKey - Encrypted key from database
+ * @returns Promise<string> - Plain text OpenAI API key
+ */
+export async function decryptApiKey(encryptedKey: string): Promise<string> {
+  try {
+    const key = getEncryptionKey();
+    const combined = Buffer.from(encryptedKey, 'base64');
+    
+    // Extract IV, auth tag, and encrypted data
+    const iv = combined.subarray(0, IV_LENGTH);
+    const authTag = combined.subarray(IV_LENGTH, IV_LENGTH + AUTH_TAG_LENGTH);
+    const encrypted = combined.subarray(IV_LENGTH + AUTH_TAG_LENGTH);
+    
+    const decipher = crypto.createDecipheriv(ALGORITHM, key, iv);
+    decipher.setAuthTag(authTag);
+    
+    let decrypted = decipher.update(encrypted.toString('base64'), 'base64', 'utf8');
+    decrypted += decipher.final('utf8');
+    
+    return decrypted;
+  } catch (error) {
+    console.error('Error decrypting API key:', error);
+    throw new Error('Failed to decrypt API key');
+  }
 }
 
 /**

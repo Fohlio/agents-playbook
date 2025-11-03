@@ -45,6 +45,15 @@ global.Response = class Response {
 
 global.Headers = class Headers extends Map {};
 
+// Polyfill fetch for tests
+global.fetch = jest.fn(() =>
+  Promise.resolve({
+    ok: true,
+    json: () => Promise.resolve([]),
+    text: () => Promise.resolve(''),
+  })
+);
+
 // Polyfill TransformStream for AI SDK
 global.TransformStream = class TransformStream {
   readable;

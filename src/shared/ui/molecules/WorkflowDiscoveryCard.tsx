@@ -18,6 +18,7 @@ interface WorkflowDiscoveryCardProps {
   };
   onImport: (id: string) => void;
   onRemove?: (id: string) => void;
+  onDuplicate?: (id: string) => void;
   isAuthenticated: boolean;
   isImporting?: boolean;
   currentUserId?: string;
@@ -27,6 +28,7 @@ export function WorkflowDiscoveryCard({
   workflow,
   onImport,
   onRemove,
+  onDuplicate,
   isAuthenticated,
   isImporting,
   currentUserId,
@@ -133,6 +135,8 @@ export function WorkflowDiscoveryCard({
 
   const handleDuplicate = async (e: React.MouseEvent) => {
     e.stopPropagation();
+    if (!onDuplicate) return;
+
     setIsDuplicating(true);
 
     try {
@@ -141,7 +145,7 @@ export function WorkflowDiscoveryCard({
       });
 
       if (response.ok) {
-        window.location.reload(); // Reload to show the duplicated workflow
+        onDuplicate(workflow.id); // Call parent callback to refresh
       }
     } catch (error) {
       console.error('Failed to duplicate workflow:', error);
@@ -224,92 +228,10 @@ export function WorkflowDiscoveryCard({
             </span>
           </div>
 
-          {!isOwnWorkflow && (
-            <div className="flex items-center justify-end gap-2">
-              <Tooltip content="Rate this workflow to help others discover quality content">
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleRateClick();
-                  }}
-                  className="text-2xl text-gray-300 hover:text-yellow-400 transition-colors"
-                  title="Rate this workflow"
-                  data-testid={`rate-button-${workflow.id}`}
-                >
-                  ☆
-                </button>
-              </Tooltip>
-              <Tooltip content="Duplicate this workflow">
-                <button
-                  onClick={handleDuplicate}
-                  disabled={isDuplicating}
-                  className="p-2 rounded-lg bg-green-50 text-green-600 hover:bg-green-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                  data-testid={`duplicate-button-${workflow.id}`}
-                >
-                  {isDuplicating ? (
-                    <svg className="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                  ) : (
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                    </svg>
-                  )}
-                </button>
-              </Tooltip>
-              {workflow.isInUserLibrary ? (
-                <Tooltip content="Remove this workflow from your personal library">
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleRemoveClick();
-                    }}
-                    disabled={isRemoving}
-                    className="p-2 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                    data-testid={`remove-button-${workflow.id}`}
-                  >
-                    {isRemoving ? (
-                      <svg className="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                      </svg>
-                    ) : (
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                      </svg>
-                    )}
-                  </button>
-                </Tooltip>
-              ) : (
-                <Tooltip content={isAuthenticated ? "Add this workflow to your personal library and use it with AI assistants" : "Login to import workflows into your library"}>
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleImportClick();
-                    }}
-                    disabled={isImporting || !isAuthenticated}
-                    className="p-2 rounded-lg bg-primary-50 text-primary-600 hover:bg-primary-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                    data-testid={`import-button-${workflow.id}`}
-                  >
-                    {isImporting ? (
-                      <svg className="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                      </svg>
-                    ) : (
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                      </svg>
-                    )}
-                  </button>
-                </Tooltip>
-              )}
-            </div>
-          )}
-
-          {isOwnWorkflow && (
+          {/* Actions Row - single unified row for all workflows */}
+          {workflow.isInUserLibrary && (
             <div className="flex items-center justify-between gap-2">
+              {/* Active checkbox - shown for all library items */}
               <Tooltip content="When active, this workflow is available in MCP tools for AI assistants">
                 <label className="flex items-center gap-2 cursor-pointer" onClick={(e) => e.stopPropagation()}>
                   <input
@@ -321,19 +243,43 @@ export function WorkflowDiscoveryCard({
                   <span className="text-sm font-medium text-gray-700">Active</span>
                 </label>
               </Tooltip>
+
+              {/* Action buttons */}
               <div className="flex items-center gap-2">
-                <Tooltip content="Edit this workflow">
-                  <a
-                    href={`/dashboard/library/workflows/${workflow.id}/constructor`}
-                    onClick={(e) => e.stopPropagation()}
-                    className="p-2 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors"
-                    data-testid={`edit-button-${workflow.id}`}
-                  >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                    </svg>
-                  </a>
-                </Tooltip>
+                {/* Rate button - only for non-owned workflows */}
+                {!isOwnWorkflow && (
+                  <Tooltip content="Rate this workflow to help others discover quality content">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleRateClick();
+                      }}
+                      className="text-2xl text-gray-300 hover:text-yellow-400 transition-colors leading-none"
+                      title="Rate this workflow"
+                      data-testid={`rate-button-${workflow.id}`}
+                    >
+                      ☆
+                    </button>
+                  </Tooltip>
+                )}
+
+                {/* Edit button - only for owned workflows */}
+                {isOwnWorkflow && (
+                  <Tooltip content="Edit this workflow">
+                    <a
+                      href={`/dashboard/library/workflows/${workflow.id}/constructor`}
+                      onClick={(e) => e.stopPropagation()}
+                      className="p-2 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors"
+                      data-testid={`edit-button-${workflow.id}`}
+                    >
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                      </svg>
+                    </a>
+                  </Tooltip>
+                )}
+
+                {/* Duplicate button - for all library items */}
                 <Tooltip content="Duplicate this workflow">
                   <button
                     onClick={handleDuplicate}
@@ -353,29 +299,97 @@ export function WorkflowDiscoveryCard({
                     )}
                   </button>
                 </Tooltip>
-                <Tooltip content="Remove this workflow">
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleRemoveClick();
-                    }}
-                    disabled={isRemoving}
-                    className="p-2 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                    data-testid={`remove-button-${workflow.id}`}
-                  >
-                    {isRemoving ? (
-                      <svg className="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                      </svg>
-                    ) : (
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                      </svg>
-                    )}
-                  </button>
-                </Tooltip>
+
+                {/* Delete/Remove button */}
+                {isOwnWorkflow ? (
+                  <Tooltip content="Delete this workflow">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleRemoveClick();
+                      }}
+                      disabled={isRemoving}
+                      className="p-2 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                      data-testid={`remove-button-${workflow.id}`}
+                    >
+                      {isRemoving ? (
+                        <svg className="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                      ) : (
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                      )}
+                    </button>
+                  </Tooltip>
+                ) : (
+                  <Tooltip content="Remove from library">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleRemoveClick();
+                      }}
+                      disabled={isRemoving}
+                      className="p-2 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                      data-testid={`remove-button-${workflow.id}`}
+                    >
+                      {isRemoving ? (
+                        <svg className="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                      ) : (
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                      )}
+                    </button>
+                  </Tooltip>
+                )}
               </div>
+            </div>
+          )}
+
+{/* Import button for workflows not in library */}
+          {!workflow.isInUserLibrary && isAuthenticated && (
+            <div className="flex items-center justify-end gap-2">
+              <Tooltip content="Rate this workflow to help others discover quality content">
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleRateClick();
+                  }}
+                  className="text-2xl text-gray-300 hover:text-yellow-400 transition-colors leading-none"
+                  title="Rate this workflow"
+                  data-testid={`rate-button-${workflow.id}`}
+                >
+                  ☆
+                </button>
+              </Tooltip>
+              <Tooltip content="Add this workflow to your personal library and use it with AI assistants">
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleImportClick();
+                  }}
+                  disabled={isImporting}
+                  className="p-2 rounded-lg bg-primary-50 text-primary-600 hover:bg-primary-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  data-testid={`import-button-${workflow.id}`}
+                >
+                  {isImporting ? (
+                    <svg className="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 714 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                  ) : (
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                    </svg>
+                  )}
+                </button>
+              </Tooltip>
             </div>
           )}
           </div>

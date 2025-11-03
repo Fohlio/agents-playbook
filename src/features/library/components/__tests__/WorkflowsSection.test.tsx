@@ -1,6 +1,7 @@
 import React from 'react';
 import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import { WorkflowsSection } from '../WorkflowsSection';
+import { TooltipProvider } from '@/shared/ui/providers/TooltipProvider';
 import '@testing-library/jest-dom';
 
 // Mock fetch
@@ -118,6 +119,10 @@ const mockWorkflows = [
 ];
 
 describe('WorkflowsSection', () => {
+  const renderWithProviders = (ui: React.ReactElement) => {
+    return render(<TooltipProvider>{ui}</TooltipProvider>);
+  };
+
   beforeEach(() => {
     jest.clearAllMocks();
     (global.fetch as jest.Mock).mockResolvedValue({
@@ -127,12 +132,12 @@ describe('WorkflowsSection', () => {
   });
 
   it('should render loading state initially', () => {
-    render(<WorkflowsSection />);
+    renderWithProviders(<WorkflowsSection />);
     expect(screen.getByText('Loading...')).toBeInTheDocument();
   });
 
   it('should fetch and display workflows sorted by position', async () => {
-    render(<WorkflowsSection />);
+    renderWithProviders(<WorkflowsSection />);
 
     await waitFor(() => {
       expect(screen.getByText('Test Workflow 1')).toBeInTheDocument();
@@ -149,7 +154,7 @@ describe('WorkflowsSection', () => {
       json: async () => [],
     });
 
-    render(<WorkflowsSection />);
+    renderWithProviders(<WorkflowsSection />);
 
     await waitFor(() => {
       expect(screen.getByText('No workflows yet')).toBeInTheDocument();
@@ -158,7 +163,7 @@ describe('WorkflowsSection', () => {
   });
 
   it('should render Create Workflow button', async () => {
-    render(<WorkflowsSection />);
+    renderWithProviders(<WorkflowsSection />);
 
     await waitFor(() => {
       expect(screen.getByText('+ Create Workflow')).toBeInTheDocument();
@@ -166,7 +171,7 @@ describe('WorkflowsSection', () => {
   });
 
   it('should use WorkflowCard component for each workflow', async () => {
-    render(<WorkflowsSection />);
+    renderWithProviders(<WorkflowsSection />);
 
     await waitFor(() => {
       expect(screen.getByTestId('workflow-card-wf1')).toBeInTheDocument();
@@ -176,7 +181,7 @@ describe('WorkflowsSection', () => {
   });
 
   it('should render metadata with stages count and visibility', async () => {
-    render(<WorkflowsSection />);
+    renderWithProviders(<WorkflowsSection />);
 
     await waitFor(() => {
       expect(screen.getByText('3 stages')).toBeInTheDocument();
@@ -186,7 +191,7 @@ describe('WorkflowsSection', () => {
   });
 
   it('should render toggle for active/inactive state', async () => {
-    render(<WorkflowsSection />);
+    renderWithProviders(<WorkflowsSection />);
 
     await waitFor(() => {
       const activeToggle = screen.getByTestId('workflow-toggle-wf1');
@@ -197,7 +202,7 @@ describe('WorkflowsSection', () => {
   });
 
   it('should render action buttons for owned workflows', async () => {
-    render(<WorkflowsSection />);
+    renderWithProviders(<WorkflowsSection />);
 
     await waitFor(() => {
       // Edit button only for non-system workflows
@@ -215,7 +220,7 @@ describe('WorkflowsSection', () => {
   });
 
   it('should render Remove from Library button for imported workflows', async () => {
-    render(<WorkflowsSection />);
+    renderWithProviders(<WorkflowsSection />);
 
     await waitFor(() => {
       expect(screen.getByText('Remove from Library')).toBeInTheDocument();
@@ -233,7 +238,7 @@ describe('WorkflowsSection', () => {
         json: async () => mockWorkflows[0],
       });
 
-    render(<WorkflowsSection />);
+    renderWithProviders(<WorkflowsSection />);
 
     await waitFor(() => {
       const workflowCard = screen.getByTestId('workflow-card-wf1');
@@ -258,7 +263,7 @@ describe('WorkflowsSection', () => {
         json: async () => ({}),
       });
 
-    render(<WorkflowsSection />);
+    renderWithProviders(<WorkflowsSection />);
 
     await waitFor(() => {
       const deleteButton = screen.getAllByLabelText('Delete workflow')[0];
@@ -283,7 +288,7 @@ describe('WorkflowsSection', () => {
         json: async () => ({ ...mockWorkflows[0], id: 'wf-new', name: 'Test Workflow 1 (Copy)' }),
       });
 
-    render(<WorkflowsSection />);
+    renderWithProviders(<WorkflowsSection />);
 
     await waitFor(() => {
       const duplicateButtons = screen.getAllByLabelText('Duplicate workflow');
@@ -304,7 +309,7 @@ describe('WorkflowsSection', () => {
   });
 
   it('should wrap workflows in DndContext and SortableContext', async () => {
-    render(<WorkflowsSection />);
+    renderWithProviders(<WorkflowsSection />);
 
     await waitFor(() => {
       expect(screen.getByTestId('workflow-card-wf1')).toBeInTheDocument();
@@ -319,7 +324,7 @@ describe('WorkflowsSection', () => {
     const libraryReorderModule = await import('../../hooks/use-library-reorder');
     const { useLibraryReorder } = libraryReorderModule;
 
-    render(<WorkflowsSection />);
+    renderWithProviders(<WorkflowsSection />);
 
     await waitFor(() => {
       expect(useLibraryReorder).toHaveBeenCalledWith(

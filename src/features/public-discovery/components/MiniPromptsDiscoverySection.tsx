@@ -106,6 +106,8 @@ export function MiniPromptsDiscoverySection({
             key={miniPrompt.id}
             miniPrompt={miniPrompt}
             onImport={handleImport}
+            onDuplicate={fetchMiniPrompts}
+            onUpdate={fetchMiniPrompts}
             isAuthenticated={isAuthenticated}
             isImporting={importing === miniPrompt.id}
             currentUserId={currentUserId}

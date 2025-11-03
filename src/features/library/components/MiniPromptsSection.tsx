@@ -131,6 +131,8 @@ export function MiniPromptsSection() {
                     miniPrompt={miniPrompt as unknown as import('@/features/public-discovery/types').PublicMiniPromptWithMeta & { tags?: { tag: { id: string; name: string; color: string | null } }[] }}
                     onImport={() => {}}
                     onRemove={handleRemove}
+                    onDuplicate={fetchMiniPrompts}
+                    onUpdate={fetchMiniPrompts}
                     isAuthenticated={true}
                     currentUserId={currentUserId}
                   />

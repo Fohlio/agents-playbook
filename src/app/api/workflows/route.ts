@@ -117,8 +117,8 @@ export async function GET(request: Request) {
 
       return {
         ...workflow,
-        averageRating: ratingStats._avg.rating || null,
-        totalRatings: ratingStats._count.rating,
+        averageRating: ratingStats?._avg?.rating || null,
+        totalRatings: ratingStats?._count?.rating || 0,
         usageCount: usageStats?.usageCount || 0,
       };
     })
