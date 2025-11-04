@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { DndContext, DragEndEvent } from '@dnd-kit/core';
 import Button from '@/shared/ui/atoms/Button';
 import Input from '@/shared/ui/atoms/Input';
@@ -14,6 +14,7 @@ import { useWorkflowAIIntegration } from '../lib/use-workflow-ai-integration';
 import { MiniPromptLibrary } from './MiniPromptLibrary';
 import { StageSection } from './StageSection';
 import { StageCreateForm } from './StageCreateForm';
+import { MiniPromptEditorModal } from './MiniPromptEditorModal';
 import { TagMultiSelect } from '@/shared/ui/molecules';
 import { Tooltip } from '@/shared/ui/molecules';
 import { ChatSidebar } from '@/features/ai-assistant/components/ChatSidebar';
@@ -68,6 +69,9 @@ export function WorkflowConstructor({ data }: WorkflowConstructorProps) {
     markDirty,
   } = useWorkflowConstructorStore();
 
+  const [editingMiniPrompt, setEditingMiniPrompt] = useState<typeof miniPrompts[0] | null>(null);
+  const [editingTagIds, setEditingTagIds] = useState<string[]>([]);
+
   // Build a synthetic workflow from Zustand state for the chat context
   const currentWorkflow = workflowId
     ? {
@@ -96,12 +100,28 @@ export function WorkflowConstructor({ data }: WorkflowConstructorProps) {
     handleCreateStage,
     handleRemoveStage,
     handleRemoveMiniPrompt,
-    handleEditMiniPrompt,
     handleToggleWithReview,
     handleEditStage,
     handleUpdateStage,
     handleDragEnd: handleMiniPromptDragEnd,
-  } = useWorkflowHandlers();
+    handleEditMiniPrompt,
+    handleUpdateMiniPrompt,
+  } = useWorkflowHandlers({
+    miniPrompts,
+    setMiniPrompts,
+    onEditMiniPrompt: setEditingMiniPrompt,
+    onEditTagIds: setEditingTagIds,
+  });
+
+  const handleUpdateMiniPromptWrapper = async (
+    name: string,
+    description: string,
+    content: string,
+    visibility: 'PUBLIC' | 'PRIVATE',
+    tagIds: string[]
+  ) => {
+    await handleUpdateMiniPrompt(editingMiniPrompt, name, description, content, visibility, tagIds);
+  };
 
   // Get AI integration
   const { handleToolCall } = useWorkflowAIIntegration();
@@ -405,6 +425,23 @@ export function WorkflowConstructor({ data }: WorkflowConstructorProps) {
           </Tooltip>
         </DraggableButton>
       </div>
+
+      {/* Mini Prompt Edit Modal */}
+      <MiniPromptEditorModal
+        isOpen={!!editingMiniPrompt}
+        onClose={() => {
+          setEditingMiniPrompt(null);
+          setEditingTagIds([]);
+        }}
+        onSave={handleUpdateMiniPromptWrapper}
+        initialData={editingMiniPrompt ? {
+          name: editingMiniPrompt.name,
+          description: editingMiniPrompt.description || '',
+          content: editingMiniPrompt.content,
+          visibility: editingMiniPrompt.visibility as 'PUBLIC' | 'PRIVATE',
+          tagIds: editingTagIds,
+        } : undefined}
+      />
     </div>
   );
 }

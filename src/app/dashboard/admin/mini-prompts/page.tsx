@@ -10,11 +10,13 @@ import Toggle from '@/shared/ui/atoms/Toggle';
 import Link from 'next/link';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import { MiniPromptEditorModal } from '@/features/workflow-constructor/components/MiniPromptEditorModal';
 
 interface SystemMiniPrompt {
   id: string;
   name: string;
   content: string;
+  description?: string | null;
   visibility: string;
   isActive: boolean;
   isSystemMiniPrompt: boolean;
@@ -25,6 +27,8 @@ export default function AdminSystemMiniPromptsPage() {
   const router = useRouter();
   const [miniPrompts, setMiniPrompts] = useState<SystemMiniPrompt[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [editingMiniPrompt, setEditingMiniPrompt] = useState<SystemMiniPrompt | null>(null);
+  const [editingTagIds, setEditingTagIds] = useState<string[]>([]);
 
   // Check if user is admin
   useEffect(() => {
@@ -47,6 +51,54 @@ export default function AdminSystemMiniPromptsPage() {
       console.error('Failed to fetch system mini-prompts:', error);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleEditClick = async (miniPrompt: SystemMiniPrompt) => {
+    try {
+      // Fetch full mini prompt with tags
+      const response = await fetch(`/api/mini-prompts/${miniPrompt.id}`);
+      if (!response.ok) throw new Error('Failed to fetch mini prompt');
+      const data = await response.json();
+      setEditingTagIds(data.tagIds || []);
+      setEditingMiniPrompt(data);
+    } catch (error) {
+      console.error('Failed to fetch mini prompt:', error);
+      alert('Failed to load mini prompt for editing');
+    }
+  };
+
+  const handleUpdateMiniPrompt = async (
+    name: string,
+    description: string,
+    content: string,
+    visibility: 'PUBLIC' | 'PRIVATE',
+    tagIds: string[]
+  ) => {
+    if (!editingMiniPrompt) return;
+
+    try {
+      const response = await fetch(`/api/mini-prompts/${editingMiniPrompt.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name,
+          description,
+          content,
+          visibility,
+          tagIds,
+        }),
+      });
+
+      if (!response.ok) throw new Error('Failed to update mini prompt');
+
+      // Refresh the list
+      await fetchSystemMiniPrompts();
+      setEditingMiniPrompt(null);
+      setEditingTagIds([]);
+    } catch (error) {
+      console.error('Failed to update mini prompt:', error);
+      alert('Failed to update mini prompt');
     }
   };
 
@@ -159,14 +211,13 @@ export default function AdminSystemMiniPromptsPage() {
                   </div>
                 </div>
                 <div className="flex gap-2 mt-4">
-                  <Link href={ROUTES.LIBRARY.MINI_PROMPTS.EDIT(miniPrompt.id)}>
-                    <IconButton
-                      variant="primary"
-                      size="sm"
-                      icon={<EditIcon fontSize="small" />}
-                      ariaLabel="Edit mini-prompt"
-                    />
-                  </Link>
+                  <IconButton
+                    variant="primary"
+                    size="sm"
+                    icon={<EditIcon fontSize="small" />}
+                    ariaLabel="Edit mini-prompt"
+                    onClick={() => handleEditClick(miniPrompt)}
+                  />
                   <IconButton
                     variant="danger"
                     size="sm"
@@ -180,6 +231,22 @@ export default function AdminSystemMiniPromptsPage() {
           ))}
         </div>
       )}
+
+      <MiniPromptEditorModal
+        isOpen={!!editingMiniPrompt}
+        onClose={() => {
+          setEditingMiniPrompt(null);
+          setEditingTagIds([]);
+        }}
+        onSave={handleUpdateMiniPrompt}
+        initialData={editingMiniPrompt ? {
+          name: editingMiniPrompt.name,
+          description: editingMiniPrompt.description || '',
+          content: editingMiniPrompt.content,
+          visibility: editingMiniPrompt.visibility as 'PUBLIC' | 'PRIVATE',
+          tagIds: editingTagIds,
+        } : undefined}
+      />
     </div>
   );
 }

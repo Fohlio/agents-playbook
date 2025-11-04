@@ -3,6 +3,55 @@ import { auth } from '@/lib/auth/auth';
 import { prisma } from '@/lib/db/client';
 import { triggerMiniPromptEmbedding } from '@/features/mini-prompts/lib/embedding-service';
 
+export async function GET(
+  request: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const session = await auth();
+
+  if (!session?.user?.id) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  try {
+    const { id } = await params;
+
+    const miniPrompt = await prisma.miniPrompt.findUnique({
+      where: { id },
+      include: {
+        tags: {
+          include: {
+            tag: true,
+          },
+        },
+      },
+    });
+
+    if (!miniPrompt) {
+      return NextResponse.json({ error: 'Mini prompt not found' }, { status: 404 });
+    }
+
+    // Allow admin to view system mini prompts, or owner to view their own
+    if (
+      miniPrompt.userId !== session.user.id &&
+      session.user.role !== 'ADMIN'
+    ) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    }
+
+    return NextResponse.json({
+      ...miniPrompt,
+      tagIds: miniPrompt.tags.map((t) => t.tagId),
+    });
+  } catch (error) {
+    console.error('Error fetching mini prompt:', error);
+    return NextResponse.json(
+      { error: 'Failed to fetch mini prompt' },
+      { status: 500 }
+    );
+  }
+}
+
 export async function PATCH(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
