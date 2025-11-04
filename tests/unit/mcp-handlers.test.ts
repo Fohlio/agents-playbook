@@ -41,7 +41,6 @@ describe('MCP Handlers', () => {
         id: 'workflow-1',
         name: 'Test Workflow',
         description: 'Test description',
-        yamlContent: 'test: yaml',
         source: 'user',
         includeMultiAgentChat: false,
         stages: [
@@ -78,7 +77,6 @@ describe('MCP Handlers', () => {
       expect(result.content[0].type).toBe('text');
       expect(result.content[0].text).toContain('Test Workflow');
       expect(result.content[0].text).toContain('Execution Plan');
-      expect(result.content[0].text).toContain('YAML Content');
     });
 
     it('should return workflow without user token for system workflows', async () => {
@@ -86,7 +84,6 @@ describe('MCP Handlers', () => {
         id: 'workflow-1',
         name: 'Test Workflow',
         description: 'Test description',
-        yamlContent: null,
         source: 'system',
         includeMultiAgentChat: false,
         stages: [

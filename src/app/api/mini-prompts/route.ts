@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { auth } from '@/lib/auth/auth';
 import { prisma } from '@/lib/db/client';
+import { triggerMiniPromptEmbedding } from '@/features/mini-prompts/lib/embedding-service';
 
 export async function GET(request: Request) {
   const session = await auth();
@@ -174,6 +175,9 @@ export async function POST(request: Request) {
       }))
     });
   }
+
+  // Trigger embedding generation asynchronously
+  triggerMiniPromptEmbedding(miniPrompt.id);
 
   return NextResponse.json(miniPrompt);
 }

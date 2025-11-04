@@ -6,6 +6,8 @@ import type {
   WorkflowWithStages,
   SaveWorkflowInput,
 } from '@/lib/types/workflow-constructor-types';
+import { userWorkflowEmbeddings } from '@/lib/embeddings/user-workflow-embeddings';
+import { triggerMiniPromptEmbedding } from '@/features/mini-prompts/lib/embedding-service';
 
 export async function getWorkflowWithStages(
   workflowId: string
@@ -84,6 +86,7 @@ export async function createWorkflow(input: {
 
   try {
     console.log('[createWorkflow] Starting transaction');
+    const createdMiniPromptIds: string[] = []; // Collect IDs to generate embeddings after commit
     const workflow = await prisma.$transaction(async (tx) => {
       // First, create temp mini-prompts
       const miniPromptIdMap = new Map<string, string>(); // temp ID -> real ID
@@ -105,6 +108,7 @@ export async function createWorkflow(input: {
             },
           });
           miniPromptIdMap.set(tempId, createdMiniPrompt.id);
+          createdMiniPromptIds.push(createdMiniPrompt.id); // Collect ID for embedding generation after commit
           console.log('[createWorkflow] Created mini-prompt:', tempId, '->', createdMiniPrompt.id);
         }
       }
@@ -197,6 +201,18 @@ export async function createWorkflow(input: {
     });
 
     console.log('[createWorkflow] Success! Workflow ID:', workflow.id);
+    
+    // Trigger embedding generation AFTER transaction commit (fire-and-forget)
+    // Generate embeddings for workflow
+    userWorkflowEmbeddings.syncWorkflowEmbedding(workflow.id).catch((error) => {
+      console.error('[createWorkflow] Failed to generate workflow embedding:', error);
+    });
+    
+    // Generate embeddings for temp mini-prompts created during transaction
+    for (const miniPromptId of createdMiniPromptIds) {
+      triggerMiniPromptEmbedding(miniPromptId);
+    }
+    
     return { success: true, workflowId: workflow.id };
   } catch (error) {
     console.error('[createWorkflow] Error creating workflow:', error);
@@ -287,6 +303,13 @@ export async function saveWorkflow(input: SaveWorkflowInput): Promise<WorkflowWi
       },
     });
   });
+
+  // Trigger embedding regeneration AFTER transaction commit if name, description, or tags changed
+  if (input.name !== undefined || input.description !== undefined || input.tagIds !== undefined) {
+    userWorkflowEmbeddings.syncWorkflowEmbedding(input.workflowId).catch((error) => {
+      console.error('[saveWorkflow] Failed to regenerate embedding:', error);
+    });
+  }
 
   return result;
 }

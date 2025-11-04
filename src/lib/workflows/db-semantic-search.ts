@@ -82,10 +82,12 @@ export class DBSemanticSearch {
 
   /**
    * Get workflows based on user context
+   * - No userId: Returns only system public active workflows
+   * - With userId: Returns only user's library active workflows (excludes system)
    */
   private async getWorkflows(userId?: string) {
     if (!userId) {
-      // System workflows only
+      // System workflows only (public, active)
       return prisma.workflow.findMany({
         where: {
           isSystemWorkflow: true,
@@ -94,13 +96,12 @@ export class DBSemanticSearch {
       });
     }
 
-    // System + user workflows
+    // User's library workflows only (active, excludes system)
     return prisma.workflow.findMany({
       where: {
-        OR: [
-          { isSystemWorkflow: true },
-          { userId, isActive: true }
-        ]
+        userId,
+        isActive: true,
+        isSystemWorkflow: false
       }
     });
   }
@@ -154,6 +155,8 @@ export class DBSemanticSearch {
 
   /**
    * Fallback text search when embeddings unavailable
+   * - No userId: Returns only system public active workflows
+   * - With userId: Returns only user's library active workflows (excludes system)
    */
   private async fallbackTextSearch(
     query: string,
@@ -168,10 +171,9 @@ export class DBSemanticSearch {
         ],
         AND: userId
           ? {
-              OR: [
-                { isSystemWorkflow: true },
-                { userId, isActive: true }
-              ]
+              userId,
+              isActive: true,
+              isSystemWorkflow: false
             }
           : {
               isSystemWorkflow: true,

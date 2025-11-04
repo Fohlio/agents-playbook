@@ -1,21 +1,30 @@
 import OpenAI from 'openai';
 import { prisma } from '@/lib/db/client';
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY
-});
+function getOpenAIClient() {
+  if (!process.env.OPENAI_API_KEY) {
+    return null;
+  }
+  return new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY,
+    dangerouslyAllowBrowser: process.env.NODE_ENV === 'test' || typeof window !== 'undefined'
+  });
+}
 
 export class UserWorkflowEmbeddings {
   /**
-   * Create searchable text from workflow
+   * Create searchable text from workflow (includes tags)
    */
   private createSearchableText(workflow: {
     name: string;
     description?: string | null;
+    tags?: Array<{ tag: { name: string } }>;
   }): string {
+    const tagNames = workflow.tags?.map(wt => wt.tag.name) || [];
     const parts = [
       workflow.name,
-      workflow.description || ''
+      workflow.description || '',
+      ...tagNames
     ];
     return parts.filter(Boolean).join(' ').toLowerCase();
   }
@@ -29,7 +38,16 @@ export class UserWorkflowEmbeddings {
         where: { id: workflowId },
         select: {
           name: true,
-          description: true
+          description: true,
+          tags: {
+            include: {
+              tag: {
+                select: {
+                  name: true
+                }
+              }
+            }
+          }
         }
       });
 
@@ -39,6 +57,12 @@ export class UserWorkflowEmbeddings {
       }
 
       const searchText = this.createSearchableText(workflow);
+
+      const openai = getOpenAIClient();
+      if (!openai) {
+        console.warn('[Embeddings] OpenAI API key not configured, skipping embedding generation');
+        return null;
+      }
 
       const response = await openai.embeddings.create({
         model: 'text-embedding-3-small',
@@ -62,7 +86,19 @@ export class UserWorkflowEmbeddings {
   ): Promise<void> {
     const workflow = await prisma.workflow.findUnique({
       where: { id: workflowId },
-      select: { name: true, description: true }
+      select: {
+        name: true,
+        description: true,
+        tags: {
+          include: {
+            tag: {
+              select: {
+                name: true
+              }
+            }
+          }
+        }
+      }
     });
 
     if (!workflow) {

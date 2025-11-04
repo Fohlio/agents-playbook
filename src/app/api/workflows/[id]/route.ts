@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { auth } from '@/lib/auth/auth';
 import { prisma } from '@/lib/db/client';
+import { userWorkflowEmbeddings } from '@/lib/embeddings/user-workflow-embeddings';
 
 export async function PATCH(
   request: Request,
@@ -49,6 +50,13 @@ export async function PATCH(
     where: { id },
     data: { isActive: body.isActive },
   });
+
+  // Trigger embedding regeneration if tags changed (tags affect searchability)
+  if (body.tagIds !== undefined) {
+    userWorkflowEmbeddings.syncWorkflowEmbedding(id).catch((error) => {
+      console.error('[PATCH /api/workflows/[id]] Failed to regenerate embedding:', error);
+    });
+  }
 
   return NextResponse.json(updated);
 }

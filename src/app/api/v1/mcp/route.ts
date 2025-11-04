@@ -1,18 +1,17 @@
 import { createMcpHandler } from '@vercel/mcp-adapter';
 import { config } from 'dotenv';
 import { auth } from '@/lib/auth/auth';
+import { z } from 'zod';
+// Import database services directly
+import { dbSemanticSearch } from '@/lib/workflows/db-semantic-search';
+import { unifiedWorkflowService } from '@/lib/workflows/unified-workflow-service';
+import { executionPlanBuilder } from '@/lib/mcp-tools-db/execution-plan-builder';
+// Import database-backed handlers for prompts (already using DB)
 import {
-  getWorkflowsToolSchema,
-  getWorkflowsHandler,
-  selectWorkflowToolSchema,
-  selectWorkflowHandler,
-  getNextStepToolSchema,
-  getNextStepHandler,
   getPromptsToolSchema,
   getPromptsHandler,
   getSelectedPromptToolSchema,
   getSelectedPromptHandler,
-  getUserWorkflowsHandler
 } from '@/lib/mcp-tools';
 
 // Load environment variables
@@ -23,44 +22,206 @@ export const runtime = 'nodejs';
 
 const handler = createMcpHandler(
   (server) => {
-    // Tool 1: Get workflows
-    // - No auth: Returns public system workflows (YAML playbook)
-    // - With auth: Returns active workflows from user's library
+    // Tool 1: Get available workflows using database semantic search
+    // - No auth: Returns public system workflows from database
+    // - With auth: Returns active workflows from user's library + system workflows
     server.tool(
       'get_available_workflows',
       'Get workflow recommendations. Without auth: public system workflows. With auth: active workflows from your library.',
-      getWorkflowsToolSchema,
+      {
+        task_description: z.string().describe('Description of the task to find workflows for')
+      },
       async ({ task_description }) => {
         const session = await auth();
         const userId = session?.user?.id;
 
-        if (userId) {
-          // Authenticated: return user's library workflows
-          return await getUserWorkflowsHandler({ search: task_description, userId });
-        } else {
-          // Not authenticated: return public system workflows
-          return await getWorkflowsHandler({ task_description });
+        try {
+          // Use database semantic search directly with userId
+          const results = await dbSemanticSearch.searchWorkflows(task_description, 5, userId);
+
+          if (results.length === 0) {
+            return {
+              content: [{
+                type: "text" as const,
+                text: `No relevant workflows found for "${task_description}". ${userId ? 'Try creating a custom workflow or check system workflows.' : 'Try different search terms or authenticate to see user workflows.'}`
+              }]
+            };
+          }
+
+          // Format results
+          const formattedResults = results.map((workflow, index: number) => {
+            const sourceIndicator = workflow.source === 'system' ? '[SYSTEM]' : '[USER]';
+            const complexity = workflow.complexity === 'low' ? '🟢' : workflow.complexity === 'medium' ? '🟡' : '🔴';
+            const similarity = Math.round(workflow.similarity * 100);
+
+            return `${index + 1}. ${sourceIndicator} **${workflow.title}** ${complexity} (${similarity}% match)\n   ${workflow.description}\n   📁 ${workflow.category} | 🏷️ ${workflow.tags.join(', ')}`;
+          });
+
+          const matchQuality = results[0].similarity >= 0.8 ? '🎯' : results[0].similarity >= 0.6 ? '✅' : results[0].similarity >= 0.4 ? '👍' : '🤔';
+
+          return {
+            content: [{
+              type: "text" as const,
+              text: `Found ${results.length} workflows for "${task_description}" ${matchQuality}:\n\n${formattedResults.join('\n\n')}\n\n**Next Steps:**\nUse \`select_workflow\` with one of these workflow IDs: ${results.map(w => `"${w.id}"`).join(', ')}`
+            }]
+          };
+        } catch (error) {
+          console.error('[MCP-DB] Error in workflow search:', error);
+          return {
+            content: [{
+              type: "text" as const,
+              text: 'Error: Failed to search workflows. Please try again.'
+            }]
+          };
         }
       },
     );
 
-    // Tool 2: Select workflow - returns full content
+    // Tool 2: Select workflow - returns full content from database
     server.tool(
       'select_workflow',
       'Get complete workflow details including all steps',
-      selectWorkflowToolSchema,
+      {
+        workflow_id: z.string().describe('ID of the workflow to select')
+      },
       async ({ workflow_id }) => {
-        return await selectWorkflowHandler({ workflow_id });
+        const session = await auth();
+        const userId = session?.user?.id;
+
+        try {
+          // Get workflow from unified service
+          const workflow = await unifiedWorkflowService.getWorkflowById(workflow_id, userId);
+
+          if (!workflow) {
+            return {
+              content: [{
+                type: "text" as const,
+                text: `Workflow "${workflow_id}" not found or you don't have access to it.`
+              }]
+            };
+          }
+
+          // Build execution plan with automatic prompts
+          const executionPlan = await executionPlanBuilder.buildExecutionPlan(workflow_id);
+
+          // Return workflow details
+          const sourceIndicator = workflow.source === 'system' ? '[SYSTEM WORKFLOW]' : '[USER WORKFLOW]';
+
+          let response = `${sourceIndicator}\n\n# ${workflow.name}\n\n${workflow.description || 'No description available.'}\n\n`;
+
+          // Add execution plan if available
+          if (executionPlan) {
+            response += `## Execution Plan\n\n`;
+            response += executionPlanBuilder.formatExecutionPlan(executionPlan);
+            response += `\n\n---\n\n`;
+          }
+
+          // Add YAML content if available
+          if (workflow.yamlContent) {
+            response += `## YAML Content\n\n\`\`\`yaml\n${workflow.yamlContent}\n\`\`\``;
+          }
+
+          return {
+            content: [{
+              type: "text" as const,
+              text: response
+            }]
+          };
+        } catch (error) {
+          console.error('[MCP-DB] Error selecting workflow:', error);
+          return {
+            content: [{
+              type: "text" as const,
+              text: 'Error: Failed to load workflow. Please try again.'
+            }]
+          };
+        }
       },
     );
 
-    // Tool 3: Get next step - parses steps with context support
+    // Tool 3: Get next step - parses steps with context support from database
     server.tool(
       'get_next_step',
       'Get the next step in a workflow progression with guided execution',
-      getNextStepToolSchema,
+      {
+        workflow_id: z.string().describe('ID of the workflow'),
+        current_step: z.number().describe('Current step number (0-based index)'),
+        available_context: z.array(z.string()).optional().describe('Available context for step execution')
+      },
       async ({ workflow_id, current_step, available_context }) => {
-        return await getNextStepHandler({ workflow_id, current_step, available_context });
+        try {
+          // Get execution plan with auto-prompts
+          const executionPlan = await executionPlanBuilder.buildExecutionPlan(workflow_id);
+
+          if (!executionPlan) {
+            return {
+              content: [{
+                type: "text" as const,
+                text: `Workflow "${workflow_id}" not found or you don't have access to it.`
+              }]
+            };
+          }
+
+          // Get specific step
+          const step = executionPlan.items[current_step];
+
+          if (!step) {
+            return {
+              content: [{
+                type: "text" as const,
+                text: `Step ${current_step} not found. This workflow has ${executionPlan.totalSteps} steps (0-${executionPlan.totalSteps - 1}).`
+              }]
+            };
+          }
+
+          // Format step response
+          let response = `# Step ${step.index + 1}/${executionPlan.totalSteps}\n\n`;
+
+          // Add stage context
+          if (step.stageName) {
+            response += `**Stage:** ${step.stageName}\n`;
+          }
+
+          // Add type indicator
+          if (step.type === 'auto-prompt') {
+            const icon = step.autoPromptType === 'memory-board' ? '📋' : '🤖';
+            const badge = step.autoPromptType === 'memory-board' ? '[REVIEW]' : '[AUTO]';
+            response += `**Type:** Auto-attached prompt ${icon} ${badge}\n\n`;
+          } else {
+            response += `**Type:** Mini-prompt\n\n`;
+          }
+
+          response += `## ${step.name}\n\n`;
+
+          if (step.description) {
+            response += `${step.description}\n\n`;
+          }
+
+          // Add prompt content
+          if (step.content) {
+            response += `---\n\n${step.content}\n\n`;
+          }
+
+          // Add context information
+          if (available_context && available_context.length > 0) {
+            response += `---\n\n**Available Context:** ${available_context.join(', ')}`;
+          }
+
+          return {
+            content: [{
+              type: "text" as const,
+              text: response
+            }]
+          };
+        } catch (error) {
+          console.error('[MCP-DB] Error getting next step:', error);
+          return {
+            content: [{
+              type: "text" as const,
+              text: 'Error: Failed to get next step. Please try again.'
+            }]
+          };
+        }
       },
     );
 
@@ -90,6 +251,7 @@ const handler = createMcpHandler(
     );
   },
   {},
+  { basePath: '/api/v1' },
 );
 
 export { handler as GET, handler as POST, handler as DELETE, handler as OPTIONS };

@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { auth } from '@/lib/auth/auth';
 import { prisma } from '@/lib/db/client';
+import { userWorkflowEmbeddings } from '@/lib/embeddings/user-workflow-embeddings';
 
 export async function GET(request: Request) {
   const session = await auth();
@@ -155,6 +156,11 @@ export async function POST(request: Request) {
       }))
     });
   }
+
+  // Trigger embedding generation asynchronously
+  userWorkflowEmbeddings.syncWorkflowEmbedding(workflow.id).catch((error) => {
+    console.error('[POST /api/workflows] Failed to generate embedding:', error);
+  });
 
   return NextResponse.json(workflow);
 }

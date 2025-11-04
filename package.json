@@ -7,7 +7,6 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "build:embeddings": "tsx scripts/build-embeddings.ts",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:integration": "jest tests/integration",

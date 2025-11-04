@@ -43,6 +43,10 @@ describe("embedding-service", () => {
         name: "Test Mini-Prompt",
         description: "Test description",
         content: "Test content",
+        tags: [
+          { tag: { name: "testing" } },
+          { tag: { name: "example" } }
+        ],
       };
 
       const mockEmbedding = [0.1, 0.2, 0.3];
@@ -55,7 +59,7 @@ describe("embedding-service", () => {
         id: "embedding-1",
         miniPromptId: "mini-prompt-1",
         embedding: mockEmbedding,
-        searchText: "test mini-prompt test description test content",
+        searchText: "test mini-prompt test description test content testing example",
         createdAt: new Date(),
         updatedAt: new Date(),
       } as unknown as Awaited<ReturnType<typeof prismaMock.miniPromptEmbedding.upsert>>);
@@ -69,12 +73,21 @@ describe("embedding-service", () => {
           name: true,
           description: true,
           content: true,
+          tags: {
+            include: {
+              tag: {
+                select: {
+                  name: true
+                }
+              }
+            }
+          }
         },
       });
 
       expect(mockCreateFn).toHaveBeenCalledWith({
         model: "text-embedding-3-small",
-        input: "test mini-prompt test description test content",
+        input: "test mini-prompt test description test content testing example",
         dimensions: 1536,
       });
 
@@ -83,11 +96,11 @@ describe("embedding-service", () => {
         create: {
           miniPromptId: "mini-prompt-1",
           embedding: mockEmbedding,
-          searchText: "test mini-prompt test description test content",
+          searchText: "test mini-prompt test description test content testing example",
         },
         update: {
           embedding: mockEmbedding,
-          searchText: "test mini-prompt test description test content",
+          searchText: "test mini-prompt test description test content testing example",
         },
       });
     });
@@ -98,6 +111,7 @@ describe("embedding-service", () => {
         name: "No Description",
         description: null,
         content: "Just content",
+        tags: [],
       };
 
       const mockEmbedding = [0.1, 0.2, 0.3];

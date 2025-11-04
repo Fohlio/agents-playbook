@@ -25,7 +25,7 @@ export async function generateMiniPromptEmbedding(miniPromptId: string): Promise
       return;
     }
 
-    // Fetch mini-prompt
+    // Fetch mini-prompt with tags
     const miniPrompt = await prisma.miniPrompt.findUnique({
       where: { id: miniPromptId },
       select: {
@@ -33,6 +33,15 @@ export async function generateMiniPromptEmbedding(miniPromptId: string): Promise
         name: true,
         description: true,
         content: true,
+        tags: {
+          include: {
+            tag: {
+              select: {
+                name: true
+              }
+            }
+          }
+        }
       },
     });
 
@@ -41,11 +50,13 @@ export async function generateMiniPromptEmbedding(miniPromptId: string): Promise
       return;
     }
 
-    // Build searchable text from name, description, and content
+    // Build searchable text from name, description, content, and tags
+    const tagNames = miniPrompt.tags?.map(mpt => mpt.tag.name) || [];
     const searchText = [
       miniPrompt.name,
       miniPrompt.description || "",
       miniPrompt.content,
+      ...tagNames
     ]
       .join(" ")
       .toLowerCase();

@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { auth } from '@/lib/auth/auth';
 import { prisma } from '@/lib/db/client';
+import { triggerMiniPromptEmbedding } from '@/features/mini-prompts/lib/embedding-service';
 
 export async function PATCH(
   request: Request,
@@ -60,6 +61,11 @@ export async function PATCH(
         ...(body.isActive !== undefined && { isActive: body.isActive }),
       },
     });
+
+    // Trigger embedding regeneration if name, description, content, or tags changed
+    if (body.name !== undefined || body.description !== undefined || body.content !== undefined || body.tagIds !== undefined) {
+      triggerMiniPromptEmbedding(id);
+    }
 
     return NextResponse.json(updatedMiniPrompt);
   } catch (error) {
