@@ -59,6 +59,11 @@ export async function selectWorkflowHandler({
       response += `## Execution Plan\n\n`;
       response += executionPlanBuilder.formatExecutionPlan(executionPlan);
       response += `\n\n---\n\n`;
+      response += `## Workflow Execution Instructions\n\n`;
+      response += `**⚠️ Important:** This workflow consists of ${executionPlan.totalSteps} sequential steps. `;
+      response += `After completing each step, you must automatically proceed to the next step in the workflow. `;
+      response += `Use the \`get_next_step\` tool with the workflow ID and the next step number to continue. `;
+      response += `Do not skip steps or stop until all steps are completed.\n\n`;
     }
 
     // Add YAML content if available

@@ -86,11 +86,25 @@ export async function getNextStepHandler({
     // Add prompt content
     if (step.content) {
       response += `---\n\n${step.content}\n\n`;
+      
+      // Add instruction to follow steps (only for mini-prompt types, not auto-prompts)
+      if (step.type === 'mini-prompt') {
+        response += `---\n\n**⚠️ Important:** Strictly follow all the steps outlined above.\n\n`;
+      }
     }
 
     // Add context information
     if (available_context && available_context.length > 0) {
-      response += `---\n\n**Available Context:** ${available_context.join(', ')}`;
+      response += `---\n\n**Available Context:** ${available_context.join(', ')}\n\n`;
+    }
+
+    // Add instruction to proceed to next step after completing current one
+    const nextStepIndex = current_step + 1;
+    if (nextStepIndex < executionPlan.totalSteps) {
+      response += `---\n\n**➡️ Next Step:** After completing this step, automatically proceed to step ${nextStepIndex + 1}/${executionPlan.totalSteps} `;
+      response += `by calling \`get_next_step\` with \`workflow_id="${workflow_id}"\` and \`current_step=${nextStepIndex}\`.`;
+    } else {
+      response += `---\n\n**✅ Workflow Complete:** This is the final step. After completing this step, the workflow execution is finished.`;
     }
 
     return {

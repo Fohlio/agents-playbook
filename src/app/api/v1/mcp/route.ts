@@ -13,6 +13,11 @@ import {
   getSelectedPromptToolSchema,
   getSelectedPromptHandler,
 } from '@/lib/mcp-tools';
+// Import database-backed workflow handlers
+import {
+  selectWorkflowToolSchema,
+  selectWorkflowHandler,
+} from '@/lib/mcp-tools-db';
 
 // Load environment variables
 config();
@@ -85,11 +90,13 @@ const handler = createMcpHandler(
         workflow_id: z.string().describe('ID of the workflow to select')
       },
       async ({ workflow_id }) => {
+        // Use session auth for web requests
         const session = await auth();
         const userId = session?.user?.id;
-
+        
+        // Call handler with userId extracted from session
+        // We create a modified version that accepts userId directly
         try {
-          // Get workflow from unified service
           const workflow = await unifiedWorkflowService.getWorkflowById(workflow_id, userId);
 
           if (!workflow) {
@@ -101,22 +108,22 @@ const handler = createMcpHandler(
             };
           }
 
-          // Build execution plan with automatic prompts
           const executionPlan = await executionPlanBuilder.buildExecutionPlan(workflow_id);
-
-          // Return workflow details
           const sourceIndicator = workflow.source === 'system' ? '[SYSTEM WORKFLOW]' : '[USER WORKFLOW]';
 
           let response = `${sourceIndicator}\n\n# ${workflow.name}\n\n${workflow.description || 'No description available.'}\n\n`;
 
-          // Add execution plan if available
           if (executionPlan) {
             response += `## Execution Plan\n\n`;
             response += executionPlanBuilder.formatExecutionPlan(executionPlan);
             response += `\n\n---\n\n`;
+            response += `## Workflow Execution Instructions\n\n`;
+            response += `**⚠️ Important:** This workflow consists of ${executionPlan.totalSteps} sequential steps. `;
+            response += `After completing each step, you must automatically proceed to the next step in the workflow. `;
+            response += `Use the \`get_next_step\` tool with the workflow ID and the next step number to continue. `;
+            response += `Do not skip steps or stop until all steps are completed.\n\n`;
           }
 
-          // Add YAML content if available
           if (workflow.yamlContent) {
             response += `## YAML Content\n\n\`\`\`yaml\n${workflow.yamlContent}\n\`\`\``;
           }
@@ -200,11 +207,25 @@ const handler = createMcpHandler(
           // Add prompt content
           if (step.content) {
             response += `---\n\n${step.content}\n\n`;
+            
+            // Add instruction to follow steps (only for mini-prompt types, not auto-prompts)
+            if (step.type === 'mini-prompt') {
+              response += `---\n\n**⚠️ Important:** Strictly follow all the steps outlined above.\n\n`;
+            }
           }
 
           // Add context information
           if (available_context && available_context.length > 0) {
-            response += `---\n\n**Available Context:** ${available_context.join(', ')}`;
+            response += `---\n\n**Available Context:** ${available_context.join(', ')}\n\n`;
+          }
+
+          // Add instruction to proceed to next step after completing current one
+          const nextStepIndex = current_step + 1;
+          if (nextStepIndex < executionPlan.totalSteps) {
+            response += `---\n\n**➡️ Next Step:** After completing this step, automatically proceed to step ${nextStepIndex + 1}/${executionPlan.totalSteps} `;
+            response += `by calling \`get_next_step\` with \`workflow_id="${workflow_id}"\` and \`current_step=${nextStepIndex}\`.`;
+          } else {
+            response += `---\n\n**✅ Workflow Complete:** This is the final step. After completing this step, the workflow execution is finished.`;
           }
 
           return {

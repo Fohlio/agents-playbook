@@ -67,7 +67,7 @@ export async function getSelectedPromptHandler({ prompt_id }: { prompt_id: strin
     return {
       content: [{
         type: "text" as const,
-        text: `## 📝 ${miniPrompt.name}\n\n${metadata}\n\n---\n\n${miniPrompt.content}\n\n---\n\n**💡 How to Use:**\nThis mini prompt can be used as a reusable component in workflows or as a standalone guide for specific tasks.`
+        text: `## 📝 ${miniPrompt.name}\n\n${metadata}\n\n---\n\n${miniPrompt.content}\n\n---\n\n**⚠️ Important:** Strictly follow all the steps outlined above.\n\n**💡 How to Use:**\nThis mini prompt can be used as a reusable component in workflows or as a standalone guide for specific tasks.`
       }],
     };
   } catch (error) {
