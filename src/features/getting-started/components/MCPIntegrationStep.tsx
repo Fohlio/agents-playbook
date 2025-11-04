@@ -34,7 +34,7 @@ export function MCPIntegrationStep() {
               <code className="text-green-400 text-xs">
 {`{
   "agents-playbook": {
-    "url": "https://agents-playbook.vercel.app/api/v1/mcp",
+    "url": "https://agents-playbook.com/api/v1/mcp",
     "apiKey": "your-token-from-settings"
   }
 }`}
