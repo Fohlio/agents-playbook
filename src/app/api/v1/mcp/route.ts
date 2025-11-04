@@ -14,11 +14,6 @@ import {
   getSelectedPromptHandler,
 } from '@/lib/mcp-tools';
 // Import database-backed workflow handlers
-import {
-  selectWorkflowToolSchema,
-  selectWorkflowHandler,
-} from '@/lib/mcp-tools-db';
-
 // Load environment variables
 config();
 
