@@ -125,13 +125,13 @@ Available workflows:
 
 ### Cursor
 
-Add to your Cursor MCP settings:
+Add to your Cursor MCP settings (`~/.cursor/mcp.json` or workspace `.cursor/mcp.json`):
 
 ```json
 {
   "mcpServers": {
     "agents-playbook": {
-      "url": "https://agents-playbook.vercel.app/api/v1/mcp",
+      "url": "https://agents-playbook.com/api/v1/mcp",
       "description": "AI Agent Workflow Engine",
       "apiKey": "your-token-from-settings"
     }
@@ -139,7 +139,21 @@ Add to your Cursor MCP settings:
 }
 ```
 
-**Note:** If `apiKey` is provided, it will be automatically sent as `Authorization: Bearer <token>` in the request headers.
+**Note:** The `apiKey` field should be automatically converted to `Authorization: Bearer <token>` header by Cursor's MCP client. If authentication doesn't work, try using the `headers` field instead:
+
+```json
+{
+  "mcpServers": {
+    "agents-playbook": {
+      "url": "https://agents-playbook.com/api/v1/mcp",
+      "description": "AI Agent Workflow Engine",
+      "headers": {
+        "Authorization": "Bearer your-token-from-settings"
+      }
+    }
+  }
+}
+```
 
 ### Local Usage
 

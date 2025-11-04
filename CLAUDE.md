@@ -315,7 +315,7 @@ DANGEROUSLY_OMIT_AUTH=true npx @modelcontextprotocol/inspector@latest http://loc
 
 **Production Testing:**
 ```bash
-DANGEROUSLY_OMIT_AUTH=true npx @modelcontextprotocol/inspector@latest https://agents-playbook.vercel.app/api/v1/mcp
+DANGEROUSLY_OMIT_AUTH=true npx @modelcontextprotocol/inspector@latest https://agents-playbook.com/api/v1/mcp
 ```
 
 ## Common Patterns

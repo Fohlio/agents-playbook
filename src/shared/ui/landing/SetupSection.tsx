@@ -15,7 +15,10 @@ export default function SetupSection() {
   "mcpServers": {
     "agents-playbook": {
       "url": "https://agents-playbook.com/api/v1/mcp",
-      "description": "AI Agent Workflow Engine"
+      "description": "AI Agent Workflow Engine",
+      "headers": {
+        "Authorization": "Bearer your-api-token"
+      }
     }
   }
 }`
@@ -126,6 +129,9 @@ export default function SetupSection() {
                       {/* Info note */}
                       <div className="px-4 py-3 bg-blue-50 border border-blue-200 rounded-lg text-sm text-blue-800">
                         <p className="font-medium">💡 Add this configuration to your Cursor MCP settings</p>
+                        <p className="mt-2 text-xs">
+                          <strong>Note:</strong> Get your API token from Settings → API Tokens. The <code className="bg-blue-100 px-1 rounded">headers</code> field ensures proper authentication.
+                        </p>
                       </div>
                     </div>
                   )}

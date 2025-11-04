@@ -40,9 +40,24 @@ export function MCPIntegrationStep() {
 }`}
               </code>
             </pre>
-            <p className="text-gray-600 text-xs mt-2">
-              <strong>Note:</strong> If <code className="bg-gray-100 px-1 rounded">apiKey</code> is provided, it will be automatically sent as <code className="bg-gray-100 px-1 rounded">Authorization: Bearer &lt;token&gt;</code> in the request headers.
+            <p className="text-gray-600 text-xs mt-2 mb-2">
+              <strong>Note:</strong> The <code className="bg-gray-100 px-1 rounded">apiKey</code> should be automatically converted to <code className="bg-gray-100 px-1 rounded">Authorization: Bearer &lt;token&gt;</code> header.
             </p>
+            <details className="text-xs">
+              <summary className="cursor-pointer text-gray-600 hover:text-gray-900 font-medium">Alternative: Use headers field</summary>
+              <pre className="bg-gray-900 rounded border border-orange-200 p-3 overflow-x-auto mt-2">
+                <code className="text-green-400 text-xs">
+{`{
+  "agents-playbook": {
+    "url": "https://agents-playbook.com/api/v1/mcp",
+    "headers": {
+      "Authorization": "Bearer your-token-from-settings"
+    }
+  }
+}`}
+                </code>
+              </pre>
+            </details>
           </div>
         </div>
 
@@ -61,16 +76,33 @@ export function MCPIntegrationStep() {
 {`{
   "mcpServers": {
     "agents-playbook": {
-      "url": "https://agents-playbook.vercel.app/api/v1/mcp",
+      "url": "https://agents-playbook.com/api/v1/mcp",
       "apiKey": "your-token-from-settings"
     }
   }
 }`}
               </code>
             </pre>
-            <p className="text-gray-600 text-xs mt-2">
-              <strong>Note:</strong> If <code className="bg-gray-100 px-1 rounded">apiKey</code> is provided, it will be automatically sent as <code className="bg-gray-100 px-1 rounded">Authorization: Bearer &lt;token&gt;</code> in the request headers.
+            <p className="text-gray-600 text-xs mt-2 mb-2">
+              <strong>Note:</strong> The <code className="bg-gray-100 px-1 rounded">apiKey</code> should be automatically converted to <code className="bg-gray-100 px-1 rounded">Authorization: Bearer &lt;token&gt;</code> header.
             </p>
+            <details className="text-xs">
+              <summary className="cursor-pointer text-gray-600 hover:text-gray-900 font-medium">Alternative: Use headers field</summary>
+              <pre className="bg-gray-900 rounded border border-blue-200 p-3 overflow-x-auto mt-2">
+                <code className="text-green-400 text-xs">
+{`{
+  "mcpServers": {
+    "agents-playbook": {
+      "url": "https://agents-playbook.com/api/v1/mcp",
+      "headers": {
+        "Authorization": "Bearer your-token-from-settings"
+      }
+    }
+  }
+}`}
+                </code>
+              </pre>
+            </details>
           </div>
         </div>
       </div>
