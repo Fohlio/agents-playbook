@@ -189,8 +189,10 @@ describe('MiniPromptsSection', () => {
     renderWithProviders(<MiniPromptsSection />);
 
     await waitFor(() => {
-      expect(screen.getAllByText('PUBLIC').length).toBeGreaterThan(0);
-      expect(screen.getByText('PRIVATE')).toBeInTheDocument();
+      // Visibility is not displayed in the card UI, but cards are rendered
+      expect(screen.getByTestId('mini-prompt-card-mp1')).toBeInTheDocument();
+      expect(screen.getByTestId('mini-prompt-card-mp2')).toBeInTheDocument();
+      expect(screen.getByTestId('mini-prompt-card-mp3')).toBeInTheDocument();
     });
   });
 
@@ -198,10 +200,12 @@ describe('MiniPromptsSection', () => {
     renderWithProviders(<MiniPromptsSection />);
 
     await waitFor(() => {
-      const activeToggle = screen.getByTestId('mini-prompt-toggle-mp1');
-      const inactiveToggle = screen.getByTestId('mini-prompt-toggle-mp2');
-      expect(activeToggle).toBeInTheDocument();
-      expect(inactiveToggle).toBeInTheDocument();
+      // Checkbox is rendered via role checkbox, not testid
+      const checkboxes = screen.getAllByRole('checkbox');
+      const activeCheckbox = checkboxes.find(cb => (cb as HTMLInputElement).checked);
+      const inactiveCheckbox = checkboxes.find(cb => !(cb as HTMLInputElement).checked);
+      expect(activeCheckbox).toBeInTheDocument();
+      expect(inactiveCheckbox).toBeInTheDocument();
     });
   });
 
@@ -209,17 +213,26 @@ describe('MiniPromptsSection', () => {
     renderWithProviders(<MiniPromptsSection />);
 
     await waitFor(() => {
-      const duplicateButtons = screen.queryAllByLabelText('Duplicate mini-prompt');
-      expect(duplicateButtons.length).toBeGreaterThan(0);
+      // Buttons use testid, not aria-label
+      const duplicateButton = screen.getByTestId('duplicate-button-mp1');
+      expect(duplicateButton).toBeInTheDocument();
 
-      const deleteButtons = screen.queryAllByLabelText('Delete mini-prompt');
-      expect(deleteButtons.length).toBeGreaterThan(0);
+      const deleteButton = screen.getByTestId('remove-button-mp1');
+      expect(deleteButton).toBeInTheDocument();
     });
   });
 
   it('should render Remove from Library button for imported mini-prompts', async () => {
     renderWithProviders(<MiniPromptsSection />);
 
+    await waitFor(() => {
+      // Find the remove button for imported mini-prompt (mp3) and click it to see the dialog
+      const removeButton = screen.getByTestId('remove-button-mp3');
+      expect(removeButton).toBeInTheDocument();
+      fireEvent.click(removeButton);
+    });
+
+    // Wait for confirm dialog to appear with "Remove from Library" title
     await waitFor(() => {
       expect(screen.getByText('Remove from Library')).toBeInTheDocument();
     });
@@ -239,7 +252,6 @@ describe('MiniPromptsSection', () => {
   });
 
   it('should handle delete mini-prompt', async () => {
-    global.confirm = jest.fn(() => true);
     (global.fetch as jest.Mock)
       .mockResolvedValueOnce({
         ok: true,
@@ -253,9 +265,17 @@ describe('MiniPromptsSection', () => {
     renderWithProviders(<MiniPromptsSection />);
 
     await waitFor(() => {
-      const deleteButton = screen.getAllByLabelText('Delete mini-prompt')[0];
+      const deleteButton = screen.getByTestId('remove-button-mp1');
       fireEvent.click(deleteButton);
     });
+
+    // Wait for confirm dialog and click Remove
+    await waitFor(() => {
+      expect(screen.getByText('Remove from Library')).toBeInTheDocument();
+    });
+
+    const confirmButton = screen.getByText('Remove');
+    fireEvent.click(confirmButton);
 
     await waitFor(() => {
       expect(global.fetch).toHaveBeenCalledWith('/api/mini-prompts/mp1', {
@@ -265,22 +285,26 @@ describe('MiniPromptsSection', () => {
   });
 
   it('should handle duplicate mini-prompt', async () => {
-    const miniPromptActions = await import('@/features/workflow-constructor/actions/mini-prompt-actions');
-    const { createMiniPrompt } = miniPromptActions;
+    (global.fetch as jest.Mock)
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => mockMiniPrompts,
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ ...mockMiniPrompts[0], id: 'mp-new', name: 'Test Mini-Prompt 1 (Copy)' }),
+      });
 
     renderWithProviders(<MiniPromptsSection />);
 
     await waitFor(() => {
-      const duplicateButtons = screen.getAllByLabelText('Duplicate mini-prompt');
-      fireEvent.click(duplicateButtons[0]);
+      const duplicateButton = screen.getByTestId('duplicate-button-mp1');
+      fireEvent.click(duplicateButton);
     });
 
     await waitFor(() => {
-      expect(createMiniPrompt).toHaveBeenCalledWith({
-        name: 'Test Mini-Prompt 1 (Copy)',
-        description: '',
-        content: 'Content 1',
-        visibility: 'PUBLIC',
+      expect(global.fetch).toHaveBeenCalledWith('/api/mini-prompts/mp1/duplicate', {
+        method: 'POST',
       });
     });
   });
@@ -338,8 +362,11 @@ describe('MiniPromptsSection', () => {
     renderWithProviders(<MiniPromptsSection />);
 
     await waitFor(() => {
-      const toggle = screen.getByTestId('mini-prompt-toggle-mp1');
-      fireEvent.click(toggle);
+      // Find the checkbox for mp1 (should be checked since isActive: true)
+      const checkboxes = screen.getAllByRole('checkbox');
+      const activeCheckbox = checkboxes.find(cb => (cb as HTMLInputElement).checked);
+      expect(activeCheckbox).toBeInTheDocument();
+      fireEvent.click(activeCheckbox!);
     });
 
     await waitFor(() => {

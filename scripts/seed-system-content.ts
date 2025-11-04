@@ -11,9 +11,15 @@ config({ path: path.join(__dirname, '..', '.env') });
 
 const prisma = new PrismaClient();
 
-// Exclude E2E-related workflows and mini-prompts
-const EXCLUDED_WORKFLOWS = ['e2e-test', 'e2e'];
-const EXCLUDED_MINI_PROMPTS = ['e2e/', 'e2e-'];
+// Only seed these 3 system workflows
+const ALLOWED_WORKFLOWS = [
+  'feature-development.yml',
+  'quick-feature.yml',
+  'product-prd-planning.yml'
+];
+
+// Exclude E2E-related mini-prompts and automatic prompts (seeded separately)
+const EXCLUDED_MINI_PROMPTS = ['e2e/', 'e2e-', 'automatic/'];
 
 // Helper to simplify mini-prompt names
 function simplifyMiniPromptName(filePath: string): string {
@@ -32,13 +38,9 @@ function simplifyMiniPromptName(filePath: string): string {
     .join(' ');
 }
 
-// Helper to check if workflow should be excluded
-function shouldExcludeWorkflow(name: string, fileName: string): boolean {
-  const lowerName = name.toLowerCase();
-  const lowerFileName = fileName.toLowerCase();
-  return EXCLUDED_WORKFLOWS.some(excluded =>
-    lowerName.includes(excluded) || lowerFileName.includes(excluded)
-  );
+// Helper to check if workflow should be included (only allow specific workflows)
+function shouldIncludeWorkflow(fileName: string): boolean {
+  return ALLOWED_WORKFLOWS.includes(fileName);
 }
 
 // Helper to check if mini-prompt should be excluded
@@ -159,9 +161,9 @@ async function seedSystemContent() {
         const workflowName = parsed.name || path.basename(file, '.yml');
         const fileName = path.basename(file);
 
-        // Skip E2E workflows
-        if (shouldExcludeWorkflow(workflowName, fileName)) {
-          console.log(`⏭️  Skipping E2E workflow: ${workflowName}`);
+        // Only seed allowed workflows
+        if (!shouldIncludeWorkflow(fileName)) {
+          console.log(`⏭️  Skipping workflow (not in allowed list): ${workflowName} (${fileName})`);
           continue;
         }
 

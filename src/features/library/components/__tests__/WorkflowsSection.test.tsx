@@ -4,6 +4,17 @@ import { WorkflowsSection } from '../WorkflowsSection';
 import { TooltipProvider } from '@/shared/ui/providers/TooltipProvider';
 import '@testing-library/jest-dom';
 
+// Mock react-markdown before any imports that use it
+jest.mock('react-markdown', () => ({
+  __esModule: true,
+  default: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+}));
+
+jest.mock('remark-gfm', () => ({
+  __esModule: true,
+  default: () => {},
+}));
+
 // Mock fetch
 global.fetch = jest.fn();
 
@@ -25,12 +36,25 @@ jest.mock('@/features/sharing/ui', () => ({
 
 // Mock WorkflowPreviewModal
 jest.mock('@/shared/ui/molecules/WorkflowPreviewModal', () => ({
-  WorkflowPreviewModal: ({ workflow, onClose }: { workflow: { name: string }; onClose: () => void }) => (
-    <div data-testid="workflow-preview-modal">
-      <h1>{workflow.name}</h1>
-      <button onClick={onClose}>Close</button>
-    </div>
-  ),
+  WorkflowPreviewModal: ({ workflow, onClose, isOpen }: { workflow: { name: string }; onClose: () => void; isOpen: boolean }) =>
+    isOpen ? (
+      <div data-testid="workflow-preview-modal">
+        <h1>{workflow.name}</h1>
+        <button onClick={onClose}>Close</button>
+      </div>
+    ) : null,
+}));
+
+// Mock ConfirmDialog
+jest.mock('@/shared/ui/molecules/ConfirmDialog', () => ({
+  ConfirmDialog: ({ isOpen, onClose, onConfirm, title, confirmLabel }: { isOpen: boolean; onClose: () => void; onConfirm: () => void; title: string; confirmLabel?: string }) =>
+    isOpen ? (
+      <div data-testid="confirm-dialog">
+        <h2>{title}</h2>
+        <button onClick={onConfirm}>{confirmLabel || 'Confirm'}</button>
+        <button onClick={onClose}>Cancel</button>
+      </div>
+    ) : null,
 }));
 
 // Mock @dnd-kit
@@ -125,9 +149,30 @@ describe('WorkflowsSection', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    (global.fetch as jest.Mock).mockResolvedValue({
-      ok: true,
-      json: async () => mockWorkflows,
+    (global.fetch as jest.Mock).mockImplementation((url: string) => {
+      if (url === '/api/auth/session') {
+        return Promise.resolve({
+          ok: true,
+          json: async () => ({ user: { id: 'user-1' } }),
+        });
+      }
+      if (url === '/api/workflows') {
+        return Promise.resolve({
+          ok: true,
+          json: async () => mockWorkflows.map(w => ({
+            ...w,
+            userId: 'user-1', // Make workflows owned by user-1
+            user: { id: 'user-1', username: 'testuser', email: 'test@example.com' },
+            averageRating: null,
+            totalRatings: 0,
+            usageCount: 0,
+          })),
+        });
+      }
+      return Promise.resolve({
+        ok: true,
+        json: async () => ({}),
+      });
     });
   });
 
@@ -140,9 +185,10 @@ describe('WorkflowsSection', () => {
     renderWithProviders(<WorkflowsSection />);
 
     await waitFor(() => {
-      expect(screen.getByText('Test Workflow 1')).toBeInTheDocument();
-      expect(screen.getByText('Test Workflow 2')).toBeInTheDocument();
-      expect(screen.getByText('Imported Workflow')).toBeInTheDocument();
+      // Use testid to avoid duplicate matches (card name also appears in modal)
+      expect(screen.getByTestId('workflow-card-wf1')).toBeInTheDocument();
+      expect(screen.getByTestId('workflow-card-wf2')).toBeInTheDocument();
+      expect(screen.getByTestId('workflow-card-wf3')).toBeInTheDocument();
     });
 
     expect(global.fetch).toHaveBeenCalledWith('/api/workflows');
@@ -194,10 +240,12 @@ describe('WorkflowsSection', () => {
     renderWithProviders(<WorkflowsSection />);
 
     await waitFor(() => {
-      const activeToggle = screen.getByTestId('workflow-toggle-wf1');
-      const inactiveToggle = screen.getByTestId('workflow-toggle-wf2');
-      expect(activeToggle).toBeInTheDocument();
-      expect(inactiveToggle).toBeInTheDocument();
+      // Checkbox is rendered via role checkbox, not testid
+      const checkboxes = screen.getAllByRole('checkbox');
+      const activeCheckbox = checkboxes.find(cb => (cb as HTMLInputElement).checked);
+      const inactiveCheckbox = checkboxes.find(cb => !(cb as HTMLInputElement).checked);
+      expect(activeCheckbox).toBeInTheDocument();
+      expect(inactiveCheckbox).toBeInTheDocument();
     });
   });
 
@@ -205,17 +253,17 @@ describe('WorkflowsSection', () => {
     renderWithProviders(<WorkflowsSection />);
 
     await waitFor(() => {
-      // Edit button only for non-system workflows
-      const editButtons = screen.queryAllByLabelText('Edit workflow');
-      expect(editButtons.length).toBeGreaterThan(0);
+      // Edit button only for non-system workflows (wf1 is owned, non-system)
+      const editButton = screen.getByTestId('edit-button-wf1');
+      expect(editButton).toBeInTheDocument();
 
       // Duplicate button
-      const duplicateButtons = screen.queryAllByLabelText('Duplicate workflow');
-      expect(duplicateButtons.length).toBeGreaterThan(0);
+      const duplicateButton = screen.getByTestId('duplicate-button-wf1');
+      expect(duplicateButton).toBeInTheDocument();
 
       // Delete button only for non-system owned workflows
-      const deleteButtons = screen.queryAllByLabelText('Delete workflow');
-      expect(deleteButtons.length).toBeGreaterThan(0);
+      const deleteButton = screen.getByTestId('remove-button-wf1');
+      expect(deleteButton).toBeInTheDocument();
     });
   });
 
@@ -223,21 +271,19 @@ describe('WorkflowsSection', () => {
     renderWithProviders(<WorkflowsSection />);
 
     await waitFor(() => {
+      // Find the remove button for imported workflow (wf3) and click it to see the dialog
+      const removeButton = screen.getByTestId('remove-button-wf3');
+      expect(removeButton).toBeInTheDocument();
+      fireEvent.click(removeButton);
+    });
+
+    // Wait for confirm dialog to appear with "Remove from Library" title
+    await waitFor(() => {
       expect(screen.getByText('Remove from Library')).toBeInTheDocument();
     });
   });
 
   it('should handle workflow click and open preview modal', async () => {
-    (global.fetch as jest.Mock)
-      .mockResolvedValueOnce({
-        ok: true,
-        json: async () => mockWorkflows,
-      })
-      .mockResolvedValueOnce({
-        ok: true,
-        json: async () => mockWorkflows[0],
-      });
-
     renderWithProviders(<WorkflowsSection />);
 
     await waitFor(() => {
@@ -247,12 +293,10 @@ describe('WorkflowsSection', () => {
 
     await waitFor(() => {
       expect(screen.getByTestId('workflow-preview-modal')).toBeInTheDocument();
-      expect(global.fetch).toHaveBeenCalledWith('/api/workflows/wf1/details');
     });
   });
 
   it('should handle delete workflow', async () => {
-    global.confirm = jest.fn(() => true);
     (global.fetch as jest.Mock)
       .mockResolvedValueOnce({
         ok: true,
@@ -266,9 +310,17 @@ describe('WorkflowsSection', () => {
     renderWithProviders(<WorkflowsSection />);
 
     await waitFor(() => {
-      const deleteButton = screen.getAllByLabelText('Delete workflow')[0];
+      const deleteButton = screen.getByTestId('remove-button-wf1');
       fireEvent.click(deleteButton);
     });
+
+    // Wait for confirm dialog and click Remove
+    await waitFor(() => {
+      expect(screen.getByText('Remove from Library')).toBeInTheDocument();
+    });
+
+    const confirmButton = screen.getByText('Remove');
+    fireEvent.click(confirmButton);
 
     await waitFor(() => {
       expect(global.fetch).toHaveBeenCalledWith('/api/workflows/wf1', {
@@ -291,19 +343,13 @@ describe('WorkflowsSection', () => {
     renderWithProviders(<WorkflowsSection />);
 
     await waitFor(() => {
-      const duplicateButtons = screen.getAllByLabelText('Duplicate workflow');
-      fireEvent.click(duplicateButtons[0]);
+      const duplicateButton = screen.getByTestId('duplicate-button-wf1');
+      fireEvent.click(duplicateButton);
     });
 
     await waitFor(() => {
-      expect(global.fetch).toHaveBeenCalledWith('/api/workflows', {
+      expect(global.fetch).toHaveBeenCalledWith('/api/workflows/wf1/duplicate', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: 'Test Workflow 1 (Copy)',
-          description: 'Description 1',
-          isActive: false,
-        }),
       });
     });
   });

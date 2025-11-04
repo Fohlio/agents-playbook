@@ -72,7 +72,7 @@ describe('StageSection', () => {
 
     const removeButton = screen.getByTestId('remove-stage-stage-1');
     expect(removeButton).toBeInTheDocument();
-    expect(removeButton).toHaveTextContent('Remove Stage');
+    // Button only contains an icon, no text content
   });
 
   it('should call onRemoveStage when remove button clicked', () => {

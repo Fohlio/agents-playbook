@@ -1,0 +1,70 @@
+name: "Quick Feature Workflow"
+description: "Streamlined workflow for implementing well-defined features with design and implementation phases only"
+version: "1.0"
+category: "development"
+tags: ["quick-feature", "feature", "development", "streamlined", "fast", "implementation", "design"]
+
+# CRITICAL: VALIDATE ALL STEPS BEFORE STARTING
+agentInstructions:
+  validation:
+    required: true
+    message: "🚨 MANDATORY: Before starting, validate ALL workflow steps, prerequisites, mini-prompts access, and required context. Execute ALL steps completely - no skipping unless explicitly optional."
+
+phases:
+  - phase: "design-architecture"
+    description: "Technical design and architecture specification"
+    required: true
+    steps:
+      - id: "design-architecture"
+        miniPrompt: "design-architecture/design-architecture"
+        required: true
+        prerequisites:
+          requiredContext: []
+          optionalContext: ["clarified_requirements", "structured_requirements", "design_guidelines", "technical_constraints"]
+        outputs: ["design_specifications", "technical_requirements", "architecture_specifications"]
+        
+      - id: "handoff-to-implementation"
+        miniPrompt: "handoff-to-subagent"
+        required: true
+        prerequisites:
+          requiredContext: ["design_specifications"]
+          optionalContext: ["technical_requirements", "architecture_specifications"]
+        dependencies: ["design-architecture"]
+
+  - phase: "implementation"
+    description: "Technical execution and coding"
+    required: true
+    steps:
+      - id: "implement-quick-feature"
+        miniPrompt: "implementation/implement-task"
+        required: true
+        prerequisites:
+          requiredContext: ["design_specifications"]
+          optionalContext: ["development_environment", "coding_standards", "technical_requirements"]
+        dependencies: ["handoff-to-implementation"]
+
+# Workflow-level configurations
+skipConditions:
+  - condition: "feature_already_implemented"
+    message: "Feature has already been implemented and deployed"
+  - condition: "requirements_unclear"
+    message: "Feature requirements are unclear - use feature-development workflow instead"
+
+validationRules:
+  - rule: "design_required"
+    phases: ["design-architecture"]
+    message: "Design specification required before proceeding to implementation"
+
+notifications:
+  - trigger: "phase_completion"
+    phases: ["design-architecture", "implementation"]
+    message: "Phase completed, ready for next phase"
+  - trigger: "workflow_completion"
+    message: "Quick feature workflow completed successfully"
+
+# Smart execution settings
+execution:
+  allowSkipping: true
+  requireExplicitApproval: false
+  automaticProgressTracking: true
+

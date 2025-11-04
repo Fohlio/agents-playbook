@@ -90,6 +90,7 @@ async function seedAutomaticPrompts() {
             content,
             description: promptConfig.description,
             isActive: true,
+            isAutomatic: true,
             updatedAt: new Date(),
           },
         });
@@ -105,6 +106,7 @@ async function seedAutomaticPrompts() {
             visibility: 'PUBLIC',
             isActive: true,
             isSystemMiniPrompt: true,
+            isAutomatic: true,
           },
         });
         console.log(`   ✅ Created new prompt (ID: ${newPrompt.id})`);
