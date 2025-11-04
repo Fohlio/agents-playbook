@@ -50,6 +50,11 @@ describe('Workflow Constructor Actions', () => {
       expect(prismaMock.workflow.findUnique).toHaveBeenCalledWith({
         where: { id: 'workflow-1' },
         include: {
+          tags: {
+            include: {
+              tag: true,
+            },
+          },
           stages: {
             include: {
               miniPrompts: {

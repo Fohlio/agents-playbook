@@ -13,7 +13,8 @@ function getOpenAIClient() {
 
 export class UserWorkflowEmbeddings {
   /**
-   * Create searchable text from workflow (includes tags)
+   * Create searchable text from workflow (includes name, description, and tags)
+   * Name is included multiple times to emphasize it for better search relevance
    */
   private createSearchableText(workflow: {
     name: string;
@@ -22,9 +23,11 @@ export class UserWorkflowEmbeddings {
   }): string {
     const tagNames = workflow.tags?.map(wt => wt.tag.name) || [];
     const parts = [
-      workflow.name,
+      workflow.name, // Include name first for emphasis
+      workflow.name, // Repeat name for better relevance in embeddings
       workflow.description || '',
-      ...tagNames
+      ...tagNames,
+      workflow.name // Include name again at the end
     ];
     return parts.filter(Boolean).join(' ').toLowerCase();
   }

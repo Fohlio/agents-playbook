@@ -110,6 +110,13 @@ export function MiniPromptLibrary({ miniPrompts, onMiniPromptCreated, onMiniProm
             miniPrompts={miniPrompts}
             selectedMiniPromptIds={selectedMiniPromptIds}
             onChange={setSelectedMiniPromptIds}
+            onEdit={(id) => {
+              const miniPrompt = miniPrompts.find(mp => mp.id === id);
+              if (miniPrompt) {
+                setEditingMiniPrompt(miniPrompt);
+                setIsModalOpen(true);
+              }
+            }}
           />
         </div>
       </Card>

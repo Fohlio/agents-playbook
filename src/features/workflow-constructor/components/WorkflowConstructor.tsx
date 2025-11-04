@@ -43,6 +43,7 @@ export function WorkflowConstructor({ data }: WorkflowConstructorProps) {
   const {
     workflowId,
     workflowName,
+    workflowDescription,
     complexity,
     isActive,
     isPublic,
@@ -57,6 +58,7 @@ export function WorkflowConstructor({ data }: WorkflowConstructorProps) {
     isDirty,
     isSaving: storeSaving,
     setWorkflowName,
+    setWorkflowDescription,
     setIsActive,
     setIsPublic,
     setIncludeMultiAgentChat,
@@ -73,11 +75,11 @@ export function WorkflowConstructor({ data }: WorkflowConstructorProps) {
   const [editingTagIds, setEditingTagIds] = useState<string[]>([]);
 
   // Build a synthetic workflow from Zustand state for the chat context
-  const currentWorkflow = workflowId
+      const currentWorkflow = workflowId
     ? {
         id: workflowId,
         name: workflowName,
-        description: null,
+        description: workflowDescription,
         complexity,
         includeMultiAgentChat,
         isActive,
@@ -153,7 +155,7 @@ export function WorkflowConstructor({ data }: WorkflowConstructorProps) {
     await handleSave({
       workflowId,
       name: workflowName,
-      description: workflow?.description ?? undefined,
+      description: workflowDescription ?? undefined,
       complexity: complexity ?? undefined,
       isActive: isActive,
       visibility: isPublic ? 'PUBLIC' : 'PRIVATE',
@@ -262,6 +264,21 @@ export function WorkflowConstructor({ data }: WorkflowConstructorProps) {
               setSelectedTagIds(tagIds);
               markDirty();
             }}
+          />
+        </div>
+
+        <div className="mt-3">
+          <textarea
+            value={workflowDescription || ''}
+            onChange={(e) => {
+              setWorkflowDescription(e.target.value || null);
+              if (e.target.value !== (currentWorkflow.description || '')) {
+                markDirty();
+              }
+            }}
+            placeholder="Workflow Description (optional)"
+            rows={3}
+            className="w-full text-sm text-text-secondary rounded-md border border-gray-200 px-3 py-2 shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-0 focus:border-primary-500 focus:ring-primary-500 focus:shadow-md bg-white placeholder:text-gray-400 resize-none"
           />
         </div>
       </div>

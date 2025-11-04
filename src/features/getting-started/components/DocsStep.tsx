@@ -88,7 +88,7 @@ export function DocsStep() {
         },
         {
           heading: 'Getting API Token',
-          content: 'Go to Settings → API Tokens → Create New Token. Copy and add to MCP config.'
+          content: 'Go to Settings → API Tokens → Create New Token. Copy and add to MCP config as the "apiKey" field. If provided, the apiKey will be automatically sent as "Authorization: Bearer <token>" in request headers.'
         },
         {
           heading: 'Usage',

@@ -63,7 +63,10 @@ export function StageDropZone({
           {stage.miniPrompts.map((stageMiniPrompt) => (
             <div key={stageMiniPrompt.miniPromptId}>
               <div className="relative group">
-                <MiniPromptCard miniPrompt={stageMiniPrompt.miniPrompt} />
+                <MiniPromptCard 
+                  miniPrompt={stageMiniPrompt.miniPrompt}
+                  onEdit={onEditMiniPrompt ? () => onEditMiniPrompt(stageMiniPrompt.miniPromptId) : undefined}
+                />
                 <div className="absolute top-1 right-1 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                   {onEditMiniPrompt && (
                     <Tooltip content="Edit this mini-prompt">

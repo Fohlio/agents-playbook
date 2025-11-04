@@ -3,12 +3,14 @@
 import { useState, useEffect, useRef } from 'react';
 import type { MiniPrompt } from '@prisma/client';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
+import EditIcon from '@mui/icons-material/Edit';
 
 interface MiniPromptMultiSelectProps {
   miniPrompts: MiniPrompt[];
   selectedMiniPromptIds: string[];
   onChange: (ids: string[]) => void;
   onRemove?: (id: string) => void;
+  onEdit?: (id: string) => void;
   placeholder?: string;
 }
 
@@ -23,6 +25,7 @@ export function MiniPromptMultiSelect({
   selectedMiniPromptIds,
   onChange,
   onRemove,
+  onEdit,
   placeholder = 'Select mini-prompts...'
 }: MiniPromptMultiSelectProps) {
   const [isOpen, setIsOpen] = useState(false);
@@ -166,15 +169,28 @@ export function MiniPromptMultiSelect({
                     </div>
                   )}
                 </div>
-                <button
-                  type="button"
-                  onClick={() => removeMiniPrompt(mp.id)}
-                  className="flex-shrink-0 p-1 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded transition-colors"
-                  aria-label={`Remove ${mp.name}`}
-                  data-testid={`remove-mini-prompt-${mp.id}`}
-                >
-                  <DeleteOutlineIcon fontSize="small" />
-                </button>
+                <div className="flex-shrink-0 flex gap-1">
+                  {onEdit && (
+                    <button
+                      type="button"
+                      onClick={() => onEdit(mp.id)}
+                      className="p-1 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded transition-colors"
+                      aria-label={`Edit ${mp.name}`}
+                      data-testid={`edit-mini-prompt-${mp.id}`}
+                    >
+                      <EditIcon fontSize="small" />
+                    </button>
+                  )}
+                  <button
+                    type="button"
+                    onClick={() => removeMiniPrompt(mp.id)}
+                    className="p-1 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded transition-colors"
+                    aria-label={`Remove ${mp.name}`}
+                    data-testid={`remove-mini-prompt-${mp.id}`}
+                  >
+                    <DeleteOutlineIcon fontSize="small" />
+                  </button>
+                </div>
               </div>
             ))}
           </div>

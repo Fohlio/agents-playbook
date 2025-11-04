@@ -40,6 +40,9 @@ export function MCPIntegrationStep() {
 }`}
               </code>
             </pre>
+            <p className="text-gray-600 text-xs mt-2">
+              <strong>Note:</strong> If <code className="bg-gray-100 px-1 rounded">apiKey</code> is provided, it will be automatically sent as <code className="bg-gray-100 px-1 rounded">Authorization: Bearer &lt;token&gt;</code> in the request headers.
+            </p>
           </div>
         </div>
 
@@ -65,6 +68,9 @@ export function MCPIntegrationStep() {
 }`}
               </code>
             </pre>
+            <p className="text-gray-600 text-xs mt-2">
+              <strong>Note:</strong> If <code className="bg-gray-100 px-1 rounded">apiKey</code> is provided, it will be automatically sent as <code className="bg-gray-100 px-1 rounded">Authorization: Bearer &lt;token&gt;</code> in the request headers.
+            </p>
           </div>
         </div>
       </div>

@@ -1,6 +1,6 @@
 import { createMcpHandler } from '@vercel/mcp-adapter';
 import { config } from 'dotenv';
-import { auth } from '@/lib/auth/auth';
+import { NextRequest } from 'next/server';
 import { z } from 'zod';
 // Import database services directly
 import { dbSemanticSearch } from '@/lib/workflows/db-semantic-search';
@@ -13,7 +13,8 @@ import {
   getSelectedPromptToolSchema,
   getSelectedPromptHandler,
 } from '@/lib/mcp-tools';
-// Import database-backed workflow handlers
+// Import auth helpers
+import { getUserId, extractUserIdFromRequest, userIdStorage } from '@/lib/mcp-tools-db/mcp-auth-helpers';
 // Load environment variables
 config();
 
@@ -32,12 +33,11 @@ const handler = createMcpHandler(
         task_description: z.string().describe('Description of the task to find workflows for')
       },
       async ({ task_description }) => {
-        const session = await auth();
-        const userId = session?.user?.id;
+        const userId = await getUserId();
 
         try {
           // Use database semantic search directly with userId
-          const results = await dbSemanticSearch.searchWorkflows(task_description, 5, userId);
+          const results = await dbSemanticSearch.searchWorkflows(task_description, 5, userId || undefined);
 
           if (results.length === 0) {
             return {
@@ -85,14 +85,13 @@ const handler = createMcpHandler(
         workflow_id: z.string().describe('ID of the workflow to select')
       },
       async ({ workflow_id }) => {
-        // Use session auth for web requests
-        const session = await auth();
-        const userId = session?.user?.id;
+        // Get userId from session or API token
+        const userId = await getUserId();
         
-        // Call handler with userId extracted from session
+        // Call handler with userId extracted from auth
         // We create a modified version that accepts userId directly
         try {
-          const workflow = await unifiedWorkflowService.getWorkflowById(workflow_id, userId);
+          const workflow = await unifiedWorkflowService.getWorkflowById(workflow_id, userId || undefined);
 
           if (!workflow) {
             return {
@@ -249,10 +248,9 @@ const handler = createMcpHandler(
       'Get mini prompts. Without auth: public active prompts. With auth: active prompts from your library.',
       getPromptsToolSchema,
       async ({ search }) => {
-        const session = await auth();
-        const userId = session?.user?.id;
+        const userId = await getUserId();
 
-        return await getPromptsHandler({ search, userId });
+        return await getPromptsHandler({ search, userId: userId || undefined });
       },
     );
 
@@ -270,4 +268,32 @@ const handler = createMcpHandler(
   { basePath: '/api/v1' },
 );
 
-export { handler as GET, handler as POST, handler as DELETE, handler as OPTIONS };
+/**
+ * Wrap handlers to extract userId from request and store in async context
+ */
+async function wrappedHandler(
+  request: NextRequest
+): Promise<Response> {
+  const userId = await extractUserIdFromRequest(request);
+  // Store userId in async context so getUserId() can retrieve it
+  return userIdStorage.run(userId, async () => {
+    // Convert NextRequest to Request for createMcpHandler compatibility
+    return handler(request as unknown as Request);
+  });
+}
+
+export async function GET(request: NextRequest) {
+  return wrappedHandler(request);
+}
+
+export async function POST(request: NextRequest) {
+  return wrappedHandler(request);
+}
+
+export async function DELETE(request: NextRequest) {
+  return wrappedHandler(request);
+}
+
+export async function OPTIONS(request: NextRequest) {
+  return wrappedHandler(request);
+}

@@ -15,6 +15,11 @@ export async function getWorkflowWithStages(
   return await prisma.workflow.findUnique({
     where: { id: workflowId },
     include: {
+      tags: {
+        include: {
+          tag: true,
+        },
+      },
       stages: {
         include: {
           miniPrompts: {

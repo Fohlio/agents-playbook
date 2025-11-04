@@ -132,11 +132,14 @@ Add to your Cursor MCP settings:
   "mcpServers": {
     "agents-playbook": {
       "url": "https://agents-playbook.vercel.app/api/v1/mcp",
-      "description": "AI Agent Workflow Engine"
+      "description": "AI Agent Workflow Engine",
+      "apiKey": "your-token-from-settings"
     }
   }
 }
 ```
+
+**Note:** If `apiKey` is provided, it will be automatically sent as `Authorization: Bearer <token>` in the request headers.
 
 ### Local Usage
 
