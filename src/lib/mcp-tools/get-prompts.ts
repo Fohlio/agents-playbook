@@ -14,10 +14,12 @@ export async function getPromptsHandler({ search, userId }: { search?: string; u
       const whereClause: {
         isActive: boolean;
         isSystemMiniPrompt: boolean;
+        isAutomatic: boolean;
         OR?: Array<{ name?: { contains: string; mode: 'insensitive' } } | { content?: { contains: string; mode: 'insensitive' } }>;
       } = {
         isActive: true,
-        isSystemMiniPrompt: true
+        isSystemMiniPrompt: true,
+        isAutomatic: false  // Exclude automatic prompts (Memory Board, Multi-Agent Chat)
       };
 
       if (search) {
@@ -75,11 +77,12 @@ export async function getPromptsHandler({ search, userId }: { search?: string; u
       };
     }
 
-    // Get owned active mini prompts
+    // Get owned active mini prompts (exclude automatic prompts)
     const ownedMiniPrompts = await prisma.miniPrompt.findMany({
       where: {
         userId,
-        isActive: true
+        isActive: true,
+        isAutomatic: false  // Exclude automatic prompts
       },
       include: {
         user: {
@@ -97,11 +100,14 @@ export async function getPromptsHandler({ search, userId }: { search?: string; u
       }
     });
 
-    // Get referenced active mini prompts
+    // Get referenced active mini prompts (exclude automatic prompts)
     const referencedMiniPrompts = await prisma.miniPromptReference.findMany({
       where: {
         userId,
-        miniPrompt: { isActive: true }
+        miniPrompt: { 
+          isActive: true,
+          isAutomatic: false  // Exclude automatic prompts
+        }
       },
       include: {
         miniPrompt: {

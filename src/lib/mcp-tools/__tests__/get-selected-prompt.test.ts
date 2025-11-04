@@ -137,6 +137,42 @@ describe("get-selected-prompt MCP tool", () => {
       expect(result.content[0].text).toContain("get_prompts");
     });
 
+    it("should reject automatic prompts (Memory Board, Multi-Agent Chat)", async () => {
+      const mockAutomaticPrompt = {
+        id: "auto-prompt-1",
+        userId: "system-user",
+        name: "Handoff Memory Board",
+        content: "Automatic prompt content",
+        visibility: "PUBLIC" as const,
+        isActive: true,
+        isSystemMiniPrompt: true,
+        isAutomatic: true,  // This is an automatic prompt
+        createdAt: new Date("2024-01-01"),
+        updatedAt: new Date("2024-01-01"),
+        user: {
+          id: "system-user",
+          username: "system",
+        },
+        _count: {
+          stageMiniPrompts: 0,
+          references: 0,
+        },
+      };
+
+      prismaMock.miniPrompt.findUnique.mockResolvedValue(mockAutomaticPrompt as any);
+
+      const result = await getSelectedPromptHandler({ prompt_id: "auto-prompt-1" });
+
+      expect(result.content).toHaveLength(1);
+      expect(result.content[0].type).toBe("text");
+      expect(result.content[0].text).toContain("❌ **Automatic prompt not accessible**");
+      expect(result.content[0].text).toContain('"auto-prompt-1"');
+      expect(result.content[0].text).toContain("Memory Board");
+      expect(result.content[0].text).toContain("Multi-Agent Chat");
+      expect(result.content[0].text).toContain("auto-injected");
+      expect(result.content[0].text).toContain("get_prompts");
+    });
+
     it("should include full markdown content in response", async () => {
       const longContent = `# Detailed Mini Prompt
 

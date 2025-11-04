@@ -39,6 +39,16 @@ export async function getSelectedPromptHandler({ prompt_id }: { prompt_id: strin
       };
     }
 
+    // Check if this is an automatic prompt (should not be accessible via MCP)
+    if (miniPrompt.isAutomatic) {
+      return {
+        content: [{
+          type: "text" as const,
+          text: `❌ **Automatic prompt not accessible**: "${prompt_id}"\n\nThis is an automatic prompt (Memory Board or Multi-Agent Chat) that is auto-injected into workflows. It cannot be accessed directly via MCP tools.\n\nPlease use \`get_prompts\` to see available mini prompts.`
+        }],
+      };
+    }
+
     // Check if the mini prompt is active
     const statusBadge = miniPrompt.isActive ? '✅ Active' : '⚠️ Inactive';
     const visibilityBadge = miniPrompt.visibility === 'PUBLIC' ? '🌍 Public' : '🔒 Private';
