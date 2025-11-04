@@ -1,3 +1,6 @@
+/**
+ * @jest-environment node
+ */
 import { describe, test, expect, beforeAll } from '@jest/globals';
 import { getWorkflowsHandler } from '../../src/lib/mcp-tools/get-workflows';
 import { selectWorkflowHandler } from '../../src/lib/mcp-tools/select-workflow';

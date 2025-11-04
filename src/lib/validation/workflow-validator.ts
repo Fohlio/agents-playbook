@@ -3,8 +3,6 @@ import {
   WorkflowStep,
   ExecutionContext,
   StepValidation,
-  StepPrerequisites,
-  SkippedStep,
   WorkflowExecutionPlan,
   PhaseExecutionPlan,
   StepExecutionPlan,
@@ -80,7 +78,7 @@ export class WorkflowValidator {
     };
 
     for (const phaseConfig of workflow.phases) {
-      const phasePlan = this.planPhaseExecution(phaseConfig, workflow.name);
+      const phasePlan = this.planPhaseExecution(phaseConfig);
       plan.phases.push(phasePlan);
       plan.total_steps += phasePlan.total_steps;
       plan.executable_steps += phasePlan.executable_steps;
@@ -97,7 +95,7 @@ export class WorkflowValidator {
   /**
    * Plan phase execution
    */
-  private planPhaseExecution(phaseConfig: any, workflowId: string): PhaseExecutionPlan {
+  private planPhaseExecution(phaseConfig: { name: string; steps: unknown[] }): PhaseExecutionPlan {
     const phasePlan: PhaseExecutionPlan = {
       name: phaseConfig.name,
       total_steps: phaseConfig.steps.length,
@@ -106,24 +104,41 @@ export class WorkflowValidator {
       steps: []
     };
 
-    for (const stepConfig of phaseConfig.steps) {
-              // Create mock WorkflowStep for validation
-        const mockStep: WorkflowStep = {
-          id: stepConfig.id,
-          miniPrompt: {} as MiniPrompt, // Will be loaded separately
-          phase: phaseConfig.name,
-          stepNumber: 0, // Will be set later
-          totalSteps: 0, // Will be set later
-          validation: {} as StepValidation, // Will be set below
-          prerequisites: stepConfig.prerequisites,
-          skipConditions: stepConfig.skip_conditions || []
-        };
+    for (const stepConfigUnknown of phaseConfig.steps) {
+      const stepConfig = stepConfigUnknown as Record<string, unknown>;
+      const stepId = typeof stepConfig.id === 'string' ? stepConfig.id : 'unknown-step';
+      const prereqObj = stepConfig.prerequisites as Record<string, unknown> | undefined;
+      const skipConditions = Array.isArray(stepConfig.skip_conditions) ? stepConfig.skip_conditions as string[] : [];
+      
+      // Create mock WorkflowStep for validation
+      const mockStep: WorkflowStep = {
+        id: stepId,
+        miniPrompt: {} as MiniPrompt, // Will be loaded separately
+        phase: phaseConfig.name,
+        stepNumber: 0, // Will be set later
+        totalSteps: 0, // Will be set later
+        validation: {
+          hasRequiredMCP: true,
+          hasRequiredContext: true,
+          hasOptionalContext: [],
+          canExecute: false,
+          skipReasons: [],
+          missingMCP: [],
+          missingContext: []
+        },
+        prerequisites: {
+          mcp_servers: Array.isArray(prereqObj?.mcp_servers) ? prereqObj.mcp_servers as string[] : [],
+          context: Array.isArray(prereqObj?.context) ? prereqObj.context as string[] : [],
+          optional: Array.isArray(prereqObj?.optional) ? prereqObj.optional as string[] : []
+        },
+        skipConditions
+      };
 
       const validation = this.validateStep(mockStep);
       
       const stepPlan: StepExecutionPlan = {
-        id: stepConfig.id,
-        title: stepConfig.id, // Will be updated with actual title
+        id: stepId,
+        title: stepId, // Will be updated with actual title
         will_execute: validation.canExecute,
         skip_reason: validation.skipReasons.join(', ') || undefined,
         validation
@@ -135,9 +150,9 @@ export class WorkflowValidator {
         phasePlan.executable_steps++;
       } else {
         phasePlan.skipped_steps.push({
-          id: stepConfig.id,
+          id: stepId,
           reason: validation.skipReasons.join(', '),
-          step_title: stepConfig.id
+          step_title: stepId
         });
       }
     }
@@ -169,7 +184,15 @@ export class WorkflowValidator {
           phase: phaseConfig.name,
           stepNumber: stepIndex,
           totalSteps: this.getTotalExecutableSteps(workflow),
-          validation: {} as StepValidation,
+          validation: {
+            hasRequiredMCP: true,
+            hasRequiredContext: true,
+            hasOptionalContext: [],
+            canExecute: false,
+            skipReasons: [],
+            missingMCP: [],
+            missingContext: []
+          },
           prerequisites: stepConfig.prerequisites,
           skipConditions: stepConfig.skip_conditions || []
         };
@@ -277,7 +300,7 @@ export class WorkflowValidator {
   /**
    * Update execution context after step completion
    */
-  updateContextAfterStep(stepId: string, outputs: Record<string, any>): void {
+  updateContextAfterStep(stepId: string, outputs: Record<string, unknown>): void {
     // Mark step as completed (avoid duplicates)
     if (!this.context.completed_steps.includes(stepId)) {
       this.context.completed_steps.push(stepId);

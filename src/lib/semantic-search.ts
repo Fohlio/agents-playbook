@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import OpenAI from 'openai';
+import { WorkflowLoader } from './loaders/workflow-loader';
 
 interface WorkflowEmbedding {
   id: string;
@@ -33,6 +34,11 @@ const EMBEDDINGS_FILE = path.join(process.cwd(), 'public', 'workflow-embeddings.
 export class SemanticSearch {
   private embeddings: WorkflowEmbedding[] = [];
   private loaded = false;
+  private workflowLoader: WorkflowLoader;
+
+  constructor(workflowsPath?: string) {
+    this.workflowLoader = new WorkflowLoader(workflowsPath);
+  }
 
   /**
    * Load embeddings from cache file
@@ -86,8 +92,8 @@ export class SemanticSearch {
     await this.loadEmbeddings();
 
     if (this.embeddings.length === 0) {
-      console.warn('[SemanticSearch] No embeddings available for search');
-      return [];
+      console.warn('[SemanticSearch] No embeddings available, falling back to text search');
+      return this.fallbackTextSearch(query, limit);
     }
 
     if (!process.env.OPENAI_API_KEY) {
@@ -141,47 +147,25 @@ export class SemanticSearch {
   /**
    * Fallback text-based search when semantic search fails
    */
-  private fallbackTextSearch(query: string, limit: number): SearchResult[] {
-    console.log('[SemanticSearch] Using fallback text search');
+  private async fallbackTextSearch(query: string, limit: number): Promise<SearchResult[]> {
+    console.log('[SemanticSearch] Using fallback text search via WorkflowLoader');
     
-    const searchTerms = query.toLowerCase().split(' ');
-    
-    const scored = this.embeddings.map(workflow => {
-      let score = 0;
-      const searchableText = `${workflow.title} ${workflow.description} ${workflow.category} ${workflow.tags.join(' ')}`.toLowerCase();
+    try {
+      const workflows = await this.workflowLoader.searchWorkflows(query, limit);
       
-      searchTerms.forEach(term => {
-        if (searchableText.includes(term)) {
-          score += 1;
-          // Boost score for title matches
-          if (workflow.title.toLowerCase().includes(term)) {
-            score += 2;
-          }
-          // Boost score for category matches
-          if (workflow.category.toLowerCase().includes(term)) {
-            score += 1.5;
-          }
-        }
-      });
-
-      // Normalize score to 0-1 range for consistency
-      const normalizedSimilarity = Math.min(score / searchTerms.length, 1);
-
-      return {
+      return workflows.map(workflow => ({
         id: workflow.id,
         title: workflow.title,
         description: workflow.description,
         category: workflow.category,
         tags: workflow.tags,
         complexity: workflow.complexity,
-        similarity: normalizedSimilarity
-      };
-    });
-
-    return scored
-      .filter(item => item.similarity > 0)
-      .sort((a, b) => b.similarity - a.similarity)
-      .slice(0, limit);
+        similarity: workflow.similarity ?? 0
+      }));
+    } catch (error) {
+      console.error('[SemanticSearch] Error in fallback text search:', error);
+      return [];
+    }
   }
 
   /**

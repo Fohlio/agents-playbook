@@ -1,14 +1,14 @@
 /** @type {import('jest').Config} */
 const config = {
-  // Test environment
-  testEnvironment: 'node',
+  // Test environment (jsdom for React components, node for API/server tests)
+  testEnvironment: 'jsdom',
   
   // Setup files to run before tests
   setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
   
   // TypeScript support
   preset: 'ts-jest',
-  extensionsToTreatAsEsm: ['.ts'],
+  extensionsToTreatAsEsm: ['.ts', '.tsx'],
   
   // Module name mapping for absolute imports
   moduleNameMapper: {
@@ -34,6 +34,10 @@ const config = {
   transform: {
     '^.+\\.(ts|tsx)$': ['ts-jest', {
       useESM: true,
+      tsconfig: {
+        jsx: 'react-jsx',
+        esModuleInterop: true,
+      },
     }],
   },
   
@@ -44,6 +48,11 @@ const config = {
   testPathIgnorePatterns: [
     '<rootDir>/.next/',
     '<rootDir>/node_modules/',
+  ],
+  
+  // Transform node_modules that use ES modules
+  transformIgnorePatterns: [
+    'node_modules/(?!(next-auth|@auth|react-markdown|remark-gfm|unist-.*|unified|bail|is-plain-obj|trough|vfile|vfile-message|micromark.*)/)',
   ],
   
   // Verbose output
