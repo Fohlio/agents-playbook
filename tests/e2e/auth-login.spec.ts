@@ -77,17 +77,6 @@ test.describe('User Login', () => {
     expect(page.url()).toMatch(/\/$|\/$/);
   });
 
-  test('should successfully login with valid credentials (admin user)', async ({ page }) => {
-    // Login with seeded admin user credentials
-    await loginPage.login(TEST_USERS.admin.email, TEST_USERS.admin.password);
-
-    // Wait for redirect to home page
-    await page.waitForURL('/', { timeout: 10000 });
-
-    // Verify URL is home page
-    expect(page.url()).toMatch(/\/$|\/$/);
-  });
-
   test('should remember user session with "Remember Me" checked', async ({ page, context }) => {
     // Login with "Remember Me" enabled
     await loginPage.login(

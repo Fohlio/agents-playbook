@@ -13,13 +13,6 @@ export interface LoginCredentials {
 }
 
 export const TEST_USERS = {
-  admin: {
-    email: 'admin@agents-playbook.com',
-    password: 'Admin@123456',
-    username: 'admin',
-    tier: 'PREMIUM',
-    role: 'ADMIN',
-  },
   testUser: {
     email: 'test@agents-playbook.com',
     password: 'Test@123456',
