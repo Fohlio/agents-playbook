@@ -19,8 +19,6 @@ export function useWorkflowHandlers(options?: UseWorkflowHandlersOptions) {
     setLocalStages,
     setIsCreatingStage,
     setEditingStageId,
-    setViewingMiniPromptId,
-    setIsChatOpen,
     markDirty,
   } = useWorkflowConstructorStore();
 
