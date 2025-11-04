@@ -22,13 +22,16 @@ export default auth((req) => {
   // Allow public API routes without authentication
   const isPublicApiRoute = pathname.startsWith("/api/v1/public");
 
+  // Allow MCP endpoint without session auth (handles API tokens and public workflows internally)
+  const isMcpRoute = pathname === "/api/v1/mcp";
+
   // Allow /dashboard/discover without authentication
   const isPublicDashboardRoute = pathname === "/dashboard/discover";
 
   // Check if accessing protected route
   const isProtectedRoute =
     (pathname.startsWith("/dashboard") && !isPublicDashboardRoute) ||
-    (pathname.startsWith("/api/v1") && !isPublicApiRoute);
+    (pathname.startsWith("/api/v1") && !isPublicApiRoute && !isMcpRoute);
 
   // If not authenticated and trying to access protected route, redirect to login
   if (!isAuthenticated && isProtectedRoute) {

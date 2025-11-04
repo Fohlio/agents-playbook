@@ -18,6 +18,9 @@ import {
 // Load environment variables
 config();
 
+// Use Node.js runtime for database access and auth
+export const runtime = 'nodejs';
+
 const handler = createMcpHandler(
   (server) => {
     // Tool 1: Get workflows
@@ -87,7 +90,6 @@ const handler = createMcpHandler(
     );
   },
   {},
-  { basePath: '/api' },
 );
 
-export { handler as GET, handler as POST, handler as DELETE };
+export { handler as GET, handler as POST, handler as DELETE, handler as OPTIONS };
