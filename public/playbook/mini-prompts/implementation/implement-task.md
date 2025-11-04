@@ -9,6 +9,20 @@ Execute any implementation task per specifications with clean, secure, performan
 - **Minimal logging** - use logging sparingly, only for essential debugging/monitoring
 - **🤖 SUB-AGENT SCOPE**: Work on **ONLY YOUR ASSIGNED PHASE/TASK** - do not continue beyond your scope. Hand off to next sub-agent when complete.
 
+## 🎯 Universal Implementation Rules
+1. Do not over-engineer and make precise fixes
+2. Use only static imports
+3. Do not add excessive markdown files and console logs
+4. Do not use any work arounds, hacks and fallbacks
+5. Validate and document each step
+6. Do not use "any" or "unknown" types or any fallbacks or hacks
+7. Do not pass functions as dependencies to hooks
+8. Name functions and variables and classes technically or business wise
+9. Follow strict typisation if applicable
+10. Fix lint errors and do not write code which is not used
+11. Locate existing design system or UI components if applicable
+12. Use context7 MCP if available for documentation if applicable
+
 ## 📥 Context (ask if missing)
 1. **Tasks File** – `.agents-playbook/[task-name]/tasks.md` with implementation breakdown
 2. **Requirements File** – `.agents-playbook/[task-name]/requirements.md` with original user stories & acceptance criteria

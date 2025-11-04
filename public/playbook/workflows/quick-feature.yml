@@ -20,15 +20,15 @@ phases:
         required: true
         prerequisites:
           requiredContext: []
-          optionalContext: ["clarified_requirements", "structured_requirements", "design_guidelines", "technical_constraints"]
-        outputs: ["design_specifications", "technical_requirements", "architecture_specifications"]
+          optionalContext: ["feature_description", "requirements", "design_guidelines", "technical_constraints"]
+        outputs: ["design_specifications", "technical_requirements", "architecture_specifications", "coding_solution"]
         
       - id: "handoff-to-implementation"
         miniPrompt: "handoff-to-subagent"
         required: true
         prerequisites:
           requiredContext: ["design_specifications"]
-          optionalContext: ["technical_requirements", "architecture_specifications"]
+          optionalContext: ["technical_requirements", "architecture_specifications", "coding_solution"]
         dependencies: ["design-architecture"]
 
   - phase: "implementation"
@@ -36,24 +36,26 @@ phases:
     required: true
     steps:
       - id: "implement-quick-feature"
-        miniPrompt: "implementation/implement-task"
+        miniPrompt: "implementation/implement-quick-feature"
         required: true
         prerequisites:
           requiredContext: ["design_specifications"]
-          optionalContext: ["development_environment", "coding_standards", "technical_requirements"]
+          optionalContext: ["requirements", "development_environment", "coding_standards", "coding_solution"]
         dependencies: ["handoff-to-implementation"]
-
+      
 # Workflow-level configurations
 skipConditions:
   - condition: "feature_already_implemented"
-    message: "Feature has already been implemented and deployed"
-  - condition: "requirements_unclear"
-    message: "Feature requirements are unclear - use feature-development workflow instead"
+    message: "Feature has already been implemented"
+  - condition: "requires_extensive_analysis"
+    message: "Feature requires extensive analysis, use feature-development workflow instead"
+  - condition: "complex_architecture_change"
+    message: "Feature requires complex architectural changes, use feature-development workflow instead"
 
 validationRules:
-  - rule: "design_required"
+  - rule: "design_validation_required"
     phases: ["design-architecture"]
-    message: "Design specification required before proceeding to implementation"
+    message: "Design validation required before proceeding to implementation"
 
 notifications:
   - trigger: "phase_completion"

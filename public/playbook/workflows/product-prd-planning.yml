@@ -1,8 +1,8 @@
-name: "Product PRD Planning"
-description: "Plan and assemble a PRD with requirements, design, features, and a final index"
+name: "Product/Feature PRD Planning"
+description: "Plan and assemble a PRD for products or big features with requirements, design, features, and a final index"
 version: "1.0"
-category: "product"
-tags: ["prd", "planning", "requirements", "design", "features", "product", "documentation"]
+category: "product-feature"
+tags: ["prd", "planning", "requirements", "design", "features", "product", "big-feature", "documentation"]
 
 # CRITICAL: VALIDATE ALL STEPS BEFORE STARTING
 agentInstructions:
@@ -12,15 +12,15 @@ agentInstructions:
 
 phases:
   - phase: "requirements"
-    description: "Gather and structure high-level product requirements"
+    description: "Gather and structure high-level product/feature requirements"
     required: true
     steps:
       - id: "write-requirements-file"
         miniPrompt: "documentation/prd/write-requirements-file"
         required: true
         prerequisites:
-          requiredContext: ["product_slug", "product_name"]
-          optionalContext: ["product_summary", "stakeholders", "personas", "business_context"]
+          requiredContext: ["project_slug", "project_name"]
+          optionalContext: ["project_summary", "stakeholders", "personas", "business_context", "scope_level"]
         outputs: ["requirements_file_path", "structured_requirements"]
 
   - phase: "design-architecture"
@@ -31,7 +31,7 @@ phases:
         miniPrompt: "documentation/prd/write-design-file"
         required: true
         prerequisites:
-          requiredContext: ["structured_requirements", "product_slug"]
+          requiredContext: ["structured_requirements", "project_slug"]
           optionalContext: ["technical_constraints", "technology_preferences"]
         dependencies: ["write-requirements-file"]
         outputs: ["design_file_path", "design_specifications"]
@@ -40,7 +40,7 @@ phases:
         miniPrompt: "documentation/prd/write-design-system"
         required: true
         prerequisites:
-          requiredContext: ["structured_requirements", "product_slug"]
+          requiredContext: ["structured_requirements", "project_slug"]
           optionalContext: ["design_specifications", "brand_guidelines"]
         dependencies: ["write-design-file"]
         outputs: ["design_system_file_path", "design_system_specifications"]
@@ -53,7 +53,7 @@ phases:
         miniPrompt: "documentation/prd/write-feature-file"
         required: true
         prerequisites:
-          requiredContext: ["structured_requirements", "design_specifications", "product_slug"]
+          requiredContext: ["structured_requirements", "design_specifications", "project_slug"]
           optionalContext: ["design_system_specifications", "phase_breakdown"]
         dependencies: ["write-design-system"]
         outputs: ["feature_files", "feature_list"]
@@ -66,29 +66,29 @@ phases:
         miniPrompt: "documentation/prd/assemble-prd"
         required: true
         prerequisites:
-          requiredContext: ["product_slug", "requirements_file_path", "design_file_path", "feature_files"]
-          optionalContext: ["product_name", "product_summary", "design_system_file_path"]
+          requiredContext: ["project_slug", "requirements_file_path", "design_file_path", "feature_files"]
+          optionalContext: ["project_name", "project_summary", "design_system_file_path"]
         dependencies: ["write-feature-file"]
         outputs: ["prd_index_file_path"]
 
 # Workflow-level configurations
 skipConditions:
   - condition: "prd_already_exists"
-    message: "PRD has already been created for this product"
-  - condition: "incomplete_product_context"
-    message: "Product slug and name are required to generate PRD"
+    message: "PRD has already been created for this product/feature"
+  - condition: "incomplete_project_context"
+    message: "Project slug and name are required to generate PRD"
 
 validationRules:
-  - rule: "product_context_required"
+  - rule: "project_context_required"
     phases: ["requirements"]
-    message: "Product slug and name must be provided before starting"
+    message: "Project slug and name must be provided before starting (use product or feature identifiers)"
 
 notifications:
   - trigger: "phase_completion"
     phases: ["requirements", "design-architecture", "planning", "finalization"]
     message: "Phase completed, ready for next phase"
   - trigger: "workflow_completion"
-    message: "Product PRD planning workflow completed successfully"
+    message: "Product/Feature PRD planning workflow completed successfully"
 
 # Smart execution settings
 execution:

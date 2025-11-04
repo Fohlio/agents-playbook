@@ -1,107 +1,52 @@
-# Design Architecture
+## 🎯 Objective
+Design a **scalable, maintainable architecture** for a new feature within an existing codebase.  
+Use established code patterns, libraries, and conventions already present in the project.
 
-## Purpose
-Design the solution architecture, data models, and technical approach based on requirements and analysis findings.
+---
 
-## 📋 General Instructions
-- **Follow instructions precisely** - implement exactly what is requested, no more, no less
-- **Avoid unnecessary code** - write only the code that is essential for the functionality  
-- **Minimal logging** - use logging sparingly, only for essential debugging/monitoring
+### Step 1 — Context Discovery
+1. **Search the codebase** for:
+   - Similar or related features
+   - Common architectural patterns (modules, naming, data flow)
+   - Existing data models, APIs, or utilities that can be reused
+2. Identify where this feature logically belongs (domain, service, or module).
 
-## Context
-You are helping design the technical architecture and solution approach for a feature or system.
+### Step 2 — Clarification
+If context is missing or ambiguous, **ask concise, goal-oriented questions inside the chat before proceeding** to refine:
+- Feature intent and scope
+- Key data inputs/outputs
+- Expected user or system interactions
+- Non-functional constraints (scale, latency, data volume)
 
-## Steps Sequence
-Follow this structured approach for comprehensive design:
+Keep it short and multiple-choice when possible.
 
-1. **design-solution-architecture** - Create high-level solution design and component architecture
-2. **design-data-models** - Design database schemas and data structures [conditional: if data modeling required]
-3. **design-api-interfaces** - Design API contracts and interfaces [conditional: if APIs involved]
-4. **design-ui-mockups** - Create user interface mockups and user flows [conditional: if UI changes]
-5. **design-integration-patterns** - Design integration with external systems [conditional: if integrations required]
+### Step 3 — Architecture Plan
+Once context is clear, **generate the feature design**:
 
-## ❓ Clarifying Questions (ask in chat first)
+#### A) High-Level Plan
+Describe the high-level plan for the feature and the overview of the solution.
 
-**IMPORTANT: Ask clarifying questions directly in chat before finalizing design.**
-Present multiple choice questions to clarify key architectural decisions
+#### B) Implementation Steps
+List the implementation steps. For each, provide concise code snippets that cover:
+- Essential interfaces, types, or classes to define
+- Function or method signatures for all main operations
+- Example scaffolding code that illustrates how components interact
+- Describe main components and their responsibilities
+- Show how they integrate with existing ones
+- Include only relevant layers (API, service, DB, queue, etc.)`
 
-### **UI/Design System Clarifications**
-**If UI implementation is required, ask in chat:**
-- Is there a Figma MCP server available for design analysis and code generation?
-- Does an `.agents-playbook/ui.json` file exist that documents the existing design system?
-- What design system or component library should be used? (e.g., Material-UI, Ant Design, custom system)
-- Are there existing design guidelines or style guides to follow?
-- Should new UI components follow specific patterns or frameworks?
-- Is there a design document, mockups, or Figma file to reference?
-- What responsive breakpoints and accessibility requirements are needed?
+Ensure each step is clear, actionable, and formatted for direct use in the codebase.
 
-## Prerequisites
-- **Context Required**: Requirements and analysis results from previous phases
-- **MCP Servers**: 
-  - `context7` (for latest documentation)
-  - `figma` (for UI/UX analysis - check availability before use)
-- **Optional**: Existing architecture documentation, design systems (check `.agents-playbook/ui.json`), compliance requirements
+#### C) Output Format
+Return:
+- `.agents-playbook/[task-name]/design.md` — the architecture plan
 
-## Your Task
-Design a comprehensive solution architecture that includes:
+### ⚙️ Constraints
+- Must align with existing code patterns
+- Prefer reuse over creation
+- Architecture should be scalable, composable, and easy to extend
+- Keep output brief, technical, and actionable
 
-1. **High-Level Architecture**
-   - System components and their interactions
-   - Data flow diagrams and transformations
-   - Integration points with existing systems
+---
 
-2. **Technical Specifications**
-   - Technology stack recommendations
-   - Database design (if applicable)
-   - API interfaces (if applicable)
-   - Existing patterns and conventions to follow
-
-3. **Implementation Approach**
-   - Key technical decisions and trade-offs
-   - Risk assessment and mitigation strategies
-   - Solutions should be scalable following existing patterns
-
-4. **Documentation Output**
-   - Create a `design.md` file with all architecture decisions
-   - Create a `flow_diagram.md` file for data flow and transformations
-   - Include diagrams and technical specifications
-   - Document rationale for key design choices
-
-## Success Criteria
-- **design.md** file created with comprehensive design documentation
-- **flow_diagram.md** file created with data flow and transformation details
-- Complete solution architecture documented
-- All major components and their interactions defined
-- Data models designed and validated
-- API contracts specified (if applicable)
-- UI/UX design completed (if applicable)
-- Security model defined (if applicable)
-- Design review completed and approved
-
-## Skip Conditions
-- Solution is very simple and doesn't require formal design
-- Using existing, well-established patterns
-- Emergency fix that doesn't affect architecture
-- Pure bug fix with no design implications
-
-## Deliverable
-- Comprehensive `design.md` file containing the complete technical design
-- `flow_diagram.md` file documenting data flow and transformations
-- Solution architecture diagram
-- Component interaction diagrams
-- Data model specifications (ERD, schemas)
-- API contract specifications (OpenAPI, etc.)
-- UI mockups and user flows (if applicable)
-- Technical decision log with rationale
-- Design review sign-off
-
-## Notes
-- Essential for any non-trivial development work
-- **design.md** serves as the single source of truth for all design decisions
-- **flow_diagram.md** provides clear visualization of data flow and transformations
-- Quality of design directly impacts implementation speed and maintainability
-- Thorough design reduces debugging and refactoring later
-- Consider multiple design alternatives and document trade-offs
-- Get design review from senior developers or architects when possible
-- Consider scalability, maintainability, and performance requirements
-- Align with existing system architecture and coding standards
+This prompt makes your **AI architect agent** behave like a senior dev reviewing the repo, asking missing questions, and proposing a precise, reusable architecture — not writing fluff docs.
