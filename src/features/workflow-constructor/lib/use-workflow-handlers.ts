@@ -124,31 +124,41 @@ export function useWorkflowHandlers(options?: UseWorkflowHandlersOptions) {
   );
 
   const handleDragEnd = useCallback(
-    (miniPromptId: string, stageId: string, miniPromptsList: MiniPrompt[]) => {
+    (miniPromptIds: string | string[], stageId: string, miniPromptsList: MiniPrompt[]) => {
       const stage = localStages.find((s) => s.id === stageId);
       if (!stage) return;
 
-      const alreadyExists = stage.miniPrompts.some(
-        (smp) => smp.miniPromptId === miniPromptId
+      // Normalize to array
+      const idsToAdd = Array.isArray(miniPromptIds) ? miniPromptIds : [miniPromptIds];
+      
+      // Filter out any that already exist in the stage
+      const newIds = idsToAdd.filter(
+        (id) => !stage.miniPrompts.some((smp) => smp.miniPromptId === id)
       );
-      if (alreadyExists) return;
+      
+      if (newIds.length === 0) return;
 
-      const miniPrompt = miniPromptsList.find((mp) => mp.id === miniPromptId);
-      if (!miniPrompt) return;
+      // Find all mini-prompts to add
+      const miniPromptsToAdd = newIds
+        .map((id) => miniPromptsList.find((mp) => mp.id === id))
+        .filter((mp): mp is MiniPrompt => mp !== undefined);
+      
+      if (miniPromptsToAdd.length === 0) return;
 
       setLocalStages(
         localStages.map((s) => {
           if (s.id === stageId) {
+            const startOrder = s.miniPrompts.length;
             return {
               ...s,
               miniPrompts: [
                 ...s.miniPrompts,
-                {
+                ...miniPromptsToAdd.map((miniPrompt, index) => ({
                   stageId: s.id,
                   miniPromptId: miniPrompt.id,
-                  order: s.miniPrompts.length,
+                  order: startOrder + index,
                   miniPrompt,
-                },
+                })),
               ],
             };
           }

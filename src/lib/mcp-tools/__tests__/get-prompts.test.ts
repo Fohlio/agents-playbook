@@ -63,6 +63,7 @@ describe("get-prompts MCP tool", () => {
           isActive: true,
           isSystemMiniPrompt: true,
           isAutomatic: false,  // Exclude automatic prompts
+          visibility: 'PUBLIC',  // Only show public system mini-prompts
         },
         include: {
           user: {
@@ -125,6 +126,7 @@ describe("get-prompts MCP tool", () => {
           isActive: true,
           isSystemMiniPrompt: true,
           isAutomatic: false,  // Exclude automatic prompts
+          visibility: 'PUBLIC',  // Only show public system mini-prompts
           OR: [
             { name: { contains: "analysis", mode: "insensitive" } },
             { content: { contains: "analysis", mode: "insensitive" } },

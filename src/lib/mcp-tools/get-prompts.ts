@@ -15,11 +15,13 @@ export async function getPromptsHandler({ search, userId }: { search?: string; u
         isActive: boolean;
         isSystemMiniPrompt: boolean;
         isAutomatic: boolean;
+        visibility: 'PUBLIC' | 'PRIVATE';
         OR?: Array<{ name?: { contains: string; mode: 'insensitive' } } | { content?: { contains: string; mode: 'insensitive' } }>;
       } = {
         isActive: true,
         isSystemMiniPrompt: true,
-        isAutomatic: false  // Exclude automatic prompts (Memory Board, Multi-Agent Chat)
+        isAutomatic: false,  // Exclude automatic prompts (Memory Board, Multi-Agent Chat)
+        visibility: 'PUBLIC' // Only show PUBLIC system mini-prompts to unauthenticated users
       };
 
       if (search) {
@@ -77,12 +79,13 @@ export async function getPromptsHandler({ search, userId }: { search?: string; u
       };
     }
 
-    // Get owned active mini prompts (exclude automatic prompts)
+    // Get owned active mini prompts (exclude automatic prompts, only PUBLIC)
     const ownedMiniPrompts = await prisma.miniPrompt.findMany({
       where: {
         userId,
         isActive: true,
-        isAutomatic: false  // Exclude automatic prompts
+        isAutomatic: false,  // Exclude automatic prompts
+        visibility: 'PUBLIC' // Only expose PUBLIC prompts via MCP
       },
       include: {
         user: {
@@ -100,13 +103,14 @@ export async function getPromptsHandler({ search, userId }: { search?: string; u
       }
     });
 
-    // Get referenced active mini prompts (exclude automatic prompts)
+    // Get referenced active mini prompts (exclude automatic prompts, only PUBLIC)
     const referencedMiniPrompts = await prisma.miniPromptReference.findMany({
       where: {
         userId,
         miniPrompt: { 
           isActive: true,
-          isAutomatic: false  // Exclude automatic prompts
+          isAutomatic: false,  // Exclude automatic prompts
+          visibility: 'PUBLIC' // Only expose PUBLIC prompts via MCP
         }
       },
       include: {

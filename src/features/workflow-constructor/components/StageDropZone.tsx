@@ -1,33 +1,34 @@
 'use client';
 
-import { useDroppable } from '@dnd-kit/core';
+import { useDrop } from 'react-dnd';
 import { cn } from '@/shared/lib/utils/cn';
 import type { WorkflowStageWithMiniPrompts, AutoPromptMetadata } from '@/lib/types/workflow-constructor-types';
 import { MiniPromptCard } from './MiniPromptCard';
 import { AutoPromptCard } from './AutoPromptCard';
 import { Tooltip } from '@/shared/ui/molecules';
-import EditIcon from '@mui/icons-material/Edit';
 
 interface StageDropZoneProps {
   stage: WorkflowStageWithMiniPrompts;
   onRemoveMiniPrompt: (miniPromptId: string) => void;
-  onEditMiniPrompt?: (miniPromptId: string) => void;
+  onDropMiniPrompts: (stageId: string, miniPromptIds: string[]) => void;
   includeMultiAgentChat?: boolean;
 }
 
 export function StageDropZone({
   stage,
   onRemoveMiniPrompt,
-  onEditMiniPrompt,
+  onDropMiniPrompts,
   includeMultiAgentChat = false
 }: StageDropZoneProps) {
-  const { isOver, setNodeRef } = useDroppable({
-    id: stage.id,
-    data: {
-      type: 'stage',
-      stageId: stage.id,
+  const [{ isOver }, drop] = useDrop(() => ({
+    accept: 'MINI_PROMPT',
+    drop: (item: { miniPromptIds: string[] }) => {
+      onDropMiniPrompts(stage.id, item.miniPromptIds);
     },
-  });
+    collect: (monitor) => ({
+      isOver: monitor.isOver(),
+    }),
+  }), [stage.id, onDropMiniPrompts]);
 
   const isEmpty = stage.miniPrompts.length === 0;
 
@@ -44,7 +45,7 @@ export function StageDropZone({
 
   return (
     <div
-      ref={setNodeRef}
+      ref={drop as unknown as React.Ref<HTMLDivElement>}
       className={cn(
         'min-h-32 rounded-lg border-2 border-dashed p-3 transition-colors',
         isOver
@@ -65,20 +66,8 @@ export function StageDropZone({
               <div className="relative group">
                 <MiniPromptCard 
                   miniPrompt={stageMiniPrompt.miniPrompt}
-                  onEdit={onEditMiniPrompt ? () => onEditMiniPrompt(stageMiniPrompt.miniPromptId) : undefined}
                 />
-                <div className="absolute top-1 right-1 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                  {onEditMiniPrompt && (
-                    <Tooltip content="Edit this mini-prompt">
-                      <button
-                        onClick={() => onEditMiniPrompt(stageMiniPrompt.miniPromptId)}
-                        className="bg-blue-500 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-blue-600"
-                        aria-label="Edit mini-prompt"
-                      >
-                        <EditIcon sx={{ fontSize: 14 }} />
-                      </button>
-                    </Tooltip>
-                  )}
+                <div className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition-opacity">
                   <Tooltip content="Remove this mini-prompt from the stage">
                     <button
                       onClick={() => onRemoveMiniPrompt(stageMiniPrompt.miniPromptId)}

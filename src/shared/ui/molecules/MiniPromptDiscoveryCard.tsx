@@ -39,6 +39,7 @@ export function MiniPromptDiscoveryCard({
   const [isRemoving, setIsRemoving] = useState(false);
   const [isDuplicating, setIsDuplicating] = useState(false);
   const [isActive, setIsActive] = useState(miniPrompt.isActive);
+  const [isPublic, setIsPublic] = useState(miniPrompt.visibility === 'PUBLIC');
   const [currentRating, setCurrentRating] = useState<number | undefined>();
   const [localRating, setLocalRating] = useState<{ average: number | null; count: number }>({
     average: miniPrompt.averageRating,
@@ -78,6 +79,23 @@ export function MiniPromptDiscoveryCard({
     } catch (error) {
       console.error('Failed to update mini-prompt active state:', error);
       setIsActive(!newActiveState); // Revert on error
+    }
+  };
+
+  const handleToggleVisibility = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    e.stopPropagation();
+    const newVisibility = e.target.checked ? 'PUBLIC' : 'PRIVATE';
+    setIsPublic(e.target.checked);
+
+    try {
+      await fetch(`/api/mini-prompts/${miniPrompt.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ visibility: newVisibility }),
+      });
+    } catch (error) {
+      console.error('Failed to update mini-prompt visibility:', error);
+      setIsPublic(!e.target.checked); // Revert on error
     }
   };
 
@@ -226,17 +244,34 @@ export function MiniPromptDiscoveryCard({
             {/* Actions Row - single unified row for all mini-prompts */}
             {miniPrompt.isInUserLibrary && (
               <div className="flex items-center justify-between gap-2">
-                <Tooltip content="When active, this mini-prompt is available in MCP tools for AI assistants">
-                  <label className="flex items-center gap-2 cursor-pointer" onClick={(e) => e.stopPropagation()}>
-                    <input
-                      type="checkbox"
-                      checked={isActive}
-                      onChange={handleToggleActive}
-                      className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
-                    />
-                    <span className="text-sm font-medium text-gray-700">Active</span>
-                  </label>
-                </Tooltip>
+                <div className="flex items-center gap-4">
+                  <Tooltip content="When active, this mini-prompt is available in MCP tools for AI assistants">
+                    <label className="flex items-center gap-2 cursor-pointer" onClick={(e) => e.stopPropagation()}>
+                      <input
+                        type="checkbox"
+                        checked={isActive}
+                        onChange={handleToggleActive}
+                        className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
+                      />
+                      <span className="text-sm font-medium text-gray-700">Active</span>
+                    </label>
+                  </Tooltip>
+
+                  {/* Public visibility checkbox - only for owned mini-prompts */}
+                  {isOwnMiniPrompt && (
+                    <Tooltip content="When public, this mini-prompt is discoverable by other users">
+                      <label className="flex items-center gap-2 cursor-pointer" onClick={(e) => e.stopPropagation()}>
+                        <input
+                          type="checkbox"
+                          checked={isPublic}
+                          onChange={handleToggleVisibility}
+                          className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
+                        />
+                        <span className="text-sm font-medium text-gray-700">Public</span>
+                      </label>
+                    </Tooltip>
+                  )}
+                </div>
                 {/* Action buttons */}
                 <div className="flex items-center gap-2">
                   {/* Rate button - only for non-owned mini-prompts */}

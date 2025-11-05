@@ -1,12 +1,12 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { DndContext, DragEndEvent } from '@dnd-kit/core';
+import { DndProvider } from 'react-dnd';
+import { HTML5Backend } from 'react-dnd-html5-backend';
 import Button from '@/shared/ui/atoms/Button';
 import Input from '@/shared/ui/atoms/Input';
 import { BetaBadge } from '@/shared/ui/atoms';
 import type { WorkflowConstructorData } from '@/lib/types/workflow-constructor-types';
-import { useDragAndDrop } from '../hooks/use-drag-and-drop';
 import { useWorkflowConstructor } from '../hooks/use-workflow-constructor';
 import { useWorkflowConstructorStore } from '../lib/workflow-constructor-store';
 import { useWorkflowHandlers } from '../lib/use-workflow-handlers';
@@ -106,7 +106,6 @@ export function WorkflowConstructor({ data }: WorkflowConstructorProps) {
     handleEditStage,
     handleUpdateStage,
     handleDragEnd: handleMiniPromptDragEnd,
-    handleEditMiniPrompt,
     handleUpdateMiniPrompt,
   } = useWorkflowHandlers({
     miniPrompts,
@@ -128,25 +127,9 @@ export function WorkflowConstructor({ data }: WorkflowConstructorProps) {
   // Get AI integration
   const { handleToolCall } = useWorkflowAIIntegration();
 
-  // Drag and drop
-  const {
-    sensors,
-    handleDragStart,
-    handleDragOver,
-    handleDragEnd: onDragEnd,
-    handleDragCancel,
-  } = useDragAndDrop();
-
-  const handleDragEnd = (event: DragEndEvent) => {
-    onDragEnd();
-    const { active, over } = event;
-
-    if (!over || !currentWorkflow) return;
-
-    const miniPromptId = active.id as string;
-    const stageId = over.id as string;
-
-    handleMiniPromptDragEnd(miniPromptId, stageId, miniPrompts);
+  // Drag and drop handler for stages
+  const onDropMiniPrompts = (stageId: string, miniPromptIds: string[]) => {
+    handleMiniPromptDragEnd(miniPromptIds, stageId, miniPrompts);
   };
 
   const handleSaveWorkflow = async () => {
@@ -211,7 +194,8 @@ export function WorkflowConstructor({ data }: WorkflowConstructorProps) {
           </div>
         </div>
 
-        <div className="flex items-center justify-between gap-4">
+        {/* System panel - single row with checkboxes and tags */}
+        <div className="flex items-center gap-4 flex-wrap">
           <div className="flex items-center gap-6">
             <label className="flex items-center gap-2 cursor-pointer">
               <input
@@ -255,19 +239,21 @@ export function WorkflowConstructor({ data }: WorkflowConstructorProps) {
               </label>
             </Tooltip>
           </div>
+          
+          {/* Tags multiselect */}
+          <div className="flex-1 min-w-[300px]">
+            <TagMultiSelect
+              selectedTagIds={selectedTagIds}
+              onChange={(tagIds) => {
+                setSelectedTagIds(tagIds);
+                markDirty();
+              }}
+            />
+          </div>
         </div>
 
-        <div className="mt-4">
-          <TagMultiSelect
-            selectedTagIds={selectedTagIds}
-            onChange={(tagIds) => {
-              setSelectedTagIds(tagIds);
-              markDirty();
-            }}
-          />
-        </div>
-
-        <div className="mt-3">
+        {/* Description textarea below top panel */}
+        <div className="mt-4 relative">
           <textarea
             value={workflowDescription || ''}
             onChange={(e) => {
@@ -277,20 +263,18 @@ export function WorkflowConstructor({ data }: WorkflowConstructorProps) {
               }
             }}
             placeholder="Workflow Description (optional)"
+            maxLength={500}
             rows={3}
             className="w-full text-sm text-text-secondary rounded-md border border-gray-200 px-3 py-2 shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-0 focus:border-primary-500 focus:ring-primary-500 focus:shadow-md bg-white placeholder:text-gray-400 resize-none"
           />
+          <div className={`absolute bottom-2 right-2 text-xs ${(workflowDescription?.length || 0) > 480 ? 'text-red-500' : 'text-gray-400'}`}>
+            {workflowDescription?.length || 0}/500
+          </div>
         </div>
       </div>
 
       <div className="flex-1 overflow-hidden">
-        <DndContext
-          sensors={sensors}
-          onDragStart={handleDragStart}
-          onDragOver={handleDragOver}
-          onDragEnd={handleDragEnd}
-          onDragCancel={handleDragCancel}
-        >
+        <DndProvider backend={HTML5Backend}>
           <div className="grid grid-cols-4 gap-6 p-6 h-full">
             <div className="col-span-1 overflow-y-auto">
               <MiniPromptLibrary
@@ -313,6 +297,22 @@ export function WorkflowConstructor({ data }: WorkflowConstructorProps) {
                         smp.miniPromptId === updatedMiniPrompt.id
                           ? { ...smp, miniPrompt: updatedMiniPrompt }
                           : smp
+                      ),
+                    }))
+                  );
+                  markDirty();
+                }}
+                onMiniPromptDeleted={(deletedMiniPromptId) => {
+                  // Remove from library
+                  setMiniPrompts(miniPrompts.filter(mp => mp.id !== deletedMiniPromptId));
+                  
+                  // Remove from all stages
+                  const { setLocalStages } = useWorkflowConstructorStore.getState();
+                  setLocalStages((prevStages) =>
+                    prevStages.map((stage) => ({
+                      ...stage,
+                      miniPrompts: stage.miniPrompts.filter(
+                        (smp) => smp.miniPromptId !== deletedMiniPromptId
                       ),
                     }))
                   );
@@ -346,7 +346,7 @@ export function WorkflowConstructor({ data }: WorkflowConstructorProps) {
                       stage={stage}
                       onRemoveStage={handleRemoveStage}
                       onRemoveMiniPrompt={handleRemoveMiniPrompt}
-                      onEditMiniPrompt={handleEditMiniPrompt}
+                      onDropMiniPrompts={onDropMiniPrompts}
                       onEditStage={handleEditStage}
                       onToggleWithReview={handleToggleWithReview}
                       includeMultiAgentChat={includeMultiAgentChat}
@@ -370,7 +370,7 @@ export function WorkflowConstructor({ data }: WorkflowConstructorProps) {
               </div>
             </div>
           </div>
-        </DndContext>
+        </DndProvider>
 
         {/* AI Assistant Chat Sidebar */}
         <ChatSidebar

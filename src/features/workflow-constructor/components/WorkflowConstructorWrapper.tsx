@@ -2,12 +2,12 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { DndContext, DragEndEvent } from '@dnd-kit/core';
+import { DndProvider } from 'react-dnd';
+import { HTML5Backend } from 'react-dnd-html5-backend';
 import Button from '@/shared/ui/atoms/Button';
 import Input from '@/shared/ui/atoms/Input';
 import { BetaBadge } from '@/shared/ui/atoms';
 import type { MiniPrompt } from '@prisma/client';
-import { useDragAndDrop } from '../hooks/use-drag-and-drop';
 import { useWorkflowConstructorStore } from '../lib/workflow-constructor-store';
 import { useWorkflowHandlers } from '../lib/use-workflow-handlers';
 import { useWorkflowAIIntegration } from '../lib/use-workflow-ai-integration';
@@ -74,7 +74,6 @@ export function WorkflowConstructorWrapper({
     handleCreateStage,
     handleRemoveStage,
     handleRemoveMiniPrompt,
-    handleEditMiniPrompt,
     handleToggleWithReview,
     handleEditStage,
     handleUpdateStage,
@@ -84,25 +83,9 @@ export function WorkflowConstructorWrapper({
   // Get AI integration
   const { handleToolCall } = useWorkflowAIIntegration();
 
-  // Drag and drop
-  const {
-    sensors,
-    handleDragStart,
-    handleDragOver,
-    handleDragEnd: onDragEnd,
-    handleDragCancel,
-  } = useDragAndDrop();
-
-  const handleDragEnd = (event: DragEndEvent) => {
-    onDragEnd();
-    const { active, over } = event;
-
-    if (!over) return;
-
-    const miniPromptId = active.id as string;
-    const stageId = over.id as string;
-
-    handleMiniPromptDragEnd(miniPromptId, stageId, miniPrompts);
+  // Drag and drop handler for stages
+  const onDropMiniPrompts = (stageId: string, miniPromptIds: string[]) => {
+    handleMiniPromptDragEnd(miniPromptIds, stageId, miniPrompts);
   };
 
   const handleSaveWorkflow = async () => {
@@ -254,13 +237,7 @@ export function WorkflowConstructorWrapper({
       </div>
 
       <div className="flex-1 overflow-hidden">
-        <DndContext
-          sensors={sensors}
-          onDragStart={handleDragStart}
-          onDragOver={handleDragOver}
-          onDragEnd={handleDragEnd}
-          onDragCancel={handleDragCancel}
-        >
+        <DndProvider backend={HTML5Backend}>
           <div className="grid grid-cols-4 gap-6 p-6 h-full">
             <div className="col-span-1 overflow-y-auto">
               <MiniPromptLibrary
@@ -282,6 +259,20 @@ export function WorkflowConstructorWrapper({
                         smp.miniPromptId === updatedMiniPrompt.id
                           ? { ...smp, miniPrompt: updatedMiniPrompt }
                           : smp
+                      ),
+                    }))
+                  );
+                }}
+                onMiniPromptDeleted={(deletedMiniPromptId) => {
+                  // Remove from library
+                  setMiniPrompts(miniPrompts.filter(mp => mp.id !== deletedMiniPromptId));
+                  
+                  // Remove from all stages
+                  setLocalStages((prevStages) =>
+                    prevStages.map((stage) => ({
+                      ...stage,
+                      miniPrompts: stage.miniPrompts.filter(
+                        (smp) => smp.miniPromptId !== deletedMiniPromptId
                       ),
                     }))
                   );
@@ -314,7 +305,7 @@ export function WorkflowConstructorWrapper({
                       stage={stage}
                       onRemoveStage={handleRemoveStage}
                       onRemoveMiniPrompt={handleRemoveMiniPrompt}
-                      onEditMiniPrompt={handleEditMiniPrompt}
+                      onDropMiniPrompts={onDropMiniPrompts}
                       onEditStage={handleEditStage}
                       onToggleWithReview={handleToggleWithReview}
                       includeMultiAgentChat={includeMultiAgentChat}
@@ -338,7 +329,7 @@ export function WorkflowConstructorWrapper({
               </div>
             </div>
           </div>
-        </DndContext>
+        </DndProvider>
 
         {/* AI Assistant Chat Sidebar */}
         <ChatSidebar

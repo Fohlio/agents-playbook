@@ -39,6 +39,7 @@ export function WorkflowDiscoveryCard({
   const [isRemoving, setIsRemoving] = useState(false);
   const [isDuplicating, setIsDuplicating] = useState(false);
   const [isActive, setIsActive] = useState(workflow.isActive);
+  const [isPublic, setIsPublic] = useState(workflow.visibility === 'PUBLIC');
   const [currentRating, setCurrentRating] = useState<number | undefined>();
   const [localRating, setLocalRating] = useState<{ average: number | null; count: number }>({
     average: workflow.averageRating,
@@ -130,6 +131,23 @@ export function WorkflowDiscoveryCard({
     } catch (error) {
       console.error('Failed to update workflow active state:', error);
       setIsActive(!newActiveState); // Revert on error
+    }
+  };
+
+  const handleToggleVisibility = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    e.stopPropagation();
+    const newVisibility = e.target.checked ? 'PUBLIC' : 'PRIVATE';
+    setIsPublic(e.target.checked);
+
+    try {
+      await fetch(`/api/workflows/${workflow.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ visibility: newVisibility }),
+      });
+    } catch (error) {
+      console.error('Failed to update workflow visibility:', error);
+      setIsPublic(!e.target.checked); // Revert on error
     }
   };
 
@@ -231,18 +249,35 @@ export function WorkflowDiscoveryCard({
           {/* Actions Row - single unified row for all workflows */}
           {workflow.isInUserLibrary && (
             <div className="flex items-center justify-between gap-2">
-              {/* Active checkbox - shown for all library items */}
-              <Tooltip content="When active, this workflow is available in MCP tools for AI assistants">
-                <label className="flex items-center gap-2 cursor-pointer" onClick={(e) => e.stopPropagation()}>
-                  <input
-                    type="checkbox"
-                    checked={isActive}
-                    onChange={handleToggleActive}
-                    className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
-                  />
-                  <span className="text-sm font-medium text-gray-700">Active</span>
-                </label>
-              </Tooltip>
+              <div className="flex items-center gap-4">
+                {/* Active checkbox - shown for all library items */}
+                <Tooltip content="When active, this workflow is available in MCP tools for AI assistants">
+                  <label className="flex items-center gap-2 cursor-pointer" onClick={(e) => e.stopPropagation()}>
+                    <input
+                      type="checkbox"
+                      checked={isActive}
+                      onChange={handleToggleActive}
+                      className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
+                    />
+                    <span className="text-sm font-medium text-gray-700">Active</span>
+                  </label>
+                </Tooltip>
+
+                {/* Public visibility checkbox - only for owned workflows */}
+                {isOwnWorkflow && (
+                  <Tooltip content="When public, this workflow is discoverable by other users">
+                    <label className="flex items-center gap-2 cursor-pointer" onClick={(e) => e.stopPropagation()}>
+                      <input
+                        type="checkbox"
+                        checked={isPublic}
+                        onChange={handleToggleVisibility}
+                        className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
+                      />
+                      <span className="text-sm font-medium text-gray-700">Public</span>
+                    </label>
+                  </Tooltip>
+                )}
+              </div>
 
               {/* Action buttons */}
               <div className="flex items-center gap-2">

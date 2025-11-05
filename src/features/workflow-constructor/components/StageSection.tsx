@@ -13,7 +13,7 @@ interface StageSectionProps {
   stage: WorkflowStageWithMiniPrompts;
   onRemoveStage: (stageId: string) => void;
   onRemoveMiniPrompt: (stageId: string, miniPromptId: string) => void;
-  onEditMiniPrompt?: (miniPromptId: string) => void;
+  onDropMiniPrompts: (stageId: string, miniPromptIds: string[]) => void;
   onEditStage?: (stageId: string) => void;
   onToggleWithReview?: (stageId: string, withReview: boolean) => void;
   includeMultiAgentChat?: boolean;
@@ -23,7 +23,7 @@ export function StageSection({
   stage,
   onRemoveStage,
   onRemoveMiniPrompt,
-  onEditMiniPrompt,
+  onDropMiniPrompts,
   onEditStage,
   onToggleWithReview,
   includeMultiAgentChat = false,
@@ -92,7 +92,7 @@ export function StageSection({
         onRemoveMiniPrompt={(miniPromptId) =>
           onRemoveMiniPrompt(stage.id, miniPromptId)
         }
-        onEditMiniPrompt={onEditMiniPrompt}
+        onDropMiniPrompts={onDropMiniPrompts}
         includeMultiAgentChat={includeMultiAgentChat}
       />
     </Card>

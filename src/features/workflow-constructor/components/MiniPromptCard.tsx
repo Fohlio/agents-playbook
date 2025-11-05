@@ -1,43 +1,31 @@
 'use client';
 
-import { useDraggable } from '@dnd-kit/core';
+import { useDrag } from 'react-dnd';
 import { Card } from '@/shared/ui/atoms/Card';
 import { cn } from '@/shared/lib/utils/cn';
 import type { MiniPrompt } from '@prisma/client';
-import EditIcon from '@mui/icons-material/Edit';
 
 interface MiniPromptCardProps {
   miniPrompt: MiniPrompt;
-  isDragging?: boolean;
-  onEdit?: (miniPrompt: MiniPrompt) => void;
 }
 
-export function MiniPromptCard({ miniPrompt, isDragging = false, onEdit }: MiniPromptCardProps) {
-  const { attributes, listeners, setNodeRef, transform } = useDraggable({
-    id: miniPrompt.id,
-    data: {
-      type: 'mini-prompt',
-      miniPromptId: miniPrompt.id,
+export function MiniPromptCard({ miniPrompt }: MiniPromptCardProps) {
+  const [{ isDragging }, drag] = useDrag(() => ({
+    type: 'MINI_PROMPT',
+    item: () => {
+      return { 
+        miniPromptIds: [miniPrompt.id],
+        type: 'MINI_PROMPT'
+      };
     },
-  });
-
-  const style = transform
-    ? {
-        transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
-      }
-    : undefined;
-
-  const handleEditClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    onEdit?.(miniPrompt);
-  };
+    collect: (monitor) => ({
+      isDragging: monitor.isDragging(),
+    }),
+  }), [miniPrompt.id]);
 
   return (
     <div
-      ref={setNodeRef}
-      style={style}
-      {...listeners}
-      {...attributes}
+      ref={drag as unknown as React.Ref<HTMLDivElement>}
       className={cn(
         'cursor-grab active:cursor-grabbing transition-opacity',
         isDragging && 'opacity-50'
@@ -54,16 +42,6 @@ export function MiniPromptCard({ miniPrompt, isDragging = false, onEdit }: MiniP
           <h4 className="text-sm font-medium text-text-primary flex-1">
             {miniPrompt.name}
           </h4>
-          {onEdit && (
-            <button
-              onClick={handleEditClick}
-              className="p-1 hover:bg-gray-100 rounded transition-colors"
-              aria-label={`Edit ${miniPrompt.name}`}
-              title="Edit mini-prompt"
-            >
-              <EditIcon className="text-gray-500 hover:text-blue-600" sx={{ fontSize: 16 }} />
-            </button>
-          )}
         </div>
       </Card>
     </div>
