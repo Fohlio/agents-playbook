@@ -87,47 +87,47 @@ export default function SetupSection() {
             >
               {/* Connecting line */}
               {index < steps.length - 1 && (
-                <div className="absolute left-8 top-20 w-0.5 h-16 bg-gradient-to-b from-slate-300 to-transparent"></div>
+                <div className="hidden sm:block absolute left-6 sm:left-8 top-20 w-0.5 h-16 bg-gradient-to-b from-slate-300 to-transparent"></div>
               )}
-              
-              <div className="flex items-start space-x-6">
+
+              <div className="flex items-start space-x-3 sm:space-x-6">
                 {/* Step number circle */}
                 <div className="relative flex-shrink-0">
-                  <div className={`w-16 h-16 bg-gradient-to-br ${step.gradient} rounded-2xl flex items-center justify-center text-white font-bold text-xl shadow-lg group-hover:scale-110 transition-transform duration-300`}>
+                  <div className={`w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br ${step.gradient} rounded-xl sm:rounded-2xl flex items-center justify-center text-white font-bold text-lg sm:text-xl shadow-lg group-hover:scale-110 transition-transform duration-300`}>
                     {step.number}
                   </div>
                   {/* Glow effect */}
-                  <div className={`absolute inset-0 w-16 h-16 bg-gradient-to-br ${step.gradient} rounded-2xl blur-xl opacity-30 group-hover:opacity-50 transition-opacity duration-300`}></div>
+                  <div className={`absolute inset-0 w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br ${step.gradient} rounded-xl sm:rounded-2xl blur-xl opacity-30 group-hover:opacity-50 transition-opacity duration-300`}></div>
                 </div>
 
                 {/* Content */}
-                <div className="flex-1 bg-white/80 backdrop-blur-sm rounded-3xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 border border-white/50 group-hover:-translate-y-1">
+                <div className="flex-1 min-w-0 bg-white/80 backdrop-blur-sm rounded-2xl sm:rounded-3xl p-4 sm:p-8 shadow-lg hover:shadow-xl transition-all duration-300 border border-white/50 group-hover:-translate-y-1">
                   <div className="flex items-center space-x-3 mb-4">
-                    <div className={`w-10 h-10 bg-gradient-to-br ${step.gradient} rounded-xl flex items-center justify-center text-white`}>
+                    <div className={`w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br ${step.gradient} rounded-lg sm:rounded-xl flex items-center justify-center text-white flex-shrink-0`}>
                       {step.icon}
                     </div>
-                    <h3 className="text-2xl font-bold text-slate-900">{step.title}</h3>
+                    <h3 className="text-lg sm:text-2xl font-bold text-slate-900">{step.title}</h3>
                   </div>
-                  
-                  <p className="text-slate-600 text-lg mb-6 leading-relaxed">
+
+                  <p className="text-slate-600 text-base sm:text-lg mb-6 leading-relaxed">
                     {step.description}
                   </p>
 
                   {/* Code blocks for step 1 */}
                   {step.codeBlocks && (
                     <div className="space-y-4">
-                      <div className="bg-slate-900 rounded-2xl p-6 overflow-x-auto border border-slate-200">
+                      <div className="bg-slate-900 rounded-2xl p-4 sm:p-6 overflow-x-auto border border-slate-200">
                         <div className="flex items-center space-x-2 mb-4">
-                          <div className="w-3 h-3 bg-purple-500 rounded-full"></div>
-                          <span className="text-slate-300 font-medium">Cursor MCP Settings</span>
+                          <div className="w-3 h-3 bg-purple-500 rounded-full flex-shrink-0"></div>
+                          <span className="text-slate-300 font-medium text-sm sm:text-base">Cursor MCP Settings</span>
                         </div>
-                        <pre className="text-slate-300 text-sm font-mono leading-relaxed">
-                          <code>{step.codeBlocks.cursor}</code>
+                        <pre className="text-slate-300 text-xs sm:text-sm font-mono leading-relaxed overflow-x-auto">
+                          <code className="block min-w-max">{step.codeBlocks.cursor}</code>
                         </pre>
                       </div>
-                      
+
                       {/* Info note */}
-                      <div className="px-4 py-3 bg-blue-50 border border-blue-200 rounded-lg text-sm text-blue-800">
+                      <div className="px-3 sm:px-4 py-3 bg-blue-50 border border-blue-200 rounded-lg text-xs sm:text-sm text-blue-800">
                         <p className="font-medium">💡 Add this configuration to your Cursor MCP settings</p>
                         <p className="mt-2 text-xs">
                           <strong>Note:</strong> Get your API token from Settings → API Tokens. The <code className="bg-blue-100 px-1 rounded">headers</code> field ensures proper authentication.
@@ -140,12 +140,12 @@ export default function SetupSection() {
                   {step.examples && (
                     <div className="space-y-3">
                       {step.examples.map((example, exampleIndex) => (
-                        <div 
+                        <div
                           key={exampleIndex}
-                          className="flex items-center space-x-3 p-4 bg-gradient-to-r from-slate-50 to-blue-50 rounded-xl border border-slate-200/50"
+                          className="flex items-start space-x-3 p-3 sm:p-4 bg-gradient-to-r from-slate-50 to-blue-50 rounded-xl border border-slate-200/50"
                         >
-                          <div className="w-2 h-2 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full"></div>
-                          <span className="text-slate-700 font-medium">&quot;{example}&quot;</span>
+                          <div className="w-2 h-2 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex-shrink-0 mt-1.5"></div>
+                          <span className="text-slate-700 font-medium text-sm sm:text-base break-words">&quot;{example}&quot;</span>
                         </div>
                       ))}
                     </div>

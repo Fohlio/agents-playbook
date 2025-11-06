@@ -9,57 +9,57 @@ export default function FeaturesSection() {
     {
       icon: (
         <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
         </svg>
       ),
-      title: "Eliminate Hallucinations",
-      description: "Structured workflows provide complete context so AI never invents APIs, hardcodes secrets, or skips validation.",
+      title: "Handle Complex Tasks",
+      description: "Multi-step workflows guide AI through intricate processes, breaking down large features into manageable, validated stages.",
       gradient: "from-emerald-500 to-green-500",
+      audience: "For Complex Projects"
+    },
+    {
+      icon: (
+        <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+        </svg>
+      ),
+      title: "Navigate Big Codebases",
+      description: "Structured context helps AI understand large projects, maintain consistency across modules, and respect your architecture patterns.",
+      gradient: "from-purple-500 to-pink-500",
+      audience: "For Large Projects"
+    },
+    {
+      icon: (
+        <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+        </svg>
+      ),
+      title: "Team Workflows",
+      description: "Create and share custom workflows tailored to your team's specific needs, tech stack, and development practices.",
+      gradient: "from-blue-500 to-cyan-500",
       audience: "For Engineering Teams"
     },
     {
       icon: (
         <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z" />
         </svg>
       ),
-      title: "Ship 10x Faster",
-      description: "Reusable workflows encode best practices and patterns. Stop debugging hallucinated code, start shipping features.",
-      gradient: "from-purple-500 to-pink-500",
-      audience: "For Product Teams"
-    },
-    {
-      icon: (
-        <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-        </svg>
-      ),
-      title: "Production-Ready Code",
-      description: "Every workflow includes validation stages, edge case handling, testing, and security checks built in.",
-      gradient: "from-blue-500 to-cyan-500",
-      audience: "For Startups"
-    },
-    {
-      icon: (
-        <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-        </svg>
-      ),
-      title: "AI-Powered Discovery",
-      description: "Semantic search finds the perfect workflow for any task. Just describe what you need in natural language.",
+      title: "Personal Library",
+      description: "Build and maintain your own library of reusable workflows and mini-prompts. Keep your proven patterns organized and accessible.",
       gradient: "from-orange-500 to-red-500",
       audience: "For All Users"
     },
     {
       icon: (
         <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 4a2 2 0 114 0v1a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-1a2 2 0 100 4h1a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-1a2 2 0 10-4 0v1a1 1 0 01-1 1H7a1 1 0 01-1-1v-3a1 1 0 00-1-1H4a2 2 0 110-4h1a1 1 0 001-1V7a1 1 0 011-1h3a1 1 0 001-1V4z" />
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
         </svg>
       ),
-      title: "Integrate Anywhere",
-      description: "Native MCP support for Claude Code, Cursor, and any AI assistant. Works with your existing tools.",
+      title: "Reduce Hallucinations",
+      description: "Structured workflows provide complete context so AI generates accurate, validated code instead of inventing APIs or hardcoding secrets.",
       gradient: "from-indigo-500 to-purple-500",
-      audience: "For Developers"
+      audience: "For Quality Code"
     },
     {
       icon: (
@@ -67,21 +67,21 @@ export default function FeaturesSection() {
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
         </svg>
       ),
-      title: "Build Your Own",
-      description: "Visual workflow constructor with drag-and-drop. Create custom workflows for your team's unique patterns.",
+      title: "Visual Workflow Builder",
+      description: "Drag-and-drop constructor makes it easy to create sophisticated workflows without writing YAML or configuration files.",
       gradient: "from-teal-500 to-emerald-500",
       audience: "For Power Users"
     },
     {
       icon: (
         <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 4a2 2 0 114 0v1a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-1a2 2 0 100 4h1a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-1a2 2 0 10-4 0v1a1 1 0 01-1 1H7a1 1 0 01-1-1v-3a1 1 0 00-1-1H4a2 2 0 110-4h1a1 1 0 001-1V7a1 1 0 011-1h3a1 1 0 001-1V4z" />
         </svg>
       ),
-      title: "AI Chat Assistant",
-      description: "Built-in AI assistant helps you create workflows, find mini-prompts, and optimize your processes in real-time.",
+      title: "MCP Integration",
+      description: "Native Model Context Protocol support for Claude Code, Cursor, and any AI assistant. Seamlessly integrates with your tools.",
       gradient: "from-violet-500 to-fuchsia-500",
-      audience: "For All Users"
+      audience: "For Developers"
     }
   ];
 
@@ -107,7 +107,7 @@ export default function FeaturesSection() {
             </span>
           </h2>
           <p className="text-lg text-slate-600 max-w-3xl mx-auto">
-            From solo developers to enterprise engineering teams, workflows eliminate AI hallucinations and accelerate delivery
+            Empower AI to handle complex projects and maintain team-specific knowledge libraries
           </p>
         </div>
 

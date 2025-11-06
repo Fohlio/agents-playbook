@@ -15,6 +15,7 @@ import RocketLaunchIcon from '@mui/icons-material/RocketLaunch';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import ExploreIcon from '@mui/icons-material/Explore';
 import LibraryBooksIcon from '@mui/icons-material/LibraryBooks';
+import ForumIcon from '@mui/icons-material/Forum';
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import SettingsIcon from '@mui/icons-material/Settings';
 
@@ -41,6 +42,7 @@ export function DashboardSidebar() {
     { href: ROUTES.DASHBOARD, label: 'Dashboard', icon: DashboardIcon, testId: 'dashboard-nav-link' },
     { href: ROUTES.DISCOVER, label: 'Discover', icon: ExploreIcon, testId: 'discover-nav-link' },
     { href: '/dashboard/library', label: 'Library', icon: LibraryBooksIcon, testId: 'library-nav-link' },
+    { href: '/dashboard/community', label: 'Community', icon: ForumIcon, testId: 'community-nav-link' },
     ...(isAdmin ? [{ href: ROUTES.ADMIN.SYSTEM_WORKFLOWS, label: 'Admin', icon: AdminPanelSettingsIcon, testId: 'admin-nav-link', badge: 'System' }] : []),
     { href: ROUTES.SETTINGS, label: 'Settings', icon: SettingsIcon, testId: 'settings-nav-link' },
   ];
