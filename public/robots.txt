@@ -1,0 +1,12 @@
+# Allow all crawlers
+User-agent: *
+Allow: /
+
+# Sitemap location
+Sitemap: https://agents-playbook.com/sitemap.xml
+
+# Disallow private/sensitive areas
+Disallow: /api/
+Disallow: /dashboard/admin/
+Disallow: /_next/
+Disallow: /static/

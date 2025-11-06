@@ -1,0 +1,42 @@
+{
+  "name": "Agents Playbook - AI Workflow Orchestration",
+  "short_name": "Agents Playbook",
+  "description": "Production-ready AI workflow orchestration platform with database-driven workflows and MCP server integration",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#2563eb",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["productivity", "business", "developer tools"],
+  "shortcuts": [
+    {
+      "name": "Discover Workflows",
+      "short_name": "Discover",
+      "description": "Browse and discover AI workflows",
+      "url": "/dashboard/discover",
+      "icons": [{ "src": "/icon.svg", "sizes": "any" }]
+    },
+    {
+      "name": "My Library",
+      "short_name": "Library",
+      "description": "Access your workflow library",
+      "url": "/dashboard/library",
+      "icons": [{ "src": "/icon.svg", "sizes": "any" }]
+    },
+    {
+      "name": "Create Workflow",
+      "short_name": "Create",
+      "description": "Create new workflow",
+      "url": "/dashboard/library/workflows/new",
+      "icons": [{ "src": "/icon.svg", "sizes": "any" }]
+    }
+  ]
+}
