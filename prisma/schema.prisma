@@ -77,6 +77,9 @@ model User {
   createdTags           Tag[]
   aiChatSessions        AIChatSession[]
   chatMessages          ChatMessage[]
+  topics                Topic[]
+  messages              Message[]             @relation("MessageAuthor")
+  messageVotes          MessageVote[]         @relation("MessageVotes")
 
   @@map("users")
   @@index([email])
@@ -422,6 +425,64 @@ model ChatMessage {
   @@map("chat_messages")
   @@index([chatId, createdAt])
   @@index([previousResponseId])
+  @@index([userId])
+}
+
+// ============================================================================
+// Community Forum Models
+// ============================================================================
+
+model Topic {
+  id          String    @id @default(uuid())
+  title       String    @db.VarChar(200)
+  authorId    String    @map("author_id")
+  isPinned    Boolean   @default(false) @map("is_pinned")
+  isClosed    Boolean   @default(false) @map("is_closed")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  author      User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  messages    Message[]
+
+  @@map("topics")
+  @@index([authorId])
+  @@index([isPinned, createdAt])
+  @@index([createdAt])
+}
+
+model Message {
+  id             String        @id @default(uuid())
+  topicId        String        @map("topic_id")
+  authorId       String        @map("author_id")
+  content        String        @db.Text
+  isFirstMessage Boolean       @default(false) @map("is_first_message")
+  createdAt      DateTime      @default(now()) @map("created_at")
+  updatedAt      DateTime      @updatedAt @map("updated_at")
+
+  // Relations
+  topic       Topic         @relation(fields: [topicId], references: [id], onDelete: Cascade)
+  author      User          @relation("MessageAuthor", fields: [authorId], references: [id], onDelete: Cascade)
+  votes       MessageVote[]
+
+  @@map("messages")
+  @@index([topicId, createdAt])
+  @@index([authorId])
+}
+
+model MessageVote {
+  id          String   @id @default(uuid())
+  messageId   String   @map("message_id")
+  userId      String   @map("user_id")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  // Relations
+  message     Message  @relation(fields: [messageId], references: [id], onDelete: Cascade)
+  user        User     @relation("MessageVotes", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([messageId, userId])
+  @@map("message_votes")
+  @@index([messageId])
   @@index([userId])
 }
 
