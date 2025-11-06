@@ -33,28 +33,28 @@ export default function HeroSection() {
         
         {/* Subtitle */}
         <p className="text-xl lg:text-2xl text-slate-600 mb-8 max-w-4xl mx-auto leading-relaxed">
-          Stop AI hallucinations. Start shipping reliable code.
+          Empower AI to tackle complex tasks and navigate large codebases with precision
         </p>
 
         {/* Value Propositions */}
-        <div className="flex flex-wrap justify-center gap-6 mb-12 max-w-5xl mx-auto">
-          <div className="inline-flex items-center gap-3 px-5 py-3 bg-white/80 backdrop-blur-sm rounded-lg shadow-sm border border-gray-200">
+        <div className="flex flex-wrap justify-center gap-4 lg:gap-6 mb-12 max-w-5xl mx-auto">
+          <div className="inline-flex items-center gap-3 px-4 lg:px-5 py-3 bg-white/80 backdrop-blur-sm rounded-lg shadow-sm border border-gray-200">
             <span className="text-2xl">🎯</span>
-            <span className="text-gray-700 font-medium">95% Fewer Errors</span>
+            <span className="text-gray-700 font-medium text-sm lg:text-base">Reduced Hallucinations</span>
           </div>
-          <div className="inline-flex items-center gap-3 px-5 py-3 bg-white/80 backdrop-blur-sm rounded-lg shadow-sm border border-gray-200">
-            <span className="text-2xl">⚡</span>
-            <span className="text-gray-700 font-medium">10x Faster Development</span>
+          <div className="inline-flex items-center gap-3 px-4 lg:px-5 py-3 bg-white/80 backdrop-blur-sm rounded-lg shadow-sm border border-gray-200">
+            <span className="text-2xl">🚀</span>
+            <span className="text-gray-700 font-medium text-sm lg:text-base">Complex Tasks</span>
           </div>
-          <div className="inline-flex items-center gap-3 px-5 py-3 bg-white/80 backdrop-blur-sm rounded-lg shadow-sm border border-gray-200">
-            <span className="text-2xl">🔒</span>
-            <span className="text-gray-700 font-medium">Zero Hallucinations</span>
+          <div className="inline-flex items-center gap-3 px-4 lg:px-5 py-3 bg-white/80 backdrop-blur-sm rounded-lg shadow-sm border border-gray-200">
+            <span className="text-2xl">📚</span>
+            <span className="text-gray-700 font-medium text-sm lg:text-base">Personal Library</span>
           </div>
         </div>
 
         <p className="text-lg text-slate-600 max-w-3xl mx-auto leading-relaxed mb-12">
-          Structured workflows give your AI assistant the context it needs to generate production-ready code.
-          No more hardcoded credentials. No more invented APIs. Just validated, tested, reliable results.
+          Build custom workflows and prompts for your team&apos;s specific needs. Maintain your personal library of reusable patterns.
+          Guide AI through complex multi-step processes in large projects with structured, validated workflows.
         </p>
       </div>
     </section>
