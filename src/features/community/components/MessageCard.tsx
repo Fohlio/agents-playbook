@@ -36,12 +36,14 @@ export function MessageCard({
     // Optimistic update - hide immediately
     setIsDeleting(true);
     setIsHidden(true);
-    onDelete?.();
 
     try {
       const result = await deleteMessage(message.id);
 
       if (result.success) {
+        // Only call onDelete after successful deletion
+        onDelete?.();
+
         if (result.data?.deletedTopic) {
           // Topic was deleted, redirect to community page
           window.location.href = "/dashboard/community";
@@ -53,10 +55,11 @@ export function MessageCard({
         setIsDeleting(false);
         alert(result.error || "Failed to delete message");
       }
-    } catch {
+    } catch (error) {
       // Revert on error
       setIsHidden(false);
       setIsDeleting(false);
+      console.error("Delete message error:", error);
       alert("Failed to delete message");
     }
   };

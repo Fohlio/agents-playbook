@@ -39,14 +39,26 @@ export function MessageForm({ topicId, isClosed, onMessageCreated }: MessageForm
       const query = mentionMatch[1];
       setShowMentionDropdown(true);
 
-      // Calculate dropdown position
+      // Calculate dropdown position relative to form container
       if (textareaRef.current) {
         const textarea = textareaRef.current;
-        const { top, left } = textarea.getBoundingClientRect();
-        setDropdownPosition({
-          top: top + 30, // Below the textarea
-          left: left + 10,
-        });
+        const container = textarea.offsetParent as HTMLElement;
+
+        if (container) {
+          const textareaRect = textarea.getBoundingClientRect();
+          const containerRect = container.getBoundingClientRect();
+
+          setDropdownPosition({
+            top: textareaRect.top - containerRect.top + 30, // Below the textarea
+            left: textareaRect.left - containerRect.left + 10,
+          });
+        } else {
+          // Fallback to offsetTop/offsetLeft if no offsetParent
+          setDropdownPosition({
+            top: textarea.offsetTop + 30,
+            left: textarea.offsetLeft + 10,
+          });
+        }
       }
 
       // Debounced user search

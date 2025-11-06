@@ -34,45 +34,50 @@ export async function toggleMessageVote(
       };
     }
 
-    // Check if user already voted
-    const existingVote = await prisma.messageVote.findUnique({
-      where: {
-        messageId_userId: {
-          messageId,
-          userId,
-        },
-      },
-    });
-
-    let hasVoted: boolean;
-
-    if (existingVote) {
-      // Remove vote
-      await prisma.messageVote.delete({
-        where: { id: existingVote.id },
-      });
-      hasVoted = false;
-    } else {
-      // Create vote
-      await prisma.messageVote.create({
-        data: {
-          messageId,
-          userId,
+    // Use transaction to avoid race conditions
+    const result = await prisma.$transaction(async (tx) => {
+      // Check if user already voted
+      const existingVote = await tx.messageVote.findUnique({
+        where: {
+          messageId_userId: {
+            messageId,
+            userId,
+          },
         },
       });
-      hasVoted = true;
-    }
 
-    // Count total votes for message
-    const voteCount = await prisma.messageVote.count({
-      where: { messageId },
+      let hasVoted: boolean;
+
+      if (existingVote) {
+        // Remove vote
+        await tx.messageVote.delete({
+          where: { id: existingVote.id },
+        });
+        hasVoted = false;
+      } else {
+        // Create vote
+        await tx.messageVote.create({
+          data: {
+            messageId,
+            userId,
+          },
+        });
+        hasVoted = true;
+      }
+
+      // Count total votes for message
+      const voteCount = await tx.messageVote.count({
+        where: { messageId },
+      });
+
+      return { hasVoted, voteCount };
     });
 
     return {
       success: true,
       data: {
-        voteCount,
-        hasVoted,
+        voteCount: result.voteCount,
+        hasVoted: result.hasVoted,
       },
     };
   } catch (error) {
