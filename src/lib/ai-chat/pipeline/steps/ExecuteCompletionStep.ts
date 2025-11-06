@@ -28,7 +28,7 @@ export class ExecuteCompletionStep implements PipelineStep {
       // Generate completion with response chaining using Responses API
       // IMPORTANT: Must use providerOptions (not experimental_providerMetadata) and store: true
       result = await generateText({
-        model: openai.responses('gpt-4o'),
+        model: openai.responses('gpt-4.1'),
         system: context.systemPrompt,
         messages: [{ role: 'user', content: context.userContent }],
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
