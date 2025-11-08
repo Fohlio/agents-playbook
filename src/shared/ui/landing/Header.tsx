@@ -1,6 +1,7 @@
 'use client';
 
 import Link from "next/link";
+import Image from "next/image";
 import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { ROUTES } from "@/shared/routes";
@@ -95,9 +96,15 @@ export default function Header() {
       <div className="relative max-w-7xl mx-auto px-6 py-6">
         <div className="flex justify-between items-center">
           <div className="flex items-center space-x-4">
-            <div className="relative">
-              <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl shadow-lg"></div>
-              <div className="absolute inset-0 bg-gradient-to-br from-blue-400 to-purple-500 rounded-xl blur-sm opacity-60"></div>
+            <div className="relative flex-shrink-0">
+              <Image 
+                src="/icon.svg" 
+                alt="Agents Playbook Logo" 
+                width={40}
+                height={40}
+                className="rounded-xl shadow-lg"
+                priority
+              />
             </div>
             <div>
               <h1 className="text-white font-bold text-xl tracking-tight">AI Agents Playbook</h1>
