@@ -25,7 +25,8 @@
     "db:migrate:api-keys": "tsx scripts/migrate-api-keys.ts",
     "db:studio": "prisma studio",
     "db:generate": "prisma generate",
-    "postinstall": "prisma generate"
+    "postinstall": "prisma generate",
+    "generate:favicon": "tsx scripts/generate-favicon.ts"
   },
   "dependencies": {
     "@ai-sdk/openai": "^2.0.59",
@@ -88,6 +89,7 @@
     "@types/node": "^20.19.4",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@types/sharp": "^0.32.0",
     "dotenv": "^17.0.1",
     "eslint": "^9",
     "eslint-config-next": "15.3.5",
@@ -99,6 +101,7 @@
     "jsdom": "^27.0.1",
     "playwright": "^1.56.0",
     "prisma": "^6.17.1",
+    "sharp": "^0.34.5",
     "tailwindcss": "^4",
     "ts-jest": "^29.2.5",
     "tsx": "^4.20.3",
