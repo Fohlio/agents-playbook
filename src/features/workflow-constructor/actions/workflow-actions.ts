@@ -40,6 +40,14 @@ export async function getWorkflowWithStages(
 }
 
 export async function getAllAvailableMiniPrompts(userId: string): Promise<MiniPrompt[]> {
+  // Check if user is admin
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { role: true },
+  });
+
+  const isAdmin = user?.role === 'ADMIN';
+
   // Fetch owned mini-prompts
   const ownedMiniPrompts = await prisma.miniPrompt.findMany({
     where: { userId },
@@ -51,10 +59,18 @@ export async function getAllAvailableMiniPrompts(userId: string): Promise<MiniPr
     include: { miniPrompt: true },
   });
 
+  // For admin users, also fetch all system prompts
+  const systemPrompts = isAdmin
+    ? await prisma.miniPrompt.findMany({
+        where: { isSystemMiniPrompt: true },
+      })
+    : [];
+
   // Combine and deduplicate
   const allMiniPrompts = [
     ...ownedMiniPrompts,
     ...referencedMiniPrompts.map((ref) => ref.miniPrompt),
+    ...systemPrompts,
   ];
 
   const uniqueMiniPrompts = Array.from(

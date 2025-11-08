@@ -90,12 +90,17 @@ describe('Workflow Constructor Actions', () => {
         { id: 'mp-2', name: 'User Prompt 2', userId: 'user-1', visibility: 'PUBLIC', createdAt: new Date() },
       ];
 
+      prismaMock.user.findUnique.mockResolvedValue({ role: 'USER' } as any);
       prismaMock.miniPrompt.findMany.mockResolvedValue(mockMiniPrompts as any);
       prismaMock.miniPromptReference.findMany.mockResolvedValue([]);
 
       const result = await getAllAvailableMiniPrompts('user-1');
 
       expect(result).toEqual(mockMiniPrompts);
+      expect(prismaMock.user.findUnique).toHaveBeenCalledWith({
+        where: { id: 'user-1' },
+        select: { role: true },
+      });
       expect(prismaMock.miniPrompt.findMany).toHaveBeenCalledWith({
         where: {
           userId: 'user-1',
@@ -104,12 +109,66 @@ describe('Workflow Constructor Actions', () => {
     });
 
     it('returns empty array when no prompts available', async () => {
+      prismaMock.user.findUnique.mockResolvedValue({ role: 'USER' } as any);
       prismaMock.miniPrompt.findMany.mockResolvedValue([]);
       prismaMock.miniPromptReference.findMany.mockResolvedValue([]);
 
       const result = await getAllAvailableMiniPrompts('user-1');
 
       expect(result).toEqual([]);
+    });
+
+    it('includes system prompts for admin users', async () => {
+      const mockUserPrompts = [
+        { id: 'mp-1', name: 'User Prompt 1', userId: 'admin-1', visibility: 'PRIVATE', createdAt: new Date() },
+      ];
+      const mockSystemPrompts = [
+        { id: 'mp-sys-1', name: 'System Prompt 1', userId: 'system', isSystemMiniPrompt: true, visibility: 'PRIVATE', createdAt: new Date() },
+        { id: 'mp-sys-2', name: 'System Prompt 2', userId: 'system', isSystemMiniPrompt: true, visibility: 'PRIVATE', createdAt: new Date() },
+      ];
+
+      prismaMock.user.findUnique.mockResolvedValue({ role: 'ADMIN' } as any);
+      prismaMock.miniPrompt.findMany
+        .mockResolvedValueOnce(mockUserPrompts as any) // First call for owned prompts
+        .mockResolvedValueOnce(mockSystemPrompts as any); // Second call for system prompts
+      prismaMock.miniPromptReference.findMany.mockResolvedValue([]);
+
+      const result = await getAllAvailableMiniPrompts('admin-1');
+
+      expect(result).toHaveLength(3);
+      expect(result).toEqual(expect.arrayContaining([
+        ...mockUserPrompts,
+        ...mockSystemPrompts,
+      ]));
+      expect(prismaMock.miniPrompt.findMany).toHaveBeenCalledTimes(2);
+      expect(prismaMock.miniPrompt.findMany).toHaveBeenNthCalledWith(1, {
+        where: { userId: 'admin-1' },
+      });
+      expect(prismaMock.miniPrompt.findMany).toHaveBeenNthCalledWith(2, {
+        where: { isSystemMiniPrompt: true },
+      });
+    });
+
+    it('does not include system prompts for non-admin users', async () => {
+      const mockUserPrompts = [
+        { id: 'mp-1', name: 'User Prompt 1', userId: 'user-1', visibility: 'PRIVATE', createdAt: new Date() },
+      ];
+      const mockSystemPrompts = [
+        { id: 'mp-sys-1', name: 'System Prompt 1', userId: 'system', isSystemMiniPrompt: true, visibility: 'PRIVATE', createdAt: new Date() },
+      ];
+
+      prismaMock.user.findUnique.mockResolvedValue({ role: 'USER' } as any);
+      prismaMock.miniPrompt.findMany.mockResolvedValue(mockUserPrompts as any);
+      prismaMock.miniPromptReference.findMany.mockResolvedValue([]);
+
+      const result = await getAllAvailableMiniPrompts('user-1');
+
+      expect(result).toHaveLength(1);
+      expect(result).toEqual(mockUserPrompts);
+      expect(prismaMock.miniPrompt.findMany).toHaveBeenCalledTimes(1);
+      expect(prismaMock.miniPrompt.findMany).not.toHaveBeenCalledWith({
+        where: { isSystemMiniPrompt: true },
+      });
     });
   });
 

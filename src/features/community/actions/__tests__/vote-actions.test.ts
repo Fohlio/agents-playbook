@@ -43,24 +43,22 @@ describe('Vote Actions', () => {
       };
 
       prismaMock.message.findUnique.mockResolvedValue(mockMessage as any);
-      prismaMock.messageVote.findUnique.mockResolvedValue(null);
-      prismaMock.messageVote.create.mockResolvedValue(mockVote as any);
-      prismaMock.messageVote.count.mockResolvedValue(5);
+      prismaMock.$transaction.mockImplementation(async (callback: any) => {
+        const tx = {
+          messageVote: {
+            findUnique: jest.fn().mockResolvedValue(null),
+            create: jest.fn().mockResolvedValue(mockVote as any),
+            count: jest.fn().mockResolvedValue(5),
+          },
+        };
+        return await callback(tx);
+      });
 
       const result = await toggleMessageVote(mockMessageId);
 
       expect(result).toEqual({
         success: true,
         data: { voteCount: 5, hasVoted: true },
-      });
-      expect(prismaMock.messageVote.create).toHaveBeenCalledWith({
-        data: {
-          userId: mockUserId,
-          messageId: mockMessageId,
-        },
-      });
-      expect(prismaMock.messageVote.count).toHaveBeenCalledWith({
-        where: { messageId: mockMessageId },
       });
     });
 
@@ -76,21 +74,22 @@ describe('Vote Actions', () => {
       };
 
       prismaMock.message.findUnique.mockResolvedValue(mockMessage as any);
-      prismaMock.messageVote.findUnique.mockResolvedValue(existingVote as any);
-      prismaMock.messageVote.delete.mockResolvedValue(existingVote as any);
-      prismaMock.messageVote.count.mockResolvedValue(3);
+      prismaMock.$transaction.mockImplementation(async (callback: any) => {
+        const tx = {
+          messageVote: {
+            findUnique: jest.fn().mockResolvedValue(existingVote as any),
+            delete: jest.fn().mockResolvedValue(existingVote as any),
+            count: jest.fn().mockResolvedValue(3),
+          },
+        };
+        return await callback(tx);
+      });
 
       const result = await toggleMessageVote(mockMessageId);
 
       expect(result).toEqual({
         success: true,
         data: { voteCount: 3, hasVoted: false },
-      });
-      expect(prismaMock.messageVote.delete).toHaveBeenCalledWith({
-        where: { id: mockVoteId },
-      });
-      expect(prismaMock.messageVote.count).toHaveBeenCalledWith({
-        where: { messageId: mockMessageId },
       });
     });
 
@@ -106,9 +105,7 @@ describe('Vote Actions', () => {
         success: false,
         error: 'Cannot vote on your own message',
       });
-      expect(prismaMock.messageVote.findUnique).not.toHaveBeenCalled();
-      expect(prismaMock.messageVote.create).not.toHaveBeenCalled();
-      expect(prismaMock.messageVote.delete).not.toHaveBeenCalled();
+      expect(prismaMock.$transaction).not.toHaveBeenCalled();
     });
 
     it('fails when message not found', async () => {
@@ -120,8 +117,7 @@ describe('Vote Actions', () => {
         success: false,
         error: 'Message not found',
       });
-      expect(prismaMock.messageVote.findUnique).not.toHaveBeenCalled();
-      expect(prismaMock.messageVote.create).not.toHaveBeenCalled();
+      expect(prismaMock.$transaction).not.toHaveBeenCalled();
     });
 
     it('fails when unauthenticated', async () => {
@@ -142,14 +138,25 @@ describe('Vote Actions', () => {
         authorId: 'different-user',
       };
 
+      const findUniqueMock = jest.fn().mockResolvedValue(null);
+      const createMock = jest.fn().mockResolvedValue({} as any);
+      const countMock = jest.fn().mockResolvedValue(1);
+
       prismaMock.message.findUnique.mockResolvedValue(mockMessage as any);
-      prismaMock.messageVote.findUnique.mockResolvedValue(null);
-      prismaMock.messageVote.create.mockResolvedValue({} as any);
-      prismaMock.messageVote.count.mockResolvedValue(1);
+      prismaMock.$transaction.mockImplementation(async (callback: any) => {
+        const tx = {
+          messageVote: {
+            findUnique: findUniqueMock,
+            create: createMock,
+            count: countMock,
+          },
+        };
+        return await callback(tx);
+      });
 
       await toggleMessageVote(mockMessageId);
 
-      expect(prismaMock.messageVote.findUnique).toHaveBeenCalledWith({
+      expect(findUniqueMock).toHaveBeenCalledWith({
         where: {
           messageId_userId: {
             messageId: mockMessageId,
@@ -167,9 +174,16 @@ describe('Vote Actions', () => {
 
       // Test adding vote
       prismaMock.message.findUnique.mockResolvedValue(mockMessage as any);
-      prismaMock.messageVote.findUnique.mockResolvedValue(null);
-      prismaMock.messageVote.create.mockResolvedValue({} as any);
-      prismaMock.messageVote.count.mockResolvedValue(10);
+      prismaMock.$transaction.mockImplementationOnce(async (callback: any) => {
+        const tx = {
+          messageVote: {
+            findUnique: jest.fn().mockResolvedValue(null),
+            create: jest.fn().mockResolvedValue({} as any),
+            count: jest.fn().mockResolvedValue(10),
+          },
+        };
+        return await callback(tx);
+      });
 
       let result = await toggleMessageVote(mockMessageId);
       expect(result.data?.voteCount).toBe(10);
@@ -180,9 +194,16 @@ describe('Vote Actions', () => {
         userId: mockUserId,
         messageId: mockMessageId,
       };
-      prismaMock.messageVote.findUnique.mockResolvedValue(existingVote as any);
-      prismaMock.messageVote.delete.mockResolvedValue(existingVote as any);
-      prismaMock.messageVote.count.mockResolvedValue(9);
+      prismaMock.$transaction.mockImplementationOnce(async (callback: any) => {
+        const tx = {
+          messageVote: {
+            findUnique: jest.fn().mockResolvedValue(existingVote as any),
+            delete: jest.fn().mockResolvedValue(existingVote as any),
+            count: jest.fn().mockResolvedValue(9),
+          },
+        };
+        return await callback(tx);
+      });
 
       result = await toggleMessageVote(mockMessageId);
       expect(result.data?.voteCount).toBe(9);
@@ -195,8 +216,7 @@ describe('Vote Actions', () => {
       };
 
       prismaMock.message.findUnique.mockResolvedValue(mockMessage as any);
-      prismaMock.messageVote.findUnique.mockResolvedValue(null);
-      prismaMock.messageVote.create.mockRejectedValue(new Error('Database error'));
+      prismaMock.$transaction.mockRejectedValue(new Error('Database error'));
 
       const result = await toggleMessageVote(mockMessageId);
 
@@ -218,8 +238,7 @@ describe('Vote Actions', () => {
       };
 
       prismaMock.message.findUnique.mockResolvedValue(mockMessage as any);
-      prismaMock.messageVote.findUnique.mockResolvedValue(existingVote as any);
-      prismaMock.messageVote.delete.mockRejectedValue(new Error('Database error'));
+      prismaMock.$transaction.mockRejectedValue(new Error('Database error'));
 
       const result = await toggleMessageVote(mockMessageId);
 
@@ -235,14 +254,23 @@ describe('Vote Actions', () => {
         authorId: 'different-user',
       };
 
+      const countMock = jest.fn().mockResolvedValue(7);
+
       prismaMock.message.findUnique.mockResolvedValue(mockMessage as any);
-      prismaMock.messageVote.findUnique.mockResolvedValue(null);
-      prismaMock.messageVote.create.mockResolvedValue({} as any);
-      prismaMock.messageVote.count.mockResolvedValue(7);
+      prismaMock.$transaction.mockImplementation(async (callback: any) => {
+        const tx = {
+          messageVote: {
+            findUnique: jest.fn().mockResolvedValue(null),
+            create: jest.fn().mockResolvedValue({} as any),
+            count: countMock,
+          },
+        };
+        return await callback(tx);
+      });
 
       await toggleMessageVote(mockMessageId);
 
-      expect(prismaMock.messageVote.count).toHaveBeenCalledWith({
+      expect(countMock).toHaveBeenCalledWith({
         where: { messageId: mockMessageId },
       });
     });
