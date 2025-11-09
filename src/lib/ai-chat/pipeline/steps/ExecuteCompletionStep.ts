@@ -120,13 +120,15 @@ export class ExecuteCompletionStep implements PipelineStep {
 
     // Build a friendly message from tool results
     let friendlyMessage = result.text;
+    
+    // If no text from AI but we have tool calls, build a descriptive message
     if (!friendlyMessage && toolInvocations.length > 0) {
       const messages = toolInvocations
         .map(inv => {
           // Handle error output
           if (inv.output && typeof inv.output === 'object' && 'error' in inv.output) {
             const errorValue = (inv.output as { error: unknown }).error;
-            return `Error: ${typeof errorValue === 'string' ? errorValue : JSON.stringify(errorValue, null, 2)}`;
+            return `Error calling ${inv.toolName}: ${typeof errorValue === 'string' ? errorValue : JSON.stringify(errorValue, null, 2)}`;
           }
           // Handle normal message output
           if (inv.output && typeof inv.output === 'object' && 'message' in inv.output) {
@@ -139,7 +141,32 @@ export class ExecuteCompletionStep implements PipelineStep {
       if (messages.length > 0) {
         friendlyMessage = messages.join('\n\n');
       } else {
-        friendlyMessage = 'Action completed successfully!';
+        // Build a descriptive message listing which tools were called
+        const toolNames = toolInvocations.map(inv => inv.toolName).filter(Boolean);
+        if (toolNames.length > 0) {
+          const toolList = toolNames.length === 1 
+            ? `the ${toolNames[0]} tool`
+            : `the following tools: ${toolNames.join(', ')}`;
+          friendlyMessage = `I've called ${toolList}. The changes should now be visible in your workflow.`;
+        } else {
+          friendlyMessage = 'Action completed successfully!';
+        }
+      }
+    }
+    
+    // If we have text from AI but also tool calls, enhance it with tool information
+    if (friendlyMessage && toolInvocations.length > 0) {
+      const toolNames = toolInvocations
+        .map(inv => inv.toolName)
+        .filter(Boolean)
+        .filter((name, index, arr) => arr.indexOf(name) === index); // unique
+      
+      if (toolNames.length > 0 && !friendlyMessage.toLowerCase().includes('tool')) {
+        // Only append if the message doesn't already mention tools
+        const toolInfo = toolNames.length === 1
+          ? ` (using ${toolNames[0]})`
+          : ` (using ${toolNames.join(', ')})`;
+        friendlyMessage = friendlyMessage + toolInfo;
       }
     }
 

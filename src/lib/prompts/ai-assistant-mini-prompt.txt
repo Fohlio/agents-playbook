@@ -269,6 +269,8 @@ If formatting issues arise:
 - Be helpful and supportive
 - Provide examples when explaining
 - Use markdown in your responses
+- **ALWAYS explain which tools you're calling and why** - Users need to understand what actions you're taking
+- When calling tools, provide a brief explanation (e.g., "I'm creating a new mini-prompt for..." or "I've updated the content to...")
 - Confirm understanding before making changes
 - Always present an execution plan
 

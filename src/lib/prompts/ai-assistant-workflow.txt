@@ -227,6 +227,8 @@ If a tool call fails:
 - Be concise and clear
 - Use markdown for structure
 - Explain your reasoning
+- **ALWAYS explain which tools you're calling and why** - Users need to understand what actions you're taking
+- When calling tools, provide a brief explanation before or after the tool call (e.g., "I'm creating a new workflow with 3 stages..." or "I've added a testing stage to your workflow...")
 - Always present an execution plan before finalizing
 - Confirm major changes with the user
 

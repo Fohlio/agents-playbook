@@ -288,9 +288,23 @@ export function ChatSidebar({
               )}
               {message.toolInvocations && message.toolInvocations.length > 0 && (
                 <div className="mt-2 pt-2 border-t border-gray-200">
-                  <p className="text-xs opacity-75">
-                    {message.toolInvocations.length} tool(s) called
+                  <p className="text-xs opacity-75 mb-1">
+                    {message.toolInvocations.length} tool(s) called:
                   </p>
+                  <div className="flex flex-wrap gap-1">
+                    {(message.toolInvocations as Array<{ toolName?: string }>)
+                      .map((inv, idx) => {
+                        const toolName = inv.toolName || 'unknown';
+                        return (
+                          <span
+                            key={idx}
+                            className="text-xs bg-blue-100 text-blue-800 px-2 py-0.5 rounded"
+                          >
+                            {toolName}
+                          </span>
+                        );
+                      })}
+                  </div>
                 </div>
               )}
             </div>
