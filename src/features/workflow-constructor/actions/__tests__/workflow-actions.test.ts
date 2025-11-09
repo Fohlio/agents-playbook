@@ -153,9 +153,6 @@ describe('Workflow Constructor Actions', () => {
       const mockUserPrompts = [
         { id: 'mp-1', name: 'User Prompt 1', userId: 'user-1', visibility: 'PRIVATE', createdAt: new Date() },
       ];
-      const mockSystemPrompts = [
-        { id: 'mp-sys-1', name: 'System Prompt 1', userId: 'system', isSystemMiniPrompt: true, visibility: 'PRIVATE', createdAt: new Date() },
-      ];
 
       prismaMock.user.findUnique.mockResolvedValue({ role: 'USER' } as any);
       prismaMock.miniPrompt.findMany.mockResolvedValue(mockUserPrompts as any);

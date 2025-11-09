@@ -231,11 +231,6 @@ describe('Vote Actions', () => {
         id: mockMessageId,
         authorId: 'different-user',
       };
-      const existingVote = {
-        id: mockVoteId,
-        userId: mockUserId,
-        messageId: mockMessageId,
-      };
 
       prismaMock.message.findUnique.mockResolvedValue(mockMessage as any);
       prismaMock.$transaction.mockRejectedValue(new Error('Database error'));
