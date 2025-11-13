@@ -1,8 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import Button from '@/shared/ui/atoms/Button';
-import Input from '@/shared/ui/atoms/Input';
+import { Button, Input, Textarea, Checkbox, FormField } from '@/shared/ui/atoms';
+import { Tooltip } from '@/shared/ui/molecules';
 import InfoIcon from '@mui/icons-material/Info';
 
 interface StageCreateFormProps {
@@ -55,10 +55,7 @@ export function StageCreateForm({ onSubmit, onCancel, initialValues, mode = 'cre
       </h3>
 
       <div className="space-y-4">
-        <div>
-          <label htmlFor="stage-name" className="block text-sm font-medium text-text-primary mb-1">
-            Stage Name *
-          </label>
+        <FormField label="Stage Name" htmlFor="stage-name" required>
           <Input
             id="stage-name"
             type="text"
@@ -67,27 +64,22 @@ export function StageCreateForm({ onSubmit, onCancel, initialValues, mode = 'cre
             placeholder="e.g., Analysis, Planning, Implementation"
             required
             autoFocus
+            fullWidth
           />
-        </div>
+        </FormField>
 
-        <div>
-          <label htmlFor="stage-description" className="block text-sm font-medium text-text-primary mb-1">
-            Description
-          </label>
-          <textarea
+        <FormField label="Description" htmlFor="stage-description">
+          <Textarea
             id="stage-description"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             placeholder="Optional description for this stage"
             rows={3}
-            className="w-full px-3 py-2 border border-border-base rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-text-primary bg-surface-base"
+            fullWidth
           />
-        </div>
+        </FormField>
 
-        <div>
-          <label className="block text-sm font-medium text-text-primary mb-2">
-            Color
-          </label>
+        <FormField label="Color" htmlFor="stage-color">
           <div className="flex gap-2 flex-wrap">
             {STAGE_COLORS.map((colorOption) => (
               <button
@@ -101,29 +93,25 @@ export function StageCreateForm({ onSubmit, onCancel, initialValues, mode = 'cre
                 }`}
                 style={{ backgroundColor: colorOption.value }}
                 title={colorOption.label}
+                aria-label={`Select ${colorOption.label} color`}
               />
             ))}
           </div>
-        </div>
+        </FormField>
 
         <div className="pt-2 border-t border-border-base">
           <div className="flex items-center gap-2">
-            <input
-              type="checkbox"
+            <Checkbox
               id="with-review"
               checked={withReview}
               onChange={(e) => setWithReview(e.target.checked)}
-              className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
             />
             <label htmlFor="with-review" className="text-sm font-medium text-text-primary">
               With Review
             </label>
-            <div className="group relative inline-block">
+            <Tooltip content="Add review step after this stage to validate progress before moving forward">
               <InfoIcon className="w-4 h-4 text-text-tertiary cursor-help" />
-              <div className="invisible group-hover:visible absolute left-0 bottom-full mb-2 w-64 p-2 bg-gray-900 text-white text-xs rounded shadow-lg z-10">
-                Add review step after this stage to validate progress before moving forward
-              </div>
-            </div>
+            </Tooltip>
           </div>
           <p className="text-xs text-text-secondary mt-1 ml-6">
             Recommended: Add review between stages to prevent context collapse

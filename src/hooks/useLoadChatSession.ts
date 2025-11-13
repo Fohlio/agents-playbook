@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { getChatHistory } from '@/features/ai-assistant/actions/chat-actions';
-import { CoreMessage } from 'ai';
+import { ModelMessage } from 'ai';
 
 interface Message {
   id: string;
@@ -44,8 +44,8 @@ export function useLoadChatSession(): UseLoadChatSessionReturn {
         throw new Error(result.error || 'Failed to load session');
       }
 
-      // Convert CoreMessage[] to Message[]
-      const messages: Message[] = result.messages.map((msg: CoreMessage, index: number) => ({
+      // Convert ModelMessage[] to Message[]
+      const messages: Message[] = result.messages.map((msg: ModelMessage, index: number) => ({
         id: `${sessionId}-${index}`,
         role: msg.role as 'user' | 'assistant' | 'system',
         content: typeof msg.content === 'string' ? msg.content : JSON.stringify(msg.content),

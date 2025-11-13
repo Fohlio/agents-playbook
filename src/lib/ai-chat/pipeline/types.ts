@@ -5,6 +5,7 @@
  */
 
 import type { AIChatMode, WorkflowContext } from '@/types/ai-chat';
+import type { ModelMessage, ToolSet } from 'ai';
 
 /**
  * Agent context passed through the pipeline
@@ -33,6 +34,7 @@ export interface PipelineContext extends AgentContext {
   autoResetTriggered?: boolean;
   chainBroken?: boolean;
   previousResponseId?: string;
+  previousToolResults?: ModelMessage[]; // Tool result messages from previous response
 
   // Step 4: Context building results
   systemPrompt?: string;
@@ -40,7 +42,7 @@ export interface PipelineContext extends AgentContext {
   includeExtendedContext?: boolean;
 
   // Step 5: Request preparation results
-  tools?: unknown;
+  tools?: ToolSet;
 
   // Step 6: Execution results
   completionResult?: {

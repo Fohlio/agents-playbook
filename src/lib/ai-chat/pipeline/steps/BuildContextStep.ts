@@ -44,8 +44,9 @@ export class BuildContextStep implements PipelineStep {
     }
 
     // Combine user message with context
+    // Put context BEFORE user message so AI sees it first
     const userContent = contextResult.userContent
-      ? `${context.message}\n\n[Context]\n${contextResult.userContent}`
+      ? `[Context]\n${contextResult.userContent}\n\n[User Message]\n${context.message}`
       : context.message;
 
     return {

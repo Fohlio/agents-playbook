@@ -9,7 +9,7 @@
 import { auth } from '@/lib/auth/auth';
 import { prisma } from '@/lib/db/client';
 import { MessagePersistenceService } from '@/lib/ai-chat/message-persistence-service';
-import type { CoreMessage } from 'ai';
+import type { ModelMessage } from 'ai';
 
 /**
  * Get chat history for a session
@@ -19,7 +19,7 @@ import type { CoreMessage } from 'ai';
  */
 export async function getChatHistory(
   chatId: string
-): Promise<{ success: boolean; messages?: CoreMessage[]; error?: string }> {
+): Promise<{ success: boolean; messages?: ModelMessage[]; error?: string }> {
   try {
     const session = await auth();
     if (!session?.user?.id) {

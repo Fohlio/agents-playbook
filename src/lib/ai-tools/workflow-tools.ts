@@ -1,6 +1,9 @@
 import { tool } from 'ai';
 import { z } from 'zod';
 import { prisma } from '@/lib/db/client';
+import { decryptApiKey } from '@/lib/auth/openai-key';
+import { createOpenAI } from '@ai-sdk/openai';
+import { generateText } from 'ai';
 
 /**
  * AI Tool: Get current workflow details
@@ -591,6 +594,126 @@ export const updateWorkflowSettings = tool({
 });
 
 /**
+ * AI Tool: Translate mini-prompt to a different language
+ *
+ * Translates the content of a mini-prompt to a target language while preserving
+ * all structure, formatting, and wordings. Only the language changes.
+ */
+export const translateMiniPrompt = tool({
+  description:
+    'Translate a mini-prompt to a different language while preserving all structure, formatting, markdown, and wordings. ' +
+    'Only the language changes - everything else stays exactly the same. ' +
+    'Use this when the user wants to translate the currently opened mini-prompt.',
+  inputSchema: z.object({
+    miniPromptId: z
+      .string()
+      .describe('Database ID of the mini-prompt to translate (use the currently opened mini-prompt ID from context)'),
+    targetLanguage: z
+      .string()
+      .min(1)
+      .describe('Target language name (e.g., "Spanish", "French", "German", "Japanese", "Russian", etc.)'),
+  }),
+  execute: async ({ miniPromptId, targetLanguage }) => {
+    try {
+      // Fetch the mini-prompt
+      const miniPrompt = await prisma.miniPrompt.findUnique({
+        where: { id: miniPromptId },
+        select: {
+          id: true,
+          name: true,
+          description: true,
+          content: true,
+          userId: true,
+        },
+      });
+
+      if (!miniPrompt) {
+        return {
+          success: false,
+          error: 'Mini-prompt not found',
+          message: `Mini-prompt with ID "${miniPromptId}" was not found.`,
+        };
+      }
+
+      // Get user's API key
+      const user = await prisma.user.findUnique({
+        where: { id: miniPrompt.userId },
+        select: { openaiApiKey: true, role: true },
+      });
+
+      let apiKey: string | undefined;
+      if (user?.role === 'ADMIN') {
+        apiKey = process.env.OPENAI_API_KEY;
+      } else if (user?.openaiApiKey) {
+        try {
+          apiKey = await decryptApiKey(user.openaiApiKey);
+        } catch (error) {
+          console.error('[translateMiniPrompt] Failed to decrypt API key:', error);
+          return {
+            success: false,
+            error: 'API key decryption failed',
+            message: 'Unable to access OpenAI API key. Please check your settings.',
+          };
+        }
+      }
+
+      if (!apiKey) {
+        return {
+          success: false,
+          error: 'OpenAI API key not configured',
+          message: 'OpenAI API key is required for translation. Please configure it in settings.',
+        };
+      }
+
+      // Use OpenAI to translate the content
+      const openai = createOpenAI({ apiKey });
+      
+      const translationPrompt = `Translate the following markdown content to ${targetLanguage}. 
+IMPORTANT: 
+- Preserve ALL markdown formatting exactly (headers, lists, code blocks, etc.)
+- Keep ALL structure and organization identical
+- Maintain ALL technical terms, placeholders, and special formatting
+- Only translate the natural language text, not code, markdown syntax, or technical identifiers
+- Preserve line breaks and spacing exactly
+
+Content to translate:
+${miniPrompt.content}`;
+
+      const result = await generateText({
+        model: openai('gpt-4o'),
+        messages: [
+          {
+            role: 'user',
+            content: translationPrompt,
+          },
+        ],
+        temperature: 0.3, // Lower temperature for more consistent translation
+      });
+
+      const translatedContent = result.text;
+
+      // Return result that will trigger modifyMiniPrompt action
+      return {
+        success: true,
+        action: 'modify_mini_prompt',
+        miniPromptId: miniPrompt.id,
+        updates: {
+          content: translatedContent,
+        },
+        message: `Mini-prompt "${miniPrompt.name}" has been translated to ${targetLanguage}. The translated content will be applied.`,
+      };
+    } catch (error) {
+      console.error('[translateMiniPrompt] Error:', error);
+      return {
+        success: false,
+        error: 'Translation failed',
+        message: error instanceof Error ? error.message : 'An unknown error occurred during translation.',
+      };
+    }
+  },
+});
+
+/**
  * Workflow AI Tools Collection
  *
  * Export all workflow-related AI tools as a single object
@@ -608,4 +731,6 @@ export const workflowTools = {
   createMiniPrompt,
   modifyMiniPrompt,
   updateWorkflowSettings,
+  // Translation tool
+  translateMiniPrompt,
 };

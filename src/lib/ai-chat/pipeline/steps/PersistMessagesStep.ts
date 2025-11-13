@@ -30,12 +30,36 @@ export class PersistMessagesStep implements PipelineStep {
       (context.completionResult.usage.outputTokens || 0);
 
     // Prepare messages to save
+    // Include both toolCalls (requests) and toolResults (outputs) in toolInvocations
+    // Tool results come from OpenAI's Responses API response, not from frontend
+    const toolInvocations = [];
+    
+    // Add tool calls (requests)
+    if (context.completionResult.toolCalls) {
+      toolInvocations.push(...context.completionResult.toolCalls.map(tc => ({
+        type: 'tool-call',
+        toolCallId: tc.toolCallId,
+        toolName: tc.toolName,
+        args: tc.args,
+      })));
+    }
+    
+    // Add tool results (outputs from OpenAI's Responses API)
+    if (context.completionResult.toolResults) {
+      toolInvocations.push(...context.completionResult.toolResults.map(tr => ({
+        type: 'tool-result',
+        toolCallId: tr.toolCallId,
+        toolName: tr.toolName,
+        output: tr.result,
+      })));
+    }
+
     const messagesToSave = [
       { role: 'user' as const, content: context.message },
       {
         role: 'assistant' as const,
         content: context.completionResult.text,
-        toolInvocations: context.completionResult.toolCalls || [],
+        toolInvocations: toolInvocations.length > 0 ? toolInvocations : undefined,
       },
     ];
 

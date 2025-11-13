@@ -7,9 +7,10 @@ import type { MiniPrompt } from '@prisma/client';
 
 interface MiniPromptCardProps {
   miniPrompt: MiniPrompt;
+  onClick?: (miniPrompt: MiniPrompt) => void;
 }
 
-export function MiniPromptCard({ miniPrompt }: MiniPromptCardProps) {
+export function MiniPromptCard({ miniPrompt, onClick }: MiniPromptCardProps) {
   const [{ isDragging }, drag] = useDrag(() => ({
     type: 'MINI_PROMPT',
     item: () => {
@@ -23,13 +24,23 @@ export function MiniPromptCard({ miniPrompt }: MiniPromptCardProps) {
     }),
   }), [miniPrompt.id]);
 
+  const handleClick = (e: React.MouseEvent) => {
+    // Don't trigger onClick if dragging
+    if (isDragging) return;
+    // Don't trigger if clicking on a button or interactive element
+    if ((e.target as HTMLElement).closest('button')) return;
+    onClick?.(miniPrompt);
+  };
+
   return (
     <div
       ref={drag as unknown as React.Ref<HTMLDivElement>}
       className={cn(
         'cursor-grab active:cursor-grabbing transition-opacity',
-        isDragging && 'opacity-50'
+        isDragging && 'opacity-50',
+        onClick && !isDragging && 'cursor-pointer'
       )}
+      onClick={handleClick}
     >
       <Card
         className={cn(

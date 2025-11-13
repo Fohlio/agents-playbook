@@ -7,13 +7,13 @@
 
 import { prisma } from '@/lib/db/client';
 import { withRetry } from '@/lib/db/retry';
-import type { CoreMessage } from 'ai';
+import type { ModelMessage } from 'ai';
 import type { MessageRole } from '@prisma/client';
 
 export interface SaveMessagesParams {
   chatId: string;
   userId: string;
-  messages: CoreMessage[]; // User + Assistant messages
+  messages: ModelMessage[]; // User + Assistant messages
   responseId: string | undefined; // From OpenAI providerMetadata
   tokenCount: number; // From OpenAI usage
 }
@@ -93,30 +93,76 @@ export class MessagePersistenceService {
    * Get last assistant message's previousResponseId for chain continuity
    *
    * @param chatId - Chat session ID
-   * @returns previousResponseId or undefined if no messages exist or if last message had tool calls
+   * @returns previousResponseId or undefined if no messages exist
    */
   static async getLastResponseId(chatId: string): Promise<string | undefined> {
     const lastMessage = await prisma.chatMessage.findFirst({
       where: { chatId, role: 'ASSISTANT' },
       orderBy: { createdAt: 'desc' },
-      select: { previousResponseId: true, toolInvocations: true },
+      select: { previousResponseId: true },
     });
 
     if (!lastMessage) {
       return undefined;
     }
 
-    // If the last message had tool calls, we cannot chain responses
-    // because OpenAI Responses API requires tool outputs to be provided
-    if (lastMessage.toolInvocations) {
-      const toolInvocations = lastMessage.toolInvocations as unknown;
-      if (Array.isArray(toolInvocations) && toolInvocations.length > 0) {
-        console.log('[MessagePersistence] Last message had tool calls, breaking chain to avoid API error');
-        return undefined;
-      }
+    return lastMessage.previousResponseId || undefined;
+  }
+
+  /**
+   * Get tool result messages from the last assistant message for response chaining
+   *
+   * When the previous response had tool calls, we need to provide the tool results
+   * in the messages array to continue the conversation chain properly.
+   *
+   * @param chatId - Chat session ID
+   * @returns Array of tool result messages formatted for AI SDK, or empty array if none
+   */
+  static async getLastToolResults(chatId: string): Promise<ModelMessage[]> {
+    const lastMessage = await prisma.chatMessage.findFirst({
+      where: { chatId, role: 'ASSISTANT' },
+      orderBy: { createdAt: 'desc' },
+      select: { toolInvocations: true },
+    });
+
+    if (!lastMessage || !lastMessage.toolInvocations) {
+      return [];
     }
 
-    return lastMessage.previousResponseId || undefined;
+    const toolInvocations = lastMessage.toolInvocations as unknown;
+    if (!Array.isArray(toolInvocations) || toolInvocations.length === 0) {
+      return [];
+    }
+
+    // Format tool invocations as tool result messages
+    // AI SDK expects tool messages with role 'tool' and content as array of ToolResultPart
+    return toolInvocations.map((invocation: {
+      toolCallId?: string;
+      toolName?: string;
+      output?: unknown;
+      result?: unknown;
+    }) => {
+      const toolCallId = invocation.toolCallId || '';
+      const toolResult = invocation.output || invocation.result;
+      
+      // ToolContent is an array of ToolResultPart
+      // Each part has type: 'tool-result' and content
+      const content = typeof toolResult === 'string' 
+        ? toolResult 
+        : JSON.stringify(toolResult);
+
+      return {
+        role: 'tool' as const,
+        content: [
+          {
+            type: 'tool-result' as const,
+            toolCallId,
+            toolName: invocation.toolName || '',
+            output: toolResult,
+          },
+        ],
+      } as ModelMessage;
+    });
   }
 
   /**
@@ -124,12 +170,12 @@ export class MessagePersistenceService {
    *
    * @param chatId - Chat session ID
    * @param limit - Maximum number of messages to retrieve (default: 50)
-   * @returns Array of messages formatted as CoreMessage[] for AI SDK
+   * @returns Array of messages formatted as ModelMessage[] for AI SDK
    */
   static async getMessageHistory(
     chatId: string,
     limit: number = 50
-  ): Promise<CoreMessage[]> {
+  ): Promise<ModelMessage[]> {
     const messages = await prisma.chatMessage.findMany({
       where: { chatId },
       orderBy: { createdAt: 'desc' },
@@ -143,7 +189,7 @@ export class MessagePersistenceService {
 
     // Reverse to get chronological order (oldest first)
     return messages.reverse().map((msg) => {
-      const coreMessage: CoreMessage = {
+      const coreMessage: ModelMessage = {
         role: msg.role.toLowerCase() as 'user' | 'assistant' | 'system',
         content: msg.content,
       };

@@ -185,8 +185,13 @@ export const useWorkflowConstructorStore = create<WorkflowConstructorState>((set
       isDirty: true,
     })),
 
-  // Reset
-  reset: () => set(initialState),
+  // Reset - preserve UI state (isChatOpen, viewingMiniPromptId) to avoid closing modals
+  reset: () => set((state) => ({
+    ...initialState,
+    // Preserve UI state to prevent modal from closing unexpectedly
+    isChatOpen: state.isChatOpen,
+    viewingMiniPromptId: state.viewingMiniPromptId,
+  })),
   initializeFromWorkflow: (workflow, miniPrompts) =>
     set({
       workflowId: workflow.id,

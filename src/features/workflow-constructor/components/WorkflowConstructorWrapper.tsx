@@ -1,12 +1,10 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
-import Button from '@/shared/ui/atoms/Button';
-import Input from '@/shared/ui/atoms/Input';
-import { BetaBadge } from '@/shared/ui/atoms';
+import { Button, Input, BetaBadge, Checkbox } from '@/shared/ui/atoms';
 import type { MiniPrompt } from '@prisma/client';
 import { useWorkflowConstructorStore } from '../lib/workflow-constructor-store';
 import { useWorkflowHandlers } from '../lib/use-workflow-handlers';
@@ -38,8 +36,20 @@ export function WorkflowConstructorWrapper({
   const setMiniPrompts = useWorkflowConstructorStore((s) => s.setMiniPrompts);
 
   useEffect(() => {
-    reset();
-    setMiniPrompts(initialMiniPrompts);
+    // Only reset if this is a true reset (e.g., component mount or miniPrompts actually changed)
+    // Don't reset on every render - this was causing the chat modal to close
+    const currentMiniPrompts = useWorkflowConstructorStore.getState().miniPrompts;
+    const miniPromptsChanged = JSON.stringify(currentMiniPrompts.map(mp => mp.id).sort()) !== 
+                               JSON.stringify(initialMiniPrompts.map(mp => mp.id).sort());
+    
+    if (miniPromptsChanged) {
+      console.log('[WorkflowConstructorWrapper] Mini-prompts changed, resetting store');
+      reset();
+      setMiniPrompts(initialMiniPrompts);
+    } else {
+      // Just update mini-prompts without full reset to preserve UI state
+      setMiniPrompts(initialMiniPrompts);
+    }
   }, [initialMiniPrompts, reset, setMiniPrompts]);
 
   // Get state from store
@@ -192,37 +202,30 @@ export function WorkflowConstructorWrapper({
 
         <div className="flex items-center justify-between gap-4">
           <div className="flex items-center gap-6">
-            <label className="flex items-center gap-2 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={isActive}
-                onChange={(e) => setIsActive(e.target.checked)}
-                className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
-              />
-              <span className="text-sm text-text-secondary">Active</span>
-            </label>
-            <label className="flex items-center gap-2 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={isPublic}
-                onChange={(e) => setIsPublic(e.target.checked)}
-                className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
-              />
-              <span className="text-sm text-text-secondary">Public</span>
-            </label>
+            <Checkbox
+              checked={isActive}
+              onChange={(e) => setIsActive(e.target.checked)}
+              id="new-workflow-active-checkbox"
+              label="Active"
+            />
+            <Checkbox
+              checked={isPublic}
+              onChange={(e) => setIsPublic(e.target.checked)}
+              id="new-workflow-public-checkbox"
+              label="Public"
+            />
             <Tooltip content="Enable AI coordination prompts after each mini-prompt to help multiple agents collaborate effectively">
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input
-                  type="checkbox"
+              <div className="flex items-center gap-2">
+                <Checkbox
                   checked={includeMultiAgentChat}
                   onChange={(e) => setIncludeMultiAgentChat(e.target.checked)}
-                  className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
+                  id="new-workflow-multi-agent-chat-checkbox"
                 />
-                <span className="text-sm text-text-secondary flex items-center gap-1">
+                <label htmlFor="new-workflow-multi-agent-chat-checkbox" className="text-sm text-text-secondary flex items-center gap-1 cursor-pointer">
                   Multi-Agent Chat
                   <BetaBadge />
-                </span>
-              </label>
+                </label>
+              </div>
             </Tooltip>
           </div>
         </div>
@@ -308,6 +311,9 @@ export function WorkflowConstructorWrapper({
                       onDropMiniPrompts={onDropMiniPrompts}
                       onEditStage={handleEditStage}
                       onToggleWithReview={handleToggleWithReview}
+                      onMiniPromptClick={(miniPrompt) => {
+                        setViewingMiniPromptId(miniPrompt.id);
+                      }}
                       includeMultiAgentChat={includeMultiAgentChat}
                     />
                   );
@@ -335,56 +341,88 @@ export function WorkflowConstructorWrapper({
         <ChatSidebar
           isOpen={isChatOpen}
           onClose={() => {
-            console.log('[WorkflowConstructorWrapper] ChatSidebar onClose called');
-            console.trace('[WorkflowConstructorWrapper] Close call stack');
             setIsChatOpen(false);
-            setViewingMiniPromptId(null);
+            // Don't clear viewingMiniPromptId when closing chat - user might want to keep viewing it
+            // setViewingMiniPromptId(null);
           }}
           mode="workflow"
-          workflowContext={{
-            workflow: {
-              id: 'new',
-              name: workflowName,
-              description: null,
-              complexity: null,
-              includeMultiAgentChat,
-              stages: localStages.map((stage) => ({
-                id: stage.id,
-                name: stage.name,
-                description: stage.description,
-                color: stage.color,
-                withReview: stage.withReview,
-                order: stage.order,
-                miniPrompts: stage.miniPrompts.map((smp) => ({
-                  miniPrompt: {
-                    id: smp.miniPrompt.id,
-                    name: smp.miniPrompt.name,
-                    description: smp.miniPrompt.description,
-                    content: smp.miniPrompt.content,
-                  },
-                  order: smp.order,
+          workflowContext={useMemo(() => {
+            // Find current mini-prompt
+            let currentMiniPrompt = undefined;
+            if (viewingMiniPromptId) {
+              // First try to find in main miniPrompts array
+              let mp = miniPrompts.find((m) => m.id === viewingMiniPromptId);
+              
+              // If not found, search in stages
+              if (!mp) {
+                for (const stage of localStages) {
+                  const stageMp = stage.miniPrompts.find(
+                    (smp) => smp.miniPrompt.id === viewingMiniPromptId
+                  );
+                  if (stageMp) {
+                    mp = stageMp.miniPrompt;
+                    break;
+                  }
+                }
+              }
+              
+              if (mp) {
+                currentMiniPrompt = {
+                  id: mp.id,
+                  name: mp.name,
+                  description: mp.description,
+                  content: mp.content,
+                };
+              }
+              
+              console.log('[WorkflowConstructorWrapper] Building workflowContext (memoized):', {
+                viewingMiniPromptId,
+                foundInMiniPrompts: !!miniPrompts.find((m) => m.id === viewingMiniPromptId),
+                foundInStages: !!localStages.some(s => s.miniPrompts.some(smp => smp.miniPrompt.id === viewingMiniPromptId)),
+                foundMiniPrompt: !!mp,
+                currentMiniPrompt: currentMiniPrompt ? { id: currentMiniPrompt.id, name: currentMiniPrompt.name } : null,
+              });
+            }
+
+            return {
+              workflow: {
+                id: 'new',
+                name: workflowName,
+                description: null,
+                complexity: null,
+                includeMultiAgentChat,
+                stages: localStages.map((stage) => ({
+                  id: stage.id,
+                  name: stage.name,
+                  description: stage.description,
+                  color: stage.color,
+                  withReview: stage.withReview,
+                  order: stage.order,
+                  miniPrompts: stage.miniPrompts.map((smp) => ({
+                    miniPrompt: {
+                      id: smp.miniPrompt.id,
+                      name: smp.miniPrompt.name,
+                      description: smp.miniPrompt.description,
+                      content: smp.miniPrompt.content,
+                    },
+                    order: smp.order,
+                  })),
                 })),
+              },
+              availableMiniPrompts: miniPrompts.map((mp) => ({
+                id: mp.id,
+                name: mp.name,
+                description: mp.description,
               })),
-            },
-            availableMiniPrompts: miniPrompts.map((mp) => ({
-              id: mp.id,
-              name: mp.name,
-              description: mp.description,
-            })),
-            currentMiniPrompt: viewingMiniPromptId
-              ? (() => {
-                  const mp = miniPrompts.find((m) => m.id === viewingMiniPromptId);
-                  return mp
-                    ? {
-                        id: mp.id,
-                        name: mp.name,
-                        description: mp.description,
-                        content: mp.content,
-                      }
-                    : undefined;
-                })()
-              : undefined,
-          }}
+              currentMiniPrompt,
+            };
+          }, [
+            viewingMiniPromptId,
+            miniPrompts,
+            localStages,
+            workflowName,
+            includeMultiAgentChat,
+          ])}
           onToolCall={handleToolCall}
         />
 

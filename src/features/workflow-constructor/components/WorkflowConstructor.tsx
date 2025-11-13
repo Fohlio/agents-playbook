@@ -1,25 +1,20 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { DndProvider } from 'react-dnd';
-import { HTML5Backend } from 'react-dnd-html5-backend';
-import Button from '@/shared/ui/atoms/Button';
-import Input from '@/shared/ui/atoms/Input';
-import { BetaBadge } from '@/shared/ui/atoms';
-import type { WorkflowConstructorData } from '@/lib/types/workflow-constructor-types';
+import type { WorkflowConstructorData, WorkflowComplexity } from '@/lib/types/workflow-constructor-types';
 import { useWorkflowConstructor } from '../hooks/use-workflow-constructor';
 import { useWorkflowConstructorStore } from '../lib/workflow-constructor-store';
 import { useWorkflowHandlers } from '../lib/use-workflow-handlers';
 import { useWorkflowAIIntegration } from '../lib/use-workflow-ai-integration';
-import { MiniPromptLibrary } from './MiniPromptLibrary';
-import { StageSection } from './StageSection';
-import { StageCreateForm } from './StageCreateForm';
+import { useWorkflowContext } from '../hooks/use-workflow-context';
+import { useWorkflowActions } from '../hooks/use-workflow-actions';
+import { WorkflowHeader } from './WorkflowHeader';
+import { WorkflowLayout } from './WorkflowLayout';
 import { MiniPromptEditorModal } from './MiniPromptEditorModal';
-import { TagMultiSelect } from '@/shared/ui/molecules';
-import { Tooltip } from '@/shared/ui/molecules';
 import { ChatSidebar } from '@/features/ai-assistant/components/ChatSidebar';
 import { Sparkles } from 'lucide-react';
 import { DraggableButton } from '@/shared/ui/atoms/DraggableButton';
+import { Tooltip } from '@/shared/ui/molecules';
 
 interface WorkflowConstructorProps {
   data: WorkflowConstructorData;
@@ -57,12 +52,6 @@ export function WorkflowConstructor({ data }: WorkflowConstructorProps) {
     isChatOpen,
     isDirty,
     isSaving: storeSaving,
-    setWorkflowName,
-    setWorkflowDescription,
-    setIsActive,
-    setIsPublic,
-    setIncludeMultiAgentChat,
-    setSelectedTagIds,
     setMiniPrompts,
     setIsCreatingStage,
     setEditingStageId,
@@ -74,8 +63,15 @@ export function WorkflowConstructor({ data }: WorkflowConstructorProps) {
   const [editingMiniPrompt, setEditingMiniPrompt] = useState<typeof miniPrompts[0] | null>(null);
   const [editingTagIds, setEditingTagIds] = useState<string[]>([]);
 
+  // Sync viewingMiniPromptId with editingMiniPrompt - when a mini-prompt is opened for editing, set viewingMiniPromptId
+  useEffect(() => {
+    if (editingMiniPrompt) {
+      setViewingMiniPromptId(editingMiniPrompt.id);
+    }
+  }, [editingMiniPrompt, setViewingMiniPromptId]);
+
   // Build a synthetic workflow from Zustand state for the chat context
-      const currentWorkflow = workflowId
+  const currentWorkflow = workflowId
     ? {
         id: workflowId,
         name: workflowName,
@@ -96,6 +92,47 @@ export function WorkflowConstructor({ data }: WorkflowConstructorProps) {
   // Use the existing useWorkflowConstructor hook for saving
   const { isSaving: hookSaving, handleSave } = useWorkflowConstructor(workflow);
   const isSaving = storeSaving || hookSaving;
+
+  // Use extracted hooks
+  const workflowContext = useWorkflowContext({
+    workflowId,
+    workflowName,
+    workflowDescription: workflowDescription ?? null,
+    complexity: complexity ?? null,
+    includeMultiAgentChat,
+    stages: localStages,
+    miniPrompts,
+    viewingMiniPromptId: viewingMiniPromptId ?? null,
+    workflow: currentWorkflow || null,
+  });
+
+  const {
+    handleWorkflowNameChange,
+    handleWorkflowDescriptionChange,
+    handleIsActiveChange,
+    handleIsPublicChange,
+    handleIncludeMultiAgentChatChange,
+    handleSelectedTagIdsChange,
+    handleSaveWorkflow: handleSaveWorkflowFromHook,
+  } = useWorkflowActions({
+    workflowId: workflowId ?? undefined,
+    currentWorkflowName: workflow?.name,
+    currentWorkflowDescription: workflow?.description ?? null,
+    onSave: async (data) => {
+      if (!workflowId) return;
+      await handleSave({
+        workflowId: data.workflowId,
+        name: data.name,
+        description: data.description,
+        complexity: data.complexity,
+        isActive: data.isActive,
+        visibility: data.visibility,
+        includeMultiAgentChat: data.includeMultiAgentChat,
+        tagIds: data.tagIds,
+        stages: data.stages,
+      });
+    },
+  });
 
   // Get handlers
   const {
@@ -132,30 +169,23 @@ export function WorkflowConstructor({ data }: WorkflowConstructorProps) {
     handleMiniPromptDragEnd(miniPromptIds, stageId, miniPrompts);
   };
 
-  const handleSaveWorkflow = async () => {
-    if (!workflowId) return;
+  // Wrapper functions for stage handlers to match component interface
+  const handleCreateStageWrapper = (data: {
+    name: string;
+    description?: string;
+    color?: string;
+    withReview: boolean;
+  }) => {
+    handleCreateStage(data.name, data.description || '', data.color || '', data.withReview);
+  };
 
-    await handleSave({
-      workflowId,
-      name: workflowName,
-      description: workflowDescription ?? undefined,
-      complexity: complexity ?? undefined,
-      isActive: isActive,
-      visibility: isPublic ? 'PUBLIC' : 'PRIVATE',
-      includeMultiAgentChat: includeMultiAgentChat,
-      tagIds: selectedTagIds,
-      stages: localStages.map((stage, index) => ({
-        name: stage.name,
-        description: stage.description ?? undefined,
-        color: stage.color ?? undefined,
-        order: index,
-        withReview: stage.withReview,
-        miniPrompts: stage.miniPrompts.map((smp, mpIndex) => ({
-          miniPromptId: smp.miniPromptId,
-          order: mpIndex,
-        })),
-      })),
-    });
+  const handleUpdateStageWrapper = (stageId: string, data: {
+    name: string;
+    description?: string;
+    color?: string;
+    withReview: boolean;
+  }) => {
+    handleUpdateStage(data.name, data.description || '', data.color || '', data.withReview);
   };
 
   if (!currentWorkflow) {
@@ -166,266 +196,100 @@ export function WorkflowConstructor({ data }: WorkflowConstructorProps) {
     );
   }
 
+  // Handlers for mini-prompt updates
+  const handleMiniPromptUpdated = (updatedMiniPrompt: typeof miniPrompts[0]) => {
+    setMiniPrompts(
+      miniPrompts.map((mp) =>
+        mp.id === updatedMiniPrompt.id ? updatedMiniPrompt : mp
+      )
+    );
+    // Also update mini-prompts in stages
+    const { setLocalStages } = useWorkflowConstructorStore.getState();
+    setLocalStages((prevStages) =>
+      prevStages.map((stage) => ({
+        ...stage,
+        miniPrompts: stage.miniPrompts.map((smp) =>
+          smp.miniPromptId === updatedMiniPrompt.id
+            ? { ...smp, miniPrompt: updatedMiniPrompt }
+            : smp
+        ),
+      }))
+    );
+    markDirty();
+  };
+
+  const handleMiniPromptDeleted = (deletedMiniPromptId: string) => {
+    // Remove from library
+    setMiniPrompts(miniPrompts.filter(mp => mp.id !== deletedMiniPromptId));
+    
+    // Remove from all stages
+    const { setLocalStages } = useWorkflowConstructorStore.getState();
+    setLocalStages((prevStages) =>
+      prevStages.map((stage) => ({
+        ...stage,
+        miniPrompts: stage.miniPrompts.filter(
+          (smp) => smp.miniPromptId !== deletedMiniPromptId
+        ),
+      }))
+    );
+    markDirty();
+  };
+
   return (
     <div className="h-screen flex flex-col">
-      <div className="bg-surface-base border-b border-border-base px-6 py-4">
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex-1">
-            <Input
-              type="text"
-              value={workflowName}
-              onChange={(e) => {
-                setWorkflowName(e.target.value);
-                if (e.target.value !== currentWorkflow.name) {
-                  markDirty();
-                }
-              }}
-              placeholder="Workflow Name"
-              className="text-2xl font-bold border-0 bg-transparent focus:ring-0 px-0"
-            />
-          </div>
-          <div className="flex gap-3">
-            <Button
-              onClick={handleSaveWorkflow}
-              disabled={!isDirty || isSaving}
-            >
-              {isSaving ? 'Saving...' : 'Save Workflow'}
-            </Button>
-          </div>
-        </div>
-
-        {/* System panel - single row with checkboxes and tags */}
-        <div className="flex items-center gap-4 flex-wrap">
-          <div className="flex items-center gap-6">
-            <label className="flex items-center gap-2 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={isActive}
-                onChange={(e) => {
-                  setIsActive(e.target.checked);
-                  markDirty();
-                }}
-                className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
-              />
-              <span className="text-sm text-text-secondary">Active</span>
-            </label>
-            <label className="flex items-center gap-2 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={isPublic}
-                onChange={(e) => {
-                  setIsPublic(e.target.checked);
-                  markDirty();
-                }}
-                className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
-              />
-              <span className="text-sm text-text-secondary">Public</span>
-            </label>
-            <Tooltip content="Enable AI coordination prompts after each mini-prompt to help multiple agents collaborate effectively">
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={includeMultiAgentChat}
-                  onChange={(e) => {
-                    setIncludeMultiAgentChat(e.target.checked);
-                    markDirty();
-                  }}
-                  className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
-                />
-                <span className="text-sm text-text-secondary flex items-center gap-1">
-                  Multi-Agent Chat
-                  <BetaBadge />
-                </span>
-              </label>
-            </Tooltip>
-          </div>
-          
-          {/* Tags multiselect */}
-          <div className="flex-1 min-w-[300px]">
-            <TagMultiSelect
-              selectedTagIds={selectedTagIds}
-              onChange={(tagIds) => {
-                setSelectedTagIds(tagIds);
-                markDirty();
-              }}
-            />
-          </div>
-        </div>
-
-        {/* Description textarea below top panel */}
-        <div className="mt-4 relative">
-          <textarea
-            value={workflowDescription || ''}
-            onChange={(e) => {
-              setWorkflowDescription(e.target.value || null);
-              if (e.target.value !== (currentWorkflow.description || '')) {
-                markDirty();
-              }
-            }}
-            placeholder="Workflow Description (optional)"
-            maxLength={500}
-            rows={3}
-            className="w-full text-sm text-text-secondary rounded-md border border-gray-200 px-3 py-2 shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-0 focus:border-primary-500 focus:ring-primary-500 focus:shadow-md bg-white placeholder:text-gray-400 resize-none"
-          />
-          <div className={`absolute bottom-2 right-2 text-xs ${(workflowDescription?.length || 0) > 480 ? 'text-red-500' : 'text-gray-400'}`}>
-            {workflowDescription?.length || 0}/500
-          </div>
-        </div>
-      </div>
+      <WorkflowHeader
+        workflowName={workflowName}
+        workflowDescription={workflowDescription}
+        isActive={isActive}
+        isPublic={isPublic}
+        includeMultiAgentChat={includeMultiAgentChat}
+        selectedTagIds={selectedTagIds}
+        isDirty={isDirty}
+        isSaving={isSaving}
+        onWorkflowNameChange={handleWorkflowNameChange}
+        onWorkflowDescriptionChange={handleWorkflowDescriptionChange}
+        onIsActiveChange={handleIsActiveChange}
+        onIsPublicChange={handleIsPublicChange}
+        onIncludeMultiAgentChatChange={handleIncludeMultiAgentChatChange}
+        onSelectedTagIdsChange={handleSelectedTagIdsChange}
+        onSave={handleSaveWorkflowFromHook}
+      />
 
       <div className="flex-1 overflow-hidden">
-        <DndProvider backend={HTML5Backend}>
-          <div className="grid grid-cols-4 gap-6 p-6 h-full">
-            <div className="col-span-1 overflow-y-auto">
-              <MiniPromptLibrary
-                miniPrompts={miniPrompts}
-                onMiniPromptCreated={(newMiniPrompt) =>
-                  setMiniPrompts([...miniPrompts, newMiniPrompt])
-                }
-                onMiniPromptUpdated={(updatedMiniPrompt) => {
-                  setMiniPrompts(
-                    miniPrompts.map((mp) =>
-                      mp.id === updatedMiniPrompt.id ? updatedMiniPrompt : mp
-                    )
-                  );
-                  // Also update mini-prompts in stages
-                  const { setLocalStages } = useWorkflowConstructorStore.getState();
-                  setLocalStages((prevStages) =>
-                    prevStages.map((stage) => ({
-                      ...stage,
-                      miniPrompts: stage.miniPrompts.map((smp) =>
-                        smp.miniPromptId === updatedMiniPrompt.id
-                          ? { ...smp, miniPrompt: updatedMiniPrompt }
-                          : smp
-                      ),
-                    }))
-                  );
-                  markDirty();
-                }}
-                onMiniPromptDeleted={(deletedMiniPromptId) => {
-                  // Remove from library
-                  setMiniPrompts(miniPrompts.filter(mp => mp.id !== deletedMiniPromptId));
-                  
-                  // Remove from all stages
-                  const { setLocalStages } = useWorkflowConstructorStore.getState();
-                  setLocalStages((prevStages) =>
-                    prevStages.map((stage) => ({
-                      ...stage,
-                      miniPrompts: stage.miniPrompts.filter(
-                        (smp) => smp.miniPromptId !== deletedMiniPromptId
-                      ),
-                    }))
-                  );
-                  markDirty();
-                }}
-              />
-            </div>
-
-            <div className="col-span-3 overflow-y-auto">
-              <div className="space-y-4">
-                {localStages.map((stage) => {
-                  if (editingStageId === stage.id) {
-                    return (
-                      <StageCreateForm
-                        key={stage.id}
-                        mode="edit"
-                        initialValues={{
-                          name: stage.name,
-                          description: stage.description || undefined,
-                          color: stage.color || '',
-                          withReview: stage.withReview,
-                        }}
-                        onSubmit={handleUpdateStage}
-                        onCancel={() => setEditingStageId(null)}
-                      />
-                    );
-                  }
-                  return (
-                    <StageSection
-                      key={stage.id}
-                      stage={stage}
-                      onRemoveStage={handleRemoveStage}
-                      onRemoveMiniPrompt={handleRemoveMiniPrompt}
-                      onDropMiniPrompts={onDropMiniPrompts}
-                      onEditStage={handleEditStage}
-                      onToggleWithReview={handleToggleWithReview}
-                      includeMultiAgentChat={includeMultiAgentChat}
-                    />
-                  );
-                })}
-
-                {isCreatingStage ? (
-                  <StageCreateForm
-                    onSubmit={handleCreateStage}
-                    onCancel={() => setIsCreatingStage(false)}
-                  />
-                ) : (
-                  <button
-                    onClick={() => setIsCreatingStage(true)}
-                    className="w-full border-2 border-dashed border-border-base rounded-lg p-6 text-center hover:border-border-hover hover:bg-surface-hover transition-colors"
-                  >
-                    <span className="text-text-secondary">+ Add Stage</span>
-                  </button>
-                )}
-              </div>
-            </div>
-          </div>
-        </DndProvider>
+        <WorkflowLayout
+          miniPrompts={miniPrompts}
+          stages={localStages}
+          isCreatingStage={isCreatingStage}
+          editingStageId={editingStageId}
+          includeMultiAgentChat={includeMultiAgentChat}
+          onMiniPromptCreated={(newMiniPrompt) =>
+            setMiniPrompts([...miniPrompts, newMiniPrompt])
+          }
+          onMiniPromptUpdated={handleMiniPromptUpdated}
+          onMiniPromptDeleted={handleMiniPromptDeleted}
+          onRemoveStage={handleRemoveStage}
+          onRemoveMiniPrompt={handleRemoveMiniPrompt}
+          onDropMiniPrompts={onDropMiniPrompts}
+          onEditStage={handleEditStage}
+          onUpdateStage={handleUpdateStageWrapper}
+          onToggleWithReview={handleToggleWithReview}
+          onCreateStage={handleCreateStageWrapper}
+          onCancelCreateStage={() => setIsCreatingStage(false)}
+          onCancelEditStage={() => setEditingStageId(null)}
+          onCreateStageClick={() => setIsCreatingStage(true)}
+          onMiniPromptClick={(miniPrompt) => {
+            setViewingMiniPromptId(miniPrompt.id);
+          }}
+        />
 
         {/* AI Assistant Chat Sidebar */}
         <ChatSidebar
           isOpen={isChatOpen}
           onClose={() => {
             setIsChatOpen(false);
-            setViewingMiniPromptId(null);
           }}
           mode="workflow"
-          workflowContext={{
-            workflow: currentWorkflow
-              ? {
-                  id: currentWorkflow.id,
-                  name: workflowName,
-                  description: currentWorkflow.description,
-                  complexity: complexity,
-                  includeMultiAgentChat,
-                  stages: localStages.map((stage) => ({
-                    id: stage.id,
-                    name: stage.name,
-                    description: stage.description,
-                    color: stage.color,
-                    withReview: stage.withReview,
-                    order: stage.order,
-                    miniPrompts: stage.miniPrompts.map((smp) => ({
-                      miniPrompt: {
-                        id: smp.miniPrompt.id,
-                        name: smp.miniPrompt.name,
-                        description: smp.miniPrompt.description,
-                        content: smp.miniPrompt.content,
-                      },
-                      order: smp.order,
-                    })),
-                  })),
-                }
-              : undefined,
-            availableMiniPrompts: miniPrompts.map((mp) => ({
-              id: mp.id,
-              name: mp.name,
-              description: mp.description,
-            })),
-            currentMiniPrompt: viewingMiniPromptId
-              ? (() => {
-                  const mp = miniPrompts.find((m) => m.id === viewingMiniPromptId);
-                  return mp
-                    ? {
-                        id: mp.id,
-                        name: mp.name,
-                        description: mp.description,
-                        content: mp.content,
-                      }
-                    : undefined;
-                })()
-              : undefined,
-          }}
+          workflowContext={workflowContext}
           onToolCall={handleToolCall}
         />
 

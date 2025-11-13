@@ -52,7 +52,7 @@ export async function updateMiniPrompt(
     throw new Error('Unauthorized');
   }
 
-  // Verify ownership
+  // Verify ownership or admin access
   const existing = await prisma.miniPrompt.findUnique({
     where: { id: input.id },
     select: { userId: true },
@@ -62,7 +62,11 @@ export async function updateMiniPrompt(
     throw new Error('Mini-prompt not found');
   }
 
-  if (existing.userId !== session.user.id) {
+  // Allow admin to update system mini prompts, or owner to update their own
+  if (
+    existing.userId !== session.user.id &&
+    session.user.role !== 'ADMIN'
+  ) {
     throw new Error('Unauthorized - not the owner');
   }
 
@@ -90,7 +94,7 @@ export async function deleteMiniPrompt(id: string): Promise<void> {
     throw new Error('Unauthorized');
   }
 
-  // Verify ownership
+  // Verify ownership or admin access
   const existing = await prisma.miniPrompt.findUnique({
     where: { id },
     select: { userId: true },
@@ -100,7 +104,11 @@ export async function deleteMiniPrompt(id: string): Promise<void> {
     throw new Error('Mini-prompt not found');
   }
 
-  if (existing.userId !== session.user.id) {
+  // Allow admin to delete system mini prompts, or owner to delete their own
+  if (
+    existing.userId !== session.user.id &&
+    session.user.role !== 'ADMIN'
+  ) {
     throw new Error('Unauthorized - not the owner');
   }
 

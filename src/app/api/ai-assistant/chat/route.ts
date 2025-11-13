@@ -79,6 +79,14 @@ export async function POST(request: NextRequest) {
         .object({
           workflow: z.any().optional(),
           availableMiniPrompts: z.array(z.any()).optional(),
+          currentMiniPrompt: z
+            .object({
+              id: z.string(),
+              name: z.string(),
+              description: z.string().nullable().optional(),
+              content: z.string(),
+            })
+            .optional(),
           mode: z.enum(['workflow', 'mini-prompt']).optional(),
         })
         .optional(),

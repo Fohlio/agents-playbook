@@ -16,6 +16,7 @@ interface StageSectionProps {
   onDropMiniPrompts: (stageId: string, miniPromptIds: string[]) => void;
   onEditStage?: (stageId: string) => void;
   onToggleWithReview?: (stageId: string, withReview: boolean) => void;
+  onMiniPromptClick?: (miniPrompt: { id: string; name: string; description?: string | null; content: string }) => void;
   includeMultiAgentChat?: boolean;
 }
 
@@ -26,6 +27,7 @@ export function StageSection({
   onDropMiniPrompts,
   onEditStage,
   onToggleWithReview,
+  onMiniPromptClick,
   includeMultiAgentChat = false,
 }: StageSectionProps) {
   return (
@@ -93,6 +95,7 @@ export function StageSection({
           onRemoveMiniPrompt(stage.id, miniPromptId)
         }
         onDropMiniPrompts={onDropMiniPrompts}
+        onMiniPromptClick={onMiniPromptClick}
         includeMultiAgentChat={includeMultiAgentChat}
       />
     </Card>

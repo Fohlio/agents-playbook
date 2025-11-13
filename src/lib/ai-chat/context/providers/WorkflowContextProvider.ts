@@ -33,7 +33,7 @@ export class WorkflowContextProvider implements ContextProvider {
       lines.push(currentMiniPrompt.content);
       lines.push('```');
 
-      lines.push('', '_The user is currently viewing this mini-prompt. You can help them edit it by using the `modifyMiniPrompt` tool with miniPromptId: "' + currentMiniPrompt.id + '"._');
+      lines.push('', `**ACTION REQUIRED**: When the user asks to translate this mini-prompt, IMMEDIATELY use \`translateMiniPrompt({ miniPromptId: "${currentMiniPrompt.id}", targetLanguage: "..." })\`. Do NOT ask for the ID or content - you already have it above.`);
 
       return {
         content: lines.join('\n'),
@@ -79,16 +79,23 @@ export class WorkflowContextProvider implements ContextProvider {
 
     // Add currently viewing mini-prompt if provided
     if (currentMiniPrompt) {
-      lines.push('', '### Currently Viewing Mini-Prompt');
+      lines.push('', '## ⚠️ IMPORTANT: Currently Viewing Mini-Prompt');
+      lines.push(`**ID**: \`${currentMiniPrompt.id}\``);
       lines.push(`**Name**: ${currentMiniPrompt.name}`);
       if (currentMiniPrompt.description) {
         lines.push(`**Description**: ${currentMiniPrompt.description}`);
       }
-      lines.push('', '**Content**:');
+      lines.push('', '**Full Content**:');
       lines.push('```markdown');
       lines.push(currentMiniPrompt.content);
       lines.push('```');
-      lines.push('', '_The user is currently viewing this mini-prompt. You can help them edit it by suggesting changes to the title, description, or content._');
+      lines.push('', `**ACTION REQUIRED**: When the user asks to translate this mini-prompt, IMMEDIATELY use \`translateMiniPrompt({ miniPromptId: "${currentMiniPrompt.id}", targetLanguage: "..." })\`. Do NOT ask for the ID or content - you already have it above.`);
+      
+      // Increase priority when currentMiniPrompt is present
+      return {
+        content: lines.join('\n'),
+        priority: 15, // Very high priority when viewing a specific mini-prompt
+      };
     }
 
     return {

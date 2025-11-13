@@ -7,6 +7,7 @@ import type { MiniPrompt } from '@prisma/client';
 import { MiniPromptEditorModal } from './MiniPromptEditorModal';
 import { MiniPromptCard } from './MiniPromptCard';
 import { createMiniPrompt, updateMiniPrompt, deleteMiniPrompt } from '../actions/mini-prompt-actions';
+import { useWorkflowConstructorStore } from '../lib/workflow-constructor-store';
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -32,6 +33,15 @@ export function MiniPromptLibrary({
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingMiniPrompt, setEditingMiniPrompt] = useState<MiniPrompt | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
+
+  // Sync viewingMiniPromptId with editingMiniPrompt - when a mini-prompt is opened for editing, set viewingMiniPromptId
+  // This ensures the AI assistant knows which mini-prompt is currently being viewed/edited
+  const setViewingMiniPromptId = useWorkflowConstructorStore((state) => state.setViewingMiniPromptId);
+  useEffect(() => {
+    if (editingMiniPrompt && setViewingMiniPromptId) {
+      setViewingMiniPromptId(editingMiniPrompt.id);
+    }
+  }, [editingMiniPrompt, setViewingMiniPromptId]);
 
   // Use controlled selection if provided, otherwise use internal state
   const selectedMiniPromptIds = controlledSelection ?? internalSelection;
@@ -205,13 +215,27 @@ export function MiniPromptLibrary({
                   key={miniPrompt.id}
                   className="relative group"
                 >
-                  <MiniPromptCard miniPrompt={miniPrompt} />
+                  <MiniPromptCard 
+                    miniPrompt={miniPrompt}
+                    onClick={(mp) => {
+                      // Set viewingMiniPromptId immediately when card is clicked
+                      if (setViewingMiniPromptId) {
+                        setViewingMiniPromptId(mp.id);
+                      }
+                      setEditingMiniPrompt(mp);
+                      setIsModalOpen(true);
+                    }}
+                  />
                   
                   {/* Action buttons overlay */}
                   <div className="absolute top-1 right-1 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
+                        // Set viewingMiniPromptId immediately (synchronously) before opening modal
+                        if (setViewingMiniPromptId) {
+                          setViewingMiniPromptId(miniPrompt.id);
+                        }
                         setEditingMiniPrompt(miniPrompt);
                         setIsModalOpen(true);
                       }}

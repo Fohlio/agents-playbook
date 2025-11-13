@@ -1,8 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import Button from '@/shared/ui/atoms/Button';
-import Input from '@/shared/ui/atoms/Input';
+import { Button, Input, Textarea, FormField, Radio } from '@/shared/ui/atoms';
 import { Modal } from '@/shared/ui/atoms/Modal';
 import { TagMultiSelect } from '@/shared/ui/molecules';
 
@@ -97,10 +96,7 @@ export function MiniPromptEditorModal({
         <div className="space-y-4 mb-6">
           {!viewOnly && (
             <>
-              <div>
-                <label htmlFor="mini-prompt-name" className="block text-sm font-medium text-text-primary mb-1">
-                  Name *
-                </label>
+              <FormField label="Name" htmlFor="mini-prompt-name" required>
                 <Input
                   id="mini-prompt-name"
                   type="text"
@@ -109,44 +105,44 @@ export function MiniPromptEditorModal({
                   placeholder="e.g., Create Implementation Plan"
                   required
                   autoFocus
+                  fullWidth
                 />
-              </div>
-              <div>
-                <label htmlFor="mini-prompt-description" className="block text-sm font-medium text-text-primary mb-1">
-                  Description
-                </label>
-                <textarea
+              </FormField>
+              <FormField 
+                label="Description" 
+                htmlFor="mini-prompt-description"
+                helperText={`${description.length}/1000 characters`}
+              >
+                <Textarea
                   id="mini-prompt-description"
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   placeholder="Brief description for search and discovery (optional, max 1000 chars)"
                   maxLength={1000}
                   rows={3}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-y"
+                  fullWidth
                 />
-                <p className="text-xs text-gray-500 mt-1">
-                  {description.length}/1000 characters
-                </p>
-              </div>
+              </FormField>
             </>
           )}
 
-          <div>
-            {!viewOnly && (
-              <div className="flex items-center justify-between mb-1">
-                <label htmlFor="mini-prompt-content" className="block text-sm font-medium text-text-primary">
-                  Content (Markdown) *
-                </label>
-                <button
+          <div className="space-y-1">
+            <div className="flex items-center justify-between mb-1">
+              <label htmlFor="mini-prompt-content" className="block text-sm font-medium text-gray-700">
+                Content (Markdown) {!viewOnly && <span className="text-red-500 ml-1">*</span>}
+              </label>
+              {!viewOnly && (
+                <Button
                   type="button"
+                  variant="secondary"
+                  size="sm"
                   onClick={() => setShowPreview(!showPreview)}
-                  className="text-sm text-accent-primary hover:text-accent-hover"
+                  className="text-sm"
                 >
                   {showPreview ? 'Edit' : 'Preview'}
-                </button>
-              </div>
-            )}
-
+                </Button>
+              )}
+            </div>
             {viewOnly || showPreview ? (
               <div className="w-full min-h-[300px] max-h-[500px] overflow-y-auto px-4 py-3 border border-border-base rounded-lg bg-surface-base">
                 <div className="prose prose-sm max-w-none text-text-primary">
@@ -183,57 +179,46 @@ export function MiniPromptEditorModal({
                 </div>
               </div>
             ) : (
-              <textarea
+              <Textarea
                 id="mini-prompt-content"
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
                 placeholder="Enter markdown content for this mini-prompt...&#10;&#10;Supported formatting:&#10;# Heading 1&#10;## Heading 2&#10;### Heading 3&#10;**bold text**&#10;*italic text*&#10;`code`&#10;- bullet point"
                 rows={10}
-                className="w-full px-3 py-2 border border-border-base rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-text-primary bg-surface-base font-mono text-sm resize-y min-h-[200px] max-h-[400px]"
+                fullWidth
+                className="font-mono min-h-[200px] max-h-[400px]"
               />
             )}
           </div>
 
           {!viewOnly && (
             <>
-              <div>
-                <label className="block text-sm font-medium text-text-primary mb-2">
-                  Visibility
-                </label>
+              <FormField label="Visibility" htmlFor="visibility-private">
                 <div className="flex gap-4">
-                  <label className="flex items-center gap-2 cursor-pointer">
-                    <input
-                      type="radio"
-                      name="visibility"
-                      value="PRIVATE"
-                      checked={visibility === 'PRIVATE'}
-                      onChange={(e) => setVisibility(e.target.value as 'PRIVATE')}
-                      className="w-4 h-4 text-accent-primary focus:ring-accent-primary"
-                    />
-                    <span className="text-sm text-text-primary">Private (Only Me)</span>
-                  </label>
-                  <label className="flex items-center gap-2 cursor-pointer">
-                    <input
-                      type="radio"
-                      name="visibility"
-                      value="PUBLIC"
-                      checked={visibility === 'PUBLIC'}
-                      onChange={(e) => setVisibility(e.target.value as 'PUBLIC')}
-                      className="w-4 h-4 text-accent-primary focus:ring-accent-primary"
-                    />
-                    <span className="text-sm text-text-primary">Public (Everyone)</span>
-                  </label>
+                  <Radio
+                    name="visibility"
+                    id="visibility-private"
+                    value="PRIVATE"
+                    checked={visibility === 'PRIVATE'}
+                    onChange={(e) => setVisibility(e.target.value as 'PRIVATE')}
+                    label="Private (Only Me)"
+                  />
+                  <Radio
+                    name="visibility"
+                    id="visibility-public"
+                    value="PUBLIC"
+                    checked={visibility === 'PUBLIC'}
+                    onChange={(e) => setVisibility(e.target.value as 'PUBLIC')}
+                    label="Public (Everyone)"
+                  />
                 </div>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-text-primary mb-2">
-                  Tags
-                </label>
+              </FormField>
+              <FormField label="Tags" htmlFor="mini-prompt-tags">
                 <TagMultiSelect
                   selectedTagIds={selectedTagIds}
                   onChange={setSelectedTagIds}
                 />
-              </div>
+              </FormField>
             </>
           )}
         </div>

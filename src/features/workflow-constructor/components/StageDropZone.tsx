@@ -11,6 +11,7 @@ interface StageDropZoneProps {
   stage: WorkflowStageWithMiniPrompts;
   onRemoveMiniPrompt: (miniPromptId: string) => void;
   onDropMiniPrompts: (stageId: string, miniPromptIds: string[]) => void;
+  onMiniPromptClick?: (miniPrompt: { id: string; name: string; description?: string | null; content: string }) => void;
   includeMultiAgentChat?: boolean;
 }
 
@@ -18,6 +19,7 @@ export function StageDropZone({
   stage,
   onRemoveMiniPrompt,
   onDropMiniPrompts,
+  onMiniPromptClick,
   includeMultiAgentChat = false
 }: StageDropZoneProps) {
   const [{ isOver }, drop] = useDrop(() => ({
@@ -66,6 +68,12 @@ export function StageDropZone({
               <div className="relative group">
                 <MiniPromptCard 
                   miniPrompt={stageMiniPrompt.miniPrompt}
+                  onClick={onMiniPromptClick ? () => onMiniPromptClick({
+                    id: stageMiniPrompt.miniPrompt.id,
+                    name: stageMiniPrompt.miniPrompt.name,
+                    description: stageMiniPrompt.miniPrompt.description,
+                    content: stageMiniPrompt.miniPrompt.content,
+                  }) : undefined}
                 />
                 <div className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition-opacity">
                   <Tooltip content="Remove this mini-prompt from the stage">

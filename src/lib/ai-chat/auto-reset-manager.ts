@@ -8,7 +8,7 @@
 import { prisma } from '@/lib/db/client';
 import { createOpenAI } from '@ai-sdk/openai';
 import { generateText } from 'ai';
-import type { CoreMessage } from 'ai';
+import type { ModelMessage } from 'ai';
 
 export class AutoResetManager {
   /**
@@ -46,7 +46,7 @@ Keep the summary under 500 tokens.`;
     }
 
     // Format messages for AI summary generation
-    const messages: CoreMessage[] = session.messages.map((msg) => ({
+    const messages: ModelMessage[] = session.messages.map((msg) => ({
       role: msg.role.toLowerCase() as 'user' | 'assistant' | 'system',
       content: msg.content,
     }));

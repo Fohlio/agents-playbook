@@ -5,7 +5,8 @@
  */
 
 import { createOpenAI } from '@ai-sdk/openai';
-import { generateText } from 'ai';
+import { generateText, stepCountIs } from 'ai';
+import type { ModelMessage } from 'ai';
 import type { PipelineContext, PipelineStep } from '../types';
 
 export class ExecuteCompletionStep implements PipelineStep {
@@ -23,19 +24,38 @@ export class ExecuteCompletionStep implements PipelineStep {
     // Create OpenAI client with responses API
     const openai = createOpenAI({ apiKey: context.apiKey });
 
+    // Build messages array: include tool results from previous response if available
+    // AI SDK expects ModelMessage[] which can include tool messages with ToolContent format
+    const messages: ModelMessage[] = [];
+    
+    // Add tool results from previous response if chaining
+    if (context.previousToolResults && context.previousToolResults.length > 0) {
+      context.previousToolResults.forEach((toolMsg) => {
+        if (toolMsg.role === 'tool' && Array.isArray(toolMsg.content)) {
+          // Tool message already has correct format from getLastToolResults
+          messages.push(toolMsg);
+        }
+      });
+      console.log(`[ExecuteCompletion] Including ${context.previousToolResults.length} tool result messages from previous response`);
+    }
+    
+    // Add current user message
+    messages.push({ role: 'user', content: context.userContent });
+
     let result;
     try {
       // Generate completion with response chaining using Responses API
       // IMPORTANT: Must use providerOptions (not experimental_providerMetadata) and store: true
+      // When previousResponseId is provided with tool results, we include them in messages array
       result = await generateText({
         model: openai.responses('gpt-4.1'),
         system: context.systemPrompt,
-        messages: [{ role: 'user', content: context.userContent }],
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        tools: context.tools as any,
+        messages,
+        tools: context.tools,
+        stopWhen: stepCountIs(5), // Allow multiple tool call rounds (e.g., getAvailableMiniPrompts -> translateMiniPrompt)
         providerOptions: {
           openai: {
-            previousResponseId: context.previousResponseId as string,
+            ...(context.previousResponseId && { previousResponseId: context.previousResponseId }),
             store: true, // Required for response chaining to work
             metadata: {
               chatId: context.chatId,
