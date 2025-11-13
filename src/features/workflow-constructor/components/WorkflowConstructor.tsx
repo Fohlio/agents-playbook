@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import type { WorkflowConstructorData, WorkflowComplexity } from '@/lib/types/workflow-constructor-types';
+import type { WorkflowConstructorData } from '@/lib/types/workflow-constructor-types';
 import { useWorkflowConstructor } from '../hooks/use-workflow-constructor';
 import { useWorkflowConstructorStore } from '../lib/workflow-constructor-store';
 import { useWorkflowHandlers } from '../lib/use-workflow-handlers';

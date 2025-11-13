@@ -144,12 +144,6 @@ export class MessagePersistenceService {
     }) => {
       const toolCallId = invocation.toolCallId || '';
       const toolResult = invocation.output || invocation.result;
-      
-      // ToolContent is an array of ToolResultPart
-      // Each part has type: 'tool-result' and content
-      const content = typeof toolResult === 'string' 
-        ? toolResult 
-        : JSON.stringify(toolResult);
 
       return {
         role: 'tool' as const,
