@@ -73,6 +73,7 @@ export interface WorkflowContext {
       description?: string | null;
       color?: string | null;
       withReview: boolean;
+      includeMultiAgentChat?: boolean;
       order: number;
       miniPrompts?: Array<{
         miniPrompt: {

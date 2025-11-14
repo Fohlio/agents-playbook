@@ -1,14 +1,13 @@
 'use client';
 
-import { Input, Button, BetaBadge, Checkbox, Textarea } from '@/shared/ui/atoms';
-import { TagMultiSelect, Tooltip } from '@/shared/ui/molecules';
+import { Input, Button, Checkbox, Textarea } from '@/shared/ui/atoms';
+import { TagMultiSelect } from '@/shared/ui/molecules';
 
 interface WorkflowHeaderProps {
   workflowName: string;
   workflowDescription: string | null;
   isActive: boolean;
   isPublic: boolean;
-  includeMultiAgentChat: boolean;
   selectedTagIds: string[];
   isDirty: boolean;
   isSaving: boolean;
@@ -16,7 +15,6 @@ interface WorkflowHeaderProps {
   onWorkflowDescriptionChange: (description: string | null) => void;
   onIsActiveChange: (isActive: boolean) => void;
   onIsPublicChange: (isPublic: boolean) => void;
-  onIncludeMultiAgentChatChange: (include: boolean) => void;
   onSelectedTagIdsChange: (tagIds: string[]) => void;
   onSave: () => void;
 }
@@ -26,7 +24,6 @@ export function WorkflowHeader({
   workflowDescription,
   isActive,
   isPublic,
-  includeMultiAgentChat,
   selectedTagIds,
   isDirty,
   isSaving,
@@ -34,7 +31,6 @@ export function WorkflowHeader({
   onWorkflowDescriptionChange,
   onIsActiveChange,
   onIsPublicChange,
-  onIncludeMultiAgentChatChange,
   onSelectedTagIdsChange,
   onSave,
 }: WorkflowHeaderProps) {
@@ -77,19 +73,6 @@ export function WorkflowHeader({
             id="workflow-public-checkbox"
             label="Public"
           />
-          <Tooltip content="Enable AI coordination prompts after each mini-prompt to help multiple agents collaborate effectively">
-            <div className="flex items-center gap-2">
-              <Checkbox
-                checked={includeMultiAgentChat}
-                onChange={(e) => onIncludeMultiAgentChatChange(e.target.checked)}
-                id="multi-agent-chat-checkbox"
-              />
-              <label htmlFor="multi-agent-chat-checkbox" className="text-sm text-text-secondary flex items-center gap-1 cursor-pointer">
-                Multi-Agent Chat
-                <BetaBadge />
-              </label>
-            </div>
-          </Tooltip>
         </div>
         
         {/* Tags multiselect */}

@@ -7,7 +7,7 @@ import { prisma } from '@/lib/db/client';
  * 1. Fetches workflow with stages and mini-prompts from database
  * 2. Fetches automatic system prompts (Memory Board, Internal Agents Chat)
  * 3. Iterates through stages and injects automatic prompts based on settings:
- *    - Adds Internal Agents Chat AFTER each mini-prompt if workflow.includeMultiAgentChat = true
+ *    - Adds Internal Agents Chat AFTER each mini-prompt if stage.includeMultiAgentChat = true
  *    - Adds Memory Board AT END of each stage if stage.withReview = true
  * 4. Returns execution plan with sequential step indices (0-based)
  *
@@ -101,8 +101,8 @@ export class ExecutionPlanBuilder {
           content: stageMiniPrompt.miniPrompt.content,
         });
 
-        // Add Internal Agents Chat after each mini-prompt if enabled
-        if (workflow.includeMultiAgentChat && multiAgentChatPrompt) {
+        // Add Internal Agents Chat after each mini-prompt if enabled for this stage
+        if (stage.includeMultiAgentChat && multiAgentChatPrompt) {
           items.push({
             index: stepIndex++,
             type: 'auto-prompt',

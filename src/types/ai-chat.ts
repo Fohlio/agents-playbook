@@ -75,6 +75,7 @@ export interface StageToolData {
   description?: string;
   color?: string;
   withReview?: boolean;
+  includeMultiAgentChat?: boolean;
   position?: number;
   miniPrompts: MiniPromptReference[];
 }
@@ -117,6 +118,7 @@ export interface WorkflowContext {
       description?: string | null;
       color?: string | null;
       withReview: boolean;
+      includeMultiAgentChat?: boolean;
       order: number;
       miniPrompts?: Array<{
         miniPrompt: {

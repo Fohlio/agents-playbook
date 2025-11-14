@@ -13,7 +13,6 @@ interface WorkflowLayoutProps {
   stages: WorkflowStageWithMiniPrompts[];
   isCreatingStage: boolean;
   editingStageId: string | null;
-  includeMultiAgentChat: boolean;
   onMiniPromptCreated: (miniPrompt: MiniPrompt) => void;
   onMiniPromptUpdated: (miniPrompt: MiniPrompt) => void;
   onMiniPromptDeleted: (miniPromptId: string) => void;
@@ -28,11 +27,13 @@ interface WorkflowLayoutProps {
     withReview: boolean;
   }) => void;
   onToggleWithReview: (stageId: string, withReview: boolean) => void;
+  onToggleMultiAgentChat?: (stageId: string, includeMultiAgentChat: boolean) => void;
   onCreateStage: (data: {
     name: string;
     description?: string;
     color?: string;
     withReview: boolean;
+    includeMultiAgentChat?: boolean;
   }) => void;
   onCancelCreateStage: () => void;
   onCancelEditStage: () => void;
@@ -45,7 +46,6 @@ export function WorkflowLayout({
   stages,
   isCreatingStage,
   editingStageId,
-  includeMultiAgentChat,
   onMiniPromptCreated,
   onMiniPromptUpdated,
   onMiniPromptDeleted,
@@ -55,6 +55,7 @@ export function WorkflowLayout({
   onEditStage,
   onUpdateStage,
   onToggleWithReview,
+  onToggleMultiAgentChat,
   onCreateStage,
   onCancelCreateStage,
   onCancelEditStage,
@@ -78,13 +79,13 @@ export function WorkflowLayout({
             stages={stages}
             isCreatingStage={isCreatingStage}
             editingStageId={editingStageId}
-            includeMultiAgentChat={includeMultiAgentChat}
             onRemoveStage={onRemoveStage}
             onRemoveMiniPrompt={onRemoveMiniPrompt}
             onDropMiniPrompts={onDropMiniPrompts}
             onEditStage={onEditStage}
             onUpdateStage={onUpdateStage}
             onToggleWithReview={onToggleWithReview}
+            onToggleMultiAgentChat={onToggleMultiAgentChat}
             onCreateStage={onCreateStage}
             onCancelCreateStage={onCancelCreateStage}
             onCancelEditStage={onCancelEditStage}

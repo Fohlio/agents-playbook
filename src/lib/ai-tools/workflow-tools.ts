@@ -83,6 +83,7 @@ export const getCurrentWorkflow = tool({
       description: string | null;
       color: string | null;
       withReview: boolean;
+      includeMultiAgentChat: boolean;
       order: number;
       miniPrompts: StageMiniPromptData[];
     }
@@ -93,6 +94,7 @@ export const getCurrentWorkflow = tool({
       description: stage.description,
       color: stage.color,
       withReview: stage.withReview,
+      includeMultiAgentChat: stage.includeMultiAgentChat,
       order: stage.order,
       miniPrompts: stage.miniPrompts.map((smp) => ({
         id: smp.miniPrompt.id,
@@ -218,6 +220,10 @@ export const createWorkflow = tool({
             .boolean()
             .default(true)
             .describe('Whether to include review/memory board at the end of this stage'),
+          includeMultiAgentChat: z
+            .boolean()
+            .default(false)
+            .describe('Whether to enable multi-agent chat coordination prompts after each mini-prompt in this stage'),
           miniPrompts: z
             .array(
               z.object({
@@ -286,6 +292,10 @@ export const addStage = tool({
       .boolean()
       .default(true)
       .describe('Whether to include review/memory board at the end of this stage'),
+    includeMultiAgentChat: z
+      .boolean()
+      .default(false)
+      .describe('Whether to enable multi-agent chat coordination prompts after each mini-prompt in this stage'),
     position: z
       .number()
       .int()
@@ -367,6 +377,10 @@ export const modifyStage = tool({
         .boolean()
         .optional()
         .describe('Update review setting'),
+      includeMultiAgentChat: z
+        .boolean()
+        .optional()
+        .describe('Update multi-agent chat setting for this stage'),
       miniPrompts: z
         .array(
           z.object({

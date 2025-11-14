@@ -25,7 +25,7 @@ export function useWorkflowHandlers(options?: UseWorkflowHandlersOptions) {
   const { miniPrompts = [], setMiniPrompts, onEditMiniPrompt, onEditTagIds } = options || {};
 
   const handleCreateStage = useCallback(
-    (name: string, description: string, color: string, withReview: boolean) => {
+    (name: string, description: string, color: string, withReview: boolean, includeMultiAgentChat: boolean = false) => {
       const newStage = {
         id: `temp-${Date.now()}`,
         workflowId: '',
@@ -34,6 +34,7 @@ export function useWorkflowHandlers(options?: UseWorkflowHandlersOptions) {
         color,
         order: localStages.length,
         withReview,
+        includeMultiAgentChat,
         createdAt: new Date(),
         miniPrompts: [],
       };
@@ -90,6 +91,24 @@ export function useWorkflowHandlers(options?: UseWorkflowHandlersOptions) {
     [localStages, setLocalStages, markDirty]
   );
 
+  const handleToggleMultiAgentChat = useCallback(
+    (stageId: string, includeMultiAgentChat: boolean) => {
+      setLocalStages(
+        localStages.map((stage) => {
+          if (stage.id === stageId) {
+            return {
+              ...stage,
+              includeMultiAgentChat,
+            };
+          }
+          return stage;
+        })
+      );
+      markDirty();
+    },
+    [localStages, setLocalStages, markDirty]
+  );
+
   const handleEditStage = useCallback(
     (stageId: string) => {
       setEditingStageId(stageId);
@@ -99,7 +118,7 @@ export function useWorkflowHandlers(options?: UseWorkflowHandlersOptions) {
   );
 
   const handleUpdateStage = useCallback(
-    (name: string, description: string, color: string, withReview: boolean) => {
+    (name: string, description: string, color: string, withReview: boolean, includeMultiAgentChat: boolean = false) => {
       const editingStageId = useWorkflowConstructorStore.getState().editingStageId;
       if (!editingStageId) return;
 
@@ -112,6 +131,7 @@ export function useWorkflowHandlers(options?: UseWorkflowHandlersOptions) {
               description: description.trim() || null,
               color,
               withReview,
+              includeMultiAgentChat,
             };
           }
           return s;
@@ -303,6 +323,7 @@ export function useWorkflowHandlers(options?: UseWorkflowHandlersOptions) {
     handleRemoveStage,
     handleRemoveMiniPrompt,
     handleToggleWithReview,
+    handleToggleMultiAgentChat,
     handleEditStage,
     handleUpdateStage,
     handleDragEnd,

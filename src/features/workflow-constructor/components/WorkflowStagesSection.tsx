@@ -10,7 +10,6 @@ interface WorkflowStagesSectionProps {
   stages: WorkflowStageWithMiniPrompts[];
   isCreatingStage: boolean;
   editingStageId: string | null;
-  includeMultiAgentChat: boolean;
   onRemoveStage: (stageId: string) => void;
   onRemoveMiniPrompt: (stageId: string, miniPromptId: string) => void;
   onDropMiniPrompts: (stageId: string, miniPromptIds: string[]) => void;
@@ -20,13 +19,16 @@ interface WorkflowStagesSectionProps {
     description?: string;
     color?: string;
     withReview: boolean;
+    includeMultiAgentChat?: boolean;
   }) => void;
   onToggleWithReview: (stageId: string, withReview: boolean) => void;
+  onToggleMultiAgentChat?: (stageId: string, includeMultiAgentChat: boolean) => void;
   onCreateStage: (data: {
     name: string;
     description?: string;
     color?: string;
     withReview: boolean;
+    includeMultiAgentChat?: boolean;
   }) => void;
   onCancelCreateStage: () => void;
   onCancelEditStage: () => void;
@@ -37,13 +39,13 @@ export function WorkflowStagesSection({
   stages,
   isCreatingStage,
   editingStageId,
-  includeMultiAgentChat,
   onRemoveStage,
   onRemoveMiniPrompt,
   onDropMiniPrompts,
   onEditStage,
   onUpdateStage,
   onToggleWithReview,
+  onToggleMultiAgentChat,
   onCreateStage,
   onCancelCreateStage,
   onCancelEditStage,
@@ -63,13 +65,15 @@ export function WorkflowStagesSection({
                   description: stage.description || undefined,
                   color: stage.color || '',
                   withReview: stage.withReview,
+                  includeMultiAgentChat: stage.includeMultiAgentChat ?? false,
                 }}
-                onSubmit={(name, description, color, withReview) => {
+                onSubmit={(name, description, color, withReview, includeMultiAgentChat) => {
                   onUpdateStage(stage.id, {
                     name,
                     description: description || undefined,
                     color: color || undefined,
                     withReview,
+                    includeMultiAgentChat,
                   });
                 }}
                 onCancel={onCancelEditStage}
@@ -85,20 +89,21 @@ export function WorkflowStagesSection({
               onDropMiniPrompts={onDropMiniPrompts}
               onEditStage={onEditStage}
               onToggleWithReview={onToggleWithReview}
+              onToggleMultiAgentChat={onToggleMultiAgentChat}
               onMiniPromptClick={onMiniPromptClick}
-              includeMultiAgentChat={includeMultiAgentChat}
             />
           );
         })}
 
         {isCreatingStage ? (
           <StageCreateForm
-            onSubmit={(name, description, color, withReview) => {
+            onSubmit={(name, description, color, withReview, includeMultiAgentChat) => {
               onCreateStage({
                 name,
                 description: description || undefined,
                 color: color || undefined,
                 withReview,
+                includeMultiAgentChat,
               });
             }}
             onCancel={onCancelCreateStage}

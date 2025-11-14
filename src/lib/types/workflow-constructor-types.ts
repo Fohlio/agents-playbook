@@ -66,6 +66,7 @@ export interface SaveWorkflowInput {
     color?: string;
     order: number;
     withReview?: boolean;
+    includeMultiAgentChat?: boolean;
     miniPrompts: Array<{
       miniPromptId: string;
       order: number;

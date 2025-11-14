@@ -76,6 +76,7 @@ export function useWorkflowContext({
             description: stage.description,
             color: stage.color,
             withReview: stage.withReview,
+            includeMultiAgentChat: stage.includeMultiAgentChat ?? false,
             order: stage.order,
             miniPrompts: stage.miniPrompts.map((smp) => ({
               miniPrompt: {

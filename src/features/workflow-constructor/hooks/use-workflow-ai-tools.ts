@@ -145,6 +145,7 @@ export function useWorkflowAITools({
                 description?: string;
                 color?: string;
                 withReview?: boolean;
+                includeMultiAgentChat?: boolean;
                 miniPrompts?: MiniPromptData[];
               }
 
@@ -159,6 +160,7 @@ export function useWorkflowAITools({
                   color: stageData.color || '#64748b',
                   order: stageIdx,
                   withReview: stageData.withReview ?? true,
+                  includeMultiAgentChat: stageData.includeMultiAgentChat ?? false,
                   createdAt: new Date(),
                   miniPrompts: stageData.miniPrompts?.map((mp, mpIdx: number) => {
                     const miniPromptId = mp.id || `temp-mp-${Date.now()}-${stageIdx}-${mpIdx}`;
@@ -363,6 +365,7 @@ export function useWorkflowAITools({
             description: result.stage.description ?? null,
             color: result.stage.color ?? '#64748b',
             withReview: result.stage.withReview ?? true,
+            includeMultiAgentChat: result.stage.includeMultiAgentChat ?? false,
             order: result.stage.position ?? localStages.length,
             createdAt: new Date(),
             miniPrompts: result.stage.miniPrompts?.map((mp, index) => ({

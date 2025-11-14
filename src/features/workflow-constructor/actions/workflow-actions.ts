@@ -97,6 +97,7 @@ export async function createWorkflow(input: {
     color?: string;
     order: number;
     withReview?: boolean;
+    includeMultiAgentChat?: boolean;
     miniPrompts: Array<{
       miniPromptId: string;
       order: number;
@@ -199,6 +200,7 @@ export async function createWorkflow(input: {
             color: stageInput.color ?? '#64748b',
             order: stageInput.order,
             withReview: stageInput.withReview ?? true,
+            includeMultiAgentChat: stageInput.includeMultiAgentChat ?? false,
           },
         });
         console.log('[createWorkflow] Stage created:', stage.id);
@@ -287,6 +289,7 @@ export async function saveWorkflow(input: SaveWorkflowInput): Promise<WorkflowWi
           color: stageInput.color ?? '#64748b',
           order: stageInput.order,
           withReview: stageInput.withReview ?? true,
+          includeMultiAgentChat: stageInput.includeMultiAgentChat ?? false,
         },
       });
 

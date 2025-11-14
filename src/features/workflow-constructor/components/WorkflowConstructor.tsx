@@ -111,7 +111,6 @@ export function WorkflowConstructor({ data }: WorkflowConstructorProps) {
     handleWorkflowDescriptionChange,
     handleIsActiveChange,
     handleIsPublicChange,
-    handleIncludeMultiAgentChatChange,
     handleSelectedTagIdsChange,
     handleSaveWorkflow: handleSaveWorkflowFromHook,
   } = useWorkflowActions({
@@ -140,6 +139,7 @@ export function WorkflowConstructor({ data }: WorkflowConstructorProps) {
     handleRemoveStage,
     handleRemoveMiniPrompt,
     handleToggleWithReview,
+    handleToggleMultiAgentChat,
     handleEditStage,
     handleUpdateStage,
     handleDragEnd: handleMiniPromptDragEnd,
@@ -175,8 +175,9 @@ export function WorkflowConstructor({ data }: WorkflowConstructorProps) {
     description?: string;
     color?: string;
     withReview: boolean;
+    includeMultiAgentChat?: boolean;
   }) => {
-    handleCreateStage(data.name, data.description || '', data.color || '', data.withReview);
+    handleCreateStage(data.name, data.description || '', data.color || '', data.withReview, data.includeMultiAgentChat ?? false);
   };
 
   const handleUpdateStageWrapper = (stageId: string, data: {
@@ -184,8 +185,9 @@ export function WorkflowConstructor({ data }: WorkflowConstructorProps) {
     description?: string;
     color?: string;
     withReview: boolean;
+    includeMultiAgentChat?: boolean;
   }) => {
-    handleUpdateStage(data.name, data.description || '', data.color || '', data.withReview);
+    handleUpdateStage(data.name, data.description || '', data.color || '', data.withReview, data.includeMultiAgentChat ?? false);
   };
 
   if (!currentWorkflow) {
@@ -242,7 +244,6 @@ export function WorkflowConstructor({ data }: WorkflowConstructorProps) {
         workflowDescription={workflowDescription}
         isActive={isActive}
         isPublic={isPublic}
-        includeMultiAgentChat={includeMultiAgentChat}
         selectedTagIds={selectedTagIds}
         isDirty={isDirty}
         isSaving={isSaving}
@@ -250,7 +251,6 @@ export function WorkflowConstructor({ data }: WorkflowConstructorProps) {
         onWorkflowDescriptionChange={handleWorkflowDescriptionChange}
         onIsActiveChange={handleIsActiveChange}
         onIsPublicChange={handleIsPublicChange}
-        onIncludeMultiAgentChatChange={handleIncludeMultiAgentChatChange}
         onSelectedTagIdsChange={handleSelectedTagIdsChange}
         onSave={handleSaveWorkflowFromHook}
       />
@@ -261,7 +261,6 @@ export function WorkflowConstructor({ data }: WorkflowConstructorProps) {
           stages={localStages}
           isCreatingStage={isCreatingStage}
           editingStageId={editingStageId}
-          includeMultiAgentChat={includeMultiAgentChat}
           onMiniPromptCreated={(newMiniPrompt) =>
             setMiniPrompts([...miniPrompts, newMiniPrompt])
           }
@@ -273,6 +272,7 @@ export function WorkflowConstructor({ data }: WorkflowConstructorProps) {
           onEditStage={handleEditStage}
           onUpdateStage={handleUpdateStageWrapper}
           onToggleWithReview={handleToggleWithReview}
+          onToggleMultiAgentChat={handleToggleMultiAgentChat}
           onCreateStage={handleCreateStageWrapper}
           onCancelCreateStage={() => setIsCreatingStage(false)}
           onCancelEditStage={() => setEditingStageId(null)}

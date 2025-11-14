@@ -17,17 +17,21 @@ jest.mock('../StageDropZone', () => ({
 
 const mockStage = {
   id: 'stage-1',
+  workflowId: 'workflow-1',
   name: 'Test Stage',
   description: 'Test stage description',
   color: '#3b82f6',
   order: 0,
   withReview: true,
+  includeMultiAgentChat: false,
+  createdAt: new Date(),
   miniPrompts: [],
 };
 
 describe('StageSection', () => {
   const mockOnRemoveStage = jest.fn();
   const mockOnRemoveMiniPrompt = jest.fn();
+  const mockOnDropMiniPrompts = jest.fn();
   const mockOnEditStage = jest.fn();
   const mockOnToggleWithReview = jest.fn();
 
@@ -41,6 +45,7 @@ describe('StageSection', () => {
         stage={mockStage}
         onRemoveStage={mockOnRemoveStage}
         onRemoveMiniPrompt={mockOnRemoveMiniPrompt}
+        onDropMiniPrompts={mockOnDropMiniPrompts}
       />
     );
 
@@ -54,6 +59,7 @@ describe('StageSection', () => {
         stage={mockStage}
         onRemoveStage={mockOnRemoveStage}
         onRemoveMiniPrompt={mockOnRemoveMiniPrompt}
+        onDropMiniPrompts={mockOnDropMiniPrompts}
       />
     );
 
@@ -67,6 +73,7 @@ describe('StageSection', () => {
         stage={mockStage}
         onRemoveStage={mockOnRemoveStage}
         onRemoveMiniPrompt={mockOnRemoveMiniPrompt}
+        onDropMiniPrompts={mockOnDropMiniPrompts}
       />
     );
 
@@ -81,6 +88,7 @@ describe('StageSection', () => {
         stage={mockStage}
         onRemoveStage={mockOnRemoveStage}
         onRemoveMiniPrompt={mockOnRemoveMiniPrompt}
+        onDropMiniPrompts={mockOnDropMiniPrompts}
       />
     );
 
@@ -97,6 +105,7 @@ describe('StageSection', () => {
           stage={mockStage}
           onRemoveStage={mockOnRemoveStage}
           onRemoveMiniPrompt={mockOnRemoveMiniPrompt}
+          onDropMiniPrompts={mockOnDropMiniPrompts}
           onToggleWithReview={mockOnToggleWithReview}
         />
       );
@@ -112,6 +121,7 @@ describe('StageSection', () => {
           stage={mockStage}
           onRemoveStage={mockOnRemoveStage}
           onRemoveMiniPrompt={mockOnRemoveMiniPrompt}
+          onDropMiniPrompts={mockOnDropMiniPrompts}
           onToggleWithReview={mockOnToggleWithReview}
         />
       );
@@ -127,6 +137,7 @@ describe('StageSection', () => {
           stage={{ ...mockStage, withReview: true }}
           onRemoveStage={mockOnRemoveStage}
           onRemoveMiniPrompt={mockOnRemoveMiniPrompt}
+          onDropMiniPrompts={mockOnDropMiniPrompts}
           onToggleWithReview={mockOnToggleWithReview}
         />
       );
@@ -141,6 +152,7 @@ describe('StageSection', () => {
           stage={{ ...mockStage, withReview: false }}
           onRemoveStage={mockOnRemoveStage}
           onRemoveMiniPrompt={mockOnRemoveMiniPrompt}
+          onDropMiniPrompts={mockOnDropMiniPrompts}
           onToggleWithReview={mockOnToggleWithReview}
         />
       );
@@ -155,6 +167,7 @@ describe('StageSection', () => {
           stage={{ ...mockStage, withReview: false }}
           onRemoveStage={mockOnRemoveStage}
           onRemoveMiniPrompt={mockOnRemoveMiniPrompt}
+          onDropMiniPrompts={mockOnDropMiniPrompts}
           onToggleWithReview={mockOnToggleWithReview}
         />
       );
@@ -171,6 +184,7 @@ describe('StageSection', () => {
           stage={mockStage}
           onRemoveStage={mockOnRemoveStage}
           onRemoveMiniPrompt={mockOnRemoveMiniPrompt}
+          onDropMiniPrompts={mockOnDropMiniPrompts}
         />
       );
 
@@ -186,6 +200,7 @@ describe('StageSection', () => {
           stage={mockStage}
           onRemoveStage={mockOnRemoveStage}
           onRemoveMiniPrompt={mockOnRemoveMiniPrompt}
+          onDropMiniPrompts={mockOnDropMiniPrompts}
           onEditStage={mockOnEditStage}
         />
       );
@@ -200,6 +215,7 @@ describe('StageSection', () => {
           stage={mockStage}
           onRemoveStage={mockOnRemoveStage}
           onRemoveMiniPrompt={mockOnRemoveMiniPrompt}
+          onDropMiniPrompts={mockOnDropMiniPrompts}
           onEditStage={mockOnEditStage}
         />
       );
@@ -216,6 +232,7 @@ describe('StageSection', () => {
           stage={mockStage}
           onRemoveStage={mockOnRemoveStage}
           onRemoveMiniPrompt={mockOnRemoveMiniPrompt}
+          onDropMiniPrompts={mockOnDropMiniPrompts}
         />
       );
 
@@ -229,10 +246,101 @@ describe('StageSection', () => {
         stage={mockStage}
         onRemoveStage={mockOnRemoveStage}
         onRemoveMiniPrompt={mockOnRemoveMiniPrompt}
-        includeMultiAgentChat={true}
+        onDropMiniPrompts={mockOnDropMiniPrompts}
       />
     );
 
     expect(screen.getByTestId('stage-dropzone-stage-1')).toBeInTheDocument();
+  });
+
+  describe('Multi-Agent Chat Checkbox', () => {
+    const mockOnToggleMultiAgentChat = jest.fn();
+
+    it('should render multi-agent chat checkbox when onToggleMultiAgentChat provided', () => {
+      renderWithTooltip(
+        <StageSection
+          stage={mockStage}
+          onRemoveStage={mockOnRemoveStage}
+          onRemoveMiniPrompt={mockOnRemoveMiniPrompt}
+          onDropMiniPrompts={mockOnDropMiniPrompts}
+          onToggleMultiAgentChat={mockOnToggleMultiAgentChat}
+        />
+      );
+
+      expect(screen.getByText('Multi-Agent Chat')).toBeInTheDocument();
+      const checkboxes = screen.getAllByRole('checkbox');
+      expect(checkboxes.length).toBeGreaterThan(0);
+    });
+
+    it('should render checkbox in checked state when includeMultiAgentChat is true', () => {
+      renderWithTooltip(
+        <StageSection
+          stage={{ ...mockStage, includeMultiAgentChat: true }}
+          onRemoveStage={mockOnRemoveStage}
+          onRemoveMiniPrompt={mockOnRemoveMiniPrompt}
+          onDropMiniPrompts={mockOnDropMiniPrompts}
+          onToggleMultiAgentChat={mockOnToggleMultiAgentChat}
+        />
+      );
+
+      const checkboxes = screen.getAllByRole('checkbox');
+      const multichatCheckbox = checkboxes.find((cb) => 
+        (cb as HTMLElement).closest('label')?.textContent?.includes('Multi-Agent Chat')
+      );
+      expect(multichatCheckbox).toBeChecked();
+    });
+
+    it('should render checkbox in unchecked state when includeMultiAgentChat is false', () => {
+      renderWithTooltip(
+        <StageSection
+          stage={{ ...mockStage, includeMultiAgentChat: false }}
+          onRemoveStage={mockOnRemoveStage}
+          onRemoveMiniPrompt={mockOnRemoveMiniPrompt}
+          onDropMiniPrompts={mockOnDropMiniPrompts}
+          onToggleMultiAgentChat={mockOnToggleMultiAgentChat}
+        />
+      );
+
+      const checkboxes = screen.getAllByRole('checkbox');
+      const multichatCheckbox = checkboxes.find((cb) => 
+        (cb as HTMLElement).closest('label')?.textContent?.includes('Multi-Agent Chat')
+      );
+      expect(multichatCheckbox).not.toBeChecked();
+    });
+
+    it('should call onToggleMultiAgentChat when checkbox toggled', () => {
+      renderWithTooltip(
+        <StageSection
+          stage={{ ...mockStage, includeMultiAgentChat: false }}
+          onRemoveStage={mockOnRemoveStage}
+          onRemoveMiniPrompt={mockOnRemoveMiniPrompt}
+          onDropMiniPrompts={mockOnDropMiniPrompts}
+          onToggleMultiAgentChat={mockOnToggleMultiAgentChat}
+        />
+      );
+
+      const checkboxes = screen.getAllByRole('checkbox');
+      const multichatCheckbox = checkboxes.find((cb) => 
+        (cb as HTMLElement).closest('label')?.textContent?.includes('Multi-Agent Chat')
+      );
+      
+      if (multichatCheckbox) {
+        fireEvent.click(multichatCheckbox);
+        expect(mockOnToggleMultiAgentChat).toHaveBeenCalledWith('stage-1', true);
+      }
+    });
+
+    it('should not render checkbox when onToggleMultiAgentChat not provided', () => {
+      renderWithTooltip(
+        <StageSection
+          stage={mockStage}
+          onRemoveStage={mockOnRemoveStage}
+          onRemoveMiniPrompt={mockOnRemoveMiniPrompt}
+          onDropMiniPrompts={mockOnDropMiniPrompts}
+        />
+      );
+
+      expect(screen.queryByText('Multi-Agent Chat')).not.toBeInTheDocument();
+    });
   });
 });

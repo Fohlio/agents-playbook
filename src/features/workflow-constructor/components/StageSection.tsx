@@ -16,8 +16,8 @@ interface StageSectionProps {
   onDropMiniPrompts: (stageId: string, miniPromptIds: string[]) => void;
   onEditStage?: (stageId: string) => void;
   onToggleWithReview?: (stageId: string, withReview: boolean) => void;
+  onToggleMultiAgentChat?: (stageId: string, includeMultiAgentChat: boolean) => void;
   onMiniPromptClick?: (miniPrompt: { id: string; name: string; description?: string | null; content: string }) => void;
-  includeMultiAgentChat?: boolean;
 }
 
 export function StageSection({
@@ -27,8 +27,8 @@ export function StageSection({
   onDropMiniPrompts,
   onEditStage,
   onToggleWithReview,
+  onToggleMultiAgentChat,
   onMiniPromptClick,
-  includeMultiAgentChat = false,
 }: StageSectionProps) {
   return (
     <Card className="mb-4" testId={`stage-section-${stage.id}`}>
@@ -59,6 +59,22 @@ export function StageSection({
                 />
                 <span className="text-sm font-medium text-text-primary">
                   With Review
+                </span>
+                <BetaBadge size="sm" />
+              </label>
+            </Tooltip>
+          )}
+          {onToggleMultiAgentChat && (
+            <Tooltip content="Enable AI coordination prompts after each mini-prompt in this stage to help multiple agents collaborate effectively">
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={stage.includeMultiAgentChat ?? false}
+                  onChange={(e) => onToggleMultiAgentChat(stage.id, e.target.checked)}
+                  className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
+                />
+                <span className="text-sm font-medium text-text-primary">
+                  Multi-Agent Chat
                 </span>
                 <BetaBadge size="sm" />
               </label>
@@ -96,7 +112,7 @@ export function StageSection({
         }
         onDropMiniPrompts={onDropMiniPrompts}
         onMiniPromptClick={onMiniPromptClick}
-        includeMultiAgentChat={includeMultiAgentChat}
+        includeMultiAgentChat={stage.includeMultiAgentChat ?? false}
       />
     </Card>
   );

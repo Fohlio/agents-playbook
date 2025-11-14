@@ -89,6 +89,7 @@ export function useWorkflowAIIntegration() {
             description?: string;
             color?: string;
             withReview?: boolean;
+            includeMultiAgentChat?: boolean;
           }
 
           const newStages: WorkflowStageWithMiniPrompts[] = data.workflow.stages.map(
@@ -100,6 +101,7 @@ export function useWorkflowAIIntegration() {
               color: stageData.color || null,
               order: idx,
               withReview: stageData.withReview ?? true,
+              includeMultiAgentChat: stageData.includeMultiAgentChat ?? false,
               createdAt: new Date(),
               miniPrompts: [],
             })
@@ -122,6 +124,7 @@ export function useWorkflowAIIntegration() {
               ? localStages.length
               : (data.stage.position ?? localStages.length),
           withReview: data.stage.withReview ?? true,
+          includeMultiAgentChat: data.stage.includeMultiAgentChat ?? false,
           createdAt: new Date(),
           miniPrompts: [],
         };

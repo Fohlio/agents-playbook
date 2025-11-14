@@ -125,13 +125,14 @@ describe('ExecutionPlanBuilder', () => {
       const mockWorkflow = {
         id: 'workflow-1',
         name: 'Test Workflow',
-        includeMultiAgentChat: true,
+        includeMultiAgentChat: false, // Deprecated - now per-stage
         stages: [
           {
             id: 'stage-1',
             name: 'Stage 1',
             order: 0,
             withReview: false,
+            includeMultiAgentChat: true, // Per-stage setting
             miniPrompts: [
               {
                 order: 0,
@@ -177,13 +178,14 @@ describe('ExecutionPlanBuilder', () => {
       const mockWorkflow = {
         id: 'workflow-1',
         name: 'Test Workflow',
-        includeMultiAgentChat: true,
+        includeMultiAgentChat: false, // Deprecated - now per-stage
         stages: [
           {
             id: 'stage-1',
             name: 'Stage 1',
             order: 0,
             withReview: true,
+            includeMultiAgentChat: true, // Per-stage setting
             miniPrompts: [
               {
                 order: 0,

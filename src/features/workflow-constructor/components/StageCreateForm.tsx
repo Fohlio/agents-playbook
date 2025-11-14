@@ -6,13 +6,14 @@ import { Tooltip } from '@/shared/ui/molecules';
 import InfoIcon from '@mui/icons-material/Info';
 
 interface StageCreateFormProps {
-  onSubmit: (name: string, description: string, color: string, withReview: boolean) => void;
+  onSubmit: (name: string, description: string, color: string, withReview: boolean, includeMultiAgentChat: boolean) => void;
   onCancel: () => void;
   initialValues?: {
     name: string;
     description?: string | null;
     color: string;
     withReview: boolean;
+    includeMultiAgentChat?: boolean;
   };
   mode?: 'create' | 'edit';
 }
@@ -33,15 +34,17 @@ export function StageCreateForm({ onSubmit, onCancel, initialValues, mode = 'cre
   const [description, setDescription] = useState(initialValues?.description || '');
   const [color, setColor] = useState(initialValues?.color || '#3B82F6');
   const [withReview, setWithReview] = useState(initialValues?.withReview ?? true);
+  const [includeMultiAgentChat, setIncludeMultiAgentChat] = useState(initialValues?.includeMultiAgentChat ?? false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (name.trim()) {
-      onSubmit(name.trim(), description.trim(), color, withReview);
+      onSubmit(name.trim(), description.trim(), color, withReview, includeMultiAgentChat);
       setName('');
       setDescription('');
       setColor('#3B82F6');
       setWithReview(true);
+      setIncludeMultiAgentChat(false);
     }
   };
 
@@ -115,6 +118,24 @@ export function StageCreateForm({ onSubmit, onCancel, initialValues, mode = 'cre
           </div>
           <p className="text-xs text-text-secondary mt-1 ml-6">
             Recommended: Add review between stages to prevent context collapse
+          </p>
+        </div>
+        <div className="pt-2 border-t border-border-base">
+          <div className="flex items-center gap-2">
+            <Checkbox
+              id="include-multi-agent-chat"
+              checked={includeMultiAgentChat}
+              onChange={(e) => setIncludeMultiAgentChat(e.target.checked)}
+            />
+            <label htmlFor="include-multi-agent-chat" className="text-sm font-medium text-text-primary">
+              Multi-Agent Chat
+            </label>
+            <Tooltip content="Enable AI coordination prompts after each mini-prompt in this stage to help multiple agents collaborate effectively">
+              <InfoIcon className="w-4 h-4 text-text-tertiary cursor-help" />
+            </Tooltip>
+          </div>
+          <p className="text-xs text-text-secondary mt-1 ml-6">
+            Adds coordination prompts after each mini-prompt for multi-agent collaboration
           </p>
         </div>
       </div>

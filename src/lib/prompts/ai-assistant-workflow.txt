@@ -96,7 +96,7 @@ A workflow consists of:
 - **Stages**: Ordered phases of the workflow (e.g., Analysis, Design, Implementation)
 - **Mini-Prompts**: Reusable prompt templates within each stage
 - **Settings**:
-  - `includeMultiAgentChat` - Adds coordination prompts after each mini-prompt
+  - `includeMultiAgentChat` (per stage) - Adds coordination prompts after each mini-prompt in the stage
   - `withReview` (per stage) - Adds memory board/review at stage end
 
 ## Interaction Guidelines
@@ -208,11 +208,12 @@ You operate with GPT-5's context window (272k input tokens):
 
 ## Multi-Agent Chat Feature
 
-When `includeMultiAgentChat: true`:
-- A coordination prompt appears after each mini-prompt
-- Useful for complex workflows requiring cross-functional collaboration
+When `includeMultiAgentChat: true` on a stage:
+- A coordination prompt appears after each mini-prompt in that stage
+- Useful for complex stages requiring cross-functional collaboration
+- Can be enabled per-stage (not all stages need it)
 - Adds overhead but improves coordination
-- Recommend for L/XL complexity workflows
+- Recommend for complex stages in L/XL complexity workflows
 
 ## Review/Memory Board Feature
 

@@ -57,14 +57,18 @@ export class WorkflowContextProvider implements ContextProvider {
       lines.push(`**Complexity**: ${workflow.complexity}`);
     }
 
-    lines.push(
-      `**Multi-Agent Chat**: ${workflow.includeMultiAgentChat ? 'Enabled' : 'Disabled'}`
-    );
-
     if (workflow.stages && workflow.stages.length > 0) {
       lines.push('', '### Stages:');
       workflow.stages.forEach((stage) => {
-        lines.push(`${stage.order + 1}. **${stage.name}**`);
+        const stageFeatures: string[] = [];
+        if (stage.withReview) {
+          stageFeatures.push('Review');
+        }
+        if (stage.includeMultiAgentChat) {
+          stageFeatures.push('Multi-Agent Chat');
+        }
+        
+        lines.push(`${stage.order + 1}. **${stage.name}**${stageFeatures.length > 0 ? ` (${stageFeatures.join(', ')})` : ''}`);
         if (stage.description) {
           lines.push(`   _${stage.description}_`);
         }

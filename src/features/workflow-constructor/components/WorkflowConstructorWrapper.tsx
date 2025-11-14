@@ -4,7 +4,7 @@ import { useEffect, useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
-import { Button, Input, BetaBadge, Checkbox } from '@/shared/ui/atoms';
+import { Button, Input, Checkbox } from '@/shared/ui/atoms';
 import type { MiniPrompt } from '@prisma/client';
 import { useWorkflowConstructorStore } from '../lib/workflow-constructor-store';
 import { useWorkflowHandlers } from '../lib/use-workflow-handlers';
@@ -69,7 +69,6 @@ export function WorkflowConstructorWrapper({
     setWorkflowName,
     setIsActive,
     setIsPublic,
-    setIncludeMultiAgentChat,
     setSelectedTagIds,
     setLocalStages,
     setIsCreatingStage,
@@ -85,6 +84,7 @@ export function WorkflowConstructorWrapper({
     handleRemoveStage,
     handleRemoveMiniPrompt,
     handleToggleWithReview,
+    handleToggleMultiAgentChat,
     handleEditStage,
     handleUpdateStage,
     handleDragEnd: handleMiniPromptDragEnd,
@@ -139,7 +139,7 @@ export function WorkflowConstructorWrapper({
         isActive,
         complexity: undefined,
         visibility: isPublic ? 'PUBLIC' : 'PRIVATE' as 'PUBLIC' | 'PRIVATE',
-        includeMultiAgentChat,
+        includeMultiAgentChat: false, // Deprecated - now per-stage
         tagIds: existingTagIds,
         newTagNames,
         tempMiniPrompts: tempMiniPromptsData,
@@ -149,6 +149,7 @@ export function WorkflowConstructorWrapper({
           color: stage.color ?? undefined,
           order: index,
           withReview: stage.withReview,
+          includeMultiAgentChat: stage.includeMultiAgentChat ?? false,
           miniPrompts: stage.miniPrompts.map((smp, mpIndex) => ({
             miniPromptId: smp.miniPromptId,
             order: mpIndex,
@@ -214,19 +215,6 @@ export function WorkflowConstructorWrapper({
               id="new-workflow-public-checkbox"
               label="Public"
             />
-            <Tooltip content="Enable AI coordination prompts after each mini-prompt to help multiple agents collaborate effectively">
-              <div className="flex items-center gap-2">
-                <Checkbox
-                  checked={includeMultiAgentChat}
-                  onChange={(e) => setIncludeMultiAgentChat(e.target.checked)}
-                  id="new-workflow-multi-agent-chat-checkbox"
-                />
-                <label htmlFor="new-workflow-multi-agent-chat-checkbox" className="text-sm text-text-secondary flex items-center gap-1 cursor-pointer">
-                  Multi-Agent Chat
-                  <BetaBadge />
-                </label>
-              </div>
-            </Tooltip>
           </div>
         </div>
 
@@ -296,6 +284,7 @@ export function WorkflowConstructorWrapper({
                           description: stage.description || undefined,
                           color: stage.color || '',
                           withReview: stage.withReview,
+                          includeMultiAgentChat: stage.includeMultiAgentChat ?? false,
                         }}
                         onSubmit={handleUpdateStage}
                         onCancel={() => setEditingStageId(null)}
@@ -311,10 +300,10 @@ export function WorkflowConstructorWrapper({
                       onDropMiniPrompts={onDropMiniPrompts}
                       onEditStage={handleEditStage}
                       onToggleWithReview={handleToggleWithReview}
+                      onToggleMultiAgentChat={handleToggleMultiAgentChat}
                       onMiniPromptClick={(miniPrompt) => {
                         setViewingMiniPromptId(miniPrompt.id);
                       }}
-                      includeMultiAgentChat={includeMultiAgentChat}
                     />
                   );
                 })}

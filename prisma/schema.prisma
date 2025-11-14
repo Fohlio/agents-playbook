@@ -2,7 +2,7 @@
 // Database: Neon PostgreSQL with Row-Level Security
 
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
   previewFeatures = ["multiSchema"]
 }
 
@@ -55,35 +55,35 @@ enum MessageRole {
 // ============================================================================
 
 model User {
-  id                    String      @id @default(uuid())
-  email                 String      @unique
-  username              String      @unique
-  passwordHash          String      @map("password_hash")
-  tier                  UserTier    @default(FREE)
-  role                  UserRole    @default(USER)
-  openaiApiKey          String?     @map("openai_api_key") @db.Text
-  openaiApiKeyUpdatedAt DateTime?   @map("openai_api_key_updated_at")
-  createdAt             DateTime    @default(now()) @map("created_at")
-  updatedAt             DateTime    @updatedAt @map("updated_at")
+  id                    String    @id @default(uuid())
+  email                 String    @unique
+  username              String    @unique
+  passwordHash          String    @map("password_hash")
+  tier                  UserTier  @default(FREE)
+  role                  UserRole  @default(USER)
+  openaiApiKey          String?   @map("openai_api_key") @db.Text
+  openaiApiKeyUpdatedAt DateTime? @map("openai_api_key_updated_at")
+  createdAt             DateTime  @default(now()) @map("created_at")
+  updatedAt             DateTime  @updatedAt @map("updated_at")
 
   // Relations
-  apiTokens             ApiToken[]
-  workflows             Workflow[]
-  miniPrompts           MiniPrompt[]
-  ratings               Rating[]
-  workflowReferences    WorkflowReference[]
-  miniPromptReferences  MiniPromptReference[]
-  sharedLinks           SharedLink[]
-  createdTags           Tag[]
-  aiChatSessions        AIChatSession[]
-  chatMessages          ChatMessage[]
-  topics                Topic[]
-  messages              Message[]             @relation("MessageAuthor")
-  messageVotes          MessageVote[]         @relation("MessageVotes")
+  apiTokens            ApiToken[]
+  workflows            Workflow[]
+  miniPrompts          MiniPrompt[]
+  ratings              Rating[]
+  workflowReferences   WorkflowReference[]
+  miniPromptReferences MiniPromptReference[]
+  sharedLinks          SharedLink[]
+  createdTags          Tag[]
+  aiChatSessions       AIChatSession[]
+  chatMessages         ChatMessage[]
+  topics               Topic[]
+  messages             Message[]             @relation("MessageAuthor")
+  messageVotes         MessageVote[]         @relation("MessageVotes")
 
-  @@map("users")
   @@index([email])
   @@index([tier])
+  @@map("users")
 }
 
 model ApiToken {
@@ -94,41 +94,39 @@ model ApiToken {
   expiresAt  DateTime  @map("expires_at")
   lastUsedAt DateTime? @map("last_used_at")
   createdAt  DateTime  @default(now()) @map("created_at")
-  
+
   // Relations
-  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
-  @@map("api_tokens")
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   @@index([userId])
   @@index([tokenHash])
   @@index([expiresAt])
+  @@map("api_tokens")
 }
 
-
 model Workflow {
-  id                   String              @id @default(uuid())
-  userId               String              @map("user_id")
-  name                 String              @db.VarChar(255)
-  description          String?             @db.Text
-  yamlContent          String?             @map("yaml_content") @db.Text // Made nullable for new workflows
-  complexity           WorkflowComplexity?
-  visibility           Visibility          @default(PRIVATE)
-  isActive             Boolean             @default(false) @map("is_active")
-  isSystemWorkflow     Boolean             @default(false) @map("is_system_workflow")
-  includeMultiAgentChat Boolean            @default(false) @map("include_multi_agent_chat")
-  position             Int                 @default(0) @map("position")
-  createdAt            DateTime            @default(now()) @map("created_at")
-  updatedAt            DateTime            @updatedAt @map("updated_at")
+  id                    String              @id @default(uuid())
+  userId                String              @map("user_id")
+  name                  String              @db.VarChar(255)
+  description           String?             @db.Text
+  yamlContent           String?             @map("yaml_content") @db.Text // Made nullable for new workflows
+  complexity            WorkflowComplexity?
+  visibility            Visibility          @default(PRIVATE)
+  isActive              Boolean             @default(false) @map("is_active")
+  isSystemWorkflow      Boolean             @default(false) @map("is_system_workflow")
+  includeMultiAgentChat Boolean             @default(false) @map("include_multi_agent_chat")
+  position              Int                 @default(0) @map("position")
+  createdAt             DateTime            @default(now()) @map("created_at")
+  updatedAt             DateTime            @updatedAt @map("updated_at")
 
   // Relations
-  user          User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
-  stages        WorkflowStage[]
-  references    WorkflowReference[]
-  embedding     WorkflowEmbedding?
-  tags          WorkflowTag[]
+  user           User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  stages         WorkflowStage[]
+  references     WorkflowReference[]
+  embedding      WorkflowEmbedding?
+  tags           WorkflowTag[]
   aiChatSessions AIChatSession[]
 
-  @@map("workflows")
   @@index([userId])
   @@index([visibility])
   @@index([isActive])
@@ -137,51 +135,53 @@ model Workflow {
   @@index([createdAt])
   @@index([complexity])
   @@index([userId, position])
+  @@map("workflows")
 }
 
 // WorkflowStage represents a stage in a workflow
 model WorkflowStage {
-  id          String   @id @default(uuid())
-  workflowId  String   @map("workflow_id")
-  name        String   @db.VarChar(255)
-  description String?  @db.Text
-  color       String?  @db.VarChar(50) // Stage color for visual identification
-  order       Int
-  withReview  Boolean  @default(true) @map("with_review")
-  createdAt   DateTime @default(now()) @map("created_at")
+  id                    String   @id @default(uuid())
+  workflowId            String   @map("workflow_id")
+  name                  String   @db.VarChar(255)
+  description           String?  @db.Text
+  color                 String?  @db.VarChar(50) // Stage color for visual identification
+  order                 Int
+  withReview            Boolean  @default(true) @map("with_review")
+  includeMultiAgentChat Boolean  @default(false) @map("include_multi_agent_chat")
+  createdAt             DateTime @default(now()) @map("created_at")
 
   // Relations
   workflow    Workflow          @relation(fields: [workflowId], references: [id], onDelete: Cascade)
   miniPrompts StageMiniPrompt[]
 
-  @@map("workflow_stages")
   @@index([workflowId])
   @@index([withReview])
+  @@index([includeMultiAgentChat])
+  @@map("workflow_stages")
 }
 
 model MiniPrompt {
-  id                 String      @id @default(uuid())
-  userId             String      @map("user_id")
-  name               String      @db.VarChar(255)
-  description        String?     @db.VarChar(1000)
-  content            String      @db.Text // Markdown content
-  visibility         Visibility  @default(PRIVATE)
-  isActive           Boolean     @default(false) @map("is_active")
-  isSystemMiniPrompt Boolean     @default(false) @map("is_system_mini_prompt")
-  isAutomatic        Boolean     @default(false) @map("is_automatic") // Auto-injected prompts (Memory Board, Multi-Agent Chat)
-  position           Int         @default(0) @map("position")
-  createdAt          DateTime    @default(now()) @map("created_at")
-  updatedAt          DateTime    @updatedAt @map("updated_at")
+  id                 String     @id @default(uuid())
+  userId             String     @map("user_id")
+  name               String     @db.VarChar(255)
+  description        String?    @db.VarChar(1000)
+  content            String     @db.Text // Markdown content
+  visibility         Visibility @default(PRIVATE)
+  isActive           Boolean    @default(false) @map("is_active")
+  isSystemMiniPrompt Boolean    @default(false) @map("is_system_mini_prompt")
+  isAutomatic        Boolean    @default(false) @map("is_automatic") // Auto-injected prompts (Memory Board, Multi-Agent Chat)
+  position           Int        @default(0) @map("position")
+  createdAt          DateTime   @default(now()) @map("created_at")
+  updatedAt          DateTime   @updatedAt @map("updated_at")
 
   // Relations
-  user              User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  stageMiniPrompts  StageMiniPrompt[]
-  references        MiniPromptReference[]
-  tags              MiniPromptTag[]
-  embedding         MiniPromptEmbedding?
-  aiChatSessions    AIChatSession[]
+  user             User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  stageMiniPrompts StageMiniPrompt[]
+  references       MiniPromptReference[]
+  tags             MiniPromptTag[]
+  embedding        MiniPromptEmbedding?
+  aiChatSessions   AIChatSession[]
 
-  @@map("mini_prompts")
   @@index([userId])
   @@index([visibility])
   @@index([isActive])
@@ -189,6 +189,7 @@ model MiniPrompt {
   @@index([isAutomatic])
   @@index([createdAt])
   @@index([userId, position])
+  @@map("mini_prompts")
 }
 
 // StageMiniPrompt junction table
@@ -202,47 +203,47 @@ model StageMiniPrompt {
   miniPrompt MiniPrompt    @relation(fields: [miniPromptId], references: [id], onDelete: Restrict)
 
   @@id([stageId, miniPromptId])
-  @@map("stage_mini_prompts")
   @@index([stageId])
   @@index([miniPromptId])
+  @@map("stage_mini_prompts")
 }
 
 model Rating {
-  id         String      @id @default(uuid())
-  userId     String      @map("user_id")
-  targetType TargetType  @map("target_type")
-  targetId   String      @map("target_id")
-  rating     Int         // Validated in application layer: 1-5
-  createdAt  DateTime    @default(now()) @map("created_at")
+  id         String     @id @default(uuid())
+  userId     String     @map("user_id")
+  targetType TargetType @map("target_type")
+  targetId   String     @map("target_id")
+  rating     Int // Validated in application layer: 1-5
+  createdAt  DateTime   @default(now()) @map("created_at")
 
   // Relations
-  user       User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
   // Note: targetId is polymorphic (Workflow or MiniPrompt) - handled at application layer
 
   @@unique([userId, targetType, targetId])
-  @@map("ratings")
   @@index([userId])
   @@index([targetType, targetId])
   @@index([rating])
   @@index([createdAt])
+  @@map("ratings")
 }
 
 model UsageStats {
-  id               String      @id @default(uuid())
-  targetType       TargetType  @map("target_type")
-  targetId         String      @map("target_id")
-  usageCount       Int         @default(0) @map("usage_count")
-  uniqueUsersCount Int         @default(0) @map("unique_users_count")
-  lastUsedAt       DateTime?   @map("last_used_at")
-  updatedAt        DateTime    @updatedAt @map("updated_at")
+  id               String     @id @default(uuid())
+  targetType       TargetType @map("target_type")
+  targetId         String     @map("target_id")
+  usageCount       Int        @default(0) @map("usage_count")
+  uniqueUsersCount Int        @default(0) @map("unique_users_count")
+  lastUsedAt       DateTime?  @map("last_used_at")
+  updatedAt        DateTime   @updatedAt @map("updated_at")
 
   // Note: targetId is polymorphic (Workflow or MiniPrompt) - handled at application layer
 
   @@unique([targetType, targetId])
-  @@map("usage_stats")
   @@index([targetType])
   @@index([usageCount])
   @@index([uniqueUsersCount])
+  @@map("usage_stats")
 }
 
 model WorkflowReference {
@@ -256,55 +257,55 @@ model WorkflowReference {
   workflow Workflow @relation(fields: [workflowId], references: [id], onDelete: Cascade)
 
   @@unique([userId, workflowId])
-  @@map("workflow_references")
   @@index([userId])
   @@index([workflowId])
+  @@map("workflow_references")
 }
 
 model MiniPromptReference {
-  id           String     @id @default(uuid())
-  userId       String     @map("user_id")
-  miniPromptId String     @map("mini_prompt_id")
-  addedAt      DateTime   @default(now()) @map("added_at")
+  id           String   @id @default(uuid())
+  userId       String   @map("user_id")
+  miniPromptId String   @map("mini_prompt_id")
+  addedAt      DateTime @default(now()) @map("added_at")
 
   // Relations
-  user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
-  miniPrompt  MiniPrompt @relation(fields: [miniPromptId], references: [id], onDelete: Cascade)
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  miniPrompt MiniPrompt @relation(fields: [miniPromptId], references: [id], onDelete: Cascade)
 
   @@unique([userId, miniPromptId])
-  @@map("mini_prompt_references")
   @@index([userId])
   @@index([miniPromptId])
+  @@map("mini_prompt_references")
 }
 
 model WorkflowEmbedding {
-  id          String   @id @default(uuid())
-  workflowId  String   @unique @map("workflow_id")
-  embedding   Json     // Vector embedding as JSON array
-  searchText  String   @db.Text // Cached searchable text
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @updatedAt @map("updated_at")
+  id         String   @id @default(uuid())
+  workflowId String   @unique @map("workflow_id")
+  embedding  Json // Vector embedding as JSON array
+  searchText String   @db.Text // Cached searchable text
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
 
   // Relations
-  workflow    Workflow @relation(fields: [workflowId], references: [id], onDelete: Cascade)
+  workflow Workflow @relation(fields: [workflowId], references: [id], onDelete: Cascade)
 
-  @@map("workflow_embeddings")
   @@index([workflowId])
+  @@map("workflow_embeddings")
 }
 
 model MiniPromptEmbedding {
-  id            String      @id @default(uuid())
-  miniPromptId  String      @unique @map("mini_prompt_id")
-  embedding     Json        // Vector embedding as JSON array
-  searchText    String      @db.Text // Cached searchable text
-  createdAt     DateTime    @default(now()) @map("created_at")
-  updatedAt     DateTime    @updatedAt @map("updated_at")
+  id           String   @id @default(uuid())
+  miniPromptId String   @unique @map("mini_prompt_id")
+  embedding    Json // Vector embedding as JSON array
+  searchText   String   @db.Text // Cached searchable text
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
 
   // Relations
-  miniPrompt    MiniPrompt  @relation(fields: [miniPromptId], references: [id], onDelete: Cascade)
+  miniPrompt MiniPrompt @relation(fields: [miniPromptId], references: [id], onDelete: Cascade)
 
-  @@map("mini_prompt_embeddings")
   @@index([miniPromptId])
+  @@map("mini_prompt_embeddings")
 }
 
 model Tag {
@@ -317,14 +318,14 @@ model Tag {
   updatedAt DateTime @updatedAt @map("updated_at")
 
   // Relations
-  creator         User           @relation(fields: [createdBy], references: [id])
-  workflowTags    WorkflowTag[]
-  miniPromptTags  MiniPromptTag[]
+  creator        User            @relation(fields: [createdBy], references: [id])
+  workflowTags   WorkflowTag[]
+  miniPromptTags MiniPromptTag[]
 
-  @@map("tags")
   @@index([name])
   @@index([isActive])
   @@index([createdBy])
+  @@map("tags")
 }
 
 model WorkflowTag {
@@ -336,9 +337,9 @@ model WorkflowTag {
   tag      Tag      @relation(fields: [tagId], references: [id], onDelete: Cascade)
 
   @@id([workflowId, tagId])
-  @@map("workflow_tags")
   @@index([workflowId])
   @@index([tagId])
+  @@map("workflow_tags")
 }
 
 model MiniPromptTag {
@@ -350,54 +351,53 @@ model MiniPromptTag {
   tag        Tag        @relation(fields: [tagId], references: [id], onDelete: Cascade)
 
   @@id([miniPromptId, tagId])
-  @@map("mini_prompt_tags")
   @@index([miniPromptId])
   @@index([tagId])
+  @@map("mini_prompt_tags")
 }
 
 model SharedLink {
-  id         String      @id @default(uuid())
-  userId     String      @map("user_id")
-  targetType TargetType  @map("target_type")
-  targetId   String      @map("target_id")
-  shareToken String      @unique @map("share_token") @db.VarChar(32)
-  isActive   Boolean     @default(true) @map("is_active")
-  expiresAt  DateTime?   @map("expires_at")
-  viewCount  Int         @default(0) @map("view_count")
-  createdAt  DateTime    @default(now()) @map("created_at")
-  updatedAt  DateTime    @updatedAt @map("updated_at")
+  id         String     @id @default(uuid())
+  userId     String     @map("user_id")
+  targetType TargetType @map("target_type")
+  targetId   String     @map("target_id")
+  shareToken String     @unique @map("share_token") @db.VarChar(32)
+  isActive   Boolean    @default(true) @map("is_active")
+  expiresAt  DateTime?  @map("expires_at")
+  viewCount  Int        @default(0) @map("view_count")
+  createdAt  DateTime   @default(now()) @map("created_at")
+  updatedAt  DateTime   @updatedAt @map("updated_at")
 
   // Relations
-  user       User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
   // Note: targetId is polymorphic (Workflow or MiniPrompt) - handled at application layer
 
-  @@map("shared_links")
   @@index([userId])
   @@index([targetType, targetId])
   @@index([shareToken])
   @@index([isActive])
   @@index([expiresAt])
+  @@map("shared_links")
 }
 
 model AIChatSession {
-  id               String        @id @default(uuid())
-  userId           String        @map("user_id")
-  workflowId       String?       @map("workflow_id")
-  miniPromptId     String?       @map("mini_prompt_id")
-  mode             String        @db.VarChar(50) // 'workflow' or 'mini-prompt'
-  totalTokens      Int           @default(0) @map("total_tokens")
-  archivedAt       DateTime?     @map("archived_at")
-  lastMessageAt    DateTime      @default(now()) @map("last_message_at")
-  createdAt        DateTime      @default(now()) @map("created_at")
-  updatedAt        DateTime      @updatedAt @map("updated_at")
+  id            String    @id @default(uuid())
+  userId        String    @map("user_id")
+  workflowId    String?   @map("workflow_id")
+  miniPromptId  String?   @map("mini_prompt_id")
+  mode          String    @db.VarChar(50) // 'workflow' or 'mini-prompt'
+  totalTokens   Int       @default(0) @map("total_tokens")
+  archivedAt    DateTime? @map("archived_at")
+  lastMessageAt DateTime  @default(now()) @map("last_message_at")
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
 
   // Relations
-  user       User           @relation(fields: [userId], references: [id], onDelete: Cascade)
-  workflow   Workflow?      @relation(fields: [workflowId], references: [id], onDelete: Cascade)
-  miniPrompt MiniPrompt?    @relation(fields: [miniPromptId], references: [id], onDelete: Cascade)
+  user       User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  workflow   Workflow?     @relation(fields: [workflowId], references: [id], onDelete: Cascade)
+  miniPrompt MiniPrompt?   @relation(fields: [miniPromptId], references: [id], onDelete: Cascade)
   messages   ChatMessage[]
 
-  @@map("ai_chat_sessions")
   @@index([userId])
   @@index([workflowId])
   @@index([miniPromptId])
@@ -405,6 +405,7 @@ model AIChatSession {
   @@index([lastMessageAt])
   @@index([updatedAt])
   @@index([archivedAt])
+  @@map("ai_chat_sessions")
 }
 
 model ChatMessage {
@@ -422,10 +423,10 @@ model ChatMessage {
   chatSession AIChatSession @relation(fields: [chatId], references: [id], onDelete: Cascade)
   user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@map("chat_messages")
   @@index([chatId, createdAt])
   @@index([previousResponseId])
   @@index([userId])
+  @@map("chat_messages")
 }
 
 // ============================================================================
@@ -433,57 +434,55 @@ model ChatMessage {
 // ============================================================================
 
 model Topic {
-  id          String    @id @default(uuid())
-  title       String    @db.VarChar(200)
-  authorId    String    @map("author_id")
-  isPinned    Boolean   @default(false) @map("is_pinned")
-  isClosed    Boolean   @default(false) @map("is_closed")
-  createdAt   DateTime  @default(now()) @map("created_at")
-  updatedAt   DateTime  @updatedAt @map("updated_at")
+  id        String   @id @default(uuid())
+  title     String   @db.VarChar(200)
+  authorId  String   @map("author_id")
+  isPinned  Boolean  @default(false) @map("is_pinned")
+  isClosed  Boolean  @default(false) @map("is_closed")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
   // Relations
-  author      User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
-  messages    Message[]
+  author   User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  messages Message[]
 
-  @@map("topics")
   @@index([authorId])
   @@index([isPinned, createdAt])
   @@index([createdAt])
+  @@map("topics")
 }
 
 model Message {
-  id             String        @id @default(uuid())
-  topicId        String        @map("topic_id")
-  authorId       String        @map("author_id")
-  content        String        @db.Text
-  isFirstMessage Boolean       @default(false) @map("is_first_message")
-  createdAt      DateTime      @default(now()) @map("created_at")
-  updatedAt      DateTime      @updatedAt @map("updated_at")
+  id             String   @id @default(uuid())
+  topicId        String   @map("topic_id")
+  authorId       String   @map("author_id")
+  content        String   @db.Text
+  isFirstMessage Boolean  @default(false) @map("is_first_message")
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
 
   // Relations
-  topic       Topic         @relation(fields: [topicId], references: [id], onDelete: Cascade)
-  author      User          @relation("MessageAuthor", fields: [authorId], references: [id], onDelete: Cascade)
-  votes       MessageVote[]
+  topic  Topic         @relation(fields: [topicId], references: [id], onDelete: Cascade)
+  author User          @relation("MessageAuthor", fields: [authorId], references: [id], onDelete: Cascade)
+  votes  MessageVote[]
 
-  @@map("messages")
   @@index([topicId, createdAt])
   @@index([authorId])
+  @@map("messages")
 }
 
 model MessageVote {
-  id          String   @id @default(uuid())
-  messageId   String   @map("message_id")
-  userId      String   @map("user_id")
-  createdAt   DateTime @default(now()) @map("created_at")
+  id        String   @id @default(uuid())
+  messageId String   @map("message_id")
+  userId    String   @map("user_id")
+  createdAt DateTime @default(now()) @map("created_at")
 
   // Relations
-  message     Message  @relation(fields: [messageId], references: [id], onDelete: Cascade)
-  user        User     @relation("MessageVotes", fields: [userId], references: [id], onDelete: Cascade)
+  message Message @relation(fields: [messageId], references: [id], onDelete: Cascade)
+  user    User    @relation("MessageVotes", fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([messageId, userId])
-  @@map("message_votes")
   @@index([messageId])
   @@index([userId])
+  @@map("message_votes")
 }
-
-
