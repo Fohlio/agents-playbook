@@ -86,6 +86,7 @@ export function WorkflowConstructorWrapper({
     handleEditStage,
     handleUpdateStage,
     handleDragEnd: handleMiniPromptDragEnd,
+    handleReorderItems,
   } = useWorkflowHandlers();
 
   // Get AI integration
@@ -148,7 +149,7 @@ export function WorkflowConstructorWrapper({
           order: index,
           withReview: stage.withReview,
           includeMultiAgentChat: stage.includeMultiAgentChat ?? false,
-          miniPrompts: stage.miniPrompts.map((smp, mpIndex) => ({
+          miniPrompts: stage.miniPrompts.map((smp: typeof stage.miniPrompts[0], mpIndex: number) => ({
             miniPromptId: smp.miniPromptId,
             order: mpIndex,
           })),
@@ -244,7 +245,7 @@ export function WorkflowConstructorWrapper({
                   setLocalStages((prevStages) =>
                     prevStages.map((stage) => ({
                       ...stage,
-                      miniPrompts: stage.miniPrompts.map((smp) =>
+                      miniPrompts: stage.miniPrompts.map((smp: typeof stage.miniPrompts[0]) =>
                         smp.miniPromptId === updatedMiniPrompt.id
                           ? { ...smp, miniPrompt: updatedMiniPrompt }
                           : smp
@@ -261,7 +262,7 @@ export function WorkflowConstructorWrapper({
                     prevStages.map((stage) => ({
                       ...stage,
                       miniPrompts: stage.miniPrompts.filter(
-                        (smp) => smp.miniPromptId !== deletedMiniPromptId
+                        (smp: typeof stage.miniPrompts[0]) => smp.miniPromptId !== deletedMiniPromptId
                       ),
                     }))
                   );
@@ -296,6 +297,7 @@ export function WorkflowConstructorWrapper({
                       onRemoveStage={handleRemoveStage}
                       onRemoveMiniPrompt={handleRemoveMiniPrompt}
                       onDropMiniPrompts={onDropMiniPrompts}
+                      onReorderItems={handleReorderItems}
                       onEditStage={handleEditStage}
                       onMiniPromptClick={(miniPrompt) => {
                         setViewingMiniPromptId(miniPrompt.id);
@@ -342,7 +344,7 @@ export function WorkflowConstructorWrapper({
               if (!mp) {
                 for (const stage of localStages) {
                   const stageMp = stage.miniPrompts.find(
-                    (smp) => smp.miniPrompt.id === viewingMiniPromptId
+                    (smp: typeof stage.miniPrompts[0]) => smp.miniPrompt.id === viewingMiniPromptId
                   );
                   if (stageMp) {
                     mp = stageMp.miniPrompt;
@@ -363,7 +365,7 @@ export function WorkflowConstructorWrapper({
               console.log('[WorkflowConstructorWrapper] Building workflowContext (memoized):', {
                 viewingMiniPromptId,
                 foundInMiniPrompts: !!miniPrompts.find((m) => m.id === viewingMiniPromptId),
-                foundInStages: !!localStages.some(s => s.miniPrompts.some(smp => smp.miniPrompt.id === viewingMiniPromptId)),
+                foundInStages: !!localStages.some(s => s.miniPrompts.some((smp: typeof s.miniPrompts[0]) => smp.miniPrompt.id === viewingMiniPromptId)),
                 foundMiniPrompt: !!mp,
                 currentMiniPrompt: currentMiniPrompt ? { id: currentMiniPrompt.id, name: currentMiniPrompt.name } : null,
               });
@@ -383,7 +385,7 @@ export function WorkflowConstructorWrapper({
                   color: stage.color,
                   withReview: stage.withReview,
                   order: stage.order,
-                  miniPrompts: stage.miniPrompts.map((smp) => ({
+                  miniPrompts: stage.miniPrompts.map((smp: typeof stage.miniPrompts[0]) => ({
                     miniPrompt: {
                       id: smp.miniPrompt.id,
                       name: smp.miniPrompt.name,

@@ -93,18 +93,21 @@ export function useWorkflowAIIntegration() {
           }
 
           const newStages: WorkflowStageWithMiniPrompts[] = data.workflow.stages.map(
-            (stageData: StageCreationData, idx: number) => ({
-              id: `temp-${Date.now()}-${idx}`,
-              workflowId: workflowId || '',
-              name: stageData.name,
-              description: stageData.description || null,
-              color: stageData.color || null,
-              order: idx,
-              withReview: stageData.withReview ?? true,
-              includeMultiAgentChat: stageData.includeMultiAgentChat ?? false,
-              createdAt: new Date(),
-              miniPrompts: [],
-            })
+            (stageData: StageCreationData, idx: number) => {
+              const stage: Omit<WorkflowStageWithMiniPrompts, 'itemOrder'> & { itemOrder?: string[] } = {
+                id: `temp-${Date.now()}-${idx}`,
+                workflowId: workflowId || '',
+                name: stageData.name,
+                description: stageData.description || null,
+                color: stageData.color || null,
+                order: idx,
+                withReview: stageData.withReview ?? true,
+                includeMultiAgentChat: stageData.includeMultiAgentChat ?? false,
+                createdAt: new Date(),
+                miniPrompts: [],
+              };
+              return stage as WorkflowStageWithMiniPrompts;
+            }
           );
           setLocalStages(newStages);
         }
@@ -113,7 +116,7 @@ export function useWorkflowAIIntegration() {
 
       // Handle addStage
       if (data.action === 'add_stage' && data.stage) {
-        const newStage: WorkflowStageWithMiniPrompts = {
+        const newStage: Omit<WorkflowStageWithMiniPrompts, 'itemOrder'> & { itemOrder?: string[] } = {
           id: `temp-${Date.now()}`,
           workflowId: workflowId || '',
           name: data.stage.name,
@@ -128,15 +131,17 @@ export function useWorkflowAIIntegration() {
           createdAt: new Date(),
           miniPrompts: [],
         };
+        
+        const typedStage = newStage as WorkflowStageWithMiniPrompts;
 
         if (data.stage.position === -1) {
-          setLocalStages([...localStages, newStage]);
+          setLocalStages([...localStages, typedStage]);
         } else {
           const updatedStages = [...localStages];
           updatedStages.splice(
             data.stage.position ?? localStages.length,
             0,
-            newStage
+            typedStage
           );
           setLocalStages(updatedStages.map((s, i) => ({ ...s, order: i })));
         }

@@ -13,6 +13,7 @@ interface StageSectionProps {
   onRemoveStage: (stageId: string) => void;
   onRemoveMiniPrompt: (stageId: string, miniPromptId: string) => void;
   onDropMiniPrompts: (stageId: string, miniPromptIds: string[]) => void;
+  onReorderItems?: (stageId: string, itemIds: string[]) => void;
   onEditStage?: (stageId: string) => void;
   onMiniPromptClick?: (miniPrompt: { id: string; name: string; description?: string | null; content: string }) => void;
 }
@@ -22,6 +23,7 @@ export function StageSection({
   onRemoveStage,
   onRemoveMiniPrompt,
   onDropMiniPrompts,
+  onReorderItems,
   onEditStage,
   onMiniPromptClick,
 }: StageSectionProps) {
@@ -74,6 +76,7 @@ export function StageSection({
           onRemoveMiniPrompt(stage.id, miniPromptId)
         }
         onDropMiniPrompts={onDropMiniPrompts}
+        onReorderItems={onReorderItems}
         onMiniPromptClick={onMiniPromptClick}
         includeMultiAgentChat={stage.includeMultiAgentChat ?? false}
       />

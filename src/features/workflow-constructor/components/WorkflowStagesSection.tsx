@@ -13,6 +13,7 @@ interface WorkflowStagesSectionProps {
   onRemoveStage: (stageId: string) => void;
   onRemoveMiniPrompt: (stageId: string, miniPromptId: string) => void;
   onDropMiniPrompts: (stageId: string, miniPromptIds: string[]) => void;
+  onReorderItems?: (stageId: string, itemIds: string[]) => void;
   onEditStage: (stageId: string) => void;
   onUpdateStage: (stageId: string, data: {
     name: string;
@@ -40,6 +41,7 @@ export function WorkflowStagesSection({
   onRemoveStage,
   onRemoveMiniPrompt,
   onDropMiniPrompts,
+  onReorderItems,
   onEditStage,
   onUpdateStage,
   onCreateStage,
@@ -83,6 +85,7 @@ export function WorkflowStagesSection({
               onRemoveStage={onRemoveStage}
               onRemoveMiniPrompt={onRemoveMiniPrompt}
               onDropMiniPrompts={onDropMiniPrompts}
+              onReorderItems={onReorderItems}
               onEditStage={onEditStage}
               onMiniPromptClick={onMiniPromptClick}
             />

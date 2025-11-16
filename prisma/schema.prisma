@@ -148,6 +148,7 @@ model WorkflowStage {
   order                 Int
   withReview            Boolean  @default(true) @map("with_review")
   includeMultiAgentChat Boolean  @default(false) @map("include_multi_agent_chat")
+  itemOrder             Json?    @map("item_order") // Order of all items (mini-prompts + auto-prompts) as array of IDs
   createdAt             DateTime @default(now()) @map("created_at")
 
   // Relations

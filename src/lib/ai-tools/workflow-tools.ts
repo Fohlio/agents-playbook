@@ -158,7 +158,7 @@ export const getAvailableMiniPrompts = tool({
       take: 50,
     });
 
-    return miniPrompts.map((mp) => ({
+    return miniPrompts.map((mp: typeof miniPrompts[0]) => ({
       id: mp.id,
       name: mp.name,
       description: mp.description,

@@ -2,6 +2,7 @@ import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { StageSection } from '../StageSection';
 import { TooltipProvider } from '@/shared/ui/providers/TooltipProvider';
+import type { WorkflowStageWithMiniPrompts } from '@/lib/types/workflow-constructor-types';
 import '@testing-library/jest-dom';
 
 const renderWithTooltip = (ui: React.ReactElement) => {
@@ -26,13 +27,14 @@ const mockStage = {
   includeMultiAgentChat: false,
   createdAt: new Date(),
   miniPrompts: [],
-};
+} as unknown as WorkflowStageWithMiniPrompts;
 
 describe('StageSection', () => {
   const mockOnRemoveStage = jest.fn();
   const mockOnRemoveMiniPrompt = jest.fn();
   const mockOnDropMiniPrompts = jest.fn();
   const mockOnEditStage = jest.fn();
+  const mockOnReorderItems = jest.fn();
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -156,6 +158,55 @@ describe('StageSection', () => {
     );
 
     expect(screen.getByTestId('stage-dropzone-stage-1')).toBeInTheDocument();
+  });
+
+  describe('onReorderItems', () => {
+    it('should render without error when onReorderItems is provided', () => {
+      renderWithTooltip(
+        <StageSection
+          stage={mockStage}
+          onRemoveStage={mockOnRemoveStage}
+          onRemoveMiniPrompt={mockOnRemoveMiniPrompt}
+          onDropMiniPrompts={mockOnDropMiniPrompts}
+          onReorderItems={mockOnReorderItems}
+        />
+      );
+
+      expect(screen.getByTestId('stage-dropzone-stage-1')).toBeInTheDocument();
+    });
+
+    it('should render without error when onReorderItems is not provided', () => {
+      renderWithTooltip(
+        <StageSection
+          stage={mockStage}
+          onRemoveStage={mockOnRemoveStage}
+          onRemoveMiniPrompt={mockOnRemoveMiniPrompt}
+          onDropMiniPrompts={mockOnDropMiniPrompts}
+        />
+      );
+
+      expect(screen.getByTestId('stage-dropzone-stage-1')).toBeInTheDocument();
+    });
+  });
+
+  describe('stage with itemOrder', () => {
+    it('should handle stage with itemOrder set', () => {
+      const stageWithItemOrder = {
+        ...mockStage,
+        itemOrder: ['mini-prompt-1', 'multi-agent-chat-stage-1', 'memory-board-stage-1'],
+      };
+
+      renderWithTooltip(
+        <StageSection
+          stage={stageWithItemOrder}
+          onRemoveStage={mockOnRemoveStage}
+          onRemoveMiniPrompt={mockOnRemoveMiniPrompt}
+          onDropMiniPrompts={mockOnDropMiniPrompts}
+        />
+      );
+
+      expect(screen.getByTestId('stage-dropzone-stage-1')).toBeInTheDocument();
+    });
   });
 
 });

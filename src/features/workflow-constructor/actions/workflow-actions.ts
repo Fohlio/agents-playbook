@@ -2,17 +2,19 @@
 
 import { prisma } from '@/lib/db/client';
 import type { MiniPrompt, WorkflowComplexity } from '@prisma/client';
+import type { Prisma } from '@prisma/client';
 import type {
   WorkflowWithStages,
   SaveWorkflowInput,
 } from '@/lib/types/workflow-constructor-types';
 import { userWorkflowEmbeddings } from '@/lib/embeddings/user-workflow-embeddings';
 import { triggerMiniPromptEmbedding } from '@/features/mini-prompts/lib/embedding-service';
+import { jsonValueToStringArray } from '@/lib/utils/prisma-json';
 
 export async function getWorkflowWithStages(
   workflowId: string
 ): Promise<WorkflowWithStages | null> {
-  return await prisma.workflow.findUnique({
+  const workflow = await prisma.workflow.findUnique({
     where: { id: workflowId },
     include: {
       tags: {
@@ -37,6 +39,28 @@ export async function getWorkflowWithStages(
       },
     },
   });
+
+  if (!workflow) {
+    return null;
+  }
+
+  // Convert itemOrder from Prisma JsonValue to string[]
+  const convertedWorkflow = {
+    ...workflow,
+    stages: workflow.stages.map((stage: (typeof workflow.stages)[0]) => {
+      const stageWithItemOrder = stage as typeof stage & { itemOrder?: unknown };
+      const itemOrder = jsonValueToStringArray(
+        stageWithItemOrder.itemOrder as Parameters<typeof jsonValueToStringArray>[0]
+      );
+      
+      return {
+        ...stage,
+        itemOrder,
+      };
+    }),
+  } as WorkflowWithStages;
+  
+  return convertedWorkflow;
 }
 
 export async function getAllAvailableMiniPrompts(userId: string): Promise<MiniPrompt[]> {
@@ -69,7 +93,7 @@ export async function getAllAvailableMiniPrompts(userId: string): Promise<MiniPr
   // Combine and deduplicate
   const allMiniPrompts = [
     ...ownedMiniPrompts,
-    ...referencedMiniPrompts.map((ref) => ref.miniPrompt),
+    ...referencedMiniPrompts.map((ref: { miniPrompt: MiniPrompt }) => ref.miniPrompt),
     ...systemPrompts,
   ];
 
@@ -98,6 +122,7 @@ export async function createWorkflow(input: {
     order: number;
     withReview?: boolean;
     includeMultiAgentChat?: boolean;
+    itemOrder?: string[];
     miniPrompts: Array<{
       miniPromptId: string;
       order: number;
@@ -192,16 +217,24 @@ export async function createWorkflow(input: {
       console.log('[createWorkflow] Creating', input.stages.length, 'stages');
       for (const stageInput of input.stages) {
         console.log('[createWorkflow] Creating stage:', stageInput.name);
+        const stageData: Prisma.WorkflowStageUncheckedCreateInput = {
+          workflowId: newWorkflow.id,
+          name: stageInput.name,
+          description: stageInput.description,
+          color: stageInput.color ?? '#64748b',
+          order: stageInput.order,
+          withReview: stageInput.withReview ?? true,
+          includeMultiAgentChat: stageInput.includeMultiAgentChat ?? false,
+        };
+        
+        // Always include itemOrder if provided (even if empty array)
+        // This ensures the order is explicitly saved
+        if (stageInput.itemOrder !== undefined && stageInput.itemOrder !== null) {
+          stageData.itemOrder = stageInput.itemOrder;
+        }
+        
         const stage = await tx.workflowStage.create({
-          data: {
-            workflowId: newWorkflow.id,
-            name: stageInput.name,
-            description: stageInput.description,
-            color: stageInput.color ?? '#64748b',
-            order: stageInput.order,
-            withReview: stageInput.withReview ?? true,
-            includeMultiAgentChat: stageInput.includeMultiAgentChat ?? false,
-          },
+          data: stageData,
         });
         console.log('[createWorkflow] Stage created:', stage.id);
 
@@ -245,7 +278,8 @@ export async function createWorkflow(input: {
 }
 
 export async function saveWorkflow(input: SaveWorkflowInput): Promise<WorkflowWithStages> {
-  const result = await prisma.$transaction(async (tx) => {
+  // Perform all updates in a transaction with increased timeout
+  await prisma.$transaction(async (tx) => {
     // Update workflow metadata
     await tx.workflow.update({
       where: { id: input.workflowId },
@@ -281,16 +315,24 @@ export async function saveWorkflow(input: SaveWorkflowInput): Promise<WorkflowWi
 
     // Create new stages with mini-prompts
     for (const stageInput of input.stages) {
+      const stageData: Prisma.WorkflowStageUncheckedCreateInput = {
+        workflowId: input.workflowId,
+        name: stageInput.name,
+        description: stageInput.description,
+        color: stageInput.color ?? '#64748b',
+        order: stageInput.order,
+        withReview: stageInput.withReview ?? true,
+        includeMultiAgentChat: stageInput.includeMultiAgentChat ?? false,
+      };
+      
+      // Always include itemOrder if provided (even if empty array)
+      // This ensures the order is explicitly saved
+      if (stageInput.itemOrder !== undefined && stageInput.itemOrder !== null) {
+        stageData.itemOrder = stageInput.itemOrder;
+      }
+      
       const stage = await tx.workflowStage.create({
-        data: {
-          workflowId: input.workflowId,
-          name: stageInput.name,
-          description: stageInput.description,
-          color: stageInput.color ?? '#64748b',
-          order: stageInput.order,
-          withReview: stageInput.withReview ?? true,
-          includeMultiAgentChat: stageInput.includeMultiAgentChat ?? false,
-        },
+        data: stageData,
       });
 
       // Add mini-prompts to stage
@@ -304,29 +346,17 @@ export async function saveWorkflow(input: SaveWorkflowInput): Promise<WorkflowWi
         });
       }
     }
-
-    // Fetch and return the complete workflow with all relations
-    return await tx.workflow.findUniqueOrThrow({
-      where: { id: input.workflowId },
-      include: {
-        stages: {
-          include: {
-            miniPrompts: {
-              include: {
-                miniPrompt: true,
-              },
-              orderBy: {
-                order: 'asc',
-              },
-            },
-          },
-          orderBy: {
-            order: 'asc',
-          },
-        },
-      },
-    });
+  }, {
+    maxWait: 10000, // Maximum time to wait for a transaction slot (default: 2000ms)
+    timeout: 30000, // Maximum time the transaction can run (default: 5000ms)
   });
+
+  // Fetch and return the complete workflow with all relations AFTER transaction commits
+  const workflow = await getWorkflowWithStages(input.workflowId);
+  
+  if (!workflow) {
+    throw new Error(`Workflow ${input.workflowId} not found after save`);
+  }
 
   // Trigger embedding regeneration AFTER transaction commit if name, description, or tags changed
   if (input.name !== undefined || input.description !== undefined || input.tagIds !== undefined) {
@@ -335,5 +365,5 @@ export async function saveWorkflow(input: SaveWorkflowInput): Promise<WorkflowWi
     });
   }
 
-  return result;
+  return workflow;
 }

@@ -8,6 +8,9 @@ export type WorkflowWithStages = Workflow & {
 
 export type WorkflowStageWithMiniPrompts = WorkflowStage & {
   miniPrompts: StageMiniPromptWithMiniPrompt[];
+  // Optional: stores the order of all items (mini-prompts + automatic prompts) for flexible positioning
+  // Format: array of IDs where IDs starting with 'memory-board-' or 'multi-agent-chat-' are automatic prompts
+  itemOrder?: string[];
 };
 
 export type StageMiniPromptWithMiniPrompt = StageMiniPrompt & {
@@ -67,6 +70,7 @@ export interface SaveWorkflowInput {
     order: number;
     withReview?: boolean;
     includeMultiAgentChat?: boolean;
+    itemOrder?: string[];
     miniPrompts: Array<{
       miniPromptId: string;
       order: number;

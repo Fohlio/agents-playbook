@@ -1,6 +1,7 @@
 import { useCallback } from 'react';
 import type { WorkflowComplexity } from '@/lib/types/workflow-constructor-types';
 import { useWorkflowConstructorStore } from '../lib/workflow-constructor-store';
+import { jsonValueToStringArray } from '@/lib/utils/prisma-json';
 
 interface UseWorkflowActionsParams {
   workflowId?: string;
@@ -21,6 +22,8 @@ interface UseWorkflowActionsParams {
       color?: string;
       order: number;
       withReview: boolean;
+      includeMultiAgentChat?: boolean;
+      itemOrder?: string[];
       miniPrompts: Array<{
         miniPromptId: string;
         order: number;
@@ -99,17 +102,36 @@ export function useWorkflowActions({
       visibility: isPublic ? 'PUBLIC' : 'PRIVATE',
       includeMultiAgentChat,
       tagIds: selectedTagIds,
-      stages: localStages.map((stage, index) => ({
-        name: stage.name,
-        description: stage.description ?? undefined,
-        color: stage.color ?? undefined,
-        order: index,
-        withReview: stage.withReview,
-        miniPrompts: stage.miniPrompts.map((smp, mpIndex) => ({
-          miniPromptId: smp.miniPromptId,
-          order: mpIndex,
-        })),
-      })),
+      stages: localStages.map((stage, index) => {
+        // Clean up itemOrder: filter out auto-prompt IDs that don't match the current stage ID
+        // This prevents old stage IDs from being saved
+        const stageItemOrder = jsonValueToStringArray(stage.itemOrder);
+        const cleanedItemOrder: string[] | undefined = stageItemOrder
+          ? stageItemOrder.filter((id: string) => {
+              if (id.startsWith('multi-agent-chat-')) {
+                return id === `multi-agent-chat-${stage.id}`;
+              }
+              if (id.startsWith('memory-board-')) {
+                return id === `memory-board-${stage.id}`;
+              }
+              return true; // Keep mini-prompt IDs
+            })
+          : undefined;
+
+        return {
+          name: stage.name,
+          description: stage.description ?? undefined,
+          color: stage.color ?? undefined,
+          order: index,
+          withReview: stage.withReview,
+          includeMultiAgentChat: stage.includeMultiAgentChat ?? false,
+          itemOrder: cleanedItemOrder,
+          miniPrompts: stage.miniPrompts.map((smp: typeof stage.miniPrompts[0], mpIndex: number) => ({
+            miniPromptId: smp.miniPromptId,
+            order: mpIndex,
+          })),
+        };
+      }),
     });
   }, [
     workflowId,

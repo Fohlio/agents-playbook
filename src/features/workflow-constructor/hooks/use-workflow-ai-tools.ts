@@ -152,7 +152,7 @@ export function useWorkflowAITools({
               const newStages: WorkflowStageWithMiniPrompts[] = result.workflow.stages.map((stageData: StageInputData, stageIdx: number) => {
                 const stageId = `temp-stage-${Date.now()}-${stageIdx}`;
 
-                return {
+                const stage: Omit<WorkflowStageWithMiniPrompts, 'itemOrder'> & { itemOrder?: string[] } = {
                   id: stageId,
                   workflowId: '',
                   name: stageData.name,
@@ -186,6 +186,8 @@ export function useWorkflowAITools({
                     };
                   }) || [],
                 };
+                
+                return stage as WorkflowStageWithMiniPrompts;
               });
 
               setLocalStages(newStages);
@@ -358,7 +360,7 @@ export function useWorkflowAITools({
         case 'add_stage': {
           if (!result.stage) break;
 
-          const newStage: WorkflowStageWithMiniPrompts = {
+          const newStage: Omit<WorkflowStageWithMiniPrompts, 'itemOrder'> & { itemOrder?: string[] } = {
             id: `temp-${Date.now()}`,
             workflowId: '', // Will be set on save
             name: result.stage.name,
@@ -388,15 +390,17 @@ export function useWorkflowAITools({
               },
             })) ?? [],
           };
+          
+          const typedStage = newStage as WorkflowStageWithMiniPrompts;
 
           // Insert at position or append
           const position = result.stage.position;
           if (position !== undefined && position >= 0 && position < localStages.length) {
             const updatedStages = [...localStages];
-            updatedStages.splice(position, 0, newStage);
+            updatedStages.splice(position, 0, typedStage);
             setLocalStages(updatedStages);
           } else {
-            setLocalStages([...localStages, newStage]);
+            setLocalStages([...localStages, typedStage]);
           }
 
           markDirty();

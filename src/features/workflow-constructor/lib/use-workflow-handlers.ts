@@ -1,6 +1,8 @@
 import { useCallback } from 'react';
 import { useWorkflowConstructorStore } from './workflow-constructor-store';
 import type { MiniPrompt } from '@prisma/client';
+import { jsonValueToStringArray } from '@/lib/utils/prisma-json';
+import { createWorkflowStage } from './create-stage';
 
 /**
  * Custom hook for workflow constructor handlers
@@ -26,7 +28,7 @@ export function useWorkflowHandlers(options?: UseWorkflowHandlersOptions) {
 
   const handleCreateStage = useCallback(
     (name: string, description: string, color: string, withReview: boolean, includeMultiAgentChat: boolean = false) => {
-      const newStage = {
+      const newStage = createWorkflowStage({
         id: `temp-${Date.now()}`,
         workflowId: '',
         name: name.trim(),
@@ -35,9 +37,7 @@ export function useWorkflowHandlers(options?: UseWorkflowHandlersOptions) {
         order: localStages.length,
         withReview,
         includeMultiAgentChat,
-        createdAt: new Date(),
-        miniPrompts: [],
-      };
+      });
       setLocalStages([...localStages, newStage]);
       setIsCreatingStage(false);
       markDirty();
@@ -58,11 +58,20 @@ export function useWorkflowHandlers(options?: UseWorkflowHandlersOptions) {
       setLocalStages(
         localStages.map((stage) => {
           if (stage.id === stageId) {
+            const updatedMiniPrompts = stage.miniPrompts.filter(
+              (smp: typeof stage.miniPrompts[0]) => smp.miniPromptId !== miniPromptId
+            );
+            // Remove the mini-prompt ID from itemOrder
+            // Note: Multi-agent chat auto-prompts use format `multi-agent-chat-${stage.id}` (stage-level),
+            // so they are not removed when removing a mini-prompt
+            const currentItemOrder = jsonValueToStringArray(stage.itemOrder) || [];
+            const updatedItemOrder = currentItemOrder.filter(
+              (id) => id !== miniPromptId
+            );
             return {
               ...stage,
-              miniPrompts: stage.miniPrompts.filter(
-                (smp) => smp.miniPromptId !== miniPromptId
-              ),
+              miniPrompts: updatedMiniPrompts,
+              itemOrder: updatedItemOrder,
             };
           }
           return stage;
@@ -78,9 +87,23 @@ export function useWorkflowHandlers(options?: UseWorkflowHandlersOptions) {
       setLocalStages(
         localStages.map((stage) => {
           if (stage.id === stageId) {
+            const memoryBoardId = `memory-board-${stage.id}`;
+            let updatedItemOrder = jsonValueToStringArray(stage.itemOrder) || [];
+            
+            if (withReview) {
+              // Add memory board at the end if not already present
+              if (!updatedItemOrder.includes(memoryBoardId)) {
+                updatedItemOrder = [...updatedItemOrder, memoryBoardId];
+              }
+            } else {
+              // Remove memory board if present
+              updatedItemOrder = updatedItemOrder.filter(id => id !== memoryBoardId);
+            }
+            
             return {
               ...stage,
               withReview,
+              itemOrder: updatedItemOrder,
             };
           }
           return stage;
@@ -96,9 +119,35 @@ export function useWorkflowHandlers(options?: UseWorkflowHandlersOptions) {
       setLocalStages(
         localStages.map((stage) => {
           if (stage.id === stageId) {
+            let updatedItemOrder = jsonValueToStringArray(stage.itemOrder) || [];
+            const multiAgentChatId = `multi-agent-chat-${stage.id}`;
+            
+            if (includeMultiAgentChat) {
+              // Add multi-agent chat (one per stage) if not already present
+              // Insert it after all mini-prompts but before memory-board
+              if (!updatedItemOrder.includes(multiAgentChatId)) {
+                const memoryBoardId = `memory-board-${stage.id}`;
+                const memoryBoardIndex = updatedItemOrder.indexOf(memoryBoardId);
+                
+                if (memoryBoardIndex >= 0) {
+                  // Insert before memory-board
+                  updatedItemOrder.splice(memoryBoardIndex, 0, multiAgentChatId);
+                } else {
+                  // Add at end if no memory-board
+                  updatedItemOrder.push(multiAgentChatId);
+                }
+              }
+            } else {
+              // Remove the multi-agent chat auto-prompt for this stage
+              updatedItemOrder = updatedItemOrder.filter(
+                id => id !== multiAgentChatId
+              );
+            }
+            
             return {
               ...stage,
               includeMultiAgentChat,
+              itemOrder: updatedItemOrder,
             };
           }
           return stage;
@@ -145,49 +194,137 @@ export function useWorkflowHandlers(options?: UseWorkflowHandlersOptions) {
 
   const handleDragEnd = useCallback(
     (miniPromptIds: string | string[], stageId: string, miniPromptsList: MiniPrompt[]) => {
-      const stage = localStages.find((s) => s.id === stageId);
-      if (!stage) return;
+      // Use functional update to avoid stale closure issues
+      setLocalStages((prevStages) => {
+        const stage = prevStages.find((s) => s.id === stageId);
+        if (!stage) return prevStages;
 
-      // Normalize to array
-      const idsToAdd = Array.isArray(miniPromptIds) ? miniPromptIds : [miniPromptIds];
-      
-      // Filter out any that already exist in the stage
-      const newIds = idsToAdd.filter(
-        (id) => !stage.miniPrompts.some((smp) => smp.miniPromptId === id)
-      );
-      
-      if (newIds.length === 0) return;
+        // Normalize to array
+        const idsToAdd = Array.isArray(miniPromptIds) ? miniPromptIds : [miniPromptIds];
+        
+        // Filter out any that already exist in the stage
+        const newIds = idsToAdd.filter(
+          (id: string) => !stage.miniPrompts.some((smp: typeof stage.miniPrompts[0]) => smp.miniPromptId === id)
+        );
+        
+        if (newIds.length === 0) return prevStages;
 
-      // Find all mini-prompts to add
-      const miniPromptsToAdd = newIds
-        .map((id) => miniPromptsList.find((mp) => mp.id === id))
-        .filter((mp): mp is MiniPrompt => mp !== undefined);
-      
-      if (miniPromptsToAdd.length === 0) return;
+        // Find all mini-prompts to add
+        const miniPromptsToAdd = newIds
+          .map((id) => miniPromptsList.find((mp) => mp.id === id))
+          .filter((mp): mp is MiniPrompt => mp !== undefined);
+        
+        if (miniPromptsToAdd.length === 0) return prevStages;
 
-      setLocalStages(
-        localStages.map((s) => {
+        const startOrder = stage.miniPrompts.length;
+        const newMiniPrompts = [
+          ...stage.miniPrompts,
+          ...miniPromptsToAdd.map((miniPrompt, index) => ({
+            stageId: stage.id,
+            miniPromptId: miniPrompt.id,
+            order: startOrder + index,
+            miniPrompt,
+          })),
+        ];
+        
+        // Update itemOrder: add new mini-prompts at the end (before memory-board if it exists)
+        // Check which items are already in itemOrder to avoid duplicates
+        const currentItemOrder = jsonValueToStringArray(stage.itemOrder) || [];
+        const itemsInOrder = new Set(currentItemOrder);
+        
+        const memoryBoardId = `memory-board-${stage.id}`;
+        const memoryBoardIndex = currentItemOrder.indexOf(memoryBoardId);
+        const itemsBeforeMemoryBoard = memoryBoardIndex >= 0 
+          ? currentItemOrder.slice(0, memoryBoardIndex)
+          : currentItemOrder;
+        const itemsAfterMemoryBoard = memoryBoardIndex >= 0
+          ? currentItemOrder.slice(memoryBoardIndex)
+          : [];
+        
+        // Add new mini-prompts before memory-board
+        // Only add if they're not already in the order
+        const newItemIds: string[] = [];
+        miniPromptsToAdd.forEach((mp) => {
+          if (!itemsInOrder.has(mp.id)) {
+            newItemIds.push(mp.id);
+          }
+        });
+        
+        // Build the updated order: items before memory-board + new mini-prompts + multi-agent chat (if needed) + memory-board
+        const updatedItemOrder: string[] = [
+          ...itemsBeforeMemoryBoard,
+          ...newItemIds,
+        ];
+        
+        // Add multi-agent chat (one per stage) if enabled and not already in order
+        // Insert it after mini-prompts but before memory-board
+        if (stage.includeMultiAgentChat) {
+          const multiAgentChatId = `multi-agent-chat-${stage.id}`;
+          if (!itemsInOrder.has(multiAgentChatId)) {
+            updatedItemOrder.push(multiAgentChatId);
+          }
+        }
+        
+        // Add memory-board at the end if it exists in current order
+        updatedItemOrder.push(...itemsAfterMemoryBoard);
+        
+        // If memory-board is not in the order but stage.withReview is true, add it at the end
+        if (stage.withReview && !itemsInOrder.has(memoryBoardId)) {
+          updatedItemOrder.push(memoryBoardId);
+        }
+        
+        return prevStages.map((s) => {
           if (s.id === stageId) {
-            const startOrder = s.miniPrompts.length;
             return {
               ...s,
-              miniPrompts: [
-                ...s.miniPrompts,
-                ...miniPromptsToAdd.map((miniPrompt, index) => ({
-                  stageId: s.id,
-                  miniPromptId: miniPrompt.id,
-                  order: startOrder + index,
-                  miniPrompt,
-                })),
-              ],
+              miniPrompts: newMiniPrompts,
+              itemOrder: updatedItemOrder,
             };
           }
           return s;
-        })
-      );
+        });
+      });
       markDirty();
     },
-    [localStages, setLocalStages, markDirty]
+    [setLocalStages, markDirty]
+  );
+
+  const handleReorderItems = useCallback(
+    (stageId: string, itemIds: string[]) => {
+      // Use functional update to avoid stale closure issues
+      setLocalStages((prevStages) => {
+        const stage = prevStages.find((s) => s.id === stageId);
+        if (!stage) return prevStages;
+
+        // Filter out automatic prompt IDs (they start with 'memory-board-' or 'multi-agent-chat-')
+        const miniPromptIds = itemIds.filter(
+          (id) => !id.startsWith('memory-board-') && !id.startsWith('multi-agent-chat-')
+        );
+
+        // Reorder mini-prompts based on the new order
+        const reorderedMiniPrompts = miniPromptIds
+          .map((id: string) => stage.miniPrompts.find((smp: typeof stage.miniPrompts[0]) => smp.miniPromptId === id))
+          .filter((smp): smp is typeof stage.miniPrompts[0] => smp !== undefined)
+          .map((smp: typeof stage.miniPrompts[0], index: number) => ({
+            ...smp,
+            order: index,
+          }));
+
+        // Update stage with reordered mini-prompts AND store the complete item order (including automatic prompts)
+        return prevStages.map((s) => {
+          if (s.id === stageId) {
+            return {
+              ...s,
+              miniPrompts: reorderedMiniPrompts,
+              itemOrder: itemIds, // Store the complete order including automatic prompts
+            };
+          }
+          return s;
+        });
+      });
+      markDirty();
+    },
+    [setLocalStages, markDirty]
   );
 
   const handleEditMiniPrompt = useCallback(
@@ -260,7 +397,7 @@ export function useWorkflowHandlers(options?: UseWorkflowHandlersOptions) {
         setLocalStages((prevStages) =>
           prevStages.map((stage) => ({
             ...stage,
-            miniPrompts: stage.miniPrompts.map((smp) =>
+            miniPrompts: stage.miniPrompts.map((smp: typeof stage.miniPrompts[0]) =>
               smp.miniPromptId === updated.id
                 ? { ...smp, miniPrompt: updated }
                 : smp
@@ -327,6 +464,7 @@ export function useWorkflowHandlers(options?: UseWorkflowHandlersOptions) {
     handleEditStage,
     handleUpdateStage,
     handleDragEnd,
+    handleReorderItems,
     handleEditMiniPrompt,
     handleUpdateMiniPrompt,
   };

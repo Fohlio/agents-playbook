@@ -104,43 +104,86 @@ export async function GET(request: Request) {
     new Map(allMiniPrompts.map((m) => [m.id, m])).values()
   ).sort((a, b) => a.position - b.position);
 
-  // Add rating and usage stats for each mini-prompt
-  const miniPromptsWithMeta = await Promise.all(
-    uniqueMiniPrompts.map(async (miniPrompt) => {
-      const ratingStats = await prisma.rating.aggregate({
-        where: {
-          targetType: 'MINI_PROMPT',
-          targetId: miniPrompt.id,
-        },
-        _avg: { rating: true },
-        _count: { rating: true },
-      });
+  // Batch fetch all ratings, usage stats, and stage counts in single queries
+  const miniPromptIds = uniqueMiniPrompts.map((m) => m.id);
 
-      const usageStats = await prisma.usageStats.findUnique({
-        where: {
-          targetType_targetId: {
-            targetType: 'MINI_PROMPT',
-            targetId: miniPrompt.id,
-          },
-        },
-      });
+  // Fetch all ratings for all mini-prompts in one query
+  const allRatings = await prisma.rating.findMany({
+    where: {
+      targetType: 'MINI_PROMPT',
+      targetId: { in: miniPromptIds },
+    },
+    select: {
+      targetId: true,
+      rating: true,
+    },
+  });
 
-      const stageCount = await prisma.stageMiniPrompt.count({
-        where: { miniPromptId: miniPrompt.id },
-      });
+  // Fetch all usage stats for all mini-prompts in one query
+  const allUsageStats = await prisma.usageStats.findMany({
+    where: {
+      targetType: 'MINI_PROMPT',
+      targetId: { in: miniPromptIds },
+    },
+  });
 
-      return {
-        ...miniPrompt,
-        averageRating: ratingStats._avg.rating || null,
-        totalRatings: ratingStats._count.rating,
-        usageCount: usageStats?.usageCount || 0,
-        _count: {
-          stageMiniPrompts: stageCount,
-          references: 0, // Can add if needed
-        },
-      };
-    })
-  );
+  // Fetch all stage counts for all mini-prompts in one query
+  const allStageCounts = await prisma.stageMiniPrompt.groupBy({
+    by: ['miniPromptId'],
+    where: {
+      miniPromptId: { in: miniPromptIds },
+    },
+    _count: {
+      miniPromptId: true,
+    },
+  });
+
+  // Group ratings by mini-prompt ID and calculate averages
+  const ratingsByMiniPrompt = new Map<string, { averageRating: number | null; totalRatings: number }>();
+  for (const miniPromptId of miniPromptIds) {
+    const miniPromptRatings = allRatings.filter((r) => r.targetId === miniPromptId);
+    const averageRating =
+      miniPromptRatings.length > 0
+        ? miniPromptRatings.reduce((sum, r) => sum + r.rating, 0) / miniPromptRatings.length
+        : null;
+    ratingsByMiniPrompt.set(miniPromptId, {
+      averageRating,
+      totalRatings: miniPromptRatings.length,
+    });
+  }
+
+  // Create usage stats map
+  const usageStatsByMiniPrompt = new Map<string, number>();
+  for (const stat of allUsageStats) {
+    usageStatsByMiniPrompt.set(stat.targetId, stat.usageCount);
+  }
+
+  // Create stage count map
+  const stageCountsByMiniPrompt = new Map<string, number>();
+  for (const count of allStageCounts) {
+    stageCountsByMiniPrompt.set(count.miniPromptId, count._count.miniPromptId);
+  }
+
+  // Combine mini-prompts with their metadata
+  const miniPromptsWithMeta = uniqueMiniPrompts.map((miniPrompt) => {
+    const ratingData = ratingsByMiniPrompt.get(miniPrompt.id) || {
+      averageRating: null,
+      totalRatings: 0,
+    };
+    const usageCount = usageStatsByMiniPrompt.get(miniPrompt.id) || 0;
+    const stageCount = stageCountsByMiniPrompt.get(miniPrompt.id) || 0;
+
+    return {
+      ...miniPrompt,
+      averageRating: ratingData.averageRating,
+      totalRatings: ratingData.totalRatings,
+      usageCount,
+      _count: {
+        stageMiniPrompts: stageCount,
+        references: 0, // Can add if needed
+      },
+    };
+  });
 
   return NextResponse.json(miniPromptsWithMeta);
 }

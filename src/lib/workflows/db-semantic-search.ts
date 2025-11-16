@@ -43,13 +43,13 @@ export class DBSemanticSearch {
       // Load embeddings for workflows
       const embeddings = await prisma.workflowEmbedding.findMany({
         where: {
-          workflowId: { in: workflows.map(w => w.id) }
+          workflowId: { in: workflows.map((w: typeof workflows[0]) => w.id) }
         }
       });
 
       // Calculate similarities
-      const results = embeddings.map(emb => {
-        const workflow = workflows.find(w => w.id === emb.workflowId);
+      const results = embeddings.map((emb: typeof embeddings[0]) => {
+        const workflow = workflows.find((w: typeof workflows[0]) => w.id === emb.workflowId);
         if (!workflow) return null;
 
         const similarity = this.cosineSimilarity(
@@ -71,7 +71,7 @@ export class DBSemanticSearch {
 
       // Sort by similarity and limit
       return results
-        .sort((a, b) => b.similarity - a.similarity)
+        .sort((a: SearchResult, b: SearchResult) => b.similarity - a.similarity)
         .slice(0, limit);
 
     } catch (error) {
@@ -101,10 +101,10 @@ export class DBSemanticSearch {
       where: { userId },
       select: { workflowId: true }
     });
-    const systemWorkflowIds = systemWorkflowReferences.map(ref => ref.workflowId);
+    const systemWorkflowIds = systemWorkflowReferences.map((ref: { workflowId: string }) => ref.workflowId);
 
     // Build OR conditions
-    const orConditions: any[] = [
+    const orConditions: Array<Record<string, unknown>> = [
       // User's own active workflows
       { userId, isActive: true, isSystemWorkflow: false }
     ];
@@ -183,7 +183,7 @@ export class DBSemanticSearch {
     limit: number,
     userId?: string
   ): Promise<SearchResult[]> {
-    let workflowFilter: any;
+    let workflowFilter: Record<string, unknown> | undefined;
 
     if (userId) {
       // Get system workflows that are in user's library (have a WorkflowReference)
@@ -191,10 +191,10 @@ export class DBSemanticSearch {
         where: { userId },
         select: { workflowId: true }
       });
-      const systemWorkflowIds = systemWorkflowReferences.map(ref => ref.workflowId);
+      const systemWorkflowIds = systemWorkflowReferences.map((ref: { workflowId: string }) => ref.workflowId);
 
       // Build OR conditions
-      const orConditions: any[] = [
+      const orConditions: Array<Record<string, unknown>> = [
         // User's own active workflows
         { userId, isActive: true, isSystemWorkflow: false }
       ];
@@ -230,7 +230,7 @@ export class DBSemanticSearch {
       take: limit
     });
 
-    return workflows.map(w => ({
+    return workflows.map((w: typeof workflows[0]) => ({
       id: w.id,
       title: w.name,
       description: w.description || '',

@@ -1,20 +1,40 @@
 'use client';
 
 import { Card } from '@/shared/ui/atoms/Card';
-import { Tooltip } from '@/shared/ui/molecules';
 import { cn } from '@/shared/lib/utils/cn';
 import type { AutoPromptMetadata } from '@/lib/types/workflow-constructor-types';
+import { useSortable } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 
 interface AutoPromptCardProps {
   autoPrompt: AutoPromptMetadata;
   className?: string;
+  isDraggable?: boolean;
 }
 
 /**
  * AutoPromptCard displays an automatic mini-prompt that is auto-attached based on workflow/stage settings.
- * These prompts cannot be dragged or removed manually.
+ * Can be dragged to reorder within a stage.
  */
-export function AutoPromptCard({ autoPrompt, className }: AutoPromptCardProps) {
+export function AutoPromptCard({ autoPrompt, className, isDraggable = false }: AutoPromptCardProps) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({
+    id: autoPrompt.id,
+    disabled: !isDraggable,
+  });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+  };
+
   const icon = autoPrompt.type === 'memory-board' ? '📋' : '🤖';
   const badgeText = autoPrompt.type === 'memory-board' ? 'Review' : 'Auto';
   const tooltipText =
@@ -23,12 +43,22 @@ export function AutoPromptCard({ autoPrompt, className }: AutoPromptCardProps) {
       : 'Multi-Agent Chat: Auto-attached when "Include Multi-Agent Chat" is enabled. Facilitates coordination between agents.';
 
   return (
-    <Tooltip content={tooltipText}>
+    <div
+      ref={setNodeRef}
+      style={style}
+      {...(isDraggable ? { ...attributes, ...listeners } : {})}
+      className={cn(
+        isDraggable && 'cursor-grab active:cursor-grabbing',
+        'touch-none' // Prevent touch scrolling on mobile
+      )}
+      title={tooltipText}
+    >
       <Card
         className={cn(
           'p-3 border-2 border-dashed relative',
           'bg-gray-50 border-gray-300',
-          'opacity-80',
+          isDraggable && !isDragging && 'hover:shadow-md hover:border-gray-400',
+          isDragging && 'shadow-lg border-accent-primary',
           className
         )}
         testId={`auto-prompt-${autoPrompt.id}`}
@@ -52,11 +82,17 @@ export function AutoPromptCard({ autoPrompt, className }: AutoPromptCardProps) {
                 : 'Internal agents coordination chat'}
             </p>
           </div>
-          <div className="text-gray-400" title="Auto-attached (not draggable)">
-            🔒
-          </div>
+          {isDraggable ? (
+            <div className="text-gray-400 select-none" title="Drag to reorder">
+              ⋮⋮
+            </div>
+          ) : (
+            <div className="text-gray-400" title="Auto-attached">
+              🔒
+            </div>
+          )}
         </div>
       </Card>
-    </Tooltip>
+    </div>
   );
 }

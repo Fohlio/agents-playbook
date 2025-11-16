@@ -95,35 +95,64 @@ export async function GET(request: Request) {
     new Map(allWorkflows.map((w) => [w.id, w])).values()
   ).sort((a, b) => a.position - b.position);
 
-  // Add rating and usage stats for each workflow
-  const workflowsWithMeta = await Promise.all(
-    uniqueWorkflows.map(async (workflow) => {
-      const ratingStats = await prisma.rating.aggregate({
-        where: {
-          targetType: 'WORKFLOW',
-          targetId: workflow.id,
-        },
-        _avg: { rating: true },
-        _count: { rating: true },
-      });
+  // Batch fetch all ratings and usage stats in single queries
+  const workflowIds = uniqueWorkflows.map((w) => w.id);
 
-      const usageStats = await prisma.usageStats.findUnique({
-        where: {
-          targetType_targetId: {
-            targetType: 'WORKFLOW',
-            targetId: workflow.id,
-          },
-        },
-      });
+  // Fetch all ratings for all workflows in one query
+  const allRatings = await prisma.rating.findMany({
+    where: {
+      targetType: 'WORKFLOW',
+      targetId: { in: workflowIds },
+    },
+    select: {
+      targetId: true,
+      rating: true,
+    },
+  });
 
-      return {
-        ...workflow,
-        averageRating: ratingStats?._avg?.rating || null,
-        totalRatings: ratingStats?._count?.rating || 0,
-        usageCount: usageStats?.usageCount || 0,
-      };
-    })
-  );
+  // Fetch all usage stats for all workflows in one query
+  const allUsageStats = await prisma.usageStats.findMany({
+    where: {
+      targetType: 'WORKFLOW',
+      targetId: { in: workflowIds },
+    },
+  });
+
+  // Group ratings by workflow ID and calculate averages
+  const ratingsByWorkflow = new Map<string, { averageRating: number | null; totalRatings: number }>();
+  for (const workflowId of workflowIds) {
+    const workflowRatings = allRatings.filter((r) => r.targetId === workflowId);
+    const averageRating =
+      workflowRatings.length > 0
+        ? workflowRatings.reduce((sum, r) => sum + r.rating, 0) / workflowRatings.length
+        : null;
+    ratingsByWorkflow.set(workflowId, {
+      averageRating,
+      totalRatings: workflowRatings.length,
+    });
+  }
+
+  // Create usage stats map
+  const usageStatsByWorkflow = new Map<string, number>();
+  for (const stat of allUsageStats) {
+    usageStatsByWorkflow.set(stat.targetId, stat.usageCount);
+  }
+
+  // Combine workflows with their metadata
+  const workflowsWithMeta = uniqueWorkflows.map((workflow) => {
+    const ratingData = ratingsByWorkflow.get(workflow.id) || {
+      averageRating: null,
+      totalRatings: 0,
+    };
+    const usageCount = usageStatsByWorkflow.get(workflow.id) || 0;
+
+    return {
+      ...workflow,
+      averageRating: ratingData.averageRating,
+      totalRatings: ratingData.totalRatings,
+      usageCount,
+    };
+  });
 
   return NextResponse.json(workflowsWithMeta);
 }

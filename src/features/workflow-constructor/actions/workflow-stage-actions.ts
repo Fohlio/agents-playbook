@@ -6,6 +6,7 @@ import type {
   UpdateWorkflowStageInput,
   WorkflowStageWithMiniPrompts,
 } from '@/lib/types/workflow-constructor-types';
+import { jsonValueToStringArray } from '@/lib/utils/prisma-json';
 
 export async function createWorkflowStage(
   input: CreateWorkflowStageInput
@@ -30,7 +31,11 @@ export async function createWorkflowStage(
     },
   });
 
-  return stage;
+  // Convert itemOrder from Prisma JsonValue to string[]
+  return {
+    ...stage,
+    itemOrder: jsonValueToStringArray(stage.itemOrder),
+  } as WorkflowStageWithMiniPrompts;
 }
 
 export async function updateWorkflowStage(
@@ -56,7 +61,11 @@ export async function updateWorkflowStage(
     },
   });
 
-  return stage;
+  // Convert itemOrder from Prisma JsonValue to string[]
+  return {
+    ...stage,
+    itemOrder: jsonValueToStringArray(stage.itemOrder),
+  } as WorkflowStageWithMiniPrompts;
 }
 
 export async function deleteWorkflowStage(stageId: string): Promise<void> {
@@ -68,7 +77,7 @@ export async function deleteWorkflowStage(stageId: string): Promise<void> {
 export async function getWorkflowStage(
   stageId: string
 ): Promise<WorkflowStageWithMiniPrompts | null> {
-  return await prisma.workflowStage.findUnique({
+  const stage = await prisma.workflowStage.findUnique({
     where: { id: stageId },
     include: {
       miniPrompts: {
@@ -81,4 +90,14 @@ export async function getWorkflowStage(
       },
     },
   });
+
+  if (!stage) {
+    return null;
+  }
+
+  // Convert itemOrder from Prisma JsonValue to string[]
+  return {
+    ...stage,
+    itemOrder: jsonValueToStringArray(stage.itemOrder),
+  } as WorkflowStageWithMiniPrompts;
 }

@@ -80,23 +80,11 @@ describe('/api/workflows', () => {
       prismaMock.workflow.findMany.mockResolvedValue(mockOwnedWorkflows as any);
       prismaMock.workflowReference.findMany.mockResolvedValue(mockReferencedWorkflows as any);
       
-      // Mock rating aggregates for each workflow
-      prismaMock.rating.aggregate.mockResolvedValue({
-        _avg: { rating: null },
-        _count: { rating: 0 },
-        _sum: null,
-        _min: null,
-        _max: null,
-      } as any);
+      // Mock ratings
+      prismaMock.rating.findMany.mockResolvedValue([]);
       
       // Mock usage stats
-      prismaMock.workflowReference.aggregate.mockResolvedValue({
-        _count: { userId: 0 },
-        _sum: null,
-        _avg: null,
-        _min: null,
-        _max: null,
-      } as any);
+      prismaMock.usageStats.findMany.mockResolvedValue([]);
 
       const request = { url: 'http://localhost/api/workflows' } as Request;
       const response = await GET(request);
@@ -168,6 +156,8 @@ describe('/api/workflows', () => {
       (auth as jest.Mock).mockResolvedValue(mockSession);
       prismaMock.workflow.findMany.mockResolvedValue([]);
       prismaMock.workflowReference.findMany.mockResolvedValue([]);
+      prismaMock.rating.findMany.mockResolvedValue([]);
+      prismaMock.usageStats.findMany.mockResolvedValue([]);
 
       const request = { url: 'http://localhost/api/workflows' } as Request;
       const response = await GET(request);
@@ -203,24 +193,8 @@ describe('/api/workflows', () => {
 
       prismaMock.workflow.findMany.mockResolvedValue(mockOwnedWorkflows as any);
       prismaMock.workflowReference.findMany.mockResolvedValue([]);
-      
-      // Mock rating aggregates
-      prismaMock.rating.aggregate.mockResolvedValue({
-        _avg: { rating: null },
-        _count: { rating: 0 },
-        _sum: null,
-        _min: null,
-        _max: null,
-      } as any);
-      
-      // Mock usage stats
-      prismaMock.workflowReference.aggregate.mockResolvedValue({
-        _count: { userId: 0 },
-        _sum: null,
-        _avg: null,
-        _min: null,
-        _max: null,
-      } as any);
+      prismaMock.rating.findMany.mockResolvedValue([]);
+      prismaMock.usageStats.findMany.mockResolvedValue([]);
 
       const request = { url: 'http://localhost/api/workflows' } as Request;
       const response = await GET(request);

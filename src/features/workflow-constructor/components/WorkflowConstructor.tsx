@@ -142,6 +142,7 @@ export function WorkflowConstructor({ data }: WorkflowConstructorProps) {
     handleUpdateStage,
     handleDragEnd: handleMiniPromptDragEnd,
     handleUpdateMiniPrompt,
+    handleReorderItems,
   } = useWorkflowHandlers({
     miniPrompts,
     setMiniPrompts,
@@ -208,7 +209,7 @@ export function WorkflowConstructor({ data }: WorkflowConstructorProps) {
     setLocalStages((prevStages) =>
       prevStages.map((stage) => ({
         ...stage,
-        miniPrompts: stage.miniPrompts.map((smp) =>
+        miniPrompts: stage.miniPrompts.map((smp: typeof stage.miniPrompts[0]) =>
           smp.miniPromptId === updatedMiniPrompt.id
             ? { ...smp, miniPrompt: updatedMiniPrompt }
             : smp
@@ -267,6 +268,7 @@ export function WorkflowConstructor({ data }: WorkflowConstructorProps) {
           onRemoveStage={handleRemoveStage}
           onRemoveMiniPrompt={handleRemoveMiniPrompt}
           onDropMiniPrompts={onDropMiniPrompts}
+          onReorderItems={handleReorderItems}
           onEditStage={handleEditStage}
           onUpdateStage={handleUpdateStageWrapper}
           onCreateStage={handleCreateStageWrapper}

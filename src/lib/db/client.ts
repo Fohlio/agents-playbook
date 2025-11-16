@@ -6,6 +6,10 @@ const globalForPrisma = globalThis as unknown as {
 };
 
 // Create Prisma client singleton
+// Note: Connection pooling is handled by PgBouncer in the DATABASE_URL for Neon PostgreSQL.
+// The connection pool timeout and limit are configured at the database/pooler level.
+// To avoid connection pool exhaustion, always batch queries instead of running individual
+// queries in loops (e.g., use findMany with 'in' clause instead of Promise.all with findUnique).
 export const prisma =
   globalForPrisma.prisma ??
   new PrismaClient({

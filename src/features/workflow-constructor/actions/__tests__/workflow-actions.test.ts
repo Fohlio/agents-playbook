@@ -241,6 +241,9 @@ describe('Workflow Constructor Actions', () => {
         });
       });
 
+      // Mock getWorkflowWithStages call after transaction
+      prismaMock.workflow.findUnique.mockResolvedValue(mockWorkflowResult as any);
+
       const result = await saveWorkflow(mockInput);
 
       expect(result).toEqual(mockWorkflowResult);
@@ -285,6 +288,12 @@ describe('Workflow Constructor Actions', () => {
         });
       });
 
+      // Mock getWorkflowWithStages call after transaction
+      prismaMock.workflow.findUnique.mockResolvedValue({
+        id: 'workflow-1',
+        stages: [],
+      } as any);
+
       const result = await saveWorkflow(inputWithoutPrompts);
 
       expect(result).toBeDefined();
@@ -323,6 +332,12 @@ describe('Workflow Constructor Actions', () => {
         });
       });
 
+      // Mock getWorkflowWithStages call after transaction
+      prismaMock.workflow.findUnique.mockResolvedValue({
+        id: 'workflow-1',
+        stages: [],
+      } as any);
+
       await saveWorkflow(inputWithoutColor);
 
       expect(createdStage.color).toBe('#64748b');
@@ -355,6 +370,12 @@ describe('Workflow Constructor Actions', () => {
         });
       });
 
+      // Mock getWorkflowWithStages call after transaction
+      prismaMock.workflow.findUnique.mockResolvedValue({
+        id: 'workflow-1',
+        stages: [],
+      } as any);
+
       await saveWorkflow(mockInput);
 
       expect(deleteManySpy).toHaveBeenCalledWith({
@@ -385,6 +406,12 @@ describe('Workflow Constructor Actions', () => {
           },
         });
       });
+
+      // Mock getWorkflowWithStages call after transaction
+      prismaMock.workflow.findUnique.mockResolvedValue({
+        id: 'workflow-1',
+        stages: [],
+      } as any);
 
       await saveWorkflow(mockInput);
 
