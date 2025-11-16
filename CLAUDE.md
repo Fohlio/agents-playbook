@@ -416,8 +416,6 @@ Use `WorkflowValidator` for:
 - `src/features/workflow-constructor/components/AutoPromptCard.tsx` - Visual representation
 - `src/app/dashboard/admin/system-prompts/` - Admin panel for managing prompts
 - `src/app/api/admin/system-prompts/` - API endpoints for prompt management
-- `public/playbook/mini-prompts/automatic/` - Automatic prompt content files
-- `scripts/seed-automatic-prompts.ts` - Seed script for automatic prompts
 
 **Authentication:**
 - `src/lib/auth/auth.ts` - NextAuth configuration
@@ -427,5 +425,4 @@ Use `WorkflowValidator` for:
 **Database:**
 - `prisma/schema.prisma` - Database schema
 - `src/lib/db/client.ts` - Prisma client singleton
-- `scripts/seed-system-content.ts` - Import system workflows/mini-prompts (for initial setup)
 - `scripts/build-embeddings.ts` - Generate OpenAI embeddings for search

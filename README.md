@@ -114,7 +114,6 @@ agents-playbook/
 │   │   └── db/               # Prisma client
 │   └── shared/               # Shared UI components
 ├── scripts/
-│   ├── seed-system-content.ts    # Seed system workflows/mini-prompts
 │   └── build-embeddings.ts       # Generate OpenAI embeddings
 └── tests/                    # Integration & E2E tests
 ```

@@ -223,6 +223,8 @@ describe('Workflow Constructor Actions', () => {
     };
 
     it('updates workflow and recreates all stages', async () => {
+      const stageMiniPromptCreateMany = jest.fn().mockResolvedValue({ count: 3 });
+      
       prismaMock.$transaction.mockImplementation(async (callback: any) => {
         return await callback({
           workflow: {
@@ -236,7 +238,7 @@ describe('Workflow Constructor Actions', () => {
               .mockResolvedValueOnce({ id: 'stage-2' }),
           },
           stageMiniPrompt: {
-            createMany: jest.fn().mockResolvedValue({ count: 3 }),
+            createMany: stageMiniPromptCreateMany,
           },
         });
       });
@@ -247,6 +249,33 @@ describe('Workflow Constructor Actions', () => {
       const result = await saveWorkflow(mockInput);
 
       expect(result).toEqual(mockWorkflowResult);
+      
+      // Verify that StageMiniPrompt.createMany was called with correct data
+      expect(stageMiniPromptCreateMany).toHaveBeenCalledTimes(2);
+      
+      // Verify first stage mini-prompts
+      const firstStageCall = stageMiniPromptCreateMany.mock.calls[0][0];
+      expect(firstStageCall.data).toHaveLength(2);
+      expect(firstStageCall.data[0]).toMatchObject({
+        miniPromptId: 'mp-1',
+        order: 0,
+      });
+      expect(firstStageCall.data[1]).toMatchObject({
+        miniPromptId: 'mp-2',
+        order: 1,
+      });
+      // Verify stageId is present (should be 'stage-1')
+      expect(firstStageCall.data[0].stageId).toBeDefined();
+      
+      // Verify second stage mini-prompts
+      const secondStageCall = stageMiniPromptCreateMany.mock.calls[1][0];
+      expect(secondStageCall.data).toHaveLength(1);
+      expect(secondStageCall.data[0]).toMatchObject({
+        miniPromptId: 'mp-3',
+        order: 0,
+      });
+      // Verify stageId is present (should be 'stage-2')
+      expect(secondStageCall.data[0].stageId).toBeDefined();
     });
 
     it('handles transaction rollback on error', async () => {
