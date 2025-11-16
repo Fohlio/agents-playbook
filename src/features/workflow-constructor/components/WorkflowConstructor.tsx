@@ -138,8 +138,6 @@ export function WorkflowConstructor({ data }: WorkflowConstructorProps) {
     handleCreateStage,
     handleRemoveStage,
     handleRemoveMiniPrompt,
-    handleToggleWithReview,
-    handleToggleMultiAgentChat,
     handleEditStage,
     handleUpdateStage,
     handleDragEnd: handleMiniPromptDragEnd,
@@ -271,8 +269,6 @@ export function WorkflowConstructor({ data }: WorkflowConstructorProps) {
           onDropMiniPrompts={onDropMiniPrompts}
           onEditStage={handleEditStage}
           onUpdateStage={handleUpdateStageWrapper}
-          onToggleWithReview={handleToggleWithReview}
-          onToggleMultiAgentChat={handleToggleMultiAgentChat}
           onCreateStage={handleCreateStageWrapper}
           onCancelCreateStage={() => setIsCreatingStage(false)}
           onCancelEditStage={() => setEditingStageId(null)}

@@ -36,8 +36,8 @@ export function WorkflowHeader({
 }: WorkflowHeaderProps) {
   return (
     <div className="bg-surface-base border-b border-border-base px-6 py-4">
-      <div className="flex items-center justify-between mb-3">
-        <div className="flex-1">
+      <div className="flex items-center justify-between mb-3 gap-4">
+        <div className="flex-1 min-w-0 max-w-4xl">
           <Input
             type="text"
             value={workflowName}
@@ -45,7 +45,7 @@ export function WorkflowHeader({
               onWorkflowNameChange(e.target.value);
             }}
             placeholder="Workflow Name"
-            className="text-2xl font-bold border-0 bg-transparent focus:ring-0 px-0"
+            className="text-2xl font-bold border-0 bg-transparent focus:ring-0 px-0 w-full"
           />
         </div>
         <div className="flex gap-3">

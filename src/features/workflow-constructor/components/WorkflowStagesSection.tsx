@@ -21,8 +21,6 @@ interface WorkflowStagesSectionProps {
     withReview: boolean;
     includeMultiAgentChat?: boolean;
   }) => void;
-  onToggleWithReview: (stageId: string, withReview: boolean) => void;
-  onToggleMultiAgentChat?: (stageId: string, includeMultiAgentChat: boolean) => void;
   onCreateStage: (data: {
     name: string;
     description?: string;
@@ -44,8 +42,6 @@ export function WorkflowStagesSection({
   onDropMiniPrompts,
   onEditStage,
   onUpdateStage,
-  onToggleWithReview,
-  onToggleMultiAgentChat,
   onCreateStage,
   onCancelCreateStage,
   onCancelEditStage,
@@ -88,8 +84,6 @@ export function WorkflowStagesSection({
               onRemoveMiniPrompt={onRemoveMiniPrompt}
               onDropMiniPrompts={onDropMiniPrompts}
               onEditStage={onEditStage}
-              onToggleWithReview={onToggleWithReview}
-              onToggleMultiAgentChat={onToggleMultiAgentChat}
               onMiniPromptClick={onMiniPromptClick}
             />
           );

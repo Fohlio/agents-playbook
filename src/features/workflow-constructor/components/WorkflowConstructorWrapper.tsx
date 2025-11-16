@@ -83,8 +83,6 @@ export function WorkflowConstructorWrapper({
     handleCreateStage,
     handleRemoveStage,
     handleRemoveMiniPrompt,
-    handleToggleWithReview,
-    handleToggleMultiAgentChat,
     handleEditStage,
     handleUpdateStage,
     handleDragEnd: handleMiniPromptDragEnd,
@@ -188,7 +186,7 @@ export function WorkflowConstructorWrapper({
               value={workflowName}
               onChange={(e) => setWorkflowName(e.target.value)}
               placeholder="Workflow Name"
-              className="text-2xl font-bold border-0 bg-transparent focus:ring-0 px-0"
+              className="text-2xl font-bold border-0 bg-transparent focus:ring-0 px-0 w-full max-w-4xl"
             />
           </div>
           <div className="flex gap-3">
@@ -299,8 +297,6 @@ export function WorkflowConstructorWrapper({
                       onRemoveMiniPrompt={handleRemoveMiniPrompt}
                       onDropMiniPrompts={onDropMiniPrompts}
                       onEditStage={handleEditStage}
-                      onToggleWithReview={handleToggleWithReview}
-                      onToggleMultiAgentChat={handleToggleMultiAgentChat}
                       onMiniPromptClick={(miniPrompt) => {
                         setViewingMiniPromptId(miniPrompt.id);
                       }}

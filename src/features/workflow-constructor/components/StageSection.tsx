@@ -2,7 +2,6 @@
 
 import { Card } from '@/shared/ui/atoms/Card';
 import Button from '@/shared/ui/atoms/Button';
-import { BetaBadge } from '@/shared/ui/atoms';
 import type { WorkflowStageWithMiniPrompts } from '@/lib/types/workflow-constructor-types';
 import { StageDropZone } from './StageDropZone';
 import { Tooltip } from '@/shared/ui/molecules';
@@ -15,8 +14,6 @@ interface StageSectionProps {
   onRemoveMiniPrompt: (stageId: string, miniPromptId: string) => void;
   onDropMiniPrompts: (stageId: string, miniPromptIds: string[]) => void;
   onEditStage?: (stageId: string) => void;
-  onToggleWithReview?: (stageId: string, withReview: boolean) => void;
-  onToggleMultiAgentChat?: (stageId: string, includeMultiAgentChat: boolean) => void;
   onMiniPromptClick?: (miniPrompt: { id: string; name: string; description?: string | null; content: string }) => void;
 }
 
@@ -26,8 +23,6 @@ export function StageSection({
   onRemoveMiniPrompt,
   onDropMiniPrompts,
   onEditStage,
-  onToggleWithReview,
-  onToggleMultiAgentChat,
   onMiniPromptClick,
 }: StageSectionProps) {
   return (
@@ -48,38 +43,6 @@ export function StageSection({
           </div>
         </div>
         <div className="flex items-center gap-3">
-          {onToggleWithReview && (
-            <Tooltip content="When enabled, adds a Memory Board review prompt at the end of this stage for handoff context">
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={stage.withReview}
-                  onChange={(e) => onToggleWithReview(stage.id, e.target.checked)}
-                  className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
-                />
-                <span className="text-sm font-medium text-text-primary">
-                  With Review
-                </span>
-                <BetaBadge size="sm" />
-              </label>
-            </Tooltip>
-          )}
-          {onToggleMultiAgentChat && (
-            <Tooltip content="Enable AI coordination prompts after each mini-prompt in this stage to help multiple agents collaborate effectively">
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={stage.includeMultiAgentChat ?? false}
-                  onChange={(e) => onToggleMultiAgentChat(stage.id, e.target.checked)}
-                  className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
-                />
-                <span className="text-sm font-medium text-text-primary">
-                  Multi-Agent Chat
-                </span>
-                <BetaBadge size="sm" />
-              </label>
-            </Tooltip>
-          )}
           {onEditStage && (
             <Tooltip content="Edit stage details">
               <Button

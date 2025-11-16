@@ -26,8 +26,6 @@ interface WorkflowLayoutProps {
     color?: string;
     withReview: boolean;
   }) => void;
-  onToggleWithReview: (stageId: string, withReview: boolean) => void;
-  onToggleMultiAgentChat?: (stageId: string, includeMultiAgentChat: boolean) => void;
   onCreateStage: (data: {
     name: string;
     description?: string;
@@ -54,8 +52,6 @@ export function WorkflowLayout({
   onDropMiniPrompts,
   onEditStage,
   onUpdateStage,
-  onToggleWithReview,
-  onToggleMultiAgentChat,
   onCreateStage,
   onCancelCreateStage,
   onCancelEditStage,
@@ -84,8 +80,6 @@ export function WorkflowLayout({
             onDropMiniPrompts={onDropMiniPrompts}
             onEditStage={onEditStage}
             onUpdateStage={onUpdateStage}
-            onToggleWithReview={onToggleWithReview}
-            onToggleMultiAgentChat={onToggleMultiAgentChat}
             onCreateStage={onCreateStage}
             onCancelCreateStage={onCancelCreateStage}
             onCancelEditStage={onCancelEditStage}

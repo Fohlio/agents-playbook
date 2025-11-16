@@ -82,12 +82,12 @@ export class DBSemanticSearch {
 
   /**
    * Get workflows based on user context
-   * - No userId: Returns only system public active workflows
-   * - With userId: Returns system workflows + user's library active workflows
+   * - No userId (unauthenticated): Returns ALL active system workflows
+   * - With userId (authenticated): Returns only system workflows in user's library + user's own active workflows
    */
   private async getWorkflows(userId?: string) {
     if (!userId) {
-      // System workflows only (public, active)
+      // Unauthenticated: Return ALL active system workflows
       return prisma.workflow.findMany({
         where: {
           isSystemWorkflow: true,
@@ -96,13 +96,32 @@ export class DBSemanticSearch {
       });
     }
 
-    // System workflows + user's library workflows (both active)
+    // Get system workflows that are in user's library (have a WorkflowReference)
+    const systemWorkflowReferences = await prisma.workflowReference.findMany({
+      where: { userId },
+      select: { workflowId: true }
+    });
+    const systemWorkflowIds = systemWorkflowReferences.map(ref => ref.workflowId);
+
+    // Build OR conditions
+    const orConditions: any[] = [
+      // User's own active workflows
+      { userId, isActive: true, isSystemWorkflow: false }
+    ];
+
+    // Only add system workflows condition if user has any in their library
+    if (systemWorkflowIds.length > 0) {
+      orConditions.push({
+        id: { in: systemWorkflowIds },
+        isSystemWorkflow: true,
+        isActive: true
+      });
+    }
+
+    // Get system workflows in user's library + user's own active workflows
     return prisma.workflow.findMany({
       where: {
-        OR: [
-          { isSystemWorkflow: true, isActive: true },
-          { userId, isActive: true, isSystemWorkflow: false }
-        ]
+        OR: orConditions
       }
     });
   }
@@ -156,31 +175,57 @@ export class DBSemanticSearch {
 
   /**
    * Fallback text search when embeddings unavailable
-   * - No userId: Returns only system public active workflows
-   * - With userId: Returns system workflows + user's library active workflows
+   * - No userId (unauthenticated): Returns ALL active system workflows matching query
+   * - With userId (authenticated): Returns only system workflows in user's library + user's own active workflows matching query
    */
   private async fallbackTextSearch(
     query: string,
     limit: number,
     userId?: string
   ): Promise<SearchResult[]> {
+    let workflowFilter: any;
+
+    if (userId) {
+      // Get system workflows that are in user's library (have a WorkflowReference)
+      const systemWorkflowReferences = await prisma.workflowReference.findMany({
+        where: { userId },
+        select: { workflowId: true }
+      });
+      const systemWorkflowIds = systemWorkflowReferences.map(ref => ref.workflowId);
+
+      // Build OR conditions
+      const orConditions: any[] = [
+        // User's own active workflows
+        { userId, isActive: true, isSystemWorkflow: false }
+      ];
+
+      // Only add system workflows condition if user has any in their library
+      if (systemWorkflowIds.length > 0) {
+        orConditions.push({
+          id: { in: systemWorkflowIds },
+          isSystemWorkflow: true,
+          isActive: true
+        });
+      }
+
+      workflowFilter = {
+        OR: orConditions
+      };
+    } else {
+      // Unauthenticated: Return ALL active system workflows
+      workflowFilter = {
+        isSystemWorkflow: true,
+        isActive: true
+      };
+    }
+
     const workflows = await prisma.workflow.findMany({
       where: {
         OR: [
           { name: { contains: query, mode: 'insensitive' } },
           { description: { contains: query, mode: 'insensitive' } }
         ],
-        AND: userId
-          ? {
-              OR: [
-                { isSystemWorkflow: true, isActive: true },
-                { userId, isActive: true, isSystemWorkflow: false }
-              ]
-            }
-          : {
-              isSystemWorkflow: true,
-              isActive: true
-            }
+        AND: workflowFilter
       },
       take: limit
     });
