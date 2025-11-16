@@ -72,7 +72,7 @@ export async function getNextStepHandler({
     if (step.type === 'auto-prompt') {
       const icon = step.autoPromptType === 'memory-board' ? '📋' : '🤖';
       const badge = step.autoPromptType === 'memory-board' ? '[REVIEW]' : '[AUTO]';
-      response += `**Type:** Auto-attached prompt ${icon} ${badge}\n\n`;
+      response += `**Type:** ${icon} ${badge}\n\n`;
     } else {
       response += `**Type:** Mini-prompt\n\n`;
     }

@@ -66,11 +66,6 @@ export async function selectWorkflowHandler({
       response += `Do not skip steps or stop until all steps are completed.\n\n`;
     }
 
-    // Add YAML content if available
-    if (workflow.yamlContent) {
-      response += `## YAML Content\n\n\`\`\`yaml\n${workflow.yamlContent}\n\`\`\``;
-    }
-
     return {
       content: [{
         type: "text" as const,

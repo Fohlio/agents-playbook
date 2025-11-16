@@ -314,7 +314,6 @@ export class ExecutionPlanBuilder {
         const icon = item.autoPromptType === 'memory-board' ? '📋' : '🤖';
         const badge = item.autoPromptType === 'memory-board' ? '[REVIEW]' : '[AUTO]';
         output += `### ${item.index + 1}. ${icon} ${item.name} ${badge}\n\n`;
-        output += `> **Auto-attached prompt** - ${item.description || 'No description'}\n\n`;
       } else {
         output += `### ${item.index + 1}. ${item.name}\n\n`;
         if (item.description) {

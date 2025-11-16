@@ -118,10 +118,6 @@ const handler = createMcpHandler(
             response += `Do not skip steps or stop until all steps are completed.\n\n`;
           }
 
-          if (workflow.yamlContent) {
-            response += `## YAML Content\n\n\`\`\`yaml\n${workflow.yamlContent}\n\`\`\``;
-          }
-
           return {
             content: [{
               type: "text" as const,
@@ -187,7 +183,7 @@ const handler = createMcpHandler(
           if (step.type === 'auto-prompt') {
             const icon = step.autoPromptType === 'memory-board' ? '📋' : '🤖';
             const badge = step.autoPromptType === 'memory-board' ? '[REVIEW]' : '[AUTO]';
-            response += `**Type:** Auto-attached prompt ${icon} ${badge}\n\n`;
+            response += `**Type:** ${icon} ${badge}\n\n`;
           } else {
             response += `**Type:** Mini-prompt\n\n`;
           }
