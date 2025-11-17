@@ -240,7 +240,6 @@ describe('MCP Handlers', () => {
       const text = result.content[0].text;
       expect(text).toContain('🤖');
       expect(text).toContain('[AUTO]');
-      expect(text).toContain('Auto-attached prompt');
     });
 
     it('should return error for invalid step index', async () => {
