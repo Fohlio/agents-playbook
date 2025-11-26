@@ -22,7 +22,7 @@ export const MarkdownContent: React.FC<MarkdownContentProps> = ({
   return (
     <div
       data-testid={testId}
-      className={className}
+      className={`text-gray-900 ${className}`}
     >
       <ReactMarkdown
         remarkPlugins={[remarkGfm]}
@@ -46,16 +46,16 @@ export const MarkdownContent: React.FC<MarkdownContentProps> = ({
             <h6 className="text-xs font-semibold mt-2 mb-1 text-gray-700" {...props} />
           ),
           p: ({ ...props }) => (
-            <p className="mb-2 last:mb-0" {...props} />
+            <p className="mb-2 last:mb-0 text-gray-900" {...props} />
           ),
           ul: ({ ...props }) => (
-            <ul className="list-disc pl-5 mb-2 space-y-1" {...props} />
+            <ul className="list-disc pl-5 mb-2 space-y-1 text-gray-900" {...props} />
           ),
           ol: ({ ...props }) => (
-            <ol className="list-decimal pl-5 mb-2 space-y-1" {...props} />
+            <ol className="list-decimal pl-5 mb-2 space-y-1 text-gray-900" {...props} />
           ),
           li: ({ ...props }) => (
-            <li className="mb-1" {...props} />
+            <li className="mb-1 text-gray-900" {...props} />
           ),
           code: ({ className, ...props }) => {
             const isInline = !className?.includes('language-');
