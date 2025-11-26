@@ -23,18 +23,19 @@ describe('MarkdownContent', () => {
     expect(screen.getByText('Hello World')).toBeInTheDocument();
   });
 
-  it('should render with default empty className', () => {
+  it('should render with default text-gray-900 className', () => {
     render(<MarkdownContent content="Test" testId="markdown-default" />);
     const element = screen.getByTestId('markdown-default');
     expect(element).toBeInTheDocument();
-    // Default className is empty string
-    expect(element.className).toBe('');
+    // Default className includes text-gray-900 for proper text color
+    expect(element.className).toContain('text-gray-900');
   });
 
   it('should apply custom className', () => {
     render(<MarkdownContent content="Test" className="custom-class" testId="markdown" />);
     const element = screen.getByTestId('markdown');
     expect(element).toHaveClass('custom-class');
+    expect(element).toHaveClass('text-gray-900'); // Should still have default color
   });
 
   it('should render markdown content', () => {
