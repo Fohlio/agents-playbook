@@ -50,10 +50,10 @@ export const MarkdownContent: React.FC<MarkdownContentProps> = ({
             <p className="mb-2 last:mb-0 text-gray-900" {...props} />
           ),
           ul: ({ ...props }) => (
-            <ul className="list-disc pl-5 mb-2 space-y-1 text-gray-900" {...props} />
+            <ul className="list-disc pl-5 mb-2 space-y-1 text-gray-900 [&>li::marker]:text-gray-900" {...props} />
           ),
           ol: ({ ...props }) => (
-            <ol className="list-decimal pl-5 mb-2 space-y-1 text-gray-900" {...props} />
+            <ol className="list-decimal pl-5 mb-2 space-y-1 text-gray-900 [&>li::marker]:text-gray-900" {...props} />
           ),
           li: ({ ...props }) => (
             <li className="mb-1 text-gray-900" {...props} />

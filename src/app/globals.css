@@ -64,6 +64,13 @@
   button.bg-red-800 {
     color: white;
   }
+
+  /* Ensure list markers (numbers, bullets) are dark */
+  ol li::marker,
+  ul li::marker {
+    color: #111827; /* text-gray-900 */
+    font-weight: 500;
+  }
 }
 
 /* Custom scrollbar (webkit browsers) */
