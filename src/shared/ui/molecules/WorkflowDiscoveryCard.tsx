@@ -11,6 +11,7 @@ import { WorkflowPreviewModal } from "./WorkflowPreviewModal";
 import { RatingDisplay } from "@/features/ratings/ui/RatingDisplay";
 import { RatingDialog } from "@/features/ratings/ui/RatingDialog";
 import { TagBadgeList } from "./TagBadgeList";
+import { ShareButton } from "@/features/sharing/ui";
 
 interface WorkflowDiscoveryCardProps {
   workflow: PublicWorkflowWithMeta & {
@@ -281,6 +282,12 @@ export function WorkflowDiscoveryCard({
 
               {/* Action buttons */}
               <div className="flex items-center gap-2">
+                {/* Share button - for all workflows */}
+                <ShareButton
+                  targetType="WORKFLOW"
+                  targetId={workflow.id}
+                  targetName={workflow.name}
+                />
                 {/* Rate button - only for non-owned workflows */}
                 {!isOwnWorkflow && (
                   <Tooltip content="Rate this workflow to help others discover quality content">

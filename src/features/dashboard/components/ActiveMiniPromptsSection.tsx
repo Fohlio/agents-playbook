@@ -6,6 +6,7 @@ import { Card, CardHeader, Badge, Button } from "@/shared/ui/atoms";
 import { ShareButton } from "@/features/sharing/ui";
 import { MiniPromptWithUsage } from "../lib/dashboard-service";
 import { deactivateMiniPrompt } from "../actions/mini-prompt-actions";
+import { MiniPromptEditorModal } from "@/features/workflow-constructor/components/MiniPromptEditorModal";
 
 interface ActiveMiniPromptsSectionProps {
   miniPrompts: MiniPromptWithUsage[];
@@ -15,6 +16,14 @@ export function ActiveMiniPromptsSection({ miniPrompts }: ActiveMiniPromptsSecti
   const router = useRouter();
   const [loading, setLoading] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [editingMiniPromptId, setEditingMiniPromptId] = useState<string | null>(null);
+  const [editingMiniPromptData, setEditingMiniPromptData] = useState<{
+    name: string;
+    description?: string;
+    content: string;
+    visibility: 'PUBLIC' | 'PRIVATE';
+    tagIds?: string[];
+  } | null>(null);
 
   const handleDeactivate = async (miniPromptId: string) => {
     try {
@@ -25,6 +34,55 @@ export function ActiveMiniPromptsSection({ miniPrompts }: ActiveMiniPromptsSecti
       setError(err instanceof Error ? err.message : "Failed to deactivate mini-prompt");
     } finally {
       setLoading(null);
+    }
+  };
+
+  const handleEdit = async (miniPromptId: string) => {
+    try {
+      const response = await fetch(`/api/mini-prompts/${miniPromptId}`);
+      if (!response.ok) throw new Error('Failed to fetch mini-prompt');
+      const data = await response.json();
+      setEditingMiniPromptData({
+        name: data.name,
+        description: data.description || '',
+        content: data.content,
+        visibility: data.visibility,
+        tagIds: data.tagIds || [],
+      });
+      setEditingMiniPromptId(miniPromptId);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to load mini-prompt for editing");
+    }
+  };
+
+  const handleSaveEdit = async (
+    name: string,
+    description: string,
+    content: string,
+    visibility: 'PUBLIC' | 'PRIVATE',
+    tagIds: string[]
+  ) => {
+    if (!editingMiniPromptId) return;
+    
+    try {
+      const response = await fetch(`/api/mini-prompts/${editingMiniPromptId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name,
+          description,
+          content,
+          visibility,
+          tagIds,
+        }),
+      });
+      if (!response.ok) throw new Error('Failed to update mini-prompt');
+      setEditingMiniPromptId(null);
+      setEditingMiniPromptData(null);
+      // Reload the page to refresh the list
+      router.refresh();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to update mini-prompt");
     }
   };
 
@@ -85,7 +143,7 @@ export function ActiveMiniPromptsSection({ miniPrompts }: ActiveMiniPromptsSecti
                 <Button
                   variant="secondary"
                   size="sm"
-                  onClick={() => router.push(`/dashboard/library/mini-prompts/${miniPrompt.id}/edit`)}
+                  onClick={() => handleEdit(miniPrompt.id)}
                   testId={`edit-button-${miniPrompt.id}`}
                 >
                   Edit
@@ -104,6 +162,16 @@ export function ActiveMiniPromptsSection({ miniPrompts }: ActiveMiniPromptsSecti
           </div>
         ))}
       </div>
+
+      <MiniPromptEditorModal
+        isOpen={editingMiniPromptId !== null}
+        onClose={() => {
+          setEditingMiniPromptId(null);
+          setEditingMiniPromptData(null);
+        }}
+        onSave={handleSaveEdit}
+        initialData={editingMiniPromptData || undefined}
+      />
     </Card>
   );
 }

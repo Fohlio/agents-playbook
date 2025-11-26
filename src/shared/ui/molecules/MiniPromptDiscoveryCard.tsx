@@ -9,6 +9,7 @@ import { MiniPromptEditorModal } from "@/features/workflow-constructor/component
 import { RatingDisplay } from "@/features/ratings/ui/RatingDisplay";
 import { RatingDialog } from "@/features/ratings/ui/RatingDialog";
 import { TagBadgeList } from "./TagBadgeList";
+import { ShareButton } from "@/features/sharing/ui";
 
 interface MiniPromptDiscoveryCardProps {
   miniPrompt: PublicMiniPromptWithMeta & {
@@ -274,6 +275,12 @@ export function MiniPromptDiscoveryCard({
                 </div>
                 {/* Action buttons */}
                 <div className="flex items-center gap-2">
+                  {/* Share button - for all mini-prompts */}
+                  <ShareButton
+                    targetType="MINI_PROMPT"
+                    targetId={miniPrompt.id}
+                    targetName={miniPrompt.name}
+                  />
                   {/* Rate button - only for non-owned mini-prompts */}
                   {!isOwnMiniPrompt && (
                     <Tooltip content="Rate this mini-prompt to help others discover quality content">

@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { Button, Input, Textarea, FormField, Radio } from '@/shared/ui/atoms';
 import { Modal } from '@/shared/ui/atoms/Modal';
 import { TagMultiSelect } from '@/shared/ui/molecules';
+import { MarkdownContent } from '@/shared/ui/atoms/MarkdownContent';
 
 interface MiniPromptEditorModalProps {
   isOpen: boolean;
@@ -145,38 +146,7 @@ export function MiniPromptEditorModal({
             </div>
             {viewOnly || showPreview ? (
               <div className="w-full min-h-[300px] max-h-[500px] overflow-y-auto px-4 py-3 border border-border-base rounded-lg bg-surface-base">
-                <div className="prose prose-sm max-w-none text-text-primary">
-                  {content.split('\n').map((line, i) => {
-                    // Headers
-                    if (line.startsWith('### ')) {
-                      return <h3 key={i} className="text-lg font-semibold mt-4 mb-2">{line.replace('### ', '')}</h3>;
-                    }
-                    if (line.startsWith('## ')) {
-                      return <h2 key={i} className="text-xl font-bold mt-6 mb-3">{line.replace('## ', '')}</h2>;
-                    }
-                    if (line.startsWith('# ')) {
-                      return <h1 key={i} className="text-2xl font-bold mt-8 mb-4">{line.replace('# ', '')}</h1>;
-                    }
-                    // Lists
-                    if (line.startsWith('- ') || line.startsWith('* ')) {
-                      return <li key={i} className="ml-4">{line.replace(/^[*-] /, '')}</li>;
-                    }
-                    // Code blocks
-                    if (line.startsWith('```')) {
-                      return <pre key={i} className="bg-surface-secondary p-2 rounded my-2 overflow-x-auto"><code>{line.replace(/```/g, '')}</code></pre>;
-                    }
-                    // Empty lines
-                    if (line.trim() === '') {
-                      return <br key={i} />;
-                    }
-                    // Regular text with inline formatting
-                    const formatted = line
-                      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-                      .replace(/\*(.*?)\*/g, '<em>$1</em>')
-                      .replace(/`(.*?)`/g, '<code class="bg-surface-secondary px-1 rounded text-sm">$1</code>');
-                    return <p key={i} dangerouslySetInnerHTML={{ __html: formatted }} className="mb-2" />;
-                  })}
-                </div>
+                <MarkdownContent content={content} />
               </div>
             ) : (
               <Textarea
