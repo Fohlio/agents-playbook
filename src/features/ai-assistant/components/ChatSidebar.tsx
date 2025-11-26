@@ -7,6 +7,7 @@ import { useLoadChatSession } from '@/hooks/useLoadChatSession';
 import { AIChatMode, WorkflowContext, AIToolResult } from '@/types/ai-chat';
 import { X, Send, Sparkles, AlertCircle, Loader2, History, Clock } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
+import remarkBreaks from 'remark-breaks';
 import { BetaBadge, Badge } from '@/shared/ui/atoms';
 import { ApiKeyModal } from './ApiKeyModal';
 
@@ -283,7 +284,7 @@ export function ChatSidebar({
                 <p className="text-sm whitespace-pre-wrap break-words">{message.content}</p>
               ) : (
                 <div className="text-sm prose prose-sm max-w-none break-words prose-p:my-1 prose-headings:my-2 prose-ul:my-1 prose-ol:my-1 prose-li:my-0.5 prose-pre:my-2 prose-code:text-xs prose-code:bg-gray-200 prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-pre:bg-gray-800 prose-pre:text-white prose-pre:break-words prose-code:break-words">
-                  <ReactMarkdown>{message.content}</ReactMarkdown>
+                  <ReactMarkdown remarkPlugins={[remarkBreaks]}>{message.content}</ReactMarkdown>
                 </div>
               )}
               {message.toolInvocations && message.toolInvocations.length > 0 && (

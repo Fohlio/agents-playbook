@@ -52,7 +52,7 @@ const config = {
   
   // Transform node_modules that use ES modules
   transformIgnorePatterns: [
-    'node_modules/(?!(next-auth|@auth|react-markdown|remark-gfm|unist-.*|unified|bail|is-plain-obj|trough|vfile|vfile-message|micromark.*)/)',
+    'node_modules/(?!(next-auth|@auth|react-markdown|remark-gfm|remark-breaks|unist-.*|unified|bail|is-plain-obj|trough|vfile|vfile-message|micromark.*)/)',
   ],
   
   // Verbose output

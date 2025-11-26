@@ -3,6 +3,7 @@
 import { Button, Badge } from "@/shared/ui/atoms";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import remarkBreaks from "remark-breaks";
 import { useState } from "react";
 
 interface WorkflowStage {
@@ -175,7 +176,7 @@ export function SharedWorkflowView({
                             {smp.miniPrompt.name}
                           </h4>
                           <div className="text-xs text-gray-600 leading-relaxed prose prose-sm max-w-none">
-                            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                            <ReactMarkdown remarkPlugins={[remarkGfm, remarkBreaks]}>
                               {smp.miniPrompt.content ||
                                 "No prompt text available"}
                             </ReactMarkdown>

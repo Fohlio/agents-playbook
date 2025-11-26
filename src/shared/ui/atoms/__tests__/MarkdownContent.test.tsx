@@ -17,6 +17,13 @@ jest.mock('remark-gfm', () => {
   };
 });
 
+jest.mock('remark-breaks', () => {
+  return {
+    __esModule: true,
+    default: () => {},
+  };
+});
+
 describe('MarkdownContent', () => {
   it('should render content using react-markdown', () => {
     render(<MarkdownContent content="Hello World" />);

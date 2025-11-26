@@ -1,6 +1,7 @@
 import React from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import remarkBreaks from "remark-breaks";
 
 export interface MarkdownContentProps {
   content: string;
@@ -25,7 +26,7 @@ export const MarkdownContent: React.FC<MarkdownContentProps> = ({
       className={`text-gray-900 ${className}`}
     >
       <ReactMarkdown
-        remarkPlugins={[remarkGfm]}
+        remarkPlugins={[remarkGfm, remarkBreaks]}
         components={{
           h1: ({ ...props }) => (
             <h1 className="text-2xl font-bold mt-6 mb-4 text-gray-900" {...props} />
