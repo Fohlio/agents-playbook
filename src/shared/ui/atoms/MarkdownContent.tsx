@@ -23,7 +23,7 @@ export const MarkdownContent: React.FC<MarkdownContentProps> = ({
   return (
     <div
       data-testid={testId}
-      className={`text-gray-900 ${className}`}
+      className={`text-gray-900 ${className} [&_ol_li::marker]:text-gray-900 [&_ul_li::marker]:text-gray-900 [&_ol_li::marker]:font-medium [&_ul_li::marker]:font-medium`}
     >
       <ReactMarkdown
         remarkPlugins={[remarkGfm, remarkBreaks]}

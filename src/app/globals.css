@@ -65,11 +65,22 @@
     color: white;
   }
 
-  /* Ensure list markers (numbers, bullets) are dark */
+  /* Ensure list markers (numbers, bullets) are dark - override prose styles */
+  .prose ol li::marker,
+  .prose ul li::marker,
   ol li::marker,
   ul li::marker {
-    color: #111827; /* text-gray-900 */
-    font-weight: 500;
+    color: #111827 !important; /* text-gray-900 */
+    font-weight: 500 !important;
+  }
+  
+  /* Also target nested lists in prose */
+  .prose ol ol li::marker,
+  .prose ul ul li::marker,
+  .prose ol ul li::marker,
+  .prose ul ol li::marker {
+    color: #111827 !important;
+    font-weight: 500 !important;
   }
 }
 
