@@ -11,11 +11,24 @@ interface PageProps {
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { token } = await params;
   const result = await getSharedContent(token, false);
+  const baseUrl = process.env.NEXTAUTH_URL || 'https://agents-playbook.com';
+  const url = `${baseUrl}/share/mini-prompt/${token}`;
 
   if (!result.success || result.targetType !== "MINI_PROMPT") {
     return {
       title: "Shared Mini-Prompt Not Found",
       description: "This shared mini-prompt link is invalid or has expired.",
+      openGraph: {
+        title: "Shared Mini-Prompt Not Found",
+        description: "This shared mini-prompt link is invalid or has expired.",
+        url,
+        type: "website",
+      },
+      twitter: {
+        card: "summary",
+        title: "Shared Mini-Prompt Not Found",
+        description: "This shared mini-prompt link is invalid or has expired.",
+      },
     };
   }
 
@@ -27,9 +40,38 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     user: { id: string; username: string };
     tags: Array<{ tag: { name: string; id: string; color: string | null } }>;
   };
+
+  const title = `${miniPrompt.name} - Shared Mini-Prompt`;
+  const description = miniPrompt.content?.substring(0, 160) || `View shared mini-prompt: ${miniPrompt.name}`;
+  const tagsText = miniPrompt.tags?.length > 0 
+    ? `Tags: ${miniPrompt.tags.map(t => t.tag.name).join(', ')}` 
+    : '';
+  const fullDescription = `${description}${tagsText ? ` • ${tagsText}` : ''} • By @${miniPrompt.user.username}`;
+
   return {
-    title: `${miniPrompt.name} - Shared Mini-Prompt`,
-    description: miniPrompt.content?.substring(0, 160) || `View shared mini-prompt: ${miniPrompt.name}`,
+    title,
+    description: fullDescription,
+    openGraph: {
+      title,
+      description: fullDescription,
+      url,
+      type: "website",
+      siteName: "Agents Playbook",
+      images: [
+        {
+          url: "/og-image.png",
+          width: 1200,
+          height: 630,
+          alt: title,
+        }
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description: fullDescription,
+      images: ["/og-image.png"],
+    },
   };
 }
 

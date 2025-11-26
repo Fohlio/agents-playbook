@@ -11,11 +11,24 @@ interface PageProps {
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { token } = await params;
   const result = await getSharedContent(token, false);
+  const baseUrl = process.env.NEXTAUTH_URL || 'https://agents-playbook.com';
+  const url = `${baseUrl}/share/workflow/${token}`;
 
   if (!result.success || result.targetType !== "WORKFLOW") {
     return {
       title: "Shared Workflow Not Found",
       description: "This shared workflow link is invalid or has expired.",
+      openGraph: {
+        title: "Shared Workflow Not Found",
+        description: "This shared workflow link is invalid or has expired.",
+        url,
+        type: "website",
+      },
+      twitter: {
+        card: "summary",
+        title: "Shared Workflow Not Found",
+        description: "This shared workflow link is invalid or has expired.",
+      },
     };
   }
 
@@ -28,10 +41,39 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     stages: unknown[];
     tags: Array<{ tag: { name: string; id: string; color: string | null } }>;
   };
+
+  const title = `${workflow.name} - Shared Workflow`;
+  const description = workflow.description || `View shared workflow: ${workflow.name}`;
+  const stagesCount = Array.isArray(workflow.stages) ? workflow.stages.length : 0;
+  const tagsText = workflow.tags?.length > 0 
+    ? `Tags: ${workflow.tags.map(t => t.tag.name).join(', ')}` 
+    : '';
+  const fullDescription = `${description}${stagesCount > 0 ? ` • ${stagesCount} stage${stagesCount !== 1 ? 's' : ''}` : ''}${tagsText ? ` • ${tagsText}` : ''} • By @${workflow.user.username}`;
+
   return {
-    title: `${workflow.name} - Shared Workflow`,
-    description:
-      workflow.description || `View shared workflow: ${workflow.name}`,
+    title,
+    description: fullDescription,
+    openGraph: {
+      title,
+      description: fullDescription,
+      url,
+      type: "website",
+      siteName: "Agents Playbook",
+      images: [
+        {
+          url: "/og-image.png",
+          width: 1200,
+          height: 630,
+          alt: title,
+        }
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description: fullDescription,
+      images: ["/og-image.png"],
+    },
   };
 }
 
