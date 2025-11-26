@@ -2,7 +2,8 @@
 
 import { Button, Badge } from "@/shared/ui/atoms";
 import { MarkdownContent } from "@/shared/ui/atoms/MarkdownContent";
-import { useState } from "react";
+import { CopyButton } from "@/shared/ui/molecules";
+import { useState, useMemo } from "react";
 
 interface WorkflowStage {
   id: string;
@@ -78,13 +79,43 @@ export function SharedWorkflowView({
   const canImport =
     isAuthenticated && workflow.visibility === "PUBLIC" && onImport;
 
+  // Collect all mini-prompt content for copying
+  const allContent = useMemo(() => {
+    const parts: string[] = [];
+    workflow.stages.forEach((stage, stageIndex) => {
+      parts.push(`## Stage ${stageIndex + 1}: ${stage.name}`);
+      if (stage.description) {
+        parts.push(stage.description);
+      }
+      if (stage.miniPrompts && stage.miniPrompts.length > 0) {
+        stage.miniPrompts.forEach((smp) => {
+          parts.push(`\n### ${smp.miniPrompt.name}`);
+          parts.push(smp.miniPrompt.content || "");
+        });
+      }
+      parts.push("\n");
+    });
+    return parts.join("\n");
+  }, [workflow.stages]);
+
   return (
     <div className="max-w-4xl mx-auto p-6">
       {/* Header */}
       <div className="mb-6 pb-6 border-b border-gray-200">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">
-          {workflow.name}
-        </h1>
+        <div className="flex items-start justify-between gap-4 mb-4">
+          <h1 className="text-3xl font-bold text-gray-900 flex-1">
+            {workflow.name}
+          </h1>
+          {allContent && (
+            <CopyButton
+              textToCopy={allContent}
+              label="Copy"
+              variant="secondary"
+              size="sm"
+              testId="copy-content"
+            />
+          )}
+        </div>
         <div className="flex items-center gap-4 text-sm text-gray-600 mb-4">
           <span className="flex items-center gap-1">
             <svg

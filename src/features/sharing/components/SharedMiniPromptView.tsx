@@ -2,6 +2,7 @@
 
 import { Button, Badge } from "@/shared/ui/atoms";
 import { MarkdownContent } from "@/shared/ui/atoms/MarkdownContent";
+import { CopyButton } from "@/shared/ui/molecules";
 import { useState } from "react";
 
 interface SharedMiniPrompt {
@@ -63,9 +64,18 @@ export function SharedMiniPromptView({
     <div className="max-w-4xl mx-auto p-6">
       {/* Header */}
       <div className="mb-6 pb-6 border-b border-gray-200">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">
-          {miniPrompt.name}
-        </h1>
+        <div className="flex items-start justify-between gap-4 mb-4">
+          <h1 className="text-3xl font-bold text-gray-900 flex-1">
+            {miniPrompt.name}
+          </h1>
+          <CopyButton
+            textToCopy={miniPrompt.content || ""}
+            label="Copy"
+            variant="secondary"
+            size="sm"
+            testId="copy-content"
+          />
+        </div>
         <div className="flex items-center gap-4 text-sm text-gray-600 mb-4">
           <span className="flex items-center gap-1">
             <svg
