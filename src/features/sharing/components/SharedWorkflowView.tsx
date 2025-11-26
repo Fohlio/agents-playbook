@@ -1,9 +1,7 @@
 "use client";
 
 import { Button, Badge } from "@/shared/ui/atoms";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
-import remarkBreaks from "remark-breaks";
+import { MarkdownContent } from "@/shared/ui/atoms/MarkdownContent";
 import { useState } from "react";
 
 interface WorkflowStage {
@@ -175,11 +173,11 @@ export function SharedWorkflowView({
                           <h4 className="font-semibold text-sm text-gray-900 mb-1">
                             {smp.miniPrompt.name}
                           </h4>
-                          <div className="text-xs text-gray-600 leading-relaxed prose prose-sm max-w-none">
-                            <ReactMarkdown remarkPlugins={[remarkGfm, remarkBreaks]}>
-                              {smp.miniPrompt.content ||
-                                "No prompt text available"}
-                            </ReactMarkdown>
+                          <div className="text-xs text-gray-600 leading-relaxed">
+                            <MarkdownContent 
+                              content={smp.miniPrompt.content || "No prompt text available"}
+                              className="prose prose-sm max-w-none"
+                            />
                           </div>
                         </div>
                       ))}

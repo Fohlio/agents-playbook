@@ -4,15 +4,9 @@ import { WorkflowsSection } from '../WorkflowsSection';
 import { TooltipProvider } from '@/shared/ui/providers/TooltipProvider';
 import '@testing-library/jest-dom';
 
-// Mock react-markdown before any imports that use it
-jest.mock('react-markdown', () => ({
-  __esModule: true,
-  default: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
-}));
-
-jest.mock('remark-gfm', () => ({
-  __esModule: true,
-  default: () => {},
+// Mock MarkdownContent before any imports that use it
+jest.mock('@/shared/ui/atoms/MarkdownContent', () => ({
+  MarkdownContent: ({ content }: { content: string }) => <div>{content}</div>,
 }));
 
 // Mock fetch

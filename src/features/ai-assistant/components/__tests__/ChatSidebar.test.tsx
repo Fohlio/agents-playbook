@@ -6,10 +6,9 @@ import '@testing-library/jest-dom';
 // Mock scrollIntoView
 Element.prototype.scrollIntoView = jest.fn();
 
-// Mock react-markdown
-jest.mock('react-markdown', () => ({
-  __esModule: true,
-  default: ({ children }: { children: string }) => <div>{children}</div>,
+// Mock MarkdownContent
+jest.mock('@/shared/ui/atoms/MarkdownContent', () => ({
+  MarkdownContent: ({ content }: { content: string }) => <div>{content}</div>,
 }));
 
 // Mock hooks

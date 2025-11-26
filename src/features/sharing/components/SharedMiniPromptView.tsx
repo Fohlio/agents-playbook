@@ -1,9 +1,7 @@
 "use client";
 
 import { Button, Badge } from "@/shared/ui/atoms";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
-import remarkBreaks from "remark-breaks";
+import { MarkdownContent } from "@/shared/ui/atoms/MarkdownContent";
 import { useState } from "react";
 
 interface SharedMiniPrompt {
@@ -111,9 +109,7 @@ export function SharedMiniPromptView({
         <h2 className="text-xl font-semibold text-gray-900 mb-4">Content</h2>
         <div className="p-6 rounded-lg border border-gray-200 bg-white shadow-sm">
           <div className="prose prose-sm max-w-none text-gray-700">
-            <ReactMarkdown remarkPlugins={[remarkGfm, remarkBreaks]}>
-              {miniPrompt.content || "No content available"}
-            </ReactMarkdown>
+            <MarkdownContent content={miniPrompt.content || "No content available"} />
           </div>
         </div>
       </div>
