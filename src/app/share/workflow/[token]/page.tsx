@@ -1,4 +1,4 @@
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { auth } from "@/lib/auth/auth";
 import { getSharedContent } from "@/features/sharing/lib/share-service";
 import { SharedWorkflowView } from "@/features/sharing/components/SharedWorkflowView";
@@ -81,6 +81,11 @@ export default async function SharedWorkflowPage({ params }: PageProps) {
   const { token } = await params;
   const session = await auth();
   const isAuthenticated = !!session?.user?.id;
+
+  // Redirect authenticated users to dashboard
+  if (isAuthenticated) {
+    redirect("/dashboard");
+  }
 
   // Fetch shared content
   const result = await getSharedContent(token, true);

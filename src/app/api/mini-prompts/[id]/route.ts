@@ -156,10 +156,13 @@ export async function DELETE(
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
-    // Soft delete: mark as inactive (keeps in workflows but hides from library)
+    // Soft delete: mark as inactive and set to private (hides from library and discover)
     await prisma.miniPrompt.update({
       where: { id },
-      data: { isActive: false },
+      data: { 
+        isActive: false,
+        visibility: 'PRIVATE', // Remove from public discover when deleted
+      },
     });
 
     return NextResponse.json({ success: true });

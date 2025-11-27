@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { Button, Input, Textarea, FormField, Radio } from '@/shared/ui/atoms';
 import { Modal } from '@/shared/ui/atoms/Modal';
-import { TagMultiSelect } from '@/shared/ui/molecules';
+import { TagMultiSelect, CopyButton } from '@/shared/ui/molecules';
 import { MarkdownContent } from '@/shared/ui/atoms/MarkdownContent';
 
 interface MiniPromptEditorModalProps {
@@ -132,19 +132,34 @@ export function MiniPromptEditorModal({
               <label htmlFor="mini-prompt-content" className="block text-sm font-medium text-gray-700">
                 Content (Markdown) {!viewOnly && <span className="text-red-500 ml-1">*</span>}
               </label>
-              {!viewOnly && (
-                <Button
-                  type="button"
-                  variant="secondary"
-                  size="sm"
-                  onClick={() => setShowPreview(!showPreview)}
-                  className="text-sm"
-                >
-                  {showPreview ? 'Edit' : 'Preview'}
-                </Button>
-              )}
+              <div className="flex items-center gap-2">
+                {viewOnly && (
+                  <CopyButton
+                    textToCopy={content || ""}
+                    label="Copy"
+                    variant="secondary"
+                    size="sm"
+                    testId="copy-mini-prompt-content"
+                  />
+                )}
+                {!viewOnly && (
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    size="sm"
+                    onClick={() => setShowPreview(!showPreview)}
+                    className="text-sm"
+                  >
+                    {showPreview ? 'Edit' : 'Preview'}
+                  </Button>
+                )}
+              </div>
             </div>
-            {viewOnly || showPreview ? (
+            {viewOnly ? (
+              <div className="w-full min-h-[300px] max-h-[500px] overflow-y-auto px-4 py-3 border border-border-base rounded-lg bg-surface-base">
+                <MarkdownContent content={content} />
+              </div>
+            ) : showPreview ? (
               <div className="w-full min-h-[300px] max-h-[500px] overflow-y-auto px-4 py-3 border border-border-base rounded-lg bg-surface-base">
                 <MarkdownContent content={content} />
               </div>
