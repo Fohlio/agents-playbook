@@ -177,8 +177,30 @@ export function WorkflowDiscoveryCard({
     <>
       <div
         onClick={() => setIsPreviewOpen(true)}
-        className="cursor-pointer h-full"
+        className="cursor-pointer h-full group relative"
       >
+        {/* Hover Preview Indicator - hidden on mobile */}
+        <div
+          className="
+            absolute inset-0 z-10
+            bg-black/5 
+            opacity-0 group-hover:opacity-100 
+            transition-opacity duration-200
+            items-center justify-center
+            pointer-events-none
+            rounded-lg
+            hidden md:flex
+          "
+          data-testid={`workflow-card-hover-${workflow.id}`}
+        >
+          <div className="bg-white/95 px-3 py-1.5 rounded-full shadow-md flex items-center gap-2 text-sm font-medium text-gray-700">
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+            </svg>
+            Click to preview
+          </div>
+        </div>
         <Card
           testId={`workflow-card-${workflow.id}`}
           className="hover:shadow-lg transition-shadow h-full flex flex-col"

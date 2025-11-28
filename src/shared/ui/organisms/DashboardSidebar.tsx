@@ -5,8 +5,9 @@ import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { Button, Link, Badge } from "@/shared/ui/atoms";
 import { Tooltip } from "@/shared/ui/molecules";
-import { ROUTES } from "@/shared/routes";
+import { ROUTES, PROTECTED_ROUTES } from "@/shared/routes";
 import { useSidebar } from "./DashboardLayout";
+import { useShareCount } from "@/features/sharing/hooks/useShareCount";
 import MenuIcon from '@mui/icons-material/Menu';
 import CloseIcon from '@mui/icons-material/Close';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
@@ -15,6 +16,7 @@ import RocketLaunchIcon from '@mui/icons-material/RocketLaunch';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import ExploreIcon from '@mui/icons-material/Explore';
 import LibraryBooksIcon from '@mui/icons-material/LibraryBooks';
+import ShareIcon from '@mui/icons-material/Share';
 import ForumIcon from '@mui/icons-material/Forum';
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import SettingsIcon from '@mui/icons-material/Settings';
@@ -30,6 +32,7 @@ export function DashboardSidebar() {
   const pathname = usePathname();
   const isAdmin = session?.user?.role === 'ADMIN';
   const { isCollapsed, setIsCollapsed } = useSidebar();
+  const { count: shareCount } = useShareCount();
 
   const [isOpen, setIsOpen] = useState(false);
 
@@ -41,8 +44,9 @@ export function DashboardSidebar() {
     { href: ROUTES.GETTING_STARTED, label: 'Getting Started', icon: RocketLaunchIcon, testId: 'getting-started-nav-link' },
     { href: ROUTES.DASHBOARD, label: 'Dashboard', icon: DashboardIcon, testId: 'dashboard-nav-link' },
     { href: ROUTES.DISCOVER, label: 'Discover', icon: ExploreIcon, testId: 'discover-nav-link' },
-    { href: '/dashboard/library', label: 'Library', icon: LibraryBooksIcon, testId: 'library-nav-link' },
-    { href: '/dashboard/community', label: 'Community', icon: ForumIcon, testId: 'community-nav-link' },
+    { href: PROTECTED_ROUTES.LIBRARY, label: 'Library', icon: LibraryBooksIcon, testId: 'library-nav-link' },
+    { href: PROTECTED_ROUTES.SHARING, label: 'My Shares', icon: ShareIcon, testId: 'sharing-nav-link', badgeCount: shareCount },
+    { href: PROTECTED_ROUTES.COMMUNITY, label: 'Community', icon: ForumIcon, testId: 'community-nav-link' },
     ...(isAdmin ? [{ href: ROUTES.ADMIN.SYSTEM_WORKFLOWS, label: 'Admin', icon: AdminPanelSettingsIcon, testId: 'admin-nav-link', badge: 'System' }] : []),
     { href: ROUTES.SETTINGS, label: 'Settings', icon: SettingsIcon, testId: 'settings-nav-link' },
   ];
@@ -126,6 +130,11 @@ export function DashboardSidebar() {
                         {item.badge && (
                           <Badge variant="primary" testId="admin-badge">
                             {item.badge}
+                          </Badge>
+                        )}
+                        {item.badgeCount !== undefined && item.badgeCount > 0 && (
+                          <Badge variant="default" testId={`${item.testId}-badge`}>
+                            {item.badgeCount}
                           </Badge>
                         )}
                       </>

@@ -7,6 +7,8 @@ import { Pagination } from "@/shared/ui/molecules/Pagination";
 import { SearchBar } from "@/shared/ui/molecules/SearchBar";
 import { DiscoveryFilters } from "./DiscoveryFilters";
 import { PublicWorkflowWithMeta, PaginatedResult, WorkflowSortOption, WorkflowFilters } from "../types";
+import { useToast } from "@/shared/ui/providers/ToastProvider";
+import { noSearchResults, noFilterResults, emptyDiscovery } from "@/shared/ui/molecules/empty-state-presets";
 
 interface WorkflowsDiscoverySectionProps {
   isAuthenticated: boolean;
@@ -24,6 +26,7 @@ export function WorkflowsDiscoverySection({
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState<WorkflowSortOption>("most_used");
   const [filters, setFilters] = useState<WorkflowFilters>({});
+  const { showToast } = useToast();
 
   useEffect(() => {
     fetchWorkflows();
@@ -51,6 +54,28 @@ export function WorkflowsDiscoverySection({
     }
   };
 
+  const handleUndo = async (workflowId: string) => {
+    try {
+      const response = await fetch(`/api/v1/workflows/import/${workflowId}`, {
+        method: "DELETE",
+      });
+
+      if (response.ok) {
+        showToast({
+          message: "Removed from library",
+          variant: "info",
+        });
+        fetchWorkflows();
+      }
+    } catch (error) {
+      console.error("Error undoing import:", error);
+      showToast({
+        message: "Failed to undo",
+        variant: "error",
+      });
+    }
+  };
+
   const handleImport = async (workflowId: string) => {
     setImporting(workflowId);
     try {
@@ -59,11 +84,29 @@ export function WorkflowsDiscoverySection({
       });
 
       if (response.ok) {
+        showToast({
+          message: "Workflow added to library",
+          variant: "success",
+          action: {
+            label: "Undo",
+            onClick: () => handleUndo(workflowId),
+          },
+        });
         // Refresh data to update "In Library" status
         fetchWorkflows();
+      } else {
+        const errorData = await response.json();
+        showToast({
+          message: errorData.error || "Failed to add to library",
+          variant: "error",
+        });
       }
     } catch (error) {
       console.error("Error importing workflow:", error);
+      showToast({
+        message: "Failed to add to library",
+        variant: "error",
+      });
     } finally {
       setImporting(null);
     }
@@ -110,7 +153,13 @@ export function WorkflowsDiscoverySection({
           />
         )}
         loading={loading}
-        emptyMessage="No workflows found"
+        emptyStateProps={
+          search
+            ? noSearchResults(search, () => setSearch(""))
+            : Object.keys(filters).length > 0
+            ? noFilterResults(() => setFilters({}))
+            : emptyDiscovery("workflow")
+        }
       />
 
       {data && data.pagination.totalPages > 1 && (

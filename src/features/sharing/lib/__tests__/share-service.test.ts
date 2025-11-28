@@ -21,10 +21,11 @@ describe("share-service", () => {
   });
 
   describe("generateShareToken", () => {
-    it("should generate 32-character hex token", () => {
+    it("should generate base64url token (~11 characters)", () => {
       const token = generateShareToken();
-      expect(token).toHaveLength(32);
-      expect(token).toMatch(/^[0-9a-f]{32}$/);
+      expect(token.length).toBeGreaterThanOrEqual(10);
+      expect(token.length).toBeLessThanOrEqual(12);
+      expect(token).toMatch(/^[A-Za-z0-9_-]+$/);
     });
 
     it("should generate unique tokens on multiple calls", () => {
@@ -73,7 +74,7 @@ describe("share-service", () => {
       const result = await createShareLink("user-1", "WORKFLOW", "workflow-1");
 
       expect(result.success).toBe(true);
-      expect(result.shareToken).toMatch(/^[0-9a-f]{32}$/);
+      expect(result.shareToken).toMatch(/^[A-Za-z0-9_-]+$/);
       expect(result.message).toBe("Share link created successfully");
       expect(prismaMock.workflow.findFirst).toHaveBeenCalledWith({
         where: { id: "workflow-1", userId: "user-1" },
@@ -168,7 +169,7 @@ describe("share-service", () => {
           userId: "user-1",
           targetType: "MINI_PROMPT",
           targetId: "mini-prompt-1",
-          shareToken: expect.stringMatching(/^[0-9a-f]{32}$/),
+          shareToken: expect.stringMatching(/^[A-Za-z0-9_-]+$/),
           expiresAt: expiresAt,
         },
       });
@@ -308,7 +309,7 @@ describe("share-service", () => {
       const result = await regenerateShareToken("user-1", "share-1");
 
       expect(result.success).toBe(true);
-      expect(result.shareToken).toMatch(/^[0-9a-f]{32}$/);
+      expect(result.shareToken).toMatch(/^[A-Za-z0-9_-]+$/);
       expect(result.shareToken).not.toBe("old-token-123");
       expect(result.message).toBe("Share token regenerated successfully");
       expect(prismaMock.sharedLink.update).toHaveBeenCalled();

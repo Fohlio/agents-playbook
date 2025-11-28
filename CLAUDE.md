@@ -426,3 +426,13 @@ Use `WorkflowValidator` for:
 - `prisma/schema.prisma` - Database schema
 - `src/lib/db/client.ts` - Prisma client singleton
 - `scripts/build-embeddings.ts` - Generate OpenAI embeddings for search
+
+---
+
+## Active Task
+
+**Task:** sharing-improvements
+**Updated:** 2025-11-28T14:30:00Z
+**Phase:** Implementation (Complete) → Testing & Review
+
+→ **Context:** `.agents-playbook/sharing-improvements/memory-board.md`

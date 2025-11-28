@@ -4,10 +4,12 @@ import crypto from "crypto";
 
 /**
  * Generate a cryptographically secure share token
- * Returns a 32-character hexadecimal string
+ * Returns a base64url-encoded string (~11 characters for 8 bytes)
+ * Base64url is URL-safe (uses - and _ instead of + and /, no padding)
  */
 export function generateShareToken(): string {
-  return crypto.randomBytes(16).toString("hex");
+  const bytes = crypto.randomBytes(8);
+  return bytes.toString("base64url");
 }
 
 /**

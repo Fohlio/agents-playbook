@@ -10,6 +10,19 @@ jest.mock("@/lib/auth/auth", () => ({
 }));
 
 jest.mock("next/server", () => ({
+  NextRequest: class NextRequest {
+    method: string;
+    body: any;
+
+    constructor(url: string, init?: any) {
+      this.method = init?.method || 'GET';
+      this.body = init?.body;
+    }
+
+    async json() {
+      return JSON.parse(this.body);
+    }
+  },
   NextResponse: {
     json: (data: any, init?: any) => {
       const response = {
@@ -22,6 +35,7 @@ jest.mock("next/server", () => ({
 }));
 
 import { auth } from "@/lib/auth/auth";
+import { NextRequest } from "next/server";
 import { POST } from "../route";
 
 describe("POST /api/v1/share/create", () => {
@@ -47,7 +61,7 @@ describe("POST /api/v1/share/create", () => {
 
     prismaMock.workflow.findFirst.mockResolvedValue(mockWorkflow as any);
     prismaMock.sharedLink.findFirst.mockResolvedValue(null);
-    prismaMock.sharedLink.create.mockImplementation((args) => {
+    (prismaMock.sharedLink.create as jest.Mock).mockImplementation((args: any) => {
       return Promise.resolve({
         id: "share-1",
         userId: "user-123",
@@ -62,7 +76,7 @@ describe("POST /api/v1/share/create", () => {
       } as any);
     });
 
-    const request = new Request("http://localhost/api/v1/share/create", {
+    const request = new NextRequest("http://localhost/api/v1/share/create", {
       method: "POST",
       body: JSON.stringify({
         targetType: "WORKFLOW",
@@ -75,7 +89,7 @@ describe("POST /api/v1/share/create", () => {
 
     expect(response.status).toBe(200);
     expect(json.success).toBe(true);
-    expect(json.shareToken).toMatch(/^[0-9a-f]{32}$/);
+    expect(json.shareToken).toMatch(/^[A-Za-z0-9_-]+$/);
     expect(prismaMock.workflow.findFirst).toHaveBeenCalledWith({
       where: { id: "workflow-1", userId: "user-123" },
     });
@@ -93,7 +107,7 @@ describe("POST /api/v1/share/create", () => {
 
     prismaMock.miniPrompt.findFirst.mockResolvedValue(mockMiniPrompt as any);
     prismaMock.sharedLink.findFirst.mockResolvedValue(null);
-    prismaMock.sharedLink.create.mockImplementation((args) => {
+    (prismaMock.sharedLink.create as jest.Mock).mockImplementation((args: any) => {
       return Promise.resolve({
         id: "share-1",
         userId: "user-123",
@@ -108,7 +122,7 @@ describe("POST /api/v1/share/create", () => {
       } as any);
     });
 
-    const request = new Request("http://localhost/api/v1/share/create", {
+    const request = new NextRequest("http://localhost/api/v1/share/create", {
       method: "POST",
       body: JSON.stringify({
         targetType: "MINI_PROMPT",
@@ -156,7 +170,7 @@ describe("POST /api/v1/share/create", () => {
     prismaMock.workflow.findFirst.mockResolvedValue(mockWorkflow as any);
     prismaMock.sharedLink.findFirst.mockResolvedValue(existingShareLink as any);
 
-    const request = new Request("http://localhost/api/v1/share/create", {
+    const request = new NextRequest("http://localhost/api/v1/share/create", {
       method: "POST",
       body: JSON.stringify({
         targetType: "WORKFLOW",
@@ -177,7 +191,7 @@ describe("POST /api/v1/share/create", () => {
   it("returns 401 when not authenticated", async () => {
     (auth as jest.Mock).mockResolvedValue(null);
 
-    const request = new Request("http://localhost/api/v1/share/create", {
+    const request = new NextRequest("http://localhost/api/v1/share/create", {
       method: "POST",
       body: JSON.stringify({
         targetType: "WORKFLOW",
@@ -196,7 +210,7 @@ describe("POST /api/v1/share/create", () => {
   it("returns 400 when targetType is invalid", async () => {
     (auth as jest.Mock).mockResolvedValue(mockSession);
 
-    const request = new Request("http://localhost/api/v1/share/create", {
+    const request = new NextRequest("http://localhost/api/v1/share/create", {
       method: "POST",
       body: JSON.stringify({
         targetType: "INVALID_TYPE",
@@ -215,7 +229,7 @@ describe("POST /api/v1/share/create", () => {
   it("returns 400 when targetId is missing", async () => {
     (auth as jest.Mock).mockResolvedValue(mockSession);
 
-    const request = new Request("http://localhost/api/v1/share/create", {
+    const request = new NextRequest("http://localhost/api/v1/share/create", {
       method: "POST",
       body: JSON.stringify({
         targetType: "WORKFLOW",
@@ -234,7 +248,7 @@ describe("POST /api/v1/share/create", () => {
 
     prismaMock.workflow.findFirst.mockResolvedValue(null);
 
-    const request = new Request("http://localhost/api/v1/share/create", {
+    const request = new NextRequest("http://localhost/api/v1/share/create", {
       method: "POST",
       body: JSON.stringify({
         targetType: "WORKFLOW",
@@ -257,7 +271,7 @@ describe("POST /api/v1/share/create", () => {
     prismaMock.sharedLink.findFirst.mockResolvedValue(null);
     prismaMock.sharedLink.create.mockRejectedValue(new Error("Database error"));
 
-    const request = new Request("http://localhost/api/v1/share/create", {
+    const request = new NextRequest("http://localhost/api/v1/share/create", {
       method: "POST",
       body: JSON.stringify({
         targetType: "WORKFLOW",

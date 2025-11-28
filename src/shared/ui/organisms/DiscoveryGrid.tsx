@@ -1,12 +1,16 @@
 "use client";
 
 import { ReactNode } from "react";
+import { EmptyState, EmptyStateProps } from "@/shared/ui/molecules/EmptyState";
 
 interface DiscoveryGridProps<T> {
   items: T[];
   renderCard: (item: T) => ReactNode;
   loading?: boolean;
+  /** @deprecated Use emptyStateProps instead */
   emptyMessage?: string;
+  /** Props for EmptyState component when items is empty */
+  emptyStateProps?: EmptyStateProps;
 }
 
 export function DiscoveryGrid<T>({
@@ -14,6 +18,7 @@ export function DiscoveryGrid<T>({
   renderCard,
   loading,
   emptyMessage = "No items found",
+  emptyStateProps,
 }: DiscoveryGridProps<T>) {
   if (loading) {
     return (
@@ -30,6 +35,11 @@ export function DiscoveryGrid<T>({
   }
 
   if (items.length === 0) {
+    // Use EmptyState component if props provided, otherwise fallback to simple message
+    if (emptyStateProps) {
+      return <EmptyState {...emptyStateProps} />;
+    }
+    
     return (
       <div className="text-center py-12" data-testid="empty-state">
         <p className="text-gray-500">{emptyMessage}</p>

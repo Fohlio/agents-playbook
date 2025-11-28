@@ -2,7 +2,9 @@
 
 import { useState, useEffect } from "react";
 import { Card, Button, Badge } from "@/shared/ui/atoms";
-import { CopyButton } from "@/shared/ui/molecules";
+import { CopyButton, EmptyState } from "@/shared/ui/molecules";
+import { noSharedItems } from "@/shared/ui/molecules/empty-state-presets";
+import { useToast } from "@/shared/ui/providers/ToastProvider";
 import { TargetType } from "@prisma/client";
 
 interface SharedItem {
@@ -33,6 +35,7 @@ export function MySharedItemsSection() {
   const [items, setItems] = useState<SharedItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { showToast } = useToast();
 
   useEffect(() => {
     fetchSharedItems();
@@ -58,6 +61,14 @@ export function MySharedItemsSection() {
   };
 
   const toggleActive = async (itemId: string, currentStatus: boolean) => {
+    // Optimistic update
+    const previousItems = items;
+    setItems((prev) =>
+      prev.map((item) =>
+        item.id === itemId ? { ...item, isActive: !currentStatus } : item
+      )
+    );
+
     try {
       const response = await fetch(`/api/v1/share/${itemId}/toggle`, {
         method: "PATCH",
@@ -69,17 +80,57 @@ export function MySharedItemsSection() {
         throw new Error("Failed to toggle share link");
       }
 
-      // Refresh items
-      await fetchSharedItems();
+      showToast({
+        message: currentStatus ? "Share link disabled" : "Share link enabled",
+        variant: "success",
+      });
     } catch (err) {
-      alert(err instanceof Error ? err.message : "Failed to toggle share link");
+      // Revert on error
+      setItems(previousItems);
+      showToast({
+        message: err instanceof Error ? err.message : "Failed to toggle share link",
+        variant: "error",
+      });
     }
   };
 
-  const getShareUrl = (token: string, type: TargetType) => {
+  const deleteShare = async (itemId: string, itemName: string) => {
+    // Confirm before deleting
+    if (!confirm(`Are you sure you want to permanently delete the share link for "${itemName}"? This action cannot be undone.`)) {
+      return;
+    }
+
+    // Optimistic update - remove item immediately
+    const previousItems = items;
+    setItems((prev) => prev.filter((item) => item.id !== itemId));
+
+    try {
+      const response = await fetch(`/api/v1/share/${itemId}/delete`, {
+        method: "DELETE",
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || "Failed to delete share link");
+      }
+
+      showToast({
+        message: "Share link deleted",
+        variant: "success",
+      });
+    } catch (err) {
+      // Revert on error
+      setItems(previousItems);
+      showToast({
+        message: err instanceof Error ? err.message : "Failed to delete share link",
+        variant: "error",
+      });
+    }
+  };
+
+  const getShareUrl = (token: string) => {
     const baseUrl = window.location.origin;
-    const typeSlug = type === "WORKFLOW" ? "workflow" : "mini-prompt";
-    return `${baseUrl}/share/${typeSlug}/${token}`;
+    return `${baseUrl}/${token}`;
   };
 
   const formatDate = (dateString: string) => {
@@ -122,25 +173,7 @@ export function MySharedItemsSection() {
       </div>
 
       {items.length === 0 ? (
-        <div className="text-center py-8">
-          <svg
-            className="w-16 h-16 mx-auto text-gray-300 mb-4"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={1.5}
-              d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"
-            />
-          </svg>
-          <p className="text-gray-500 mb-2">No shared items yet</p>
-          <p className="text-sm text-gray-400">
-            Share workflows or mini-prompts to see them here
-          </p>
-        </div>
+        <EmptyState {...noSharedItems()} />
       ) : (
         <div className="space-y-4">
           {items.map((item) => (
@@ -196,12 +229,12 @@ export function MySharedItemsSection() {
               <div className="flex items-center gap-2 mb-3">
                 <input
                   type="text"
-                  value={getShareUrl(item.shareToken, item.targetType)}
+                  value={getShareUrl(item.shareToken)}
                   readOnly
                   className="flex-1 px-3 py-1.5 text-sm border border-gray-300 rounded-md bg-gray-50"
                 />
                 <CopyButton
-                  textToCopy={getShareUrl(item.shareToken, item.targetType)}
+                  textToCopy={getShareUrl(item.shareToken)}
                   size="sm"
                 />
               </div>
@@ -213,13 +246,22 @@ export function MySharedItemsSection() {
                     <> • Expires: {formatDate(item.expiresAt)}</>
                   )}
                 </div>
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  onClick={() => toggleActive(item.id, item.isActive)}
-                >
-                  {item.isActive ? "Disable" : "Enable"}
-                </Button>
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    onClick={() => toggleActive(item.id, item.isActive)}
+                  >
+                    {item.isActive ? "Disable" : "Enable"}
+                  </Button>
+                  <Button
+                    variant="danger"
+                    size="sm"
+                    onClick={() => deleteShare(item.id, item.targetName)}
+                  >
+                    Delete
+                  </Button>
+                </div>
               </div>
             </div>
           ))}

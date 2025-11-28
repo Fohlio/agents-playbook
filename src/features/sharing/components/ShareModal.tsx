@@ -205,8 +205,7 @@ export function ShareModal({
   const getShareUrl = () => {
     if (!shareToken) return "";
     const baseUrl = window.location.origin;
-    const type = targetType === "WORKFLOW" ? "workflow" : "mini-prompt";
-    return `${baseUrl}/share/${type}/${shareToken}`;
+    return `${baseUrl}/${shareToken}`;
   };
 
   return (

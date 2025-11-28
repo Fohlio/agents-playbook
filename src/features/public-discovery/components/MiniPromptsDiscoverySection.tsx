@@ -7,6 +7,8 @@ import { Pagination } from "@/shared/ui/molecules/Pagination";
 import { SearchBar } from "@/shared/ui/molecules/SearchBar";
 import { DiscoveryFilters } from "./DiscoveryFilters";
 import { PublicMiniPromptWithMeta, PaginatedResult, MiniPromptSortOption, MiniPromptFilters } from "../types";
+import { useToast } from "@/shared/ui/providers/ToastProvider";
+import { noSearchResults, noFilterResults, emptyDiscovery } from "@/shared/ui/molecules/empty-state-presets";
 
 interface MiniPromptsDiscoverySectionProps {
   isAuthenticated: boolean;
@@ -24,6 +26,7 @@ export function MiniPromptsDiscoverySection({
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState<MiniPromptSortOption>("most_used");
   const [filters, setFilters] = useState<MiniPromptFilters>({});
+  const { showToast } = useToast();
 
   useEffect(() => {
     fetchMiniPrompts();
@@ -51,6 +54,28 @@ export function MiniPromptsDiscoverySection({
     }
   };
 
+  const handleUndo = async (miniPromptId: string) => {
+    try {
+      const response = await fetch(`/api/v1/mini-prompts/import/${miniPromptId}`, {
+        method: "DELETE",
+      });
+
+      if (response.ok) {
+        showToast({
+          message: "Removed from library",
+          variant: "info",
+        });
+        fetchMiniPrompts();
+      }
+    } catch (error) {
+      console.error("Error undoing import:", error);
+      showToast({
+        message: "Failed to undo",
+        variant: "error",
+      });
+    }
+  };
+
   const handleImport = async (miniPromptId: string) => {
     setImporting(miniPromptId);
     try {
@@ -62,11 +87,29 @@ export function MiniPromptsDiscoverySection({
       );
 
       if (response.ok) {
+        showToast({
+          message: "Mini-prompt added to library",
+          variant: "success",
+          action: {
+            label: "Undo",
+            onClick: () => handleUndo(miniPromptId),
+          },
+        });
         // Refresh data to update "In Library" status
         fetchMiniPrompts();
+      } else {
+        const errorData = await response.json();
+        showToast({
+          message: errorData.error || "Failed to add to library",
+          variant: "error",
+        });
       }
     } catch (error) {
       console.error("Error importing mini-prompt:", error);
+      showToast({
+        message: "Failed to add to library",
+        variant: "error",
+      });
     } finally {
       setImporting(null);
     }
@@ -114,7 +157,13 @@ export function MiniPromptsDiscoverySection({
           />
         )}
         loading={loading}
-        emptyMessage="No mini-prompts found"
+        emptyStateProps={
+          search
+            ? noSearchResults(search, () => setSearch(""))
+            : Object.keys(filters).length > 0
+            ? noFilterResults(() => setFilters({}))
+            : emptyDiscovery("mini-prompt")
+        }
       />
 
       {data && data.pagination.totalPages > 1 && (
