@@ -21,12 +21,13 @@ describe('MiniPromptCard', () => {
     expect(screen.getByText('Test Mini-Prompt')).toBeInTheDocument();
   });
 
-  it('should display description with line-clamp-3', () => {
+  it('should display description with line-clamp', () => {
     render(<MiniPromptCard miniPrompt={mockMiniPrompt} actions={mockActions} />);
 
     const description = screen.getByText('This is a test mini-prompt description');
     expect(description).toBeInTheDocument();
-    expect(description).toHaveClass('line-clamp-3');
+    // Mobile: line-clamp-2, Desktop: sm:line-clamp-3
+    expect(description).toHaveClass('line-clamp-2');
   });
 
   it('should not render description when not provided', () => {
@@ -50,7 +51,7 @@ describe('MiniPromptCard', () => {
     expect(screen.getByText('Imported')).toBeInTheDocument();
   });
 
-  it('should display tags (max 3 + overflow indicator)', () => {
+  it('should display tags (max 2 + overflow indicator for mobile-first design)', () => {
     const miniPromptWithTags = {
       ...mockMiniPrompt,
       tags: [
@@ -66,8 +67,8 @@ describe('MiniPromptCard', () => {
 
     expect(screen.getByText('Tag 1')).toBeInTheDocument();
     expect(screen.getByText('Tag 2')).toBeInTheDocument();
-    expect(screen.getByText('Tag 3')).toBeInTheDocument();
-    expect(screen.getByText('+2')).toBeInTheDocument();
+    expect(screen.getByText('+3')).toBeInTheDocument();
+    expect(screen.queryByText('Tag 3')).not.toBeInTheDocument();
     expect(screen.queryByText('Tag 4')).not.toBeInTheDocument();
     expect(screen.queryByText('Tag 5')).not.toBeInTheDocument();
   });

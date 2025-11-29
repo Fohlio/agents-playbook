@@ -63,7 +63,7 @@ function SortableMiniPromptCard({
       {...attributes} 
       {...listeners}
       className={cn(
-        "relative group cursor-grab active:cursor-grabbing",
+        "relative group cursor-grab active:cursor-grabbing touch-manipulation",
         onClick && !isDragging && 'cursor-pointer'
       )}
       onClick={(e) => {
@@ -77,19 +77,19 @@ function SortableMiniPromptCard({
       <div>
         <Card
           className={cn(
-            'p-3 !bg-white border border-border-base hover:shadow-md hover:border-border-hover transition-all',
+            'p-2 sm:p-3 !bg-white border border-border-base hover:shadow-md hover:border-border-hover transition-all min-h-[44px]',
             isDragging && 'shadow-lg !border-accent-primary'
           )}
           testId={`mini-prompt-${stageMiniPrompt.miniPrompt.id}`}
         >
           <div className="flex items-center justify-between gap-2">
-            <h4 className="text-sm font-medium text-text-primary flex-1">
+            <h4 className="text-xs sm:text-sm font-medium text-text-primary flex-1 truncate">
               {stageMiniPrompt.miniPrompt.name}
             </h4>
           </div>
         </Card>
       </div>
-      <div className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition-opacity z-10">
+      <div className="absolute top-1 right-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity z-10">
         <Tooltip content="Remove this mini-prompt from the stage">
           <button
             onClick={(e) => {

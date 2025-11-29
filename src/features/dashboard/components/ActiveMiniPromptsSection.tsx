@@ -60,7 +60,8 @@ export function ActiveMiniPromptsSection({ miniPrompts }: ActiveMiniPromptsSecti
     description: string,
     content: string,
     visibility: 'PUBLIC' | 'PRIVATE',
-    tagIds: string[]
+    tagIds: string[],
+    newTagNames: string[]
   ) => {
     if (!editingMiniPromptId) return;
     
@@ -74,6 +75,7 @@ export function ActiveMiniPromptsSection({ miniPrompts }: ActiveMiniPromptsSecti
           content,
           visibility,
           tagIds,
+          newTagNames,
         }),
       });
       if (!response.ok) throw new Error('Failed to update mini-prompt');

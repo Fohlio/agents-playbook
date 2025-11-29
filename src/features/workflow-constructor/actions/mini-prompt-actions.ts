@@ -10,6 +10,8 @@ export interface CreateMiniPromptInput {
   description?: string;
   content: string;
   visibility: Visibility;
+  tagIds?: string[];
+  newTagNames?: string[];
 }
 
 export interface UpdateMiniPromptInput {
@@ -18,6 +20,8 @@ export interface UpdateMiniPromptInput {
   description?: string;
   content?: string;
   visibility?: Visibility;
+  tagIds?: string[];
+  newTagNames?: string[];
 }
 
 export async function createMiniPrompt(
@@ -37,6 +41,46 @@ export async function createMiniPrompt(
       visibility: input.visibility,
     },
   });
+
+  // Create new tags if provided
+  const createdTagIds: string[] = [];
+  if (input.newTagNames && input.newTagNames.length > 0) {
+    for (const tagName of input.newTagNames) {
+      // Check if tag already exists (case-insensitive)
+      const existingTag = await prisma.tag.findFirst({
+        where: { name: { equals: tagName, mode: 'insensitive' } },
+      });
+
+      if (existingTag) {
+        createdTagIds.push(existingTag.id);
+      } else {
+        const newTag = await prisma.tag.create({
+          data: {
+            name: tagName,
+            color: null,
+            isActive: true,
+            createdBy: session.user.id,
+          },
+        });
+        createdTagIds.push(newTag.id);
+      }
+    }
+  }
+
+  // Combine existing tag IDs with newly created tag IDs
+  const existingTagIds = (input.tagIds || []).filter(
+    (id: string) => !id.startsWith('temp-')
+  );
+  const allTagIds = [...existingTagIds, ...createdTagIds];
+
+  if (allTagIds.length > 0) {
+    await prisma.miniPromptTag.createMany({
+      data: allTagIds.map((tagId: string) => ({
+        miniPromptId: miniPrompt.id,
+        tagId
+      }))
+    });
+  }
 
   // Trigger embedding generation asynchronously
   triggerMiniPromptEmbedding(miniPrompt.id);
@@ -70,6 +114,54 @@ export async function updateMiniPrompt(
     throw new Error('Unauthorized - not the owner');
   }
 
+  // Handle tag updates if provided
+  if (input.tagIds !== undefined || input.newTagNames !== undefined) {
+    // Create new tags if provided
+    const createdTagIds: string[] = [];
+    if (input.newTagNames && input.newTagNames.length > 0) {
+      for (const tagName of input.newTagNames) {
+        // Check if tag already exists (case-insensitive)
+        const existingTag = await prisma.tag.findFirst({
+          where: { name: { equals: tagName, mode: 'insensitive' } },
+        });
+
+        if (existingTag) {
+          createdTagIds.push(existingTag.id);
+        } else {
+          const newTag = await prisma.tag.create({
+            data: {
+              name: tagName,
+              color: null,
+              isActive: true,
+              createdBy: session.user.id,
+            },
+          });
+          createdTagIds.push(newTag.id);
+        }
+      }
+    }
+
+    // Delete existing tag associations
+    await prisma.miniPromptTag.deleteMany({
+      where: { miniPromptId: input.id }
+    });
+
+    // Combine existing tag IDs with newly created tag IDs
+    const existingTagIds = (input.tagIds || []).filter(
+      (tagId: string) => !tagId.startsWith('temp-')
+    );
+    const allTagIds = [...existingTagIds, ...createdTagIds];
+
+    if (allTagIds.length > 0) {
+      await prisma.miniPromptTag.createMany({
+        data: allTagIds.map((tagId: string) => ({
+          miniPromptId: input.id,
+          tagId
+        }))
+      });
+    }
+  }
+
   const miniPrompt = await prisma.miniPrompt.update({
     where: { id: input.id },
     data: {
@@ -80,8 +172,8 @@ export async function updateMiniPrompt(
     },
   });
 
-  // Trigger embedding regeneration if description or content changed
-  if (input.description !== undefined || input.content !== undefined) {
+  // Trigger embedding regeneration if description, content, or tags changed
+  if (input.description !== undefined || input.content !== undefined || input.tagIds !== undefined || input.newTagNames !== undefined) {
     triggerMiniPromptEmbedding(miniPrompt.id);
   }
 

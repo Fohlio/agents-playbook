@@ -146,7 +146,7 @@ export function MiniPromptsSection() {
       <MiniPromptEditorModal
         isOpen={isCreating}
         onClose={() => setIsCreating(false)}
-        onSave={async (name, description, content, visibility, tagIds) => {
+        onSave={async (name, description, content, visibility, tagIds, newTagNames) => {
           // Create the mini-prompt
           await fetch('/api/mini-prompts', {
             method: 'POST',
@@ -157,6 +157,7 @@ export function MiniPromptsSection() {
               content,
               visibility,
               tagIds,
+              newTagNames,
             }),
           });
           setIsCreating(false);

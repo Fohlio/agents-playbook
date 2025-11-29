@@ -371,7 +371,8 @@ export function useWorkflowHandlers(options?: UseWorkflowHandlersOptions) {
       description: string,
       content: string,
       visibility: 'PUBLIC' | 'PRIVATE',
-      tagIds: string[]
+      tagIds: string[],
+      newTagNames: string[]
     ) => {
       if (!editingMiniPrompt || !setMiniPrompts || !onEditMiniPrompt || !onEditTagIds) return;
 
@@ -420,6 +421,7 @@ export function useWorkflowHandlers(options?: UseWorkflowHandlersOptions) {
               content,
               visibility,
               tagIds,
+              newTagNames,
             }),
           });
 
