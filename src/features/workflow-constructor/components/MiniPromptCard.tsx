@@ -36,7 +36,7 @@ export function MiniPromptCard({ miniPrompt, onClick }: MiniPromptCardProps) {
     <div
       ref={drag as unknown as React.Ref<HTMLDivElement>}
       className={cn(
-        'cursor-grab active:cursor-grabbing transition-opacity',
+        'cursor-grab active:cursor-grabbing transition-opacity touch-manipulation',
         isDragging && 'opacity-50',
         onClick && !isDragging && 'cursor-pointer'
       )}
@@ -44,13 +44,13 @@ export function MiniPromptCard({ miniPrompt, onClick }: MiniPromptCardProps) {
     >
       <Card
         className={cn(
-          'p-3 !bg-white border border-border-base hover:shadow-md hover:border-border-hover transition-all',
+          'p-2 sm:p-3 !bg-white border border-border-base hover:shadow-md hover:border-border-hover transition-all min-h-[44px]',
           isDragging && 'shadow-lg !border-accent-primary'
         )}
         testId={`mini-prompt-${miniPrompt.id}`}
       >
         <div className="flex items-center justify-between gap-2">
-          <h4 className="text-sm font-medium text-text-primary flex-1">
+          <h4 className="text-xs sm:text-sm font-medium text-text-primary flex-1 truncate">
             {miniPrompt.name}
           </h4>
         </div>

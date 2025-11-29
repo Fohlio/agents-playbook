@@ -203,11 +203,11 @@ export function MiniPromptDiscoveryCard({
         </div>
         <Card
           testId={`mini-prompt-card-${miniPrompt.id}`}
-          className="hover:shadow-lg transition-shadow h-full flex flex-col"
+          className="hover:shadow-lg transition-shadow h-full flex flex-col touch-manipulation"
         >
-          <div className="p-6 flex-1 flex flex-col">
-            <div className="flex items-start justify-between mb-3">
-              <h3 className="text-xl font-bold text-gray-900 hover:text-blue-600 transition-colors">
+          <div className="p-4 sm:p-6 flex-1 flex flex-col">
+            <div className="flex items-start justify-between gap-2 mb-2 sm:mb-3">
+              <h3 className="text-lg sm:text-xl font-bold text-gray-900 hover:text-blue-600 transition-colors line-clamp-2">
                 {miniPrompt.name}
               </h3>
               {localRating.average !== null && localRating.count > 0 && (
@@ -221,23 +221,23 @@ export function MiniPromptDiscoveryCard({
 
             <div className="flex-1">
               {miniPrompt.description ? (
-                <p className="text-sm text-gray-600 mb-4 line-clamp-3 leading-relaxed">
+                <p className="text-xs sm:text-sm text-gray-600 mb-3 sm:mb-4 line-clamp-2 sm:line-clamp-3 leading-relaxed">
                   {miniPrompt.description}
                 </p>
               ) : (
-                <p className="text-sm text-gray-400 italic mb-4 line-clamp-3 leading-relaxed">
+                <p className="text-xs sm:text-sm text-gray-400 italic mb-3 sm:mb-4 line-clamp-2 sm:line-clamp-3 leading-relaxed">
                   No description
                 </p>
               )}
             </div>
 
             {miniPrompt.tags && miniPrompt.tags.length > 0 && (
-              <div className="mb-3">
+              <div className="mb-2 sm:mb-3">
                 <TagBadgeList tags={miniPrompt.tags.map(mt => mt.tag)} />
               </div>
             )}
 
-            <div className="flex items-center gap-4 text-xs text-gray-500 mb-4 pb-4 border-b border-gray-100">
+            <div className="flex flex-wrap items-center gap-2 sm:gap-4 text-xs text-gray-500 mb-3 sm:mb-4 pb-3 sm:pb-4 border-b border-gray-100">
               <span className="flex items-center gap-1">
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
@@ -251,7 +251,7 @@ export function MiniPromptDiscoveryCard({
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                 </svg>
-                {miniPrompt._count.stageMiniPrompts} {miniPrompt._count.stageMiniPrompts === 1 ? 'workflow' : 'workflows'}
+                {miniPrompt._count.stageMiniPrompts} <span className="hidden sm:inline">{miniPrompt._count.stageMiniPrompts === 1 ? 'workflow' : 'workflows'}</span>
               </span>
               <span
                 className="flex items-center gap-1"
@@ -264,9 +264,10 @@ export function MiniPromptDiscoveryCard({
               </span>
             </div>
 
-            {/* Actions Row - single unified row for all mini-prompts */}
+            {/* Actions Row - mobile-friendly stacked layout */}
             {miniPrompt.isInUserLibrary && (
-              <div className="flex items-center justify-between gap-2">
+              <div className="space-y-3">
+                {/* Checkboxes row */}
                 <div className="flex items-center gap-4">
                   <Tooltip content="When active, this mini-prompt is available in MCP tools for AI assistants">
                     <label className="flex items-center gap-2 cursor-pointer" onClick={(e) => e.stopPropagation()}>
@@ -295,8 +296,9 @@ export function MiniPromptDiscoveryCard({
                     </Tooltip>
                   )}
                 </div>
-                {/* Action buttons */}
-                <div className="flex items-center gap-2">
+                
+                {/* Action buttons row */}
+                <div className="flex items-center justify-end gap-2 flex-wrap">
                   {/* Share button - for all mini-prompts */}
                   <ShareButton
                     targetType="MINI_PROMPT"
@@ -463,9 +465,10 @@ export function MiniPromptDiscoveryCard({
           description: miniPrompt.description || '',
           content: miniPrompt.content,
           visibility: miniPrompt.visibility as 'PUBLIC' | 'PRIVATE',
+          tagIds: miniPrompt.tags?.map(t => t.tag.id) ?? [],
         }}
         viewOnly={!isOwnMiniPrompt}
-        onSave={isOwnMiniPrompt ? async (name, description, content, visibility, tagIds) => {
+        onSave={isOwnMiniPrompt ? async (name, description, content, visibility, tagIds, newTagNames) => {
           await fetch(`/api/mini-prompts/${miniPrompt.id}`, {
             method: 'PATCH',
             headers: { 'Content-Type': 'application/json' },
@@ -475,6 +478,7 @@ export function MiniPromptDiscoveryCard({
               content,
               visibility,
               tagIds,
+              newTagNames,
             }),
           });
           setIsViewOpen(false);

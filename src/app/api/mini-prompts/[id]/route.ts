@@ -83,15 +83,48 @@ export async function PATCH(
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
-    // Update tags if provided
-    if (body.tagIds !== undefined) {
+    // Handle tag updates if provided
+    if (body.tagIds !== undefined || body.newTagNames !== undefined) {
+      // Create new tags if provided
+      const createdTagIds: string[] = [];
+      if (body.newTagNames && body.newTagNames.length > 0) {
+        for (const tagName of body.newTagNames) {
+          // Check if tag already exists (case-insensitive)
+          const existingTag = await prisma.tag.findFirst({
+            where: { name: { equals: tagName, mode: 'insensitive' } },
+          });
+
+          if (existingTag) {
+            createdTagIds.push(existingTag.id);
+          } else {
+            const newTag = await prisma.tag.create({
+              data: {
+                name: tagName,
+                color: null,
+                isActive: true,
+                createdBy: session.user.id,
+              },
+            });
+            createdTagIds.push(newTag.id);
+          }
+        }
+      }
+
+      // Delete existing tag associations
       await prisma.miniPromptTag.deleteMany({
         where: { miniPromptId: id }
       });
 
-      if (body.tagIds.length > 0) {
+      // Combine existing tag IDs with newly created tag IDs
+      // Filter out any temporary IDs that might have slipped through
+      const existingTagIds = (body.tagIds || []).filter(
+        (tagId: string) => !tagId.startsWith('temp-')
+      );
+      const allTagIds = [...existingTagIds, ...createdTagIds];
+
+      if (allTagIds.length > 0) {
         await prisma.miniPromptTag.createMany({
-          data: body.tagIds.map((tagId: string) => ({
+          data: allTagIds.map((tagId: string) => ({
             miniPromptId: id,
             tagId
           }))
@@ -112,7 +145,7 @@ export async function PATCH(
     });
 
     // Trigger embedding regeneration if name, description, content, or tags changed
-    if (body.name !== undefined || body.description !== undefined || body.content !== undefined || body.tagIds !== undefined) {
+    if (body.name !== undefined || body.description !== undefined || body.content !== undefined || body.tagIds !== undefined || body.newTagNames !== undefined) {
       triggerMiniPromptEmbedding(id);
     }
 

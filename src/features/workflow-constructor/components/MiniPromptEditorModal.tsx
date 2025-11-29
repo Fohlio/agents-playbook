@@ -1,15 +1,15 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Button, Input, Textarea, FormField, Radio } from '@/shared/ui/atoms';
 import { Modal } from '@/shared/ui/atoms/Modal';
-import { TagMultiSelect, CopyButton } from '@/shared/ui/molecules';
+import { TagMultiSelect, CopyButton, type Tag } from '@/shared/ui/molecules';
 import { MarkdownContent } from '@/shared/ui/atoms/MarkdownContent';
 
 interface MiniPromptEditorModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave?: (name: string, description: string, content: string, visibility: 'PUBLIC' | 'PRIVATE', tagIds: string[]) => Promise<void>;
+  onSave?: (name: string, description: string, content: string, visibility: 'PUBLIC' | 'PRIVATE', tagIds: string[], newTagNames: string[]) => Promise<void>;
   initialData?: {
     name: string;
     description?: string;
@@ -34,8 +34,14 @@ export function MiniPromptEditorModal({
     initialData?.visibility ?? 'PRIVATE'
   );
   const [selectedTagIds, setSelectedTagIds] = useState<string[]>(initialData?.tagIds ?? []);
+  const [allTags, setAllTags] = useState<Tag[]>([]);
   const [showPreview, setShowPreview] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+
+  // Track tags from TagMultiSelect to know which are temporary
+  const handleTagsChanged = useCallback((tags: Tag[]) => {
+    setAllTags(tags);
+  }, []);
 
   // Update state when initialData changes (for edit mode)
   useEffect(() => {
@@ -60,12 +66,28 @@ export function MiniPromptEditorModal({
 
     setIsSaving(true);
     try {
-      await onSave(name.trim(), description.trim(), content.trim(), visibility, selectedTagIds);
+      // Separate existing tags from temporary (new) tags
+      const existingTagIds: string[] = [];
+      const newTagNames: string[] = [];
+
+      for (const tagId of selectedTagIds) {
+        const tag = allTags.find(t => t.id === tagId);
+        if (tag?.isTemporary) {
+          // This is a new tag that needs to be created
+          newTagNames.push(tag.name);
+        } else {
+          // This is an existing tag
+          existingTagIds.push(tagId);
+        }
+      }
+
+      await onSave(name.trim(), description.trim(), content.trim(), visibility, existingTagIds, newTagNames);
       setName('');
       setDescription('');
       setContent('');
       setVisibility('PRIVATE');
       setSelectedTagIds([]);
+      setAllTags([]);
       setShowPreview(false);
       onClose();
     } catch (error) {
@@ -202,6 +224,7 @@ export function MiniPromptEditorModal({
                 <TagMultiSelect
                   selectedTagIds={selectedTagIds}
                   onChange={setSelectedTagIds}
+                  onTagsChanged={handleTagsChanged}
                 />
               </FormField>
             </>

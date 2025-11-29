@@ -32,6 +32,7 @@ export function MiniPromptLibrary({
   const [internalSelection, setInternalSelection] = useState<string[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingMiniPrompt, setEditingMiniPrompt] = useState<MiniPrompt | null>(null);
+  const [editingTagIds, setEditingTagIds] = useState<string[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
 
   // Sync viewingMiniPromptId with editingMiniPrompt - when a mini-prompt is opened for editing, set viewingMiniPromptId
@@ -73,9 +74,11 @@ export function MiniPromptLibrary({
     name: string,
     description: string,
     content: string,
-    visibility: 'PUBLIC' | 'PRIVATE'
+    visibility: 'PUBLIC' | 'PRIVATE',
+    tagIds: string[],
+    newTagNames: string[]
   ) => {
-    const newMiniPrompt = await createMiniPrompt({ name, description, content, visibility });
+    const newMiniPrompt = await createMiniPrompt({ name, description, content, visibility, tagIds, newTagNames });
     onMiniPromptCreated?.(newMiniPrompt);
   };
 
@@ -83,7 +86,9 @@ export function MiniPromptLibrary({
     name: string,
     description: string,
     content: string,
-    visibility: 'PUBLIC' | 'PRIVATE'
+    visibility: 'PUBLIC' | 'PRIVATE',
+    tagIds: string[],
+    newTagNames: string[]
   ) => {
     if (!editingMiniPrompt) return;
 
@@ -110,6 +115,8 @@ export function MiniPromptLibrary({
         description,
         content,
         visibility,
+        tagIds,
+        newTagNames,
       });
       onMiniPromptUpdated?.(updated);
       setEditingMiniPrompt(null);
@@ -119,6 +126,32 @@ export function MiniPromptLibrary({
   const handleCloseModal = () => {
     setIsModalOpen(false);
     setEditingMiniPrompt(null);
+    setEditingTagIds([]);
+  };
+
+  // Fetch tags when editing a saved mini-prompt
+  const handleEditMiniPrompt = async (miniPrompt: MiniPrompt) => {
+    // Check if this is a temp mini-prompt (not saved to database yet)
+    const isTempMiniPrompt = miniPrompt.id.startsWith('temp-');
+    
+    if (!isTempMiniPrompt) {
+      // Fetch tags from API for saved mini-prompts
+      try {
+        const response = await fetch(`/api/mini-prompts/${miniPrompt.id}`);
+        if (response.ok) {
+          const data = await response.json();
+          setEditingTagIds(data.tagIds || []);
+        }
+      } catch (error) {
+        console.error('Failed to fetch mini-prompt tags:', error);
+        setEditingTagIds([]);
+      }
+    } else {
+      setEditingTagIds([]);
+    }
+    
+    setEditingMiniPrompt(miniPrompt);
+    setIsModalOpen(true);
   };
 
   // Filter mini-prompts based on search query
@@ -222,8 +255,7 @@ export function MiniPromptLibrary({
                       if (setViewingMiniPromptId) {
                         setViewingMiniPromptId(mp.id);
                       }
-                      setEditingMiniPrompt(mp);
-                      setIsModalOpen(true);
+                      handleEditMiniPrompt(mp);
                     }}
                   />
                   
@@ -236,8 +268,7 @@ export function MiniPromptLibrary({
                         if (setViewingMiniPromptId) {
                           setViewingMiniPromptId(miniPrompt.id);
                         }
-                        setEditingMiniPrompt(miniPrompt);
-                        setIsModalOpen(true);
+                        handleEditMiniPrompt(miniPrompt);
                       }}
                       className="bg-blue-500 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-blue-600"
                       aria-label={`Edit ${miniPrompt.name}`}
@@ -273,6 +304,7 @@ export function MiniPromptLibrary({
           description: editingMiniPrompt.description || '',
           content: editingMiniPrompt.content,
           visibility: editingMiniPrompt.visibility,
+          tagIds: editingTagIds,
         } : undefined}
       />
     </>

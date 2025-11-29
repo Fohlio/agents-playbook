@@ -155,9 +155,10 @@ export function WorkflowConstructor({ data }: WorkflowConstructorProps) {
     description: string,
     content: string,
     visibility: 'PUBLIC' | 'PRIVATE',
-    tagIds: string[]
+    tagIds: string[],
+    newTagNames: string[]
   ) => {
-    await handleUpdateMiniPrompt(editingMiniPrompt, name, description, content, visibility, tagIds);
+    await handleUpdateMiniPrompt(editingMiniPrompt, name, description, content, visibility, tagIds, newTagNames);
   };
 
   // Get AI integration

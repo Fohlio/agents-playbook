@@ -32,6 +32,11 @@ export async function GET(request: Request) {
           email: true,
         },
       },
+      tags: {
+        include: {
+          tag: true,
+        },
+      },
     },
   });
 
@@ -46,6 +51,11 @@ export async function GET(request: Request) {
               id: true,
               username: true,
               email: true,
+            },
+          },
+          tags: {
+            include: {
+              tag: true,
             },
           },
         },
@@ -70,6 +80,11 @@ export async function GET(request: Request) {
               id: true,
               username: true,
               email: true,
+            },
+          },
+          tags: {
+            include: {
+              tag: true,
             },
           },
         },
@@ -210,17 +225,61 @@ export async function POST(request: Request) {
     },
   });
 
-  if (body.tagIds && body.tagIds.length > 0) {
+  // Create new tags if provided
+  const createdTagIds: string[] = [];
+  if (body.newTagNames && body.newTagNames.length > 0) {
+    for (const tagName of body.newTagNames) {
+      // Check if tag already exists (case-insensitive)
+      const existingTag = await prisma.tag.findFirst({
+        where: { name: { equals: tagName, mode: 'insensitive' } },
+      });
+
+      if (existingTag) {
+        createdTagIds.push(existingTag.id);
+      } else {
+        const newTag = await prisma.tag.create({
+          data: {
+            name: tagName,
+            color: null,
+            isActive: true,
+            createdBy: session.user.id,
+          },
+        });
+        createdTagIds.push(newTag.id);
+      }
+    }
+  }
+
+  // Combine existing tag IDs with newly created tag IDs
+  // Filter out any temporary IDs that might have slipped through
+  const existingTagIds = (body.tagIds || []).filter(
+    (id: string) => !id.startsWith('temp-')
+  );
+  const allTagIds = [...existingTagIds, ...createdTagIds];
+
+  if (allTagIds.length > 0) {
     await prisma.miniPromptTag.createMany({
-      data: body.tagIds.map((tagId: string) => ({
+      data: allTagIds.map((tagId: string) => ({
         miniPromptId: miniPrompt.id,
         tagId
       }))
     });
   }
 
+  // Fetch the mini-prompt with tags to return
+  const miniPromptWithTags = await prisma.miniPrompt.findUnique({
+    where: { id: miniPrompt.id },
+    include: {
+      tags: {
+        include: {
+          tag: true
+        }
+      }
+    }
+  });
+
   // Trigger embedding generation asynchronously
   triggerMiniPromptEmbedding(miniPrompt.id);
 
-  return NextResponse.json(miniPrompt);
+  return NextResponse.json(miniPromptWithTags);
 }
