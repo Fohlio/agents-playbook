@@ -169,7 +169,7 @@ export default function RecentItemsSection() {
                   name: miniPrompt.name,
                   description: miniPrompt.description || null,
                   user: { username: miniPrompt.user.username },
-                  workflowsCount: miniPrompt._count.workflows || 0,
+                  workflowsCount: miniPrompt._count.stageMiniPrompts || 0,
                   referencesCount: miniPrompt._count.references,
                   tags: miniPrompt.tags?.map((t) => t.tag) || [],
                   models: miniPrompt.models?.map((m) => ({

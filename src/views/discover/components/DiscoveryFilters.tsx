@@ -36,21 +36,6 @@ export function DiscoveryFilters({
     );
   };
 
-  const filterCount = () => {
-    let count = 0;
-    const f = currentFilters;
-    if (f.rating) count++;
-    if (f.minUsage) count++;
-    if (f.tagIds && f.tagIds.length > 0) count += f.tagIds.length;
-    if (f.modelIds && f.modelIds.length > 0) count += f.modelIds.length;
-    if (type === "workflow") {
-      const wf = f as WorkflowFilters;
-      if (wf.complexity) count++;
-      if (wf.phaseCount) count++;
-    }
-    return count;
-  };
-
   const handleRemoveFilter = (key: string, value?: string) => {
     const newFilters = { ...currentFilters };
 
