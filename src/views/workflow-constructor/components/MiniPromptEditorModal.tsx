@@ -231,22 +231,25 @@ export function MiniPromptEditorModal({
                   />
                 </div>
               </FormField>
-              <FormField label="Tags" htmlFor="mini-prompt-tags">
-                <TagMultiSelect
-                  selectedTagIds={selectedTagIds}
-                  onChange={setSelectedTagIds}
-                  onTagsChanged={handleTagsChanged}
-                />
-              </FormField>
-              <FormField label="AI Models" htmlFor="mini-prompt-models">
-                <ModelMultiSelect
-                  models={models}
-                  selectedModelIds={selectedModelIds}
-                  onChange={setSelectedModelIds}
-                  loading={modelsLoading}
-                  placeholder="Select AI models this prompt works with..."
-                />
-              </FormField>
+              {/* Tags and Models in same row */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <FormField label="Tags" htmlFor="mini-prompt-tags">
+                  <TagMultiSelect
+                    selectedTagIds={selectedTagIds}
+                    onChange={setSelectedTagIds}
+                    onTagsChanged={handleTagsChanged}
+                  />
+                </FormField>
+                <FormField label="AI Models" htmlFor="mini-prompt-models">
+                  <ModelMultiSelect
+                    models={models}
+                    selectedModelIds={selectedModelIds}
+                    onChange={setSelectedModelIds}
+                    loading={modelsLoading}
+                    placeholder="Select AI models..."
+                  />
+                </FormField>
+              </div>
             </>
           )}
         </div>

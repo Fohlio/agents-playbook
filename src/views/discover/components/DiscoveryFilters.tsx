@@ -58,7 +58,7 @@ export function DiscoveryFilters({
       newFilters.tagIds = newFilters.tagIds?.filter((id) => id !== value);
       if (newFilters.tagIds?.length === 0) {
         newFilters.tagIds = undefined;
-      }
+    }
     } else if (key === "modelIds" && value) {
       newFilters.modelIds = newFilters.modelIds?.filter((id) => id !== value);
       if (newFilters.modelIds?.length === 0) {
@@ -87,22 +87,22 @@ export function DiscoveryFilters({
       <div className="flex flex-col sm:flex-row gap-3 mb-4">
         {/* Sort Dropdown */}
         <div className="flex-1 max-w-xs">
-          <Tooltip content="Order results by usage frequency, rating, recency, or popularity">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Sort By
-            </label>
-          </Tooltip>
-          <select
-            value={currentSort}
-            onChange={(e) => onSortChange(e.target.value as WorkflowSortOption | MiniPromptSortOption)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md bg-white text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-          >
-            <option value="most_used">Most Used (default)</option>
-            <option value="highest_rated">Highest Rated</option>
-            <option value="recent">Most Recent</option>
-            <option value="popular">Popular</option>
-          </select>
-        </div>
+        <Tooltip content="Order results by usage frequency, rating, recency, or popularity">
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Sort By
+          </label>
+        </Tooltip>
+        <select
+          value={currentSort}
+          onChange={(e) => onSortChange(e.target.value as WorkflowSortOption | MiniPromptSortOption)}
+          className="w-full px-3 py-2 border border-gray-300 rounded-md bg-white text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+        >
+          <option value="most_used">Most Used (default)</option>
+          <option value="highest_rated">Highest Rated</option>
+          <option value="recent">Most Recent</option>
+          <option value="popular">Popular</option>
+        </select>
+      </div>
 
         {/* Filters Button */}
         <div className="flex items-end">
@@ -115,9 +115,9 @@ export function DiscoveryFilters({
               <Filter className="w-4 h-4" />
               Filters
             </Button>
-          </Tooltip>
-        </div>
-          
+        </Tooltip>
+      </div>
+
         {/* Applied Filters Pills - same row, next to button, vertically centered with button */}
         {hasFilters() && (
           <div className="flex items-center self-end mb-1.5">
@@ -130,7 +130,7 @@ export function DiscoveryFilters({
             />
           </div>
         )}
-      </div>
+          </div>
 
       {/* Filters Modal */}
       <FiltersModal

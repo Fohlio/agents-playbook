@@ -35,7 +35,7 @@ async function seedModels() {
 
 async function main() {
   console.log('🌱 Starting database seed...');
-  
+
   // Seed predefined AI models
   await seedModels();
 }
