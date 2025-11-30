@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/lib/auth/auth";
-import { updateUsernameSchema } from "@/lib/validators/auth";
-import { updateUser } from "@/lib/db/queries/users";
+import { auth } from "@/server/auth/auth";
+import { updateUsernameSchema } from "@/shared/lib/validators/auth";
+import { updateUser } from "@/server/db/queries/users";
 
 // Use Node.js runtime for database operations
 export const runtime = 'nodejs';

@@ -1,4 +1,4 @@
-import { prismaMock } from "@/lib/db/__mocks__/client";
+import { prismaMock } from "@/server/db/__mocks__/client";
 import { generateMiniPromptEmbedding, triggerMiniPromptEmbedding } from "../embedding-service";
 
 // Mock OpenAI
@@ -22,7 +22,7 @@ beforeAll(async () => {
   mockCreateFn = instance.embeddings.create as jest.Mock;
 });
 
-jest.mock("@/lib/db/client", () => ({
+jest.mock("@/server/db/client", () => ({
   prisma: prismaMock,
 }));
 

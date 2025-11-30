@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { auth } from "@/lib/auth/auth";
+import { auth } from "@/server/auth/auth";
 import { ROUTES } from "@/shared/routes";
 import {
   getDashboardStats,
@@ -9,7 +9,7 @@ import {
   ActiveWorkflowsSection,
   ActiveMiniPromptsSection,
   QuickActions,
-} from "@/features/dashboard";
+} from "@/views/dashboard";
 
 /**
  * Dashboard Page

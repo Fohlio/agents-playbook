@@ -1,9 +1,9 @@
 import { describe, it, expect, beforeEach } from '@jest/globals';
-import { ExecutionPlanBuilder } from '@/lib/mcp-tools-db/execution-plan-builder';
-import { prisma } from '@/lib/db/client';
+import { ExecutionPlanBuilder } from '@/server/mcp-tools-db/execution-plan-builder';
+import { prisma } from '@/server/db/client';
 
 // Mock Prisma
-jest.mock('@/lib/db/client', () => ({
+jest.mock('@/server/db/client', () => ({
   prisma: {
     workflow: {
       findUnique: jest.fn()

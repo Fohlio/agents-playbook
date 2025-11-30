@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/lib/auth/auth";
-import { getPublicWorkflows } from "@/features/public-discovery/lib/discovery-service";
-import type { WorkflowSortOption } from "@/features/public-discovery/types";
+import { auth } from "@/server/auth/auth";
+import { getPublicWorkflows } from "@/views/discover/lib/discovery-service";
+import type { WorkflowSortOption } from "@/views/discover/types";
 
 export const runtime = "nodejs";
 

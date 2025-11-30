@@ -1,9 +1,9 @@
 import { notFound } from "next/navigation";
-import { auth } from "@/lib/auth/auth";
-import { prisma } from "@/lib/db/client";
-import { getMessages } from "@/features/community/actions/message-actions";
-import { TopicHeader } from "@/features/community/components/TopicHeader";
-import { MessageList } from "@/features/community/components/MessageList";
+import { auth } from "@/server/auth/auth";
+import { prisma } from "@/server/db/client";
+import { getMessages } from "@/views/community/actions/message-actions";
+import { TopicHeader } from "@/views/community/components/TopicHeader";
+import { MessageList } from "@/views/community/components/MessageList";
 
 export default async function TopicPage({
   params,

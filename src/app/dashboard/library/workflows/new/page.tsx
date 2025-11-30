@@ -1,9 +1,9 @@
 import { redirect } from 'next/navigation';
-import { auth } from '@/lib/auth/auth';
-import { prisma } from '@/lib/db/client';
+import { auth } from '@/server/auth/auth';
+import { prisma } from '@/server/db/client';
 import { ROUTES } from '@/shared/routes';
-import { WorkflowConstructorWrapper } from '@/features/workflow-constructor/components/WorkflowConstructorWrapper';
-import { getAllAvailableMiniPrompts } from '@/features/workflow-constructor/actions/workflow-actions';
+import { WorkflowConstructorWrapper } from '@/views/workflow-constructor/components/WorkflowConstructorWrapper';
+import { getAllAvailableMiniPrompts } from '@/views/workflow-constructor/actions/workflow-actions';
 
 export default async function NewWorkflowPage() {
   console.log('[NewWorkflowPage] Starting page render');

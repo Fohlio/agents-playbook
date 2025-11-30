@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { auth } from "@/lib/auth/auth";
+import { auth } from "@/server/auth/auth";
 import { getUserSharedItems } from "@/features/sharing/lib/share-service";
 
 export const runtime = "nodejs";

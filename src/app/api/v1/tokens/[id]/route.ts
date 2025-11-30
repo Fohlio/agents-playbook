@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/lib/auth/auth";
-import { prisma } from "@/lib/db/client";
+import { auth } from "@/server/auth/auth";
+import { prisma } from "@/server/db/client";
 
 // Use Node.js runtime for database operations
 export const runtime = 'nodejs';

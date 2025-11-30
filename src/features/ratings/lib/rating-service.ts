@@ -1,4 +1,4 @@
-import { prisma } from "@/lib/db/client";
+import { prisma } from "@/server/db/client";
 import { TargetType } from "@prisma/client";
 
 export interface CreateRatingParams {

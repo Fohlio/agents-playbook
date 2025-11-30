@@ -1,5 +1,5 @@
 import NextAuth from "next-auth";
-import { middlewareAuthConfig } from "@/lib/auth/middleware-config";
+import { middlewareAuthConfig } from "@/server/auth/middleware-config";
 import { ROUTES } from "@/shared/routes";
 
 /**

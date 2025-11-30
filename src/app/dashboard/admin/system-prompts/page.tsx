@@ -1,5 +1,5 @@
 import { redirect } from 'next/navigation';
-import { auth } from '@/lib/auth/auth';
+import { auth } from '@/server/auth/auth';
 import { SystemPromptsManager } from './_components/SystemPromptsManager';
 
 export const metadata = {

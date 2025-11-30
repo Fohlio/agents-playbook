@@ -27,11 +27,11 @@ describe("NextAuth Configuration", () => {
     }));
 
     // Mock dependencies
-    jest.mock("@/lib/db/queries/users");
-    jest.mock("@/lib/auth/password");
+    jest.mock("@/server/db/queries/users");
+    jest.mock("@/server/auth/password");
 
     // Import after mocks are set up
-    const configModule = await import("@/lib/auth/config");
+    const configModule = await import("@/server/auth/config");
     authOptions = configModule.authConfig;
   });
 

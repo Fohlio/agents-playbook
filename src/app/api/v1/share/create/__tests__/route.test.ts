@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { prismaMock } from "@/lib/db/__mocks__/client";
+import { prismaMock } from "@/server/db/__mocks__/client";
 
-jest.mock("@/lib/db/client", () => ({
+jest.mock("@/server/db/client", () => ({
   prisma: prismaMock,
 }));
 
-jest.mock("@/lib/auth/auth", () => ({
+jest.mock("@/server/auth/auth", () => ({
   auth: jest.fn(),
 }));
 
@@ -34,7 +34,7 @@ jest.mock("next/server", () => ({
   },
 }));
 
-import { auth } from "@/lib/auth/auth";
+import { auth } from "@/server/auth/auth";
 import { NextRequest } from "next/server";
 import { POST } from "../route";
 

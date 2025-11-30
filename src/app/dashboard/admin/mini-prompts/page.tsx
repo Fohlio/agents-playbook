@@ -10,7 +10,7 @@ import Toggle from '@/shared/ui/atoms/Toggle';
 import Link from 'next/link';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { MiniPromptEditorModal } from '@/features/workflow-constructor/components/MiniPromptEditorModal';
+import { MiniPromptEditorModal } from '@/views/workflow-constructor/components/MiniPromptEditorModal';
 
 interface SystemMiniPrompt {
   id: string;

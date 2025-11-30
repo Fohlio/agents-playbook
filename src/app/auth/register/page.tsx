@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { signIn } from "next-auth/react";
-import { registerSchema, type RegisterInput } from "@/lib/validators/auth";
+import { registerSchema, type RegisterInput } from "@/shared/lib/validators/auth";
 import { Input, Button, FormField, Alert, Link } from "@/shared/ui/atoms";
 import { ROUTES } from "@/shared/routes";
 

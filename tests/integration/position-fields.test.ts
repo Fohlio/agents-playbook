@@ -2,7 +2,7 @@
  * @jest-environment node
  */
 import { describe, test, expect, beforeAll, afterAll } from '@jest/globals';
-import { prisma } from '../../src/lib/db/client';
+import { prisma } from '../../src/server/db/client';
 
 // Test configuration
 const TEST_TIMEOUT = 10000;

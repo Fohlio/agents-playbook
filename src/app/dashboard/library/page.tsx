@@ -2,8 +2,8 @@
 
 import { useSearchParams } from 'next/navigation';
 import { Tabs } from '@/shared/ui/molecules/Tabs';
-import { WorkflowsSection } from '@/features/library/components/WorkflowsSection';
-import { MiniPromptsSection } from '@/features/library/components/MiniPromptsSection';
+import { WorkflowsSection } from '@/views/library/components/WorkflowsSection';
+import { MiniPromptsSection } from '@/views/library/components/MiniPromptsSection';
 
 export default function LibraryPage() {
   const searchParams = useSearchParams();

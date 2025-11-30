@@ -1,9 +1,9 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { useAIChat } from '@/hooks/useAIChat';
-import { useAIChatSessions } from '@/hooks/useAIChatSessions';
-import { useLoadChatSession } from '@/hooks/useLoadChatSession';
+import { useAIChat } from '@/features/ai-assistant/hooks/useAIChat';
+import { useAIChatSessions } from '@/features/ai-assistant/hooks/useAIChatSessions';
+import { useLoadChatSession } from '@/features/ai-assistant/hooks/useLoadChatSession';
 import { AIChatMode, WorkflowContext, AIToolResult } from '@/types/ai-chat';
 import { X, Send, Sparkles, AlertCircle, Loader2, History, Clock } from 'lucide-react';
 import { BetaBadge, Badge } from '@/shared/ui/atoms';

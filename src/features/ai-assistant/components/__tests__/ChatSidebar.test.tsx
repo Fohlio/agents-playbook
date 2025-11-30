@@ -16,15 +16,15 @@ const mockUseAIChat = jest.fn();
 const mockUseAIChatSessions = jest.fn();
 const mockUseLoadChatSession = jest.fn();
 
-jest.mock('@/hooks/useAIChat', () => ({
+jest.mock('@/features/ai-assistant/hooks/useAIChat', () => ({
   useAIChat: (props: unknown) => mockUseAIChat(props),
 }));
 
-jest.mock('@/hooks/useAIChatSessions', () => ({
+jest.mock('@/features/ai-assistant/hooks/useAIChatSessions', () => ({
   useAIChatSessions: (props: unknown) => mockUseAIChatSessions(props),
 }));
 
-jest.mock('@/hooks/useLoadChatSession', () => ({
+jest.mock('@/features/ai-assistant/hooks/useLoadChatSession', () => ({
   useLoadChatSession: () => mockUseLoadChatSession(),
 }));
 

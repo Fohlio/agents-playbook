@@ -9,7 +9,7 @@
  * Run: npx tsx scripts/migrate-api-keys.ts
  */
 
-import { prisma } from '../src/lib/db/client';
+import { prisma } from '../src/server/db/client';
 
 async function migrateApiKeys() {
   try {

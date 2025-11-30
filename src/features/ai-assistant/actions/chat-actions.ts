@@ -6,9 +6,9 @@
  * Provides server-side functions for loading chat history and managing sessions.
  */
 
-import { auth } from '@/lib/auth/auth';
-import { prisma } from '@/lib/db/client';
-import { MessagePersistenceService } from '@/lib/ai-chat/message-persistence-service';
+import { auth } from '@/server/auth/auth';
+import { prisma } from '@/server/db/client';
+import { MessagePersistenceService } from '@/server/ai-chat/message-persistence-service';
 import type { ModelMessage } from 'ai';
 
 /**

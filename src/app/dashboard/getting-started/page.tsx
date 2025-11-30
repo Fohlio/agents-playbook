@@ -1,7 +1,7 @@
 import { redirect } from 'next/navigation';
-import { auth } from '@/lib/auth/auth';
+import { auth } from '@/server/auth/auth';
 import { ROUTES } from '@/shared/routes';
-import { GettingStartedWizard } from '@/features/getting-started';
+import { GettingStartedWizard } from '@/views/getting-started';
 
 /**
  * Getting Started Page

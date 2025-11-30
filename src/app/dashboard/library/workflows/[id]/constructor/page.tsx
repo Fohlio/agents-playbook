@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation';
-import { auth } from '@/lib/auth/auth';
-import { getWorkflowWithStages, getAllAvailableMiniPrompts } from '@/features/workflow-constructor/actions/workflow-actions';
-import { WorkflowConstructor } from '@/features/workflow-constructor/components/WorkflowConstructor';
+import { auth } from '@/server/auth/auth';
+import { getWorkflowWithStages, getAllAvailableMiniPrompts } from '@/views/workflow-constructor/actions/workflow-actions';
+import { WorkflowConstructor } from '@/views/workflow-constructor/components/WorkflowConstructor';
 
 interface PageProps {
   params: Promise<{ id: string }>;

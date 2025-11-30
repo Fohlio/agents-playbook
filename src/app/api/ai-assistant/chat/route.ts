@@ -1,9 +1,9 @@
 import { NextRequest } from 'next/server';
-import { auth } from '@/lib/auth/auth';
-import { prisma } from '@/lib/db/client';
-import { AgentPipeline } from '@/lib/ai-chat/pipeline/AgentPipeline';
-import type { AgentContext } from '@/lib/ai-chat/pipeline/types';
-import { decryptApiKey } from '@/lib/auth/openai-key';
+import { auth } from '@/server/auth/auth';
+import { prisma } from '@/server/db/client';
+import { AgentPipeline } from '@/server/ai-chat/pipeline/AgentPipeline';
+import type { AgentContext } from '@/server/ai-chat/pipeline/types';
+import { decryptApiKey } from '@/server/auth/openai-key';
 import { z } from 'zod';
 
 // Force Node.js runtime for database operations

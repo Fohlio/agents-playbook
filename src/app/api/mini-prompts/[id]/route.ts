@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
-import { auth } from '@/lib/auth/auth';
-import { prisma } from '@/lib/db/client';
+import { auth } from '@/server/auth/auth';
+import { prisma } from '@/server/db/client';
 import { triggerMiniPromptEmbedding } from '@/features/mini-prompts/lib/embedding-service';
 
 export async function GET(

@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { auth } from "@/lib/auth/auth";
+import { auth } from "@/server/auth/auth";
 import ProfileSection from "./ProfileSection";
 import PasswordSection from "./PasswordSection";
 import { ApiTokensSection } from "@/features/api-tokens";

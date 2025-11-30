@@ -1,7 +1,7 @@
-import { auth } from "@/lib/auth/auth";
-import { getTopics } from "@/features/community/actions/topic-actions";
-import { CreateTopicButton } from "@/features/community/components/CreateTopicButton";
-import { TopicList } from "@/features/community/components/TopicList";
+import { auth } from "@/server/auth/auth";
+import { getTopics } from "@/views/community/actions/topic-actions";
+import { CreateTopicButton } from "@/views/community/components/CreateTopicButton";
+import { TopicList } from "@/views/community/components/TopicList";
 
 export default async function CommunityPage({
   searchParams,

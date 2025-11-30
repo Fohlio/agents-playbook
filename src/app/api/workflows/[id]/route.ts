@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
-import { auth } from '@/lib/auth/auth';
-import { prisma } from '@/lib/db/client';
-import { userWorkflowEmbeddings } from '@/lib/embeddings/user-workflow-embeddings';
+import { auth } from '@/server/auth/auth';
+import { prisma } from '@/server/db/client';
+import { userWorkflowEmbeddings } from '@/server/embeddings/user-workflow-embeddings';
 
 export async function PATCH(
   request: Request,

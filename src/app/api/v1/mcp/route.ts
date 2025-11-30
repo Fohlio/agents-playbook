@@ -3,18 +3,18 @@ import { config } from 'dotenv';
 import { NextRequest } from 'next/server';
 import { z } from 'zod';
 // Import database services directly
-import { dbSemanticSearch } from '@/lib/workflows/db-semantic-search';
-import { unifiedWorkflowService } from '@/lib/workflows/unified-workflow-service';
-import { executionPlanBuilder } from '@/lib/mcp-tools-db/execution-plan-builder';
+import { dbSemanticSearch } from '@/server/workflows/db-semantic-search';
+import { unifiedWorkflowService } from '@/server/workflows/unified-workflow-service';
+import { executionPlanBuilder } from '@/server/mcp-tools-db/execution-plan-builder';
 // Import database-backed handlers for prompts (already using DB)
 import {
   getPromptsToolSchema,
   getPromptsHandler,
   getSelectedPromptToolSchema,
   getSelectedPromptHandler,
-} from '@/lib/mcp-tools';
+} from '@/server/mcp-tools';
 // Import auth helpers
-import { getUserId, extractUserIdFromRequest, userIdStorage } from '@/lib/mcp-tools-db/mcp-auth-helpers';
+import { getUserId, extractUserIdFromRequest, userIdStorage } from '@/server/mcp-tools-db/mcp-auth-helpers';
 // Load environment variables
 config();
 

@@ -1,12 +1,12 @@
 import { describe, it, expect, beforeEach } from '@jest/globals';
-import { selectWorkflowHandler } from '@/lib/mcp-tools-db/select-workflow';
-import { getNextStepHandler } from '@/lib/mcp-tools-db/get-next-step';
-import { prisma } from '@/lib/db/client';
-import { tokenAuth } from '@/lib/auth/token-auth';
-import { unifiedWorkflowService } from '@/lib/workflows/unified-workflow-service';
+import { selectWorkflowHandler } from '@/server/mcp-tools-db/select-workflow';
+import { getNextStepHandler } from '@/server/mcp-tools-db/get-next-step';
+import { prisma } from '@/server/db/client';
+import { tokenAuth } from '@/server/auth/token-auth';
+import { unifiedWorkflowService } from '@/server/workflows/unified-workflow-service';
 
 // Mock dependencies
-jest.mock('@/lib/db/client', () => ({
+jest.mock('@/server/db/client', () => ({
   prisma: {
     workflow: {
       findUnique: jest.fn(),
@@ -18,13 +18,13 @@ jest.mock('@/lib/db/client', () => ({
   }
 }));
 
-jest.mock('@/lib/auth/token-auth', () => ({
+jest.mock('@/server/auth/token-auth', () => ({
   tokenAuth: {
     validateToken: jest.fn()
   }
 }));
 
-jest.mock('@/lib/workflows/unified-workflow-service', () => ({
+jest.mock('@/server/workflows/unified-workflow-service', () => ({
   unifiedWorkflowService: {
     getWorkflowById: jest.fn()
   }

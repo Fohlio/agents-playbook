@@ -4,7 +4,7 @@ import {
   decryptApiKey,
   validateOpenAIKeyFormat,
   testOpenAIKey,
-} from '@/lib/auth/openai-key';
+} from '@/server/auth/openai-key';
 
 describe('OpenAI Key Encryption', () => {
   describe('encryptApiKey and decryptApiKey', () => {

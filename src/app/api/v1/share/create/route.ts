@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/lib/auth/auth";
+import { auth } from "@/server/auth/auth";
 import { createShareLink } from "@/features/sharing/lib/share-service";
 import { TargetType } from "@prisma/client";
 

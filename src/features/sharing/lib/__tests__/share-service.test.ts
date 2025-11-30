@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { prismaMock } from "@/lib/db/__mocks__/client";
+import { prismaMock } from "@/server/db/__mocks__/client";
 import {
   generateShareToken,
   createShareLink,
@@ -11,7 +11,7 @@ import {
 } from "../share-service";
 import { TargetType } from "@prisma/client";
 
-jest.mock("@/lib/db/client", () => ({
+jest.mock("@/server/db/client", () => ({
   prisma: prismaMock,
 }));
 

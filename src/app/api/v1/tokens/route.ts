@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/lib/auth/auth";
-import { createTokenSchema } from "@/lib/validators/auth";
-import { generateApiToken } from "@/lib/auth/tokens";
-import { prisma } from "@/lib/db/client";
+import { auth } from "@/server/auth/auth";
+import { createTokenSchema } from "@/shared/lib/validators/auth";
+import { generateApiToken } from "@/server/auth/tokens";
+import { prisma } from "@/server/db/client";
 
 // Use Node.js runtime for database operations
 export const runtime = 'nodejs';

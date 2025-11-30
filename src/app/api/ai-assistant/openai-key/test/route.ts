@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
-import { validateOpenAIKeyFormat, testOpenAIKey } from '@/lib/auth/openai-key';
+import { validateOpenAIKeyFormat, testOpenAIKey } from '@/server/auth/openai-key';
 
 /**
  * POST /api/ai-assistant/openai-key/test

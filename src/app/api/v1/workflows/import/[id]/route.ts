@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/lib/auth/auth";
-import { importWorkflow } from "@/features/public-discovery/lib/discovery-service";
-import { prisma } from "@/lib/db/client";
+import { auth } from "@/server/auth/auth";
+import { importWorkflow } from "@/views/discover/lib/discovery-service";
+import { prisma } from "@/server/db/client";
 
 export const runtime = "nodejs";
 

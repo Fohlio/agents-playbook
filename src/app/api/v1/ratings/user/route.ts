@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/lib/auth/auth";
+import { auth } from "@/server/auth/auth";
 import { getUserRating, canUserRate } from "@/features/ratings/lib/rating-service";
 import { TargetType } from "@prisma/client";
 

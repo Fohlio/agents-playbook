@@ -1,7 +1,7 @@
 "use client";
 
 import { Modal, Button, Badge } from "@/shared/ui/atoms";
-import { PublicWorkflowWithMeta } from "@/features/public-discovery/types";
+import { PublicWorkflowWithMeta } from "@/views/discover/types";
 import { MarkdownContent } from "@/shared/ui/atoms/MarkdownContent";
 import { useEffect, useState } from "react";
 

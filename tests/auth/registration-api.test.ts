@@ -7,12 +7,12 @@
 
 import { NextRequest } from "next/server";
 import { POST } from "@/app/api/auth/register/route";
-import { createUser } from "@/lib/db/queries/users";
-import { validatePasswordComplexity } from "@/lib/auth/password";
+import { createUser } from "@/server/db/queries/users";
+import { validatePasswordComplexity } from "@/server/auth/password";
 
 // Mock dependencies
-jest.mock("@/lib/db/queries/users");
-jest.mock("@/lib/auth/password");
+jest.mock("@/server/db/queries/users");
+jest.mock("@/server/auth/password");
 
 jest.mock('next/server', () => ({
   NextRequest: class NextRequest {

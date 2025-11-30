@@ -1,7 +1,7 @@
-import { auth } from "@/lib/auth/auth";
+import { auth } from "@/server/auth/auth";
 import { Tabs } from "@/shared/ui/molecules/Tabs";
-import { WorkflowsDiscoverySection } from "@/features/public-discovery/components/WorkflowsDiscoverySection";
-import { MiniPromptsDiscoverySection } from "@/features/public-discovery/components/MiniPromptsDiscoverySection";
+import { WorkflowsDiscoverySection } from "@/views/discover/components/WorkflowsDiscoverySection";
+import { MiniPromptsDiscoverySection } from "@/views/discover/components/MiniPromptsDiscoverySection";
 
 export default async function DiscoverPage() {
   const session = await auth();

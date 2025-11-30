@@ -1,8 +1,8 @@
 import { describe, it, expect } from '@jest/globals';
 import { render, screen } from '@testing-library/react';
 import * as RadixTooltip from '@radix-ui/react-tooltip';
-import { AutoPromptCard } from '@/features/workflow-constructor/components/AutoPromptCard';
-import type { AutoPromptMetadata } from '@/lib/types/workflow-constructor-types';
+import { AutoPromptCard } from '@/views/workflow-constructor/components/AutoPromptCard';
+import type { AutoPromptMetadata } from '@/shared/lib/types/workflow-constructor-types';
 
 // Helper function to wrap component with TooltipProvider
 function renderWithTooltip(ui: React.ReactElement) {

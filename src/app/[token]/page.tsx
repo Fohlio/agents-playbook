@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { auth } from "@/lib/auth/auth";
+import { auth } from "@/server/auth/auth";
 import { getSharedContent } from "@/features/sharing/lib/share-service";
 import { SharedWorkflowView } from "@/features/sharing/components/SharedWorkflowView";
 import { SharedMiniPromptView } from "@/features/sharing/components/SharedMiniPromptView";

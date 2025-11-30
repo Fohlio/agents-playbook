@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
-import { auth } from '@/lib/auth/auth';
-import { prisma } from '@/lib/db/client';
+import { auth } from '@/server/auth/auth';
+import { prisma } from '@/server/db/client';
 
 const createTagSchema = z.object({
   name: z.string().min(1).max(50).trim(),

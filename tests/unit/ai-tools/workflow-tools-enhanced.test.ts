@@ -1,5 +1,5 @@
 import { describe, it, expect } from '@jest/globals';
-import { workflowTools } from '@/lib/ai-tools/workflow-tools';
+import { workflowTools } from '@/server/ai-tools/workflow-tools';
 
 describe('Enhanced Workflow AI Tools', () => {
   describe('modifyStage - position-based identification', () => {

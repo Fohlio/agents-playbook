@@ -16,7 +16,7 @@ jest.mock('openai', () => {
 });
 
 // Mock dependencies
-jest.mock('@/lib/db/client', () => ({
+jest.mock('@/server/db/client', () => ({
   prisma: {
     workflow: {
       findMany: mockWorkflowFindMany,
@@ -30,7 +30,7 @@ jest.mock('@/lib/db/client', () => ({
   },
 }));
 
-import { DBSemanticSearch } from '@/lib/workflows/db-semantic-search';
+import { DBSemanticSearch } from '@/server/workflows/db-semantic-search';
 
 describe('DBSemanticSearch', () => {
   let dbSemanticSearch: DBSemanticSearch;

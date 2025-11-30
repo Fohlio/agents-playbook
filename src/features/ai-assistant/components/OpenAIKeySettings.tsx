@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useOpenAIKey } from '@/hooks/useOpenAIKey';
+import { useOpenAIKey } from '@/features/ai-assistant/hooks/useOpenAIKey';
 import { Key, CheckCircle2, XCircle, Loader2, Trash2, Save } from 'lucide-react';
 
 export function OpenAIKeySettings() {

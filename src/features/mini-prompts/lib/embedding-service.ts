@@ -1,5 +1,5 @@
 import OpenAI from "openai";
-import { prisma } from "@/lib/db/client";
+import { prisma } from "@/server/db/client";
 
 function getOpenAIClient() {
   if (!process.env.OPENAI_API_KEY) {

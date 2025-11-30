@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/lib/auth/auth";
-import { getPublicMiniPrompts } from "@/features/public-discovery/lib/discovery-service";
-import type { MiniPromptSortOption } from "@/features/public-discovery/types";
+import { auth } from "@/server/auth/auth";
+import { getPublicMiniPrompts } from "@/views/discover/lib/discovery-service";
+import type { MiniPromptSortOption } from "@/views/discover/types";
 
 export const runtime = "nodejs";
 

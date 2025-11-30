@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { registerSchema } from "@/lib/validators/auth";
-import { createUser } from "@/lib/db/queries/users";
-import { validatePasswordComplexity } from "@/lib/auth/password";
+import { registerSchema } from "@/shared/lib/validators/auth";
+import { createUser } from "@/server/db/queries/users";
+import { validatePasswordComplexity } from "@/server/auth/password";
 
 // Use Node.js runtime for bcrypt support
 export const runtime = 'nodejs';
