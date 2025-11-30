@@ -132,7 +132,7 @@ export default function SetupSection() {
                       <div className="px-3 sm:px-4 py-3 bg-blue-50 border border-blue-200 rounded-lg text-xs sm:text-sm text-blue-800">
                         <p className="font-medium">💡 Add this configuration to your Cursor MCP settings</p>
                         <p className="mt-2 text-xs">
-                          <strong>Note:</strong> Get your API token from Settings → API Tokens. The <code className="bg-blue-100 px-1 rounded">headers</code> field ensures proper authentication.
+                          <strong>API Token is Optional:</strong> Without a token, you&apos;ll have access to all system workflows. Add your API token (from Settings → API Tokens) to also access your personal library workflows.
                         </p>
                       </div>
                     </div>

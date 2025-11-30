@@ -30,7 +30,11 @@ export function WorkflowPreviewModal({
   useEffect(() => {
     if (isOpen && (!workflow.stages || workflow.stages.length === 0) && workflow._count.stages > 0) {
       setIsLoadingDetails(true);
-      fetch(`/api/workflows/${workflow.id}/details`)
+      // Use public endpoint for unauthenticated users, authenticated endpoint otherwise
+      const endpoint = isAuthenticated 
+        ? `/api/workflows/${workflow.id}/details`
+        : `/api/public/workflows/${workflow.id}/details`;
+      fetch(endpoint)
         .then(res => res.json())
         .then(data => {
           setFullWorkflow({ ...workflow, ...data });
@@ -43,7 +47,7 @@ export function WorkflowPreviewModal({
     } else {
       setFullWorkflow(workflow);
     }
-  }, [isOpen, workflow]);
+  }, [isOpen, workflow, isAuthenticated]);
   return (
     <Modal
       isOpen={isOpen}

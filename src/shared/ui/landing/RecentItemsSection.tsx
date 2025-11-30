@@ -1,10 +1,13 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 import { Workflow, MiniPrompt, Tag, Model } from "@prisma/client";
 import { WorkflowDiscoveryCard } from "@/shared/ui/molecules/WorkflowDiscoveryCard";
 import { MiniPromptDiscoveryCard } from "@/shared/ui/molecules/MiniPromptDiscoveryCard";
+import { WorkflowPreviewModal } from "@/shared/ui/molecules/WorkflowPreviewModal";
+import { PublicWorkflowWithMeta } from "@/views/discover/types";
 
 interface WorkflowWithMeta extends Workflow {
   user: { id: string; username: string };
@@ -23,13 +26,57 @@ interface MiniPromptWithMeta extends MiniPrompt {
 
 type TabType = "workflows" | "prompts";
 
+// Transform landing workflow data to PublicWorkflowWithMeta format for the preview modal
+function toPublicWorkflowWithMeta(workflow: WorkflowWithMeta): PublicWorkflowWithMeta {
+  // Omit stages since they don't match the full type - modal will fetch full details
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { stages, ...workflowWithoutStages } = workflow;
+  return {
+    ...workflowWithoutStages,
+    stages: undefined, // Modal will fetch full stages with mini-prompts
+    averageRating: null,
+    totalRatings: 0,
+    usageCount: workflow._count.references,
+    isInUserLibrary: false,
+  };
+}
+
 export default function RecentItemsSection() {
+  const router = useRouter();
+  const { data: session, status } = useSession();
+  const isAuthenticated = status === "authenticated";
+  
   const [activeTab, setActiveTab] = useState<TabType>("workflows");
   const [workflows, setWorkflows] = useState<WorkflowWithMeta[]>([]);
   const [miniPrompts, setMiniPrompts] = useState<MiniPromptWithMeta[]>([]);
   const [loading, setLoading] = useState(true);
   const [previewWorkflow, setPreviewWorkflow] = useState<WorkflowWithMeta | null>(null);
   const [previewMiniPrompt, setPreviewMiniPrompt] = useState<MiniPromptWithMeta | null>(null);
+  const [isImporting, setIsImporting] = useState(false);
+
+  const handleImport = async (workflowId: string) => {
+    if (!isAuthenticated) {
+      router.push("/auth/login?returnUrl=/dashboard/discover");
+      return;
+    }
+    
+    setIsImporting(true);
+    try {
+      const response = await fetch(`/api/v1/workflows/import/${workflowId}`, {
+        method: "POST",
+      });
+      
+      if (response.ok) {
+        // Close modal and redirect to library
+        setPreviewWorkflow(null);
+        router.push("/dashboard/library");
+      }
+    } catch (error) {
+      console.error("Failed to import workflow:", error);
+    } finally {
+      setIsImporting(false);
+    }
+  };
 
   useEffect(() => {
     fetch("/api/public/recent")
@@ -193,50 +240,17 @@ export default function RecentItemsSection() {
           </div>
         )}
 
-        {/* Preview Modals would go here - for now just a simple overlay */}
+        {/* Workflow Preview Modal */}
         {previewWorkflow && (
-          <div
-            className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50"
-            onClick={() => setPreviewWorkflow(null)}
-          >
-            <div
-              className="bg-white rounded-lg max-w-2xl w-full max-h-[80vh] overflow-auto p-6"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <div className="flex justify-between items-start mb-4">
-                <h3 className="text-xl font-bold text-gray-900">
-                  {previewWorkflow.name}
-                </h3>
-                <button
-                  onClick={() => setPreviewWorkflow(null)}
-                  className="text-gray-500 hover:text-gray-700"
-                >
-                  ✕
-                </button>
-              </div>
-              {previewWorkflow.description && (
-                <p className="text-gray-600 mb-4">{previewWorkflow.description}</p>
-              )}
-              <div className="flex items-center gap-4 text-sm text-gray-500 mb-4">
-                <span>By {previewWorkflow.user.username}</span>
-                <span>{previewWorkflow._count.stages} stages</span>
-                {previewWorkflow.complexity && (
-                  <span className="px-2 py-0.5 bg-gray-100 rounded">
-                    {previewWorkflow.complexity}
-                  </span>
-                )}
-              </div>
-              <div className="text-center text-gray-500 mt-8">
-                <Link
-                  href="/auth/signup"
-                  className="text-blue-600 hover:text-blue-800 font-medium"
-                >
-                  Sign up
-                </Link>{" "}
-                to add this workflow to your library
-              </div>
-            </div>
-          </div>
+          <WorkflowPreviewModal
+            workflow={toPublicWorkflowWithMeta(previewWorkflow)}
+            isOpen={true}
+            onClose={() => setPreviewWorkflow(null)}
+            onImport={() => handleImport(previewWorkflow.id)}
+            isAuthenticated={isAuthenticated}
+            isImporting={isImporting}
+            isOwnWorkflow={session?.user?.id === previewWorkflow.user.id}
+          />
         )}
 
         {previewMiniPrompt && (

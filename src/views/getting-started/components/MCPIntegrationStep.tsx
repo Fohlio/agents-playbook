@@ -20,6 +20,21 @@ export function MCPIntegrationStep() {
         </p>
       </div>
 
+      {/* Token optional note */}
+      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+        <div className="flex items-start gap-3">
+          <span className="text-xl">💡</span>
+          <div className="text-sm">
+            <p className="font-medium text-blue-900 mb-1">
+              API Token is Optional
+            </p>
+            <p className="text-blue-800">
+              Without a token, you&apos;ll have access to all system workflows. Add your API token to also access your personal library workflows.
+            </p>
+          </div>
+        </div>
+      </div>
+
       <div className="grid md:grid-cols-2 gap-4">
         {/* Claude Code */}
         <div className="bg-gradient-to-br from-orange-50 to-red-50 border-2 border-orange-200 rounded-lg p-5">
@@ -36,29 +51,13 @@ export function MCPIntegrationStep() {
 {`{
   "agents-playbook": {
     "url": "https://agents-playbook.com/api/v1/mcp",
-    "apiKey": "your-token-from-settings"
+    "headers": {
+      "Authorization": "Bearer your-api-token"
+    }
   }
 }`}
               </code>
             </pre>
-            <p className="text-gray-600 text-xs mt-2 mb-2">
-              <strong>Note:</strong> The <code className="bg-gray-100 px-1 rounded">apiKey</code> should be automatically converted to <code className="bg-gray-100 px-1 rounded">Authorization: Bearer &lt;token&gt;</code> header.
-            </p>
-            <details className="text-xs">
-              <summary className="cursor-pointer text-gray-600 hover:text-gray-900 font-medium">Alternative: Use headers field</summary>
-              <pre className="bg-gray-900 rounded border border-orange-200 p-3 overflow-x-auto mt-2">
-                <code className="text-green-400 text-xs">
-{`{
-  "agents-playbook": {
-    "url": "https://agents-playbook.com/api/v1/mcp",
-    "headers": {
-      "Authorization": "Bearer your-token-from-settings"
-    }
-  }
-}`}
-                </code>
-              </pre>
-            </details>
           </div>
         </div>
 
@@ -78,32 +77,15 @@ export function MCPIntegrationStep() {
   "mcpServers": {
     "agents-playbook": {
       "url": "https://agents-playbook.com/api/v1/mcp",
-      "apiKey": "your-token-from-settings"
+      "description": "AI Agent Workflow Engine",
+      "headers": {
+        "Authorization": "Bearer your-api-token"
+      }
     }
   }
 }`}
               </code>
             </pre>
-            <p className="text-gray-600 text-xs mt-2 mb-2">
-              <strong>Note:</strong> The <code className="bg-gray-100 px-1 rounded">apiKey</code> should be automatically converted to <code className="bg-gray-100 px-1 rounded">Authorization: Bearer &lt;token&gt;</code> header.
-            </p>
-            <details className="text-xs">
-              <summary className="cursor-pointer text-gray-600 hover:text-gray-900 font-medium">Alternative: Use headers field</summary>
-              <pre className="bg-gray-900 rounded border border-blue-200 p-3 overflow-x-auto mt-2">
-                <code className="text-green-400 text-xs">
-{`{
-  "mcpServers": {
-    "agents-playbook": {
-      "url": "https://agents-playbook.com/api/v1/mcp",
-      "headers": {
-        "Authorization": "Bearer your-token-from-settings"
-      }
-    }
-  }
-}`}
-                </code>
-              </pre>
-            </details>
           </div>
         </div>
       </div>
@@ -111,8 +93,11 @@ export function MCPIntegrationStep() {
       <div className="bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200 rounded-lg p-5">
         <h4 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
           <span>🔑</span>
-          <span>Get Your API Token</span>
+          <span>Get Your API Token (Optional)</span>
         </h4>
+        <p className="text-sm text-gray-600 mb-3">
+          To access your personal library workflows, create an API token:
+        </p>
         <ol className="space-y-2 text-sm text-gray-700">
           <li className="flex gap-2">
             <span className="font-bold text-emerald-600">1.</span>
