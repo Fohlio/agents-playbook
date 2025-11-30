@@ -16,6 +16,7 @@ interface UseWorkflowActionsParams {
     visibility: 'PUBLIC' | 'PRIVATE';
     includeMultiAgentChat: boolean;
     tagIds: string[];
+    modelIds: string[];
     stages: Array<{
       name: string;
       description?: string;
@@ -46,6 +47,7 @@ export function useWorkflowActions({
     isPublic,
     includeMultiAgentChat,
     selectedTagIds,
+    selectedModelIds,
     localStages,
     markDirty,
   } = useWorkflowConstructorStore();
@@ -90,6 +92,12 @@ export function useWorkflowActions({
     markDirty();
   }, [markDirty]);
 
+  const handleSelectedModelIdsChange = useCallback((modelIds: string[]) => {
+    const { setSelectedModelIds } = useWorkflowConstructorStore.getState();
+    setSelectedModelIds(modelIds);
+    markDirty();
+  }, [markDirty]);
+
   const handleSaveWorkflow = useCallback(async () => {
     if (!workflowId || !onSave) return;
 
@@ -102,6 +110,7 @@ export function useWorkflowActions({
       visibility: isPublic ? 'PUBLIC' : 'PRIVATE',
       includeMultiAgentChat,
       tagIds: selectedTagIds,
+      modelIds: selectedModelIds,
       stages: localStages.map((stage, index) => {
         // Clean up itemOrder: filter out auto-prompt IDs that don't match the current stage ID
         // This prevents old stage IDs from being saved
@@ -142,6 +151,7 @@ export function useWorkflowActions({
     isPublic,
     includeMultiAgentChat,
     selectedTagIds,
+    selectedModelIds,
     localStages,
     onSave,
   ]);
@@ -153,6 +163,7 @@ export function useWorkflowActions({
     handleIsPublicChange,
     handleIncludeMultiAgentChatChange,
     handleSelectedTagIdsChange,
+    handleSelectedModelIdsChange,
     handleSaveWorkflow,
   };
 }

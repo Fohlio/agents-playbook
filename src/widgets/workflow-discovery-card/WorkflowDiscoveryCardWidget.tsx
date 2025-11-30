@@ -13,6 +13,7 @@ import { ShareModal } from "@/features/sharing/components/ShareModal";
 interface WorkflowDiscoveryCardWidgetProps {
   workflow: PublicWorkflowWithMeta & {
     tags?: { tag: { id: string; name: string; color: string | null } }[];
+    models?: { model: { id: string; name: string; slug: string; category: 'LLM' | 'IMAGE' } }[];
   };
   onImport: (id: string) => void;
   onRemove?: (id: string) => void;
@@ -210,6 +211,7 @@ export function WorkflowDiscoveryCardWidget({
     stagesCount: workflow._count.stages,
     usageCount: workflow.usageCount,
     tags: workflow.tags?.map((wt) => wt.tag),
+    models: workflow.models?.map((wm) => wm.model),
     rating: {
       average: localRating.average,
       count: localRating.count,

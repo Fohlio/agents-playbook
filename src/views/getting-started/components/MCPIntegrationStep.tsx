@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { ROUTES } from '@/shared/routes';
+import { USAGE_HINT_TEMPLATE } from '@/shared/lib/constants/usage-hint';
 
 /**
  * MCP Integration Step
@@ -143,7 +144,7 @@ export function MCPIntegrationStep() {
           <div>
             <p className="text-gray-400 mb-1">In Claude Code or Cursor, type:</p>
             <div className="bg-black rounded p-3 font-mono text-green-400">
-              use agents-playbook and select feature-development workflow
+              {USAGE_HINT_TEMPLATE.replace('[workflow-name]', 'feature-development workflow')}
             </div>
           </div>
           <div className="bg-blue-900/30 rounded p-3 text-blue-100">

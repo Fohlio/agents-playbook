@@ -2,6 +2,8 @@
 
 import { Input, Button, Checkbox, Textarea } from '@/shared/ui/atoms';
 import { TagMultiSelect } from '@/shared/ui/molecules';
+import { ModelMultiSelect } from '@/shared/ui/molecules/ModelMultiSelect';
+import { useModels } from '@/entities/models';
 
 interface WorkflowHeaderProps {
   workflowName: string;
@@ -9,6 +11,7 @@ interface WorkflowHeaderProps {
   isActive: boolean;
   isPublic: boolean;
   selectedTagIds: string[];
+  selectedModelIds: string[];
   isDirty: boolean;
   isSaving: boolean;
   onWorkflowNameChange: (name: string) => void;
@@ -16,6 +19,7 @@ interface WorkflowHeaderProps {
   onIsActiveChange: (isActive: boolean) => void;
   onIsPublicChange: (isPublic: boolean) => void;
   onSelectedTagIdsChange: (tagIds: string[]) => void;
+  onSelectedModelIdsChange: (modelIds: string[]) => void;
   onSave: () => void;
 }
 
@@ -25,6 +29,7 @@ export function WorkflowHeader({
   isActive,
   isPublic,
   selectedTagIds,
+  selectedModelIds,
   isDirty,
   isSaving,
   onWorkflowNameChange,
@@ -32,8 +37,12 @@ export function WorkflowHeader({
   onIsActiveChange,
   onIsPublicChange,
   onSelectedTagIdsChange,
+  onSelectedModelIdsChange,
   onSave,
 }: WorkflowHeaderProps) {
+  // Fetch models from entities layer
+  const { models, loading: modelsLoading } = useModels();
+
   return (
     <div className="bg-surface-base border-b border-border-base px-6 py-4">
       <div className="flex items-center justify-between mb-3 gap-4">
@@ -76,10 +85,21 @@ export function WorkflowHeader({
         </div>
         
         {/* Tags multiselect */}
-        <div className="flex-1 min-w-[300px]">
+        <div className="flex-1 min-w-[200px]">
           <TagMultiSelect
             selectedTagIds={selectedTagIds}
             onChange={onSelectedTagIdsChange}
+          />
+        </div>
+
+        {/* Models multiselect */}
+        <div className="flex-1 min-w-[200px]">
+          <ModelMultiSelect
+            models={models}
+            selectedModelIds={selectedModelIds}
+            onChange={onSelectedModelIdsChange}
+            loading={modelsLoading}
+            placeholder="Select AI models..."
           />
         </div>
       </div>

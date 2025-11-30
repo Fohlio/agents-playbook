@@ -55,6 +55,11 @@ describe('Workflow Constructor Actions', () => {
               tag: true,
             },
           },
+          models: {
+            include: {
+              model: true,
+            },
+          },
           stages: {
             include: {
               miniPrompts: {

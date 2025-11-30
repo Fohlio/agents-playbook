@@ -44,6 +44,7 @@ export function WorkflowConstructor({ data }: WorkflowConstructorProps) {
     isPublic,
     includeMultiAgentChat,
     selectedTagIds,
+    selectedModelIds,
     localStages,
     miniPrompts,
     isCreatingStage,
@@ -112,6 +113,7 @@ export function WorkflowConstructor({ data }: WorkflowConstructorProps) {
     handleIsActiveChange,
     handleIsPublicChange,
     handleSelectedTagIdsChange,
+    handleSelectedModelIdsChange,
     handleSaveWorkflow: handleSaveWorkflowFromHook,
   } = useWorkflowActions({
     workflowId: workflowId ?? undefined,
@@ -128,6 +130,7 @@ export function WorkflowConstructor({ data }: WorkflowConstructorProps) {
         visibility: data.visibility,
         includeMultiAgentChat: data.includeMultiAgentChat,
         tagIds: data.tagIds,
+        modelIds: data.modelIds,
         stages: data.stages,
       });
     },
@@ -245,6 +248,7 @@ export function WorkflowConstructor({ data }: WorkflowConstructorProps) {
         isActive={isActive}
         isPublic={isPublic}
         selectedTagIds={selectedTagIds}
+        selectedModelIds={selectedModelIds}
         isDirty={isDirty}
         isSaving={isSaving}
         onWorkflowNameChange={handleWorkflowNameChange}
@@ -252,6 +256,7 @@ export function WorkflowConstructor({ data }: WorkflowConstructorProps) {
         onIsActiveChange={handleIsActiveChange}
         onIsPublicChange={handleIsPublicChange}
         onSelectedTagIdsChange={handleSelectedTagIdsChange}
+        onSelectedModelIdsChange={handleSelectedModelIdsChange}
         onSave={handleSaveWorkflowFromHook}
       />
 

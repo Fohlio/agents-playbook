@@ -82,3 +82,11 @@ Exposes tools for AI agents to query workflows:
 - **"No workflows found"**: Run `npm run db:seed:system` and `npm run build:embeddings`.
 - **Database Errors**: Ensure `DATABASE_URL` ends with `?sslmode=require`.
 - **See `.agents-playbook/learnings.md`** for detailed architectural insights, gotchas, and debugging history.
+
+## Active Task
+
+**Task:** model-tags-filters-landing ✅ COMPLETE
+**Updated:** 2025-11-30
+**Phase:** All 12 Steps Complete
+
+→ **Context:** `.agents-playbook/model-tags-filters-landing/memory-board.md`

@@ -26,6 +26,7 @@ export async function getPublicWorkflows(
   const skip = (page - 1) * limit;
 
   // Build where clause
+  const workflowFilters = params.filters as WorkflowFilters;
   const where: Prisma.WorkflowWhereInput = {
     visibility: "PUBLIC",
     ...(params.search && {
@@ -35,10 +36,17 @@ export async function getPublicWorkflows(
         { user: { username: { contains: params.search, mode: "insensitive" } } },
       ],
     }),
-    ...((params.filters as WorkflowFilters)?.tagIds && (params.filters as WorkflowFilters).tagIds!.length > 0 && {
+    ...(workflowFilters?.tagIds && workflowFilters.tagIds.length > 0 && {
       tags: {
         some: {
-          tagId: { in: (params.filters as WorkflowFilters).tagIds }
+          tagId: { in: workflowFilters.tagIds }
+        }
+      }
+    }),
+    ...(workflowFilters?.modelIds && workflowFilters.modelIds.length > 0 && {
+      models: {
+        some: {
+          modelId: { in: workflowFilters.modelIds }
         }
       }
     }),
@@ -69,6 +77,11 @@ export async function getPublicWorkflows(
         tags: {
           include: {
             tag: true
+          }
+        },
+        models: {
+          include: {
+            model: true
           }
         },
         _count: {
@@ -179,6 +192,7 @@ export async function getPublicMiniPrompts(
   const skip = (page - 1) * limit;
 
   // Build where clause
+  const miniPromptFilters = params.filters as MiniPromptFilters;
   const where: Prisma.MiniPromptWhereInput = {
     visibility: "PUBLIC",
     isAutomatic: false, // Exclude automatic mini-prompts (Memory Board, Internal Agents Chat)
@@ -191,10 +205,17 @@ export async function getPublicMiniPrompts(
         { user: { username: { contains: params.search, mode: "insensitive" } } },
       ],
     }),
-    ...((params.filters as MiniPromptFilters)?.tagIds && (params.filters as MiniPromptFilters).tagIds!.length > 0 && {
+    ...(miniPromptFilters?.tagIds && miniPromptFilters.tagIds.length > 0 && {
       tags: {
         some: {
-          tagId: { in: (params.filters as MiniPromptFilters).tagIds }
+          tagId: { in: miniPromptFilters.tagIds }
+        }
+      }
+    }),
+    ...(miniPromptFilters?.modelIds && miniPromptFilters.modelIds.length > 0 && {
+      models: {
+        some: {
+          modelId: { in: miniPromptFilters.modelIds }
         }
       }
     }),
@@ -214,6 +235,11 @@ export async function getPublicMiniPrompts(
         tags: {
           include: {
             tag: true
+          }
+        },
+        models: {
+          include: {
+            model: true
           }
         },
         _count: {

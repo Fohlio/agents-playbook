@@ -2,8 +2,8 @@ import Header from "@/shared/ui/landing/Header";
 import HeroSection from "@/shared/ui/landing/HeroSection";
 import FeaturesSection from "@/shared/ui/landing/FeaturesSection";
 import SetupSection from "@/shared/ui/landing/SetupSection";
-import GetStartedSection from "@/shared/ui/landing/GetStartedSection";
 import RoadmapSection from "@/shared/ui/landing/RoadmapSection";
+import RecentItemsSection from "@/shared/ui/landing/RecentItemsSection";
 
 export default function Home() {
   return (
@@ -11,7 +11,7 @@ export default function Home() {
       <Header />
       <main role="main">
         <HeroSection />
-        <GetStartedSection />
+        <RecentItemsSection />
         <FeaturesSection />
         <SetupSection />
         <RoadmapSection />

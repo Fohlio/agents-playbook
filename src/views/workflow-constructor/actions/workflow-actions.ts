@@ -22,6 +22,11 @@ export async function getWorkflowWithStages(
           tag: true,
         },
       },
+      models: {
+        include: {
+          model: true,
+        },
+      },
       stages: {
         include: {
           miniPrompts: {
@@ -303,6 +308,21 @@ export async function saveWorkflow(input: SaveWorkflowInput): Promise<WorkflowWi
           data: input.tagIds.map((tagId) => ({
             workflowId: input.workflowId,
             tagId,
+          })),
+        });
+      }
+    }
+
+    // Update models if provided
+    if (input.modelIds !== undefined) {
+      await tx.workflowModel.deleteMany({
+        where: { workflowId: input.workflowId },
+      });
+      if (input.modelIds.length > 0) {
+        await tx.workflowModel.createMany({
+          data: input.modelIds.map((modelId) => ({
+            workflowId: input.workflowId,
+            modelId,
           })),
         });
       }

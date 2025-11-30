@@ -13,6 +13,7 @@ import { ShareModal } from "@/features/sharing/components/ShareModal";
 interface MiniPromptDiscoveryCardWidgetProps {
   miniPrompt: PublicMiniPromptWithMeta & {
     tags?: { tag: { id: string; name: string; color: string | null } }[];
+    models?: { model: { id: string; name: string; slug: string; category: 'LLM' | 'IMAGE' } }[];
   };
   onImport: (id: string) => void;
   onRemove?: (id: string) => void;
@@ -212,6 +213,7 @@ export function MiniPromptDiscoveryCardWidget({
     workflowsCount: miniPrompt._count.stageMiniPrompts,
     referencesCount: miniPrompt._count.references,
     tags: miniPrompt.tags?.map((mt) => mt.tag),
+    models: miniPrompt.models?.map((mm) => mm.model),
     rating: {
       average: localRating.average,
       count: localRating.count,
@@ -263,6 +265,7 @@ export function MiniPromptDiscoveryCardWidget({
           content: miniPrompt.content,
           visibility: miniPrompt.visibility as "PUBLIC" | "PRIVATE",
           tagIds: miniPrompt.tags?.map((t) => t.tag.id) ?? [],
+          modelIds: miniPrompt.models?.map((m) => m.model.id) ?? [],
         }}
         viewOnly={!isOwnMiniPrompt}
         onSave={
@@ -273,7 +276,8 @@ export function MiniPromptDiscoveryCardWidget({
                 content,
                 visibility,
                 tagIds,
-                newTagNames
+                newTagNames,
+                modelIds
               ) => {
                 await fetch(`/api/mini-prompts/${miniPrompt.id}`, {
                   method: "PATCH",
@@ -285,6 +289,7 @@ export function MiniPromptDiscoveryCardWidget({
                     visibility,
                     tagIds,
                     newTagNames,
+                    modelIds,
                   }),
                 });
                 setIsViewOpen(false);

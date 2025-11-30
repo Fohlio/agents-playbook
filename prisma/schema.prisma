@@ -50,6 +50,11 @@ enum MessageRole {
   SYSTEM
 }
 
+enum ModelCategory {
+  LLM
+  IMAGE
+}
+
 // ============================================================================
 // Models
 // ============================================================================
@@ -125,6 +130,7 @@ model Workflow {
   references     WorkflowReference[]
   embedding      WorkflowEmbedding?
   tags           WorkflowTag[]
+  models         WorkflowModel[]
   aiChatSessions AIChatSession[]
 
   @@index([userId])
@@ -180,6 +186,7 @@ model MiniPrompt {
   stageMiniPrompts StageMiniPrompt[]
   references       MiniPromptReference[]
   tags             MiniPromptTag[]
+  models           MiniPromptModel[]
   embedding        MiniPromptEmbedding?
   aiChatSessions   AIChatSession[]
 
@@ -355,6 +362,54 @@ model MiniPromptTag {
   @@index([miniPromptId])
   @@index([tagId])
   @@map("mini_prompt_tags")
+}
+
+// ============================================================================
+// AI Model Tags (predefined models for workflows and mini-prompts)
+// ============================================================================
+
+model Model {
+  id        String        @id @default(uuid())
+  name      String        @unique @db.VarChar(50)
+  slug      String        @unique @db.VarChar(50)
+  category  ModelCategory
+  createdAt DateTime      @default(now()) @map("created_at")
+
+  // Relations
+  workflowModels   WorkflowModel[]
+  miniPromptModels MiniPromptModel[]
+
+  @@index([category])
+  @@index([slug])
+  @@map("models")
+}
+
+model WorkflowModel {
+  workflowId String @map("workflow_id")
+  modelId    String @map("model_id")
+
+  // Relations
+  workflow Workflow @relation(fields: [workflowId], references: [id], onDelete: Cascade)
+  model    Model    @relation(fields: [modelId], references: [id], onDelete: Cascade)
+
+  @@id([workflowId, modelId])
+  @@index([workflowId])
+  @@index([modelId])
+  @@map("workflow_models")
+}
+
+model MiniPromptModel {
+  miniPromptId String @map("mini_prompt_id")
+  modelId      String @map("model_id")
+
+  // Relations
+  miniPrompt MiniPrompt @relation(fields: [miniPromptId], references: [id], onDelete: Cascade)
+  model      Model      @relation(fields: [modelId], references: [id], onDelete: Cascade)
+
+  @@id([miniPromptId, modelId])
+  @@index([miniPromptId])
+  @@index([modelId])
+  @@map("mini_prompt_models")
 }
 
 model SharedLink {

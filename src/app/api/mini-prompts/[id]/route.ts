@@ -132,6 +132,24 @@ export async function PATCH(
       }
     }
 
+    // Handle model updates if provided
+    if (body.modelIds !== undefined) {
+      // Delete existing model associations
+      await prisma.miniPromptModel.deleteMany({
+        where: { miniPromptId: id }
+      });
+
+      // Create new model associations
+      if (body.modelIds.length > 0) {
+        await prisma.miniPromptModel.createMany({
+          data: body.modelIds.map((modelId: string) => ({
+            miniPromptId: id,
+            modelId
+          }))
+        });
+      }
+    }
+
     // Update mini prompt
     const updatedMiniPrompt = await prisma.miniPrompt.update({
       where: { id },

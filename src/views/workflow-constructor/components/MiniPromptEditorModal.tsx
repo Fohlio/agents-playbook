@@ -4,18 +4,21 @@ import { useState, useEffect, useCallback } from 'react';
 import { Button, Input, Textarea, FormField, Radio } from '@/shared/ui/atoms';
 import { Modal } from '@/shared/ui/atoms/Modal';
 import { TagMultiSelect, CopyButton, type Tag } from '@/shared/ui/molecules';
+import { ModelMultiSelect } from '@/shared/ui/molecules/ModelMultiSelect';
 import { MarkdownContent } from '@/shared/ui/atoms/MarkdownContent';
+import { useModels } from '@/entities/models';
 
 interface MiniPromptEditorModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave?: (name: string, description: string, content: string, visibility: 'PUBLIC' | 'PRIVATE', tagIds: string[], newTagNames: string[]) => Promise<void>;
+  onSave?: (name: string, description: string, content: string, visibility: 'PUBLIC' | 'PRIVATE', tagIds: string[], newTagNames: string[], modelIds: string[]) => Promise<void>;
   initialData?: {
     name: string;
     description?: string;
     content: string;
     visibility: 'PUBLIC' | 'PRIVATE';
     tagIds?: string[];
+    modelIds?: string[];
   };
   viewOnly?: boolean;
 }
@@ -34,9 +37,13 @@ export function MiniPromptEditorModal({
     initialData?.visibility ?? 'PRIVATE'
   );
   const [selectedTagIds, setSelectedTagIds] = useState<string[]>(initialData?.tagIds ?? []);
+  const [selectedModelIds, setSelectedModelIds] = useState<string[]>(initialData?.modelIds ?? []);
   const [allTags, setAllTags] = useState<Tag[]>([]);
   const [showPreview, setShowPreview] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+
+  // Fetch models from entities layer
+  const { models, loading: modelsLoading } = useModels();
 
   // Track tags from TagMultiSelect to know which are temporary
   const handleTagsChanged = useCallback((tags: Tag[]) => {
@@ -51,12 +58,14 @@ export function MiniPromptEditorModal({
       setContent(initialData.content);
       setVisibility(initialData.visibility);
       setSelectedTagIds(initialData.tagIds ?? []);
+      setSelectedModelIds(initialData.modelIds ?? []);
     } else {
       setName('');
       setDescription('');
       setContent('');
       setVisibility('PRIVATE');
       setSelectedTagIds([]);
+      setSelectedModelIds([]);
     }
     setShowPreview(false);
   }, [initialData, isOpen]);
@@ -81,12 +90,13 @@ export function MiniPromptEditorModal({
         }
       }
 
-      await onSave(name.trim(), description.trim(), content.trim(), visibility, existingTagIds, newTagNames);
+      await onSave(name.trim(), description.trim(), content.trim(), visibility, existingTagIds, newTagNames, selectedModelIds);
       setName('');
       setDescription('');
       setContent('');
       setVisibility('PRIVATE');
       setSelectedTagIds([]);
+      setSelectedModelIds([]);
       setAllTags([]);
       setShowPreview(false);
       onClose();
@@ -104,6 +114,7 @@ export function MiniPromptEditorModal({
       setContent(initialData?.content ?? '');
       setVisibility(initialData?.visibility ?? 'PRIVATE');
       setSelectedTagIds(initialData?.tagIds ?? []);
+      setSelectedModelIds(initialData?.modelIds ?? []);
       setShowPreview(false);
       onClose();
     }
@@ -225,6 +236,15 @@ export function MiniPromptEditorModal({
                   selectedTagIds={selectedTagIds}
                   onChange={setSelectedTagIds}
                   onTagsChanged={handleTagsChanged}
+                />
+              </FormField>
+              <FormField label="AI Models" htmlFor="mini-prompt-models">
+                <ModelMultiSelect
+                  models={models}
+                  selectedModelIds={selectedModelIds}
+                  onChange={setSelectedModelIds}
+                  loading={modelsLoading}
+                  placeholder="Select AI models this prompt works with..."
                 />
               </FormField>
             </>

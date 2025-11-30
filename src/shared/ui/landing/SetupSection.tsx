@@ -1,3 +1,5 @@
+import { USAGE_HINT_TEMPLATE } from '@/shared/lib/constants/usage-hint';
+
 export default function SetupSection() {
   const steps = [
     {
@@ -35,7 +37,7 @@ export default function SetupSection() {
       ),
       gradient: "from-green-500 to-emerald-500",
       examples: [
-        "use agents-playbook to select feature development workflow",
+        USAGE_HINT_TEMPLATE.replace('[workflow-name]', 'feature development workflow'),
       ]
     },
     {

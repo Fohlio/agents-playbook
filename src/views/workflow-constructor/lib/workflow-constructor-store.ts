@@ -12,6 +12,7 @@ interface WorkflowConstructorState {
   isPublic: boolean;
   includeMultiAgentChat: boolean;
   selectedTagIds: string[];
+  selectedModelIds: string[];
 
   // Workflow structure
   localStages: WorkflowStageWithMiniPrompts[];
@@ -34,6 +35,7 @@ interface WorkflowConstructorState {
   setIsPublic: (isPublic: boolean) => void;
   setIncludeMultiAgentChat: (include: boolean) => void;
   setSelectedTagIds: (tagIds: string[]) => void;
+  setSelectedModelIds: (modelIds: string[]) => void;
 
   // Actions - Workflow structure
   setLocalStages: (stages: WorkflowStageWithMiniPrompts[] | ((prev: WorkflowStageWithMiniPrompts[]) => WorkflowStageWithMiniPrompts[])) => void;
@@ -69,6 +71,7 @@ interface WorkflowConstructorState {
     includeMultiAgentChat: boolean;
     stages: WorkflowStageWithMiniPrompts[];
     tags?: Array<{ tag: { id: string } }>;
+    models?: Array<{ model: { id: string } }>;
   }, miniPrompts: MiniPrompt[]) => void;
 }
 
@@ -81,6 +84,7 @@ const initialState = {
   isPublic: false,
   includeMultiAgentChat: false,
   selectedTagIds: [],
+  selectedModelIds: [],
   localStages: [],
   miniPrompts: [],
   isCreatingStage: false,
@@ -103,6 +107,7 @@ export const useWorkflowConstructorStore = create<WorkflowConstructorState>((set
   setIsPublic: (isPublic) => set({ isPublic }),
   setIncludeMultiAgentChat: (include) => set({ includeMultiAgentChat: include }),
   setSelectedTagIds: (tagIds) => set({ selectedTagIds: tagIds }),
+  setSelectedModelIds: (modelIds) => set({ selectedModelIds: modelIds }),
 
   // Workflow structure actions
   setLocalStages: (stages) =>
@@ -202,6 +207,7 @@ export const useWorkflowConstructorStore = create<WorkflowConstructorState>((set
       isPublic: workflow.visibility === 'PUBLIC',
       includeMultiAgentChat: workflow.includeMultiAgentChat,
       selectedTagIds: workflow.tags?.map((t) => t.tag.id) ?? [],
+      selectedModelIds: workflow.models?.map((m) => m.model.id) ?? [],
       localStages: workflow.stages ?? [],
       miniPrompts,
       isDirty: false,

@@ -1,4 +1,12 @@
-import { Workflow, MiniPrompt, User, WorkflowStage, StageMiniPrompt, WorkflowComplexity } from "@prisma/client";
+import { Workflow, MiniPrompt, User, WorkflowStage, StageMiniPrompt, WorkflowComplexity, Model, ModelCategory } from "@prisma/client";
+
+// Model type for cards
+export interface ModelForCard {
+  id: string;
+  name: string;
+  slug: string;
+  category: ModelCategory;
+}
 
 // Workflow with author and metadata
 export interface PublicWorkflowWithMeta extends Workflow {
@@ -8,6 +16,7 @@ export interface PublicWorkflowWithMeta extends Workflow {
       miniPrompt: MiniPrompt;
     })[];
   })[];
+  models?: { model: Model }[];
   _count: {
     stages: number;
     references: number;
@@ -21,6 +30,7 @@ export interface PublicWorkflowWithMeta extends Workflow {
 // Mini-prompt with author and metadata
 export interface PublicMiniPromptWithMeta extends MiniPrompt {
   user: Pick<User, "id" | "username">;
+  models?: { model: Model }[];
   _count: {
     stageMiniPrompts: number;
     references: number;
@@ -61,12 +71,14 @@ export interface WorkflowFilters {
   complexity?: WorkflowComplexity;
   minUsage?: "10" | "50";
   tagIds?: string[];
+  modelIds?: string[];
 }
 
 export interface MiniPromptFilters {
   rating?: "4+" | "3+";
   minUsage?: "10" | "50";
   tagIds?: string[];
+  modelIds?: string[];
 }
 
 export interface DiscoveryQueryParams {

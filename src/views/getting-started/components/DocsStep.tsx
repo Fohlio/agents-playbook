@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { USAGE_HINT_TEMPLATE } from '@/shared/lib/constants/usage-hint';
 
 /**
  * Docs Step
@@ -92,7 +93,7 @@ export function DocsStep() {
         },
         {
           heading: 'Usage',
-          content: 'In your AI assistant, type: "use agents-playbook and select [workflow-name]"'
+          content: `In your AI assistant, type: "${USAGE_HINT_TEMPLATE}"`
         },
         {
           heading: 'Troubleshooting',

@@ -63,6 +63,7 @@ export interface SaveWorkflowInput {
   visibility?: 'PUBLIC' | 'PRIVATE';
   includeMultiAgentChat?: boolean;
   tagIds?: string[];
+  modelIds?: string[];
   stages: Array<{
     name: string;
     description?: string;

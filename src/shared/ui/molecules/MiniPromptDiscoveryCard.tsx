@@ -3,6 +3,7 @@
 import { Card } from "@/shared/ui/atoms";
 import { CardActionsMenu } from "./CardActionsMenu";
 import { TagBadgeList } from "./TagBadgeList";
+import { ModelBadgeList } from "./ModelBadgeList";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 
 /**
@@ -19,6 +20,7 @@ export interface MiniPromptCardData {
   workflowsCount: number;
   referencesCount: number;
   tags?: Array<{ id: string; name: string; color: string | null }>;
+  models?: Array<{ id: string; name: string; slug?: string; category: 'LLM' | 'IMAGE' }>;
   rating?: {
     average: number | null;
     count: number;
@@ -185,8 +187,14 @@ export function MiniPromptDiscoveryCard({
           </div>
 
           {miniPrompt.tags && miniPrompt.tags.length > 0 && (
-            <div className="mb-2 sm:mb-3">
+            <div className="mb-2">
               <TagBadgeList tags={miniPrompt.tags} />
+            </div>
+          )}
+
+          {miniPrompt.models && miniPrompt.models.length > 0 && (
+            <div className="mb-2 sm:mb-3">
+              <ModelBadgeList models={miniPrompt.models} />
             </div>
           )}
 

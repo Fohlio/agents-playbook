@@ -4,8 +4,10 @@ import Link from "next/link";
 import { Card } from "@/shared/ui/atoms";
 import { MarkdownContent } from "@/shared/ui/atoms/MarkdownContent";
 import { ComplexityBadge } from "@/shared/ui/atoms/ComplexityBadge";
+import { UsageHint } from "@/shared/ui/atoms/UsageHint";
 import { CardActionsMenu } from "./CardActionsMenu";
 import { TagBadgeList } from "./TagBadgeList";
+import { ModelBadgeList } from "./ModelBadgeList";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import { WorkflowComplexity } from "@prisma/client";
 
@@ -24,6 +26,7 @@ export interface WorkflowCardData {
   stagesCount: number;
   usageCount: number;
   tags?: Array<{ id: string; name: string; color: string | null }>;
+  models?: Array<{ id: string; name: string; slug?: string; category: 'LLM' | 'IMAGE' }>;
   rating?: {
     average: number | null;
     count: number;
@@ -53,6 +56,7 @@ export interface WorkflowCardVisibility {
   showDuplicate?: boolean;
   showRemove?: boolean;
   showImport?: boolean;
+  showUsageHint?: boolean;
   isOwned?: boolean;
 }
 
@@ -217,8 +221,20 @@ export function WorkflowDiscoveryCard({
           </div>
 
           {workflow.tags && workflow.tags.length > 0 && (
-            <div className="mb-3">
+            <div className="mb-2">
               <TagBadgeList tags={workflow.tags} />
+            </div>
+          )}
+
+          {workflow.models && workflow.models.length > 0 && (
+            <div className="mb-3">
+              <ModelBadgeList models={workflow.models} />
+            </div>
+          )}
+
+          {visibility.showUsageHint && (
+            <div className="mb-3" onClick={(e) => e.stopPropagation()}>
+              <UsageHint workflowName={workflow.name} />
             </div>
           )}
 
