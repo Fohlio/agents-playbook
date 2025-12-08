@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { auth } from '@/server/auth/auth';
 import { prisma } from '@/server/db/client';
 import { triggerMiniPromptEmbedding } from '@/features/mini-prompts/lib/embedding-service';
+import { isValidKey } from '@/shared/lib/validators/key';
 
 export async function GET(
   request: Request,
@@ -150,6 +151,34 @@ export async function PATCH(
       }
     }
 
+    // Handle key updates - only allowed for admin on system mini-prompts
+    const keyUpdate: { key?: string | null } = {};
+    if (body.key !== undefined) {
+      if (session.user.role !== 'ADMIN') {
+        return NextResponse.json(
+          { error: 'Only admins can set or update keys' },
+          { status: 403 }
+        );
+      }
+      if (!miniPrompt.isSystemMiniPrompt) {
+        return NextResponse.json(
+          { error: 'Key can only be set for system mini-prompts' },
+          { status: 400 }
+        );
+      }
+      // Allow setting to null/empty to remove key, or validate new key
+      if (body.key === null || body.key === '') {
+        keyUpdate.key = null;
+      } else if (!isValidKey(body.key)) {
+        return NextResponse.json(
+          { error: 'Key must be 2-100 characters, lowercase alphanumeric and hyphens only' },
+          { status: 400 }
+        );
+      } else {
+        keyUpdate.key = body.key;
+      }
+    }
+
     // Update mini prompt
     const updatedMiniPrompt = await prisma.miniPrompt.update({
       where: { id },
@@ -159,6 +188,7 @@ export async function PATCH(
         ...(body.content !== undefined && { content: body.content }),
         ...(body.visibility !== undefined && { visibility: body.visibility }),
         ...(body.isActive !== undefined && { isActive: body.isActive }),
+        ...keyUpdate,
       },
     });
 

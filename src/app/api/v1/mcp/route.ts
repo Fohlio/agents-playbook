@@ -251,12 +251,13 @@ const handler = createMcpHandler(
     );
 
     // Tool 5: Get selected mini prompt details
+    // Supports lookup by ID or by unique key (for system prompts)
     server.tool(
       'get_selected_prompt',
-      'Get complete details and content for a specific mini prompt',
+      'Get complete details and content for a specific mini prompt. Supports lookup by ID or by unique key (for system prompts).',
       getSelectedPromptToolSchema,
-      async ({ prompt_id }) => {
-        return await getSelectedPromptHandler({ prompt_id });
+      async ({ prompt_id, key }) => {
+        return await getSelectedPromptHandler({ prompt_id, key });
       },
     );
   },

@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { auth } from '@/server/auth/auth';
 import { prisma } from '@/server/db/client';
 import { triggerMiniPromptEmbedding } from '@/features/mini-prompts/lib/embedding-service';
+import { isValidKey } from '@/shared/lib/validators/key';
 
 export async function GET(request: Request) {
   const session = await auth();
@@ -215,6 +216,24 @@ export async function POST(request: Request) {
   // Allow admins to create system mini-prompts
   const isSystemMiniPrompt = session.user.role === 'ADMIN' ? (body.isSystemMiniPrompt ?? false) : false;
 
+  // Handle key field - only allowed for admin creating system mini-prompts
+  let key: string | null = null;
+  if (body.key) {
+    if (session.user.role !== 'ADMIN' || !isSystemMiniPrompt) {
+      return NextResponse.json(
+        { error: 'Key can only be set for system mini-prompts by admins' },
+        { status: 403 }
+      );
+    }
+    if (!isValidKey(body.key)) {
+      return NextResponse.json(
+        { error: 'Key must be 2-100 characters, lowercase alphanumeric and hyphens only' },
+        { status: 400 }
+      );
+    }
+    key = body.key;
+  }
+
   const miniPrompt = await prisma.miniPrompt.create({
     data: {
       userId: session.user.id,
@@ -224,6 +243,7 @@ export async function POST(request: Request) {
       visibility: body.visibility || 'PRIVATE',
       isActive: true,
       isSystemMiniPrompt,
+      key,
       position: 0,
     },
   });

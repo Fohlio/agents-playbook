@@ -20,6 +20,7 @@ interface SystemMiniPrompt {
   visibility: string;
   isActive: boolean;
   isSystemMiniPrompt: boolean;
+  key?: string | null;
 }
 
 export default function AdminSystemMiniPromptsPage() {
@@ -76,7 +77,8 @@ export default function AdminSystemMiniPromptsPage() {
     visibility: 'PUBLIC' | 'PRIVATE',
     tagIds: string[],
     newTagNames: string[],
-    modelIds: string[]
+    modelIds: string[],
+    key?: string
   ) => {
     try {
       const response = await fetch('/api/mini-prompts', {
@@ -91,6 +93,7 @@ export default function AdminSystemMiniPromptsPage() {
           newTagNames,
           modelIds,
           isSystemMiniPrompt: true,
+          key: key || null,
         }),
       });
 
@@ -112,7 +115,8 @@ export default function AdminSystemMiniPromptsPage() {
     visibility: 'PUBLIC' | 'PRIVATE',
     tagIds: string[],
     newTagNames: string[],
-    modelIds: string[]
+    modelIds: string[],
+    key?: string
   ) => {
     if (!editingMiniPrompt) return;
 
@@ -128,6 +132,7 @@ export default function AdminSystemMiniPromptsPage() {
           tagIds,
           newTagNames,
           modelIds,
+          key: key || null,
         }),
       });
 
@@ -239,6 +244,11 @@ export default function AdminSystemMiniPromptsPage() {
                   </p>
                   <div className="flex items-center gap-4 text-xs text-text-tertiary mb-3">
                     <span>{miniPrompt.visibility}</span>
+                    {miniPrompt.key && (
+                      <span className="font-mono bg-gray-100 px-1.5 py-0.5 rounded">
+                        key: {miniPrompt.key}
+                      </span>
+                    )}
                   </div>
                   <div className="flex items-center gap-2">
                     <Toggle
@@ -287,7 +297,9 @@ export default function AdminSystemMiniPromptsPage() {
           content: editingMiniPrompt.content,
           visibility: editingMiniPrompt.visibility as 'PUBLIC' | 'PRIVATE',
           tagIds: editingTagIds,
+          key: editingMiniPrompt.key,
         } : undefined}
+        isSystemPrompt={true}
       />
     </div>
   );

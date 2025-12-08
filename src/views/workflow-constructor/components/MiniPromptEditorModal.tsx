@@ -7,11 +7,12 @@ import { TagMultiSelect, CopyButton, type Tag } from '@/shared/ui/molecules';
 import { ModelMultiSelect } from '@/shared/ui/molecules/ModelMultiSelect';
 import { MarkdownContent } from '@/shared/ui/atoms/MarkdownContent';
 import { useModels } from '@/entities/models';
+import { isValidKey } from '@/shared/lib/validators/key';
 
 interface MiniPromptEditorModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave?: (name: string, description: string, content: string, visibility: 'PUBLIC' | 'PRIVATE', tagIds: string[], newTagNames: string[], modelIds: string[]) => Promise<void>;
+  onSave?: (name: string, description: string, content: string, visibility: 'PUBLIC' | 'PRIVATE', tagIds: string[], newTagNames: string[], modelIds: string[], key?: string) => Promise<void>;
   initialData?: {
     name: string;
     description?: string;
@@ -19,8 +20,10 @@ interface MiniPromptEditorModalProps {
     visibility: 'PUBLIC' | 'PRIVATE';
     tagIds?: string[];
     modelIds?: string[];
+    key?: string | null;
   };
   viewOnly?: boolean;
+  isSystemPrompt?: boolean;
 }
 
 export function MiniPromptEditorModal({
@@ -29,6 +32,7 @@ export function MiniPromptEditorModal({
   onSave,
   initialData,
   viewOnly = false,
+  isSystemPrompt = false,
 }: MiniPromptEditorModalProps) {
   const [name, setName] = useState(initialData?.name ?? '');
   const [description, setDescription] = useState(initialData?.description ?? '');
@@ -41,6 +45,8 @@ export function MiniPromptEditorModal({
   const [allTags, setAllTags] = useState<Tag[]>([]);
   const [showPreview, setShowPreview] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [key, setKey] = useState(initialData?.key ?? '');
+  const [keyError, setKeyError] = useState<string | null>(null);
 
   // Fetch models from entities layer
   const { models, loading: modelsLoading } = useModels();
@@ -59,6 +65,7 @@ export function MiniPromptEditorModal({
       setVisibility(initialData.visibility);
       setSelectedTagIds(initialData.tagIds ?? []);
       setSelectedModelIds(initialData.modelIds ?? []);
+      setKey(initialData.key ?? '');
     } else {
       setName('');
       setDescription('');
@@ -66,14 +73,24 @@ export function MiniPromptEditorModal({
       setVisibility('PRIVATE');
       setSelectedTagIds([]);
       setSelectedModelIds([]);
+      setKey('');
     }
     setShowPreview(false);
+    setKeyError(null);
   }, [initialData, isOpen]);
 
   const handleSave = async () => {
     if (!name.trim() || !content.trim() || !onSave) return;
 
+    // Validate key if provided (for system prompts)
+    const trimmedKey = key.trim();
+    if (isSystemPrompt && trimmedKey && !isValidKey(trimmedKey)) {
+      setKeyError('Key must be 2-100 characters, lowercase letters, numbers, and hyphens only');
+      return;
+    }
+
     setIsSaving(true);
+    setKeyError(null);
     try {
       // Separate existing tags from temporary (new) tags
       const existingTagIds: string[] = [];
@@ -90,7 +107,7 @@ export function MiniPromptEditorModal({
         }
       }
 
-      await onSave(name.trim(), description.trim(), content.trim(), visibility, existingTagIds, newTagNames, selectedModelIds);
+      await onSave(name.trim(), description.trim(), content.trim(), visibility, existingTagIds, newTagNames, selectedModelIds, isSystemPrompt ? trimmedKey || undefined : undefined);
       setName('');
       setDescription('');
       setContent('');
@@ -99,6 +116,8 @@ export function MiniPromptEditorModal({
       setSelectedModelIds([]);
       setAllTags([]);
       setShowPreview(false);
+      setKey('');
+      setKeyError(null);
       onClose();
     } catch (error) {
       console.error('Failed to save mini-prompt:', error);
@@ -115,6 +134,8 @@ export function MiniPromptEditorModal({
       setVisibility(initialData?.visibility ?? 'PRIVATE');
       setSelectedTagIds(initialData?.tagIds ?? []);
       setSelectedModelIds(initialData?.modelIds ?? []);
+      setKey(initialData?.key ?? '');
+      setKeyError(null);
       setShowPreview(false);
       onClose();
     }
@@ -157,6 +178,27 @@ export function MiniPromptEditorModal({
                   fullWidth
                 />
               </FormField>
+              {isSystemPrompt && (
+                <FormField 
+                  label="Key" 
+                  htmlFor="mini-prompt-key"
+                  helperText="Unique identifier for MCP lookup (e.g., 'code-review-checklist'). Lowercase, numbers, hyphens only."
+                  error={keyError || undefined}
+                >
+                  <Input
+                    id="mini-prompt-key"
+                    type="text"
+                    value={key}
+                    onChange={(e) => {
+                      setKey(e.target.value.toLowerCase());
+                      setKeyError(null);
+                    }}
+                    placeholder="e.g., memory-board, code-review"
+                    maxLength={100}
+                    fullWidth
+                  />
+                </FormField>
+              )}
             </>
           )}
 
