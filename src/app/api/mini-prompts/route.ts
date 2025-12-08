@@ -212,6 +212,9 @@ export async function POST(request: Request) {
 
   const body = await request.json();
 
+  // Allow admins to create system mini-prompts
+  const isSystemMiniPrompt = session.user.role === 'ADMIN' ? (body.isSystemMiniPrompt ?? false) : false;
+
   const miniPrompt = await prisma.miniPrompt.create({
     data: {
       userId: session.user.id,
@@ -220,7 +223,7 @@ export async function POST(request: Request) {
       content: body.content || '',
       visibility: body.visibility || 'PRIVATE',
       isActive: true,
-      isSystemMiniPrompt: false,
+      isSystemMiniPrompt,
       position: 0,
     },
   });

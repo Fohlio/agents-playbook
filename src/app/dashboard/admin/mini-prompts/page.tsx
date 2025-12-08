@@ -29,6 +29,7 @@ export default function AdminSystemMiniPromptsPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [editingMiniPrompt, setEditingMiniPrompt] = useState<SystemMiniPrompt | null>(null);
   const [editingTagIds, setEditingTagIds] = useState<string[]>([]);
+  const [isCreating, setIsCreating] = useState(false);
 
   // Check if user is admin
   useEffect(() => {
@@ -68,12 +69,50 @@ export default function AdminSystemMiniPromptsPage() {
     }
   };
 
+  const handleCreateMiniPrompt = async (
+    name: string,
+    description: string,
+    content: string,
+    visibility: 'PUBLIC' | 'PRIVATE',
+    tagIds: string[],
+    newTagNames: string[],
+    modelIds: string[]
+  ) => {
+    try {
+      const response = await fetch('/api/mini-prompts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name,
+          description,
+          content,
+          visibility,
+          tagIds,
+          newTagNames,
+          modelIds,
+          isSystemMiniPrompt: true,
+        }),
+      });
+
+      if (!response.ok) throw new Error('Failed to create system mini prompt');
+
+      // Refresh the list
+      await fetchSystemMiniPrompts();
+      setIsCreating(false);
+    } catch (error) {
+      console.error('Failed to create system mini prompt:', error);
+      alert('Failed to create system mini prompt');
+    }
+  };
+
   const handleUpdateMiniPrompt = async (
     name: string,
     description: string,
     content: string,
     visibility: 'PUBLIC' | 'PRIVATE',
-    tagIds: string[]
+    tagIds: string[],
+    newTagNames: string[],
+    modelIds: string[]
   ) => {
     if (!editingMiniPrompt) return;
 
@@ -87,6 +126,8 @@ export default function AdminSystemMiniPromptsPage() {
           content,
           visibility,
           tagIds,
+          newTagNames,
+          modelIds,
         }),
       });
 
@@ -162,18 +203,18 @@ export default function AdminSystemMiniPromptsPage() {
           <Link href={ROUTES.ADMIN.TAGS}>
             <Button variant="secondary">Tags</Button>
           </Link>
-          <Link href={ROUTES.LIBRARY.MINI_PROMPTS.NEW}>
-            <Button variant="primary">+ Create System Mini-Prompt</Button>
-          </Link>
+          <Button variant="primary" onClick={() => setIsCreating(true)}>
+            + Create System Mini-Prompt
+          </Button>
         </div>
       </div>
 
       {miniPrompts.length === 0 ? (
         <Card className="text-center py-12">
           <p className="text-text-secondary mb-4">No system mini-prompts found</p>
-          <Link href={ROUTES.LIBRARY.MINI_PROMPTS.NEW}>
-            <Button variant="primary">Create First System Mini-Prompt</Button>
-          </Link>
+          <Button variant="primary" onClick={() => setIsCreating(true)}>
+            Create First System Mini-Prompt
+          </Button>
         </Card>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -233,12 +274,13 @@ export default function AdminSystemMiniPromptsPage() {
       )}
 
       <MiniPromptEditorModal
-        isOpen={!!editingMiniPrompt}
+        isOpen={isCreating || !!editingMiniPrompt}
         onClose={() => {
+          setIsCreating(false);
           setEditingMiniPrompt(null);
           setEditingTagIds([]);
         }}
-        onSave={handleUpdateMiniPrompt}
+        onSave={isCreating ? handleCreateMiniPrompt : handleUpdateMiniPrompt}
         initialData={editingMiniPrompt ? {
           name: editingMiniPrompt.name,
           description: editingMiniPrompt.description || '',
