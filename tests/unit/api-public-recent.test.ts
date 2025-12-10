@@ -89,7 +89,7 @@ describe('GET /api/public/recent', () => {
     );
   });
 
-  it('should only fetch public and active mini-prompts (excluding automatic/system)', async () => {
+  it('should only fetch public and active mini-prompts (excluding automatic)', async () => {
     prismaMock.workflow.findMany.mockResolvedValue(mockWorkflows as never);
     prismaMock.miniPrompt.findMany.mockResolvedValue(mockMiniPrompts as never);
 
@@ -101,7 +101,6 @@ describe('GET /api/public/recent', () => {
           visibility: 'PUBLIC',
           isActive: true,
           isAutomatic: false,
-          isSystemMiniPrompt: false,
         },
       })
     );

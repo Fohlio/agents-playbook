@@ -49,7 +49,6 @@ export async function GET() {
           visibility: "PUBLIC",
           isActive: true,
           isAutomatic: false,
-          isSystemMiniPrompt: false,
         },
         include: {
           user: {
