@@ -56,7 +56,7 @@
     "gray-matter": "^4.0.3",
     "js-yaml": "^4.1.0",
     "lucide-react": "^0.545.0",
-    "next": "15.3.6",
+    "next": "15.3.8",
     "next-auth": "^5.0.0-beta.29",
     "openai": "^5.8.2",
     "react": "19.1.2",
