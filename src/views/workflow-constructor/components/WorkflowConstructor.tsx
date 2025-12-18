@@ -245,6 +245,7 @@ export function WorkflowConstructor({ data }: WorkflowConstructorProps) {
       <WorkflowHeader
         workflowName={workflowName}
         workflowDescription={workflowDescription}
+        workflowKey={workflow?.key}
         isActive={isActive}
         isPublic={isPublic}
         selectedTagIds={selectedTagIds}
@@ -325,6 +326,7 @@ export function WorkflowConstructor({ data }: WorkflowConstructorProps) {
           content: editingMiniPrompt.content,
           visibility: editingMiniPrompt.visibility as 'PUBLIC' | 'PRIVATE',
           tagIds: editingTagIds,
+          key: editingMiniPrompt.key,
         } : undefined}
       />
     </div>

@@ -13,6 +13,7 @@ import { ShareModal } from "@/features/sharing/components/ShareModal";
 interface MiniPromptDiscoveryCardWidgetProps {
   miniPrompt: PublicMiniPromptWithMeta & {
     tags?: { tag: { id: string; name: string; color: string | null } }[];
+
     models?: { model: { id: string; name: string; slug: string; category: 'LLM' | 'IMAGE' } }[];
   };
   onImport: (id: string) => void;
@@ -266,6 +267,7 @@ export function MiniPromptDiscoveryCardWidget({
           visibility: miniPrompt.visibility as "PUBLIC" | "PRIVATE",
           tagIds: miniPrompt.tags?.map((t) => t.tag.id) ?? [],
           modelIds: miniPrompt.models?.map((m) => m.model.id) ?? [],
+          key: miniPrompt.key,
         }}
         viewOnly={!isOwnMiniPrompt}
         onSave={

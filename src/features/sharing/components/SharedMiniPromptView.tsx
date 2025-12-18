@@ -2,7 +2,7 @@
 
 import { Button, Badge } from "@/shared/ui/atoms";
 import { MarkdownContent } from "@/shared/ui/atoms/MarkdownContent";
-import { CopyButton } from "@/shared/ui/molecules";
+import { CopyButton, KeyDisplay } from "@/shared/ui/molecules";
 import { useState } from "react";
 
 interface SharedMiniPrompt {
@@ -10,6 +10,7 @@ interface SharedMiniPrompt {
   name: string;
   content: string;
   visibility: "PUBLIC" | "PRIVATE";
+  key?: string | null;
   user: {
     id: string;
     username: string;
@@ -76,7 +77,7 @@ export function SharedMiniPromptView({
             testId="copy-content"
           />
         </div>
-        <div className="flex items-center gap-4 text-sm text-gray-600 mb-4">
+        <div className="flex items-center gap-4 text-sm text-gray-600 mb-4 flex-wrap">
           <span className="flex items-center gap-1">
             <svg
               className="w-4 h-4"
@@ -98,6 +99,9 @@ export function SharedMiniPromptView({
           >
             {miniPrompt.visibility}
           </Badge>
+          {miniPrompt.key && (
+            <KeyDisplay keyValue={miniPrompt.key} />
+          )}
         </div>
 
         {miniPrompt.tags && miniPrompt.tags.length > 0 && (

@@ -1,13 +1,14 @@
 'use client';
 
 import { Input, Button, Checkbox, Textarea } from '@/shared/ui/atoms';
-import { TagMultiSelect } from '@/shared/ui/molecules';
+import { TagMultiSelect, KeyDisplay } from '@/shared/ui/molecules';
 import { ModelMultiSelect } from '@/shared/ui/molecules/ModelMultiSelect';
 import { useModels } from '@/entities/models';
 
 interface WorkflowHeaderProps {
   workflowName: string;
   workflowDescription: string | null;
+  workflowKey?: string | null;
   isActive: boolean;
   isPublic: boolean;
   selectedTagIds: string[];
@@ -26,6 +27,7 @@ interface WorkflowHeaderProps {
 export function WorkflowHeader({
   workflowName,
   workflowDescription,
+  workflowKey,
   isActive,
   isPublic,
   selectedTagIds,
@@ -82,6 +84,9 @@ export function WorkflowHeader({
             id="workflow-public-checkbox"
             label="Public"
           />
+          {workflowKey && (
+            <KeyDisplay keyValue={workflowKey} />
+          )}
         </div>
         
         {/* Tags multiselect */}

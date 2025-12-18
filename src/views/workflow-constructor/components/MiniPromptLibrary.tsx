@@ -305,6 +305,7 @@ export function MiniPromptLibrary({
           content: editingMiniPrompt.content,
           visibility: editingMiniPrompt.visibility,
           tagIds: editingTagIds,
+          key: editingMiniPrompt.key,
         } : undefined}
       />
     </>

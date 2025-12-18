@@ -23,6 +23,7 @@ export function ActiveMiniPromptsSection({ miniPrompts }: ActiveMiniPromptsSecti
     content: string;
     visibility: 'PUBLIC' | 'PRIVATE';
     tagIds?: string[];
+    key?: string | null;
   } | null>(null);
 
   const handleDeactivate = async (miniPromptId: string) => {
@@ -48,6 +49,7 @@ export function ActiveMiniPromptsSection({ miniPrompts }: ActiveMiniPromptsSecti
         content: data.content,
         visibility: data.visibility,
         tagIds: data.tagIds || [],
+        key: data.key,
       });
       setEditingMiniPromptId(miniPromptId);
     } catch (err) {

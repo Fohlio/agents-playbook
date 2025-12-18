@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Button, Input, Textarea, FormField, Radio } from '@/shared/ui/atoms';
 import { Modal } from '@/shared/ui/atoms/Modal';
-import { TagMultiSelect, CopyButton, type Tag } from '@/shared/ui/molecules';
+import { TagMultiSelect, CopyButton, KeyDisplay, type Tag } from '@/shared/ui/molecules';
 import { ModelMultiSelect } from '@/shared/ui/molecules/ModelMultiSelect';
 import { MarkdownContent } from '@/shared/ui/atoms/MarkdownContent';
 import { useModels } from '@/entities/models';
@@ -144,9 +144,14 @@ export function MiniPromptEditorModal({
   return (
     <Modal isOpen={isOpen} onClose={handleClose} className="max-w-4xl max-h-[85vh] overflow-y-auto">
       <div className="p-6">
-        <h2 className="text-2xl font-bold text-text-primary mb-6">
-          {viewOnly ? name || 'Mini-Prompt' : initialData ? 'Edit Mini-Prompt' : 'Create New Mini-Prompt'}
-        </h2>
+        <div className="mb-6">
+          <h2 className="text-2xl font-bold text-text-primary mb-2">
+            {viewOnly ? name || 'Mini-Prompt' : initialData ? 'Edit Mini-Prompt' : 'Create New Mini-Prompt'}
+          </h2>
+          {key && (
+            <KeyDisplay keyValue={key} />
+          )}
+        </div>
 
         <div className="space-y-4 mb-6">
           {!viewOnly && (
@@ -178,6 +183,7 @@ export function MiniPromptEditorModal({
                   fullWidth
                 />
               </FormField>
+              {/* For system prompts, show editable key field */}
               {isSystemPrompt && (
                 <FormField 
                   label="Key" 

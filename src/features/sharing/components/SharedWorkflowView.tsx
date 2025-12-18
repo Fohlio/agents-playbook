@@ -2,7 +2,7 @@
 
 import { Button, Badge } from "@/shared/ui/atoms";
 import { MarkdownContent } from "@/shared/ui/atoms/MarkdownContent";
-import { CopyButton } from "@/shared/ui/molecules";
+import { CopyButton, KeyDisplay } from "@/shared/ui/molecules";
 import { useState, useMemo } from "react";
 
 interface WorkflowStage {
@@ -27,6 +27,7 @@ interface SharedWorkflow {
   name: string;
   description: string | null;
   visibility: "PUBLIC" | "PRIVATE";
+  key?: string | null;
   user: {
     id: string;
     username: string;
@@ -116,7 +117,7 @@ export function SharedWorkflowView({
             />
           )}
         </div>
-        <div className="flex items-center gap-4 text-sm text-gray-600 mb-4">
+        <div className="flex items-center gap-4 text-sm text-gray-600 mb-4 flex-wrap">
           <span className="flex items-center gap-1">
             <svg
               className="w-4 h-4"
@@ -136,6 +137,9 @@ export function SharedWorkflowView({
           <Badge variant={workflow.visibility === "PUBLIC" ? "success" : "warning"}>
             {workflow.visibility}
           </Badge>
+          {workflow.key && (
+            <KeyDisplay keyValue={workflow.key} />
+          )}
         </div>
 
         {workflow.tags && workflow.tags.length > 0 && (
