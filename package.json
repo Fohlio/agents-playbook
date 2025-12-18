@@ -20,6 +20,7 @@
     "db:migrate:status": "prisma migrate status",
     "db:push": "prisma db push",
     "db:seed": "tsx prisma/seed.ts",
+    "db:populate:keys": "tsx scripts/populate-keys.ts",
     "db:migrate:api-keys": "tsx scripts/migrate-api-keys.ts",
     "db:translate:system-prompts": "tsx scripts/translate-system-prompts.ts",
     "db:studio": "prisma studio",

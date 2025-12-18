@@ -4,6 +4,7 @@ import { auth } from '@/server/auth/auth';
 import { prisma } from '@/server/db/client';
 import type { MiniPrompt, Visibility } from '@prisma/client';
 import { triggerMiniPromptEmbedding } from '@/features/mini-prompts/lib/embedding-service';
+import { generateUniqueKey } from '@/shared/lib/generate-key';
 
 export interface CreateMiniPromptInput {
   name: string;
@@ -32,6 +33,9 @@ export async function createMiniPrompt(
     throw new Error('Unauthorized');
   }
 
+  // Generate unique key for the mini-prompt
+  const miniPromptKey = generateUniqueKey(input.name);
+  
   const miniPrompt = await prisma.miniPrompt.create({
     data: {
       userId: session.user.id,
@@ -39,6 +43,7 @@ export async function createMiniPrompt(
       description: input.description,
       content: input.content,
       visibility: input.visibility,
+      key: miniPromptKey,
     },
   });
 

@@ -10,6 +10,7 @@ import type {
 import { userWorkflowEmbeddings } from '@/server/embeddings/user-workflow-embeddings';
 import { triggerMiniPromptEmbedding } from '@/features/mini-prompts/lib/embedding-service';
 import { jsonValueToStringArray } from '@/shared/lib/utils/prisma-json';
+import { generateUniqueKey } from '@/shared/lib/generate-key';
 
 export async function getWorkflowWithStages(
   workflowId: string
@@ -147,6 +148,8 @@ export async function createWorkflow(input: {
         console.log('[createWorkflow] Creating', Object.keys(input.tempMiniPrompts).length, 'temp mini-prompts');
         for (const [tempId, mpData] of Object.entries(input.tempMiniPrompts)) {
           console.log('[createWorkflow] Creating mini-prompt:', tempId, mpData.name);
+          // Generate unique key for the mini-prompt
+          const miniPromptKey = generateUniqueKey(mpData.name);
           const createdMiniPrompt = await tx.miniPrompt.create({
             data: {
               name: mpData.name,
@@ -156,6 +159,7 @@ export async function createWorkflow(input: {
               userId: input.userId,
               isActive: true,
               isSystemMiniPrompt: false,
+              key: miniPromptKey,
               position: 0,
             },
           });
@@ -166,6 +170,10 @@ export async function createWorkflow(input: {
       }
 
       console.log('[createWorkflow] Creating workflow');
+      // Generate unique key for the workflow
+      const workflowKey = generateUniqueKey(input.name);
+      console.log('[createWorkflow] Generated key:', workflowKey);
+      
       // Create workflow
       const newWorkflow = await tx.workflow.create({
         data: {
@@ -176,6 +184,7 @@ export async function createWorkflow(input: {
           isActive: input.isActive ?? false,
           visibility: input.visibility ?? 'PRIVATE',
           includeMultiAgentChat: input.includeMultiAgentChat ?? false,
+          key: workflowKey,
           position: 0,
         },
       });
