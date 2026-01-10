@@ -15,6 +15,21 @@ import {
 } from '@/server/mcp-tools';
 // Import auth helpers
 import { getUserId, extractUserIdFromRequest, userIdStorage } from '@/server/mcp-tools-db/mcp-auth-helpers';
+// Import new CRUD handlers
+import {
+  getWorkflowToolSchema,
+  getWorkflowHandler,
+  getAllMyPromptsToolSchema,
+  getAllMyPromptsHandler,
+  addPromptToolSchema,
+  addPromptHandler,
+  editPromptToolSchema,
+  editPromptHandler,
+  addWorkflowToolSchema,
+  addWorkflowHandler,
+  editWorkflowToolSchema,
+  editWorkflowHandler,
+} from '@/server/mcp-tools-db';
 // Load environment variables
 config();
 
@@ -258,6 +273,78 @@ const handler = createMcpHandler(
       getSelectedPromptToolSchema,
       async ({ prompt_id, key }) => {
         return await getSelectedPromptHandler({ prompt_id, key });
+      },
+    );
+
+    // Tool 6: Get workflow details
+    // PUBLIC workflows accessible without auth, PRIVATE requires auth + ownership
+    server.tool(
+      'get_workflow',
+      'Get complete workflow details including all stages, prompts, tags, and models. Public workflows work without auth.',
+      getWorkflowToolSchema,
+      async ({ workflow_id }) => {
+        const userId = await getUserId();
+        return await getWorkflowHandler({ workflow_id }, userId);
+      },
+    );
+
+    // Tool 7: Get all my prompts (paginated)
+    // Requires authentication
+    server.tool(
+      'get_all_my_prompts',
+      'Get paginated list of your prompts with search support. Requires authentication.',
+      getAllMyPromptsToolSchema,
+      async ({ page, limit, search }) => {
+        const userId = await getUserId();
+        return await getAllMyPromptsHandler({ page, limit, search }, userId);
+      },
+    );
+
+    // Tool 8: Add new prompt
+    // Requires authentication
+    server.tool(
+      'add_prompt',
+      'Create a new mini-prompt with optional tags. Requires authentication.',
+      addPromptToolSchema,
+      async ({ name, content, description, visibility, tags }) => {
+        const userId = await getUserId();
+        return await addPromptHandler({ name, content, description, visibility, tags }, userId);
+      },
+    );
+
+    // Tool 9: Edit existing prompt
+    // Requires authentication and ownership
+    server.tool(
+      'edit_prompt',
+      'Update an existing mini-prompt. Requires authentication and ownership.',
+      editPromptToolSchema,
+      async ({ prompt_id, name, content, description, visibility, is_active, tags }) => {
+        const userId = await getUserId();
+        return await editPromptHandler({ prompt_id, name, content, description, visibility, is_active, tags }, userId);
+      },
+    );
+
+    // Tool 10: Add new workflow
+    // Requires authentication
+    server.tool(
+      'add_workflow',
+      'Create a new workflow with optional stages and prompts. Requires authentication.',
+      addWorkflowToolSchema,
+      async ({ name, description, complexity, visibility, tags, stages }) => {
+        const userId = await getUserId();
+        return await addWorkflowHandler({ name, description, complexity, visibility, tags, stages }, userId);
+      },
+    );
+
+    // Tool 11: Edit existing workflow
+    // Requires authentication and ownership
+    server.tool(
+      'edit_workflow',
+      'Update an existing workflow. If stages are provided, performs full replacement. Requires authentication and ownership.',
+      editWorkflowToolSchema,
+      async ({ workflow_id, name, description, complexity, visibility, is_active, tags, stages }) => {
+        const userId = await getUserId();
+        return await editWorkflowHandler({ workflow_id, name, description, complexity, visibility, is_active, tags, stages }, userId);
       },
     );
   },
