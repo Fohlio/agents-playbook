@@ -1,3 +1,6 @@
+'use client';
+
+import { useTranslations } from "next-intl";
 import { StatCard } from "@/shared/ui/molecules";
 
 export interface DashboardStatsData {
@@ -13,34 +16,36 @@ interface DashboardStatsProps {
 }
 
 export function DashboardStats({ stats }: DashboardStatsProps) {
+  const t = useTranslations('dashboard.stats');
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
       <StatCard
-        label="Total Workflows"
+        label={t('totalWorkflows')}
         value={stats.totalWorkflows}
         testId="stat-total-workflows"
-        tooltip="Total number of workflows in your library (active and inactive)"
+        tooltip={t('totalWorkflowsTooltip')}
       />
 
       <StatCard
-        label="Active Workflows"
+        label={t('activeWorkflows')}
         value={stats.activeWorkflows}
         testId="stat-active-workflows"
-        tooltip="Active workflows available in MCP server"
+        tooltip={t('activeWorkflowsTooltip')}
       />
 
       <StatCard
-        label="Mini-Prompts"
+        label={t('miniPrompts')}
         value={stats.totalMiniPrompts}
         testId="stat-mini-prompts"
-        tooltip="Reusable prompt templates that can be used across multiple workflows"
+        tooltip={t('miniPromptsTooltip')}
       />
 
       <StatCard
-        label="Public Items"
+        label={t('publicItems')}
         value={stats.publicItems}
         testId="stat-public-items"
-        tooltip="Number of your workflows and mini-prompts visible to the community"
+        tooltip={t('publicItemsTooltip')}
       />
     </div>
   );

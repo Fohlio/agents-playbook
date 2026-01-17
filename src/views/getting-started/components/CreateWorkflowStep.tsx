@@ -1,4 +1,7 @@
+'use client';
+
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 import { ROUTES } from '@/shared/routes';
 
 /**
@@ -8,14 +11,16 @@ import { ROUTES } from '@/shared/routes';
  * Shows how to build workflows visually
  */
 export function CreateWorkflowStep() {
+  const t = useTranslations('gettingStarted.createWorkflow');
+
   return (
     <div className="space-y-6">
       <div className="text-center">
         <h2 className="text-2xl font-bold text-gray-900 mb-2">
-          Create Custom Workflows
+          {t('title')}
         </h2>
         <p className="text-gray-600">
-          Build workflows visually with our drag-and-drop constructor
+          {t('subtitle')}
         </p>
       </div>
 
@@ -26,10 +31,10 @@ export function CreateWorkflowStep() {
               <div className="w-8 h-8 bg-blue-100 rounded flex items-center justify-center text-blue-600 font-bold text-sm">
                 1
               </div>
-              <h4 className="font-semibold text-gray-900">Create Stages</h4>
+              <h4 className="font-semibold text-gray-900">{t('step1Title')}</h4>
             </div>
             <p className="text-sm text-gray-600 ml-11">
-              Organize your workflow into logical phases like &quot;Analysis&quot;, &quot;Design&quot;, &quot;Implementation&quot;
+              {t('step1Desc')}
             </p>
           </div>
 
@@ -44,10 +49,10 @@ export function CreateWorkflowStep() {
               <div className="w-8 h-8 bg-purple-100 rounded flex items-center justify-center text-purple-600 font-bold text-sm">
                 2
               </div>
-              <h4 className="font-semibold text-gray-900">Drag Mini-Prompts</h4>
+              <h4 className="font-semibold text-gray-900">{t('step2Title')}</h4>
             </div>
             <p className="text-sm text-gray-600 ml-11">
-              Drag mini-prompts from your library into stages. Reorder them to define execution sequence.
+              {t('step2Desc')}
             </p>
           </div>
 
@@ -62,10 +67,10 @@ export function CreateWorkflowStep() {
               <div className="w-8 h-8 bg-emerald-100 rounded flex items-center justify-center text-emerald-600 font-bold text-sm">
                 3
               </div>
-              <h4 className="font-semibold text-gray-900">Configure & Save</h4>
+              <h4 className="font-semibold text-gray-900">{t('step3Title')}</h4>
             </div>
             <p className="text-sm text-gray-600 ml-11">
-              Set complexity, tags, and visibility (PUBLIC/PRIVATE). Save to use with MCP server.
+              {t('step3Desc')}
             </p>
           </div>
         </div>
@@ -75,10 +80,9 @@ export function CreateWorkflowStep() {
         <div className="flex items-start gap-3">
           <span className="text-2xl">💡</span>
           <div>
-            <h4 className="font-semibold text-blue-900 mb-1">Best Practice</h4>
+            <h4 className="font-semibold text-blue-900 mb-1">{t('bestPractice')}</h4>
             <p className="text-sm text-blue-800">
-              Assign <strong>one agent per stage</strong> to prevent context collapse.
-              Use review steps between stages to maintain clarity and allow validation before proceeding.
+              {t('bestPracticeDesc')}
             </p>
           </div>
         </div>
@@ -88,21 +92,21 @@ export function CreateWorkflowStep() {
         <div className="flex items-start gap-3">
           <span className="text-2xl">📋</span>
           <div>
-            <h4 className="font-semibold text-purple-900 mb-2">Context Management</h4>
+            <h4 className="font-semibold text-purple-900 mb-2">{t('contextManagement')}</h4>
             <p className="text-sm text-purple-800 mb-3">
-              Keep AI agents aligned across workflow stages with automatic mini-prompts:
+              {t('contextManagementDesc')}
             </p>
             <div className="space-y-2">
               <div className="bg-white rounded p-2 text-xs">
-                <strong className="text-purple-900">Memory Board (📋):</strong>
+                <strong className="text-purple-900">{t('memoryBoard')}</strong>
                 <span className="text-gray-700 ml-1">
-                  Enable &quot;With Review&quot; on stages to add handoff review prompts
+                  {t('memoryBoardDesc')}
                 </span>
               </div>
               <div className="bg-white rounded p-2 text-xs">
-                <strong className="text-purple-900">Multi-Agent Chat (🤖):</strong>
+                <strong className="text-purple-900">{t('multiAgentChat')}</strong>
                 <span className="text-gray-700 ml-1">
-                  Enable globally to add coordination chat after each mini-prompt
+                  {t('multiAgentChatDesc')}
                 </span>
               </div>
             </div>
@@ -112,12 +116,12 @@ export function CreateWorkflowStep() {
 
       <div className="grid grid-cols-2 gap-3 text-sm">
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-          <p className="font-medium text-blue-900 mb-1">✨ Real-time Preview</p>
-          <p className="text-blue-700 text-xs">See your workflow structure as you build</p>
+          <p className="font-medium text-blue-900 mb-1">✨ {t('realTimePreview')}</p>
+          <p className="text-blue-700 text-xs">{t('realTimePreviewDesc')}</p>
         </div>
         <div className="bg-purple-50 border border-purple-200 rounded-lg p-3">
-          <p className="font-medium text-purple-900 mb-1">🎯 Smart Validation</p>
-          <p className="text-purple-700 text-xs">Ensures all required fields are complete</p>
+          <p className="font-medium text-purple-900 mb-1">🎯 {t('smartValidation')}</p>
+          <p className="text-purple-700 text-xs">{t('smartValidationDesc')}</p>
         </div>
       </div>
 
@@ -125,32 +129,32 @@ export function CreateWorkflowStep() {
         <div className="flex items-start gap-3">
           <span className="text-2xl">🤖</span>
           <div>
-            <h4 className="font-semibold text-violet-900 mb-2">AI Assistant</h4>
+            <h4 className="font-semibold text-violet-900 mb-2">{t('aiAssistant')}</h4>
             <p className="text-sm text-violet-800 mb-3">
-              Need help creating your workflow? Use the built-in AI assistant to:
+              {t('aiAssistantDesc')}
             </p>
             <div className="space-y-2">
               <div className="bg-white rounded p-2 text-xs">
-                <strong className="text-violet-900">Generate Workflows:</strong>
+                <strong className="text-violet-900">{t('generateWorkflows')}</strong>
                 <span className="text-gray-700 ml-1">
-                  Describe your task and get a complete workflow structure
+                  {t('generateWorkflowsDesc')}
                 </span>
               </div>
               <div className="bg-white rounded p-2 text-xs">
-                <strong className="text-violet-900">Create Mini-Prompts:</strong>
+                <strong className="text-violet-900">{t('createMiniPrompts')}</strong>
                 <span className="text-gray-700 ml-1">
-                  Ask AI to write custom prompts for specific tasks
+                  {t('createMiniPromptsDesc')}
                 </span>
               </div>
               <div className="bg-white rounded p-2 text-xs">
-                <strong className="text-violet-900">Get Recommendations:</strong>
+                <strong className="text-violet-900">{t('getRecommendations')}</strong>
                 <span className="text-gray-700 ml-1">
-                  Receive suggestions for improving workflow structure
+                  {t('getRecommendationsDesc')}
                 </span>
               </div>
             </div>
             <p className="text-xs text-violet-700 mt-3 italic">
-              💡 The AI assistant is available in the workflow constructor and library sections
+              💡 {t('aiAssistantNote')}
             </p>
           </div>
         </div>
@@ -160,17 +164,17 @@ export function CreateWorkflowStep() {
         <div className="flex items-center justify-between">
           <div>
             <p className="text-sm font-medium text-gray-900">
-              Try the workflow constructor
+              {t('tryConstructor')}
             </p>
             <p className="text-xs text-gray-600 mt-1">
-              Create your first custom workflow with AI assistance
+              {t('tryConstructorDesc')}
             </p>
           </div>
           <Link
             href={ROUTES.LIBRARY.WORKFLOWS.NEW}
             className="px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700 transition-colors text-sm font-medium"
           >
-            Create Workflow
+            {t('createWorkflowBtn')}
           </Link>
         </div>
       </div>

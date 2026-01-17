@@ -6,6 +6,9 @@ import { ROUTES, PROTECTED_ROUTES } from "@/shared/routes";
  *
  * Pre-configured empty state configurations for common scenarios.
  * Each preset returns EmptyStateProps that can be spread into EmptyState component.
+ * 
+ * Note: These presets use hardcoded English strings for backwards compatibility.
+ * For translated versions, use the useEmptyStatePresets hook from @/shared/hooks/use-empty-state-presets.
  */
 
 /**
@@ -149,4 +152,3 @@ export const emptyStatePresets = {
   noFilterResults,
   emptyDiscovery,
 };
-

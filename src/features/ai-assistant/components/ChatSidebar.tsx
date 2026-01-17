@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
+import { useTranslations } from 'next-intl';
 import { useAIChat } from '@/features/ai-assistant/hooks/useAIChat';
 import { useAIChatSessions } from '@/features/ai-assistant/hooks/useAIChatSessions';
 import { useLoadChatSession } from '@/features/ai-assistant/hooks/useLoadChatSession';
@@ -27,6 +28,7 @@ export function ChatSidebar({
   sessionId,
   onToolCall,
 }: ChatSidebarProps) {
+  const t = useTranslations('aiAssistant');
   const [showError, setShowError] = useState(false);
   const [showSessionSelector, setShowSessionSelector] = useState(false);
   const [showApiKeyModal, setShowApiKeyModal] = useState(false);
@@ -116,7 +118,7 @@ export function ChatSidebar({
         <div className="flex items-center gap-2">
           <Sparkles className="w-5 h-5 text-blue-600" />
           <h2 className="font-semibold text-gray-900 flex items-center gap-2">
-            AI Assistant
+            {t('title')}
             <BetaBadge size="sm" />
             <span className="text-sm text-gray-500">
               ({mode === 'workflow' ? 'Workflow' : 'Mini-Prompt'})
@@ -127,8 +129,8 @@ export function ChatSidebar({
           <button
             onClick={() => setShowSessionSelector(!showSessionSelector)}
             className="p-1 hover:bg-gray-100 rounded-md transition-colors"
-            aria-label="Toggle session history"
-            title="Session History"
+            aria-label={t('history')}
+            title={t('history')}
           >
             <History className="w-5 h-5 text-gray-500" />
           </button>
@@ -142,7 +144,7 @@ export function ChatSidebar({
               onClose();
             }}
             className="p-1 hover:bg-gray-100 rounded-md transition-colors"
-            aria-label="Close chat"
+            aria-label={t('close')}
             disabled={isLoading}
           >
             <X className={`w-5 h-5 ${isLoading ? 'text-gray-300' : 'text-gray-500'}`} />
@@ -156,13 +158,13 @@ export function ChatSidebar({
           <div className="p-3 border-b border-gray-200 bg-white">
             <div className="flex items-center justify-between">
               <h3 className="font-medium text-sm text-gray-900">
-                Chat History
+                {t('history')}
               </h3>
               <button
                 onClick={handleNewChat}
                 className="text-xs px-2 py-1 bg-blue-600 text-white rounded hover:bg-blue-700"
               >
-                New Chat
+                {t('newChat')}
               </button>
             </div>
           </div>
@@ -170,11 +172,11 @@ export function ChatSidebar({
           {isLoadingSessions ? (
             <div className="p-4 text-center">
               <Loader2 className="w-5 h-5 animate-spin text-gray-400 mx-auto" />
-              <p className="text-xs text-gray-500 mt-2">Loading sessions...</p>
+              <p className="text-xs text-gray-500 mt-2">{t('loadingHistory')}</p>
             </div>
           ) : sessions.length === 0 ? (
             <div className="p-4 text-center">
-              <p className="text-sm text-gray-500">No previous chats</p>
+              <p className="text-sm text-gray-500">{t('noHistory')}</p>
             </div>
           ) : (
             <div className="divide-y divide-gray-200">
@@ -218,7 +220,7 @@ export function ChatSidebar({
 
       {/* Token Counter */}
       <div className="px-4 py-2 bg-gray-50 border-b border-gray-200 text-xs text-gray-600">
-        Tokens: ~{tokenCount.toLocaleString()} / 272,000
+        {t('tokens', { count: tokenCount.toLocaleString() })} / 272,000
         {tokenCount > 220000 && (
           <span className="text-orange-600 ml-2">
             (Approaching limit - conversation will be summarized)
@@ -258,9 +260,7 @@ export function ChatSidebar({
           <div className="text-center text-gray-500 mt-8">
             <Sparkles className="w-12 h-12 mx-auto mb-3 text-gray-300" />
             <p className="text-sm">
-              {mode === 'workflow'
-                ? 'Ask me to create or modify workflows'
-                : 'Ask me to create or edit mini-prompts'}
+              {t('placeholder')}
             </p>
           </div>
         )}

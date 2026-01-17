@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { loginSchema, type LoginInput } from "@/shared/lib/validators/auth";
 import { Input, Button, FormField, Alert, Checkbox, Link } from "@/shared/ui/atoms";
 import { ROUTES } from "@/shared/routes";
@@ -24,6 +25,7 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const { data: session } = useSession();
   const router = useRouter();
+  const t = useTranslations('auth.login');
 
   const {
     register,
@@ -59,7 +61,7 @@ export default function LoginPage() {
       });
 
       if (result?.error) {
-        setError("Invalid credentials");
+        setError(t('invalidCredentials'));
         setIsLoading(false);
       } else if (result?.ok) {
         // Successful login - use window.location for full page navigation
@@ -67,7 +69,7 @@ export default function LoginPage() {
         window.location.href = ROUTES.DASHBOARD;
       }
     } catch {
-      setError("An error occurred during login");
+      setError(t('loginError'));
       setIsLoading(false);
     }
   };
@@ -75,9 +77,9 @@ export default function LoginPage() {
   return (
     <div className="space-y-8 bg-white p-8 rounded-lg shadow-base">
       <div className="text-center">
-        <h1 className="text-3xl font-bold text-gray-900">Sign In</h1>
+        <h1 className="text-3xl font-bold text-gray-900">{t('title')}</h1>
         <p className="mt-2 text-sm text-gray-600">
-          Welcome back to Agents Playbook
+          {t('subtitle')}
         </p>
       </div>
 
@@ -87,7 +89,7 @@ export default function LoginPage() {
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         <FormField
-          label="Email"
+          label={t('email')}
           htmlFor="email"
           required
           error={errors.email?.message}
@@ -96,7 +98,7 @@ export default function LoginPage() {
             id="email"
             type="email"
             autoComplete="email"
-            placeholder="you@example.com"
+            placeholder={t('emailPlaceholder')}
             error={!!errors.email}
             fullWidth
             testId="login-email-input"
@@ -105,7 +107,7 @@ export default function LoginPage() {
         </FormField>
 
         <FormField
-          label="Password"
+          label={t('password')}
           htmlFor="password"
           required
           error={errors.password?.message}
@@ -114,7 +116,7 @@ export default function LoginPage() {
             id="password"
             type="password"
             autoComplete="current-password"
-            placeholder="••••••••"
+            placeholder={t('passwordPlaceholder')}
             error={!!errors.password}
             fullWidth
             testId="login-password-input"
@@ -124,7 +126,7 @@ export default function LoginPage() {
 
         <Checkbox
           id="rememberMe"
-          label="Remember me for 90 days"
+          label={t('rememberMe')}
           testId="login-remember-me-checkbox"
           {...register("rememberMe")}
         />
@@ -136,14 +138,14 @@ export default function LoginPage() {
           disabled={isLoading}
           testId="login-submit-button"
         >
-          {isLoading ? "Signing in..." : "Sign In"}
+          {isLoading ? t('submitting') : t('submit')}
         </Button>
       </form>
 
       <div className="text-center text-sm">
-        <span className="text-gray-600">Don&apos;t have an account? </span>
+        <span className="text-gray-600">{t('noAccount')} </span>
         <Link href={ROUTES.REGISTER}>
-          Sign up
+          {t('signUp')}
         </Link>
       </div>
     </div>

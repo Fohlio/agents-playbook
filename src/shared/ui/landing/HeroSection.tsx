@@ -1,4 +1,10 @@
+'use client';
+
+import { useTranslations } from 'next-intl';
+
 export default function HeroSection() {
+  const t = useTranslations('landing.hero');
+
   return (
     <section className="relative min-h-[60vh] flex items-center justify-center overflow-hidden">
       {/* Background */}
@@ -16,47 +22,46 @@ export default function HeroSection() {
         <div className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-500/10 to-purple-500/10 backdrop-blur-sm border border-blue-200/50 rounded-full text-blue-800 text-sm font-medium mb-8 hover:scale-105 transition-transform duration-300">
           <div className="w-2 h-2 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full mr-3 animate-pulse"></div>
           <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent font-semibold">
-            MCP Server • Cursor Compatible
+            {t('badge')}
           </span>
         </div>
         
         {/* Main Heading */}
         <h1 className="text-4xl lg:text-5xl font-bold mb-8 leading-tight">
           <span className="bg-gradient-to-r from-slate-900 via-blue-900 to-slate-900 bg-clip-text text-transparent">
-            AI Agents
+            {t('title1')}
           </span>
           <br />
           <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-blue-600 bg-clip-text text-transparent animate-pulse">
-            Playbook
+            {t('title2')}
           </span>
         </h1>
         
         {/* Subtitle */}
         <p className="text-xl lg:text-2xl text-slate-600 mb-8 max-w-4xl mx-auto leading-relaxed">
-          Empower AI to tackle complex tasks and navigate large codebases with precision
+          {t('subtitle')}
         </p>
 
         {/* Value Propositions */}
         <div className="flex flex-wrap justify-center gap-4 lg:gap-6 mb-12 max-w-5xl mx-auto">
           <div className="inline-flex items-center gap-3 px-4 lg:px-5 py-3 bg-white/80 backdrop-blur-sm rounded-lg shadow-sm border border-gray-200">
             <span className="text-2xl">🎯</span>
-            <span className="text-gray-700 font-medium text-sm lg:text-base">Reduced Hallucinations</span>
+            <span className="text-gray-700 font-medium text-sm lg:text-base">{t('value1')}</span>
           </div>
           <div className="inline-flex items-center gap-3 px-4 lg:px-5 py-3 bg-white/80 backdrop-blur-sm rounded-lg shadow-sm border border-gray-200">
             <span className="text-2xl">🚀</span>
-            <span className="text-gray-700 font-medium text-sm lg:text-base">Complex Tasks</span>
+            <span className="text-gray-700 font-medium text-sm lg:text-base">{t('value2')}</span>
           </div>
           <div className="inline-flex items-center gap-3 px-4 lg:px-5 py-3 bg-white/80 backdrop-blur-sm rounded-lg shadow-sm border border-gray-200">
             <span className="text-2xl">📚</span>
-            <span className="text-gray-700 font-medium text-sm lg:text-base">Personal Library</span>
+            <span className="text-gray-700 font-medium text-sm lg:text-base">{t('value3')}</span>
           </div>
         </div>
 
         <p className="text-lg text-slate-600 max-w-3xl mx-auto leading-relaxed mb-12">
-          Build custom workflows and prompts for your team&apos;s specific needs. Maintain your personal library of reusable patterns.
-          Guide AI through complex multi-step processes in large projects with structured, validated workflows.
+          {t('description')}
         </p>
       </div>
     </section>
   );
-} 
+}

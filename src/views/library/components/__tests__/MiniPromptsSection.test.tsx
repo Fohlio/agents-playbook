@@ -226,7 +226,8 @@ describe('MiniPromptsSection', () => {
 
   it('should render loading state initially', () => {
     renderWithProviders(<MiniPromptsSection />);
-    expect(screen.getByText('Loading...')).toBeInTheDocument();
+    // Translation mock returns the key
+    expect(screen.getByText('loading')).toBeInTheDocument();
   });
 
   it('should fetch and display mini-prompts sorted by position', async () => {
@@ -258,8 +259,9 @@ describe('MiniPromptsSection', () => {
     renderWithProviders(<MiniPromptsSection />);
 
     await waitFor(() => {
-      expect(screen.getByText('No mini-prompts yet')).toBeInTheDocument();
-      expect(screen.getByText('Create Your First Mini-Prompt')).toBeInTheDocument();
+      // Translation mock returns the key
+      expect(screen.getByText('miniPrompts.empty')).toBeInTheDocument();
+      expect(screen.getByText('miniPrompts.createFirst')).toBeInTheDocument();
     });
   });
 
@@ -267,7 +269,8 @@ describe('MiniPromptsSection', () => {
     renderWithProviders(<MiniPromptsSection />);
 
     await waitFor(() => {
-      expect(screen.getByText('+ Create Mini-Prompt')).toBeInTheDocument();
+      // Translation mock returns the key
+      expect(screen.getByText('miniPrompts.create')).toBeInTheDocument();
     });
   });
 
@@ -435,7 +438,8 @@ describe('MiniPromptsSection', () => {
     renderWithProviders(<MiniPromptsSection />);
 
     await waitFor(() => {
-      const createButton = screen.getByText('+ Create Mini-Prompt');
+      // Translation mock returns the key, so look for the translation key
+      const createButton = screen.getByText('miniPrompts.create');
       fireEvent.click(createButton);
     });
 

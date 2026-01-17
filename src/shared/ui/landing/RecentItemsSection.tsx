@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
+import { useTranslations } from "next-intl";
 import { Workflow, MiniPrompt, Tag, Model } from "@prisma/client";
 import { WorkflowDiscoveryCard } from "@/shared/ui/molecules/WorkflowDiscoveryCard";
 import { MiniPromptDiscoveryCard } from "@/shared/ui/molecules/MiniPromptDiscoveryCard";
@@ -45,6 +46,8 @@ export default function RecentItemsSection() {
   const router = useRouter();
   const { data: session, status } = useSession();
   const isAuthenticated = status === "authenticated";
+  const t = useTranslations('landing.recentItems');
+  const tCommon = useTranslations('common');
   
   const [activeTab, setActiveTab] = useState<TabType>("workflows");
   const [workflows, setWorkflows] = useState<WorkflowWithMeta[]>([]);
@@ -108,14 +111,14 @@ export default function RecentItemsSection() {
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-gray-900 mb-4">
-              Recent Community Additions
+              {t('title')}
             </h2>
             <p className="text-lg text-gray-600">
-              Explore the latest workflows and prompts shared by the community
+              {t('subtitle')}
             </p>
           </div>
           <div className="flex justify-center">
-            <div className="animate-pulse text-gray-500">Loading...</div>
+            <div className="animate-pulse text-gray-500">{tCommon('loading')}</div>
           </div>
         </div>
       </section>
@@ -127,10 +130,10 @@ export default function RecentItemsSection() {
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-12">
           <h2 className="text-3xl font-bold text-gray-900 mb-4">
-            Recent Community Additions
+            {t('title')}
           </h2>
           <p className="text-lg text-gray-600">
-            Explore the latest workflows and prompts shared by the community
+            {t('subtitle')}
           </p>
         </div>
 
@@ -145,7 +148,7 @@ export default function RecentItemsSection() {
                   : "text-gray-600 hover:text-gray-900"
               }`}
             >
-              Workflows ({workflows.length})
+              {t('tabWorkflows', { count: workflows.length })}
             </button>
             <button
               onClick={() => setActiveTab("prompts")}
@@ -155,7 +158,7 @@ export default function RecentItemsSection() {
                   : "text-gray-600 hover:text-gray-900"
               }`}
             >
-              Prompts ({miniPrompts.length})
+              {t('tabPrompts', { count: miniPrompts.length })}
             </button>
           </div>
         </div>
@@ -164,7 +167,7 @@ export default function RecentItemsSection() {
         {activeTab === "workflows" ? (
           workflows.length === 0 ? (
             <div className="text-center text-gray-500 py-12">
-              No public workflows yet. Be the first to share one!
+              {t('noWorkflows')}
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -204,7 +207,7 @@ export default function RecentItemsSection() {
           )
         ) : miniPrompts.length === 0 ? (
           <div className="text-center text-gray-500 py-12">
-            No public prompts yet. Be the first to share one!
+            {t('noPrompts')}
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -283,7 +286,7 @@ export default function RecentItemsSection() {
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-sm text-gray-500">
-                  By {previewMiniPrompt.user.username}
+                  {tCommon('by', { author: previewMiniPrompt.user.username })}
                 </span>
                 <button
                   onClick={() => {
@@ -291,7 +294,7 @@ export default function RecentItemsSection() {
                   }}
                   className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
                 >
-                  Copy Prompt
+                  {t('copyPrompt')}
                 </button>
               </div>
             </div>
@@ -301,4 +304,3 @@ export default function RecentItemsSection() {
     </section>
   );
 }
-

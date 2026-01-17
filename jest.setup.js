@@ -6,6 +6,69 @@ require('@testing-library/jest-dom');
 config({ path: '.env.local' });
 config({ path: '.env' });
 
+// Mock next-intl for tests
+jest.mock('next-intl', () => ({
+  useTranslations: () => (key, values) => {
+    // Simple mock that returns the key with interpolated values
+    if (values) {
+      return Object.entries(values).reduce(
+        (str, [k, v]) => str.replace(`{${k}}`, String(v)),
+        key
+      );
+    }
+    return key;
+  },
+  useLocale: () => 'en',
+  useMessages: () => ({}),
+  useNow: () => new Date(),
+  useTimeZone: () => 'UTC',
+  NextIntlClientProvider: ({ children }) => children,
+}));
+
+jest.mock('next-intl/server', () => ({
+  getTranslations: () => Promise.resolve((key) => key),
+  getLocale: () => Promise.resolve('en'),
+  getMessages: () => Promise.resolve({}),
+}));
+
+jest.mock('next-intl/routing', () => ({
+  defineRouting: (config) => config,
+  createSharedPathnamesNavigation: () => ({
+    Link: 'a',
+    redirect: jest.fn(),
+    usePathname: () => '/',
+    useRouter: () => ({
+      push: jest.fn(),
+      replace: jest.fn(),
+      back: jest.fn(),
+    }),
+  }),
+}));
+
+jest.mock('next-intl/navigation', () => ({
+  createSharedPathnamesNavigation: () => ({
+    Link: 'a',
+    redirect: jest.fn(),
+    usePathname: () => '/',
+    useRouter: () => ({
+      push: jest.fn(),
+      replace: jest.fn(),
+      back: jest.fn(),
+    }),
+  }),
+  createNavigation: () => ({
+    Link: 'a',
+    redirect: jest.fn(),
+    usePathname: () => '/',
+    useRouter: () => ({
+      push: jest.fn(),
+      replace: jest.fn(),
+      back: jest.fn(),
+    }),
+    getPathname: () => '/',
+  }),
+}));
+
 // Polyfill Web APIs for Node.js test environment
 global.Request = class Request {
   method;

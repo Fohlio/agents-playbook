@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { formatDistanceToNow } from "date-fns";
+import { useTranslations } from "next-intl";
 import PushPinIcon from '@mui/icons-material/PushPin';
 import LockIcon from '@mui/icons-material/Lock';
 import { Card } from "@/shared/ui/atoms";
@@ -12,6 +13,8 @@ interface TopicCardProps {
 }
 
 export function TopicCard({ topic }: TopicCardProps) {
+  const t = useTranslations("community");
+
   return (
     <Link href={`/dashboard/community/${topic.id}`}>
       <Card className="p-4 hover:shadow-md transition-shadow cursor-pointer">
@@ -22,14 +25,14 @@ export function TopicCard({ topic }: TopicCardProps) {
               <PushPinIcon
                 fontSize="small"
                 className="text-primary-600"
-                titleAccess="Pinned topic"
+                titleAccess={t("pinnedTopic")}
               />
             )}
             {topic.isClosed && (
               <LockIcon
                 fontSize="small"
                 className="text-gray-500"
-                titleAccess="Closed topic"
+                titleAccess={t("closedTopic")}
               />
             )}
           </div>
@@ -51,7 +54,7 @@ export function TopicCard({ topic }: TopicCardProps) {
               <span>•</span>
               <span>
                 {topic._count.messages}{" "}
-                {topic._count.messages === 1 ? "message" : "messages"}
+                {t("messages", { count: topic._count.messages })}
               </span>
             </div>
           </div>

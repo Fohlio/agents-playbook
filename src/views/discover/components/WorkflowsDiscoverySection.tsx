@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useTranslations } from "next-intl";
 import { WorkflowDiscoveryCardWidget } from "@/widgets/workflow-discovery-card";
 import { DiscoveryGrid } from "@/shared/ui/organisms/DiscoveryGrid";
 import { Pagination } from "@/shared/ui/molecules/Pagination";
@@ -8,7 +9,7 @@ import { SearchBar } from "@/shared/ui/molecules/SearchBar";
 import { DiscoveryFilters } from "./DiscoveryFilters";
 import { PublicWorkflowWithMeta, PaginatedResult, WorkflowSortOption, WorkflowFilters } from "../types";
 import { useToast } from "@/shared/ui/providers/ToastProvider";
-import { noSearchResults, noFilterResults, emptyDiscovery } from "@/shared/ui/molecules/empty-state-presets";
+import { useEmptyStatePresets } from "@/shared/hooks/use-empty-state-presets";
 
 interface WorkflowsDiscoverySectionProps {
   isAuthenticated: boolean;
@@ -19,6 +20,8 @@ export function WorkflowsDiscoverySection({
   isAuthenticated,
   currentUserId,
 }: WorkflowsDiscoverySectionProps) {
+  const t = useTranslations("discover");
+  const { noSearchResults, noFilterResults, emptyDiscovery } = useEmptyStatePresets();
   const [data, setData] = useState<PaginatedResult<PublicWorkflowWithMeta> | null>(null);
   const [loading, setLoading] = useState(true);
   const [importing, setImporting] = useState<string | null>(null);
@@ -62,7 +65,7 @@ export function WorkflowsDiscoverySection({
 
       if (response.ok) {
         showToast({
-          message: "Removed from library",
+          message: t("toast.removedFromLibrary"),
           variant: "info",
         });
         fetchWorkflows();
@@ -70,7 +73,7 @@ export function WorkflowsDiscoverySection({
     } catch (error) {
       console.error("Error undoing import:", error);
       showToast({
-        message: "Failed to undo",
+        message: t("toast.failedToUndo"),
         variant: "error",
       });
     }
@@ -85,10 +88,10 @@ export function WorkflowsDiscoverySection({
 
       if (response.ok) {
         showToast({
-          message: "Workflow added to library",
+          message: t("toast.addedToLibrary"),
           variant: "success",
           action: {
-            label: "Undo",
+            label: t("toast.undo"),
             onClick: () => handleUndo(workflowId),
           },
         });
@@ -97,14 +100,14 @@ export function WorkflowsDiscoverySection({
       } else {
         const errorData = await response.json();
         showToast({
-          message: errorData.error || "Failed to add to library",
+          message: errorData.error || t("toast.failedToAdd"),
           variant: "error",
         });
       }
     } catch (error) {
       console.error("Error importing workflow:", error);
       showToast({
-        message: "Failed to add to library",
+        message: t("toast.failedToAdd"),
         variant: "error",
       });
     } finally {
@@ -121,7 +124,7 @@ export function WorkflowsDiscoverySection({
             setSearch(value);
             setPage(1);
           }}
-          placeholder="Search workflows by name, description, or author..."
+          placeholder={t("searchPlaceholder")}
         />
       </div>
 

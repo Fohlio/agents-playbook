@@ -1,10 +1,13 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useScrollAnimation } from "@/shared/hooks/use-scroll-animation";
 
 export default function FeaturesSection() {
+  const t = useTranslations('landing.features');
   const { ref: headerRef, isVisible: headerVisible } = useScrollAnimation();
   const { ref: gridRef, isVisible: gridVisible } = useScrollAnimation();
+
   const features = [
     {
       icon: (
@@ -12,10 +15,10 @@ export default function FeaturesSection() {
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
         </svg>
       ),
-      title: "Handle Complex Tasks",
-      description: "Multi-step workflows guide AI through intricate processes, breaking down large features into manageable, validated stages.",
+      titleKey: 'complexTasks.title',
+      descriptionKey: 'complexTasks.description',
+      audienceKey: 'complexTasks.audience',
       gradient: "from-emerald-500 to-green-500",
-      audience: "For Complex Projects"
     },
     {
       icon: (
@@ -23,10 +26,10 @@ export default function FeaturesSection() {
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
         </svg>
       ),
-      title: "Navigate Big Codebases",
-      description: "Structured context helps AI understand large projects, maintain consistency across modules, and respect your architecture patterns.",
+      titleKey: 'bigCodebases.title',
+      descriptionKey: 'bigCodebases.description',
+      audienceKey: 'bigCodebases.audience',
       gradient: "from-purple-500 to-pink-500",
-      audience: "For Large Projects"
     },
     {
       icon: (
@@ -34,10 +37,10 @@ export default function FeaturesSection() {
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
         </svg>
       ),
-      title: "Team Workflows",
-      description: "Create and share custom workflows tailored to your team's specific needs, tech stack, and development practices.",
+      titleKey: 'teamWorkflows.title',
+      descriptionKey: 'teamWorkflows.description',
+      audienceKey: 'teamWorkflows.audience',
       gradient: "from-blue-500 to-cyan-500",
-      audience: "For Engineering Teams"
     },
     {
       icon: (
@@ -45,10 +48,10 @@ export default function FeaturesSection() {
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z" />
         </svg>
       ),
-      title: "Personal Library",
-      description: "Build and maintain your own library of reusable workflows and mini-prompts. Keep your proven patterns organized and accessible.",
+      titleKey: 'personalLibrary.title',
+      descriptionKey: 'personalLibrary.description',
+      audienceKey: 'personalLibrary.audience',
       gradient: "from-orange-500 to-red-500",
-      audience: "For All Users"
     },
     {
       icon: (
@@ -56,10 +59,10 @@ export default function FeaturesSection() {
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
         </svg>
       ),
-      title: "Reduce Hallucinations",
-      description: "Structured workflows provide complete context so AI generates accurate, validated code instead of inventing APIs or hardcoding secrets.",
+      titleKey: 'reduceHallucinations.title',
+      descriptionKey: 'reduceHallucinations.description',
+      audienceKey: 'reduceHallucinations.audience',
       gradient: "from-indigo-500 to-purple-500",
-      audience: "For Quality Code"
     },
     {
       icon: (
@@ -67,10 +70,10 @@ export default function FeaturesSection() {
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
         </svg>
       ),
-      title: "Visual Workflow Builder",
-      description: "Drag-and-drop constructor makes it easy to create sophisticated workflows without writing YAML or configuration files.",
+      titleKey: 'visualBuilder.title',
+      descriptionKey: 'visualBuilder.description',
+      audienceKey: 'visualBuilder.audience',
       gradient: "from-teal-500 to-emerald-500",
-      audience: "For Power Users"
     },
     {
       icon: (
@@ -78,10 +81,10 @@ export default function FeaturesSection() {
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 4a2 2 0 114 0v1a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-1a2 2 0 100 4h1a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-1a2 2 0 10-4 0v1a1 1 0 01-1 1H7a1 1 0 01-1-1v-3a1 1 0 00-1-1H4a2 2 0 110-4h1a1 1 0 001-1V7a1 1 0 011-1h3a1 1 0 001-1V4z" />
         </svg>
       ),
-      title: "MCP Integration",
-      description: "Native Model Context Protocol support for Claude Code, Cursor, and any AI assistant. Seamlessly integrates with your tools.",
+      titleKey: 'mcpIntegration.title',
+      descriptionKey: 'mcpIntegration.description',
+      audienceKey: 'mcpIntegration.audience',
       gradient: "from-violet-500 to-fuchsia-500",
-      audience: "For Developers"
     }
   ];
 
@@ -103,11 +106,11 @@ export default function FeaturesSection() {
         >
           <h2 className="text-4xl lg:text-5xl font-bold mb-6">
             <span className="bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent">
-              Built for Every Team
+              {t('title')}
             </span>
           </h2>
           <p className="text-lg text-slate-600 max-w-3xl mx-auto">
-            Empower AI to handle complex projects and maintain team-specific knowledge libraries
+            {t('subtitle')}
           </p>
         </div>
 
@@ -128,7 +131,7 @@ export default function FeaturesSection() {
               {/* Audience Badge */}
               <div className="relative mb-4">
                 <span className="inline-block px-3 py-1 text-xs font-semibold bg-gray-100 text-gray-600 rounded-full">
-                  {feature.audience}
+                  {t(feature.audienceKey)}
                 </span>
               </div>
 
@@ -143,10 +146,10 @@ export default function FeaturesSection() {
 
               {/* Content */}
               <h3 className="text-2xl font-bold text-slate-900 mb-4 group-hover:text-slate-800 transition-colors duration-300">
-                {feature.title}
+                {t(feature.titleKey)}
               </h3>
               <p className="text-slate-600 leading-relaxed group-hover:text-slate-700 transition-colors duration-300">
-                {feature.description}
+                {t(feature.descriptionKey)}
               </p>
             </div>
           ))}
@@ -154,4 +157,4 @@ export default function FeaturesSection() {
       </div>
     </section>
   );
-} 
+}

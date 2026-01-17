@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { signIn } from "next-auth/react";
+import { useTranslations } from "next-intl";
 import { registerSchema, type RegisterInput } from "@/shared/lib/validators/auth";
 import { Input, Button, FormField, Alert, Link } from "@/shared/ui/atoms";
 import { ROUTES } from "@/shared/routes";
@@ -21,6 +22,7 @@ import { ROUTES } from "@/shared/routes";
 export default function RegisterPage() {
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const t = useTranslations('auth.register');
 
   const {
     register,
@@ -45,7 +47,7 @@ export default function RegisterPage() {
       const result = await response.json();
 
       if (!response.ok) {
-        throw new Error(result.error || "Registration failed");
+        throw new Error(result.error || t('registrationFailed'));
       }
 
       // Auto-login after successful registration
@@ -56,13 +58,13 @@ export default function RegisterPage() {
       });
 
       if (signInResult?.error) {
-        throw new Error("Login failed after registration");
+        throw new Error(t('loginAfterRegisterFailed'));
       } else if (signInResult?.ok) {
         // Use window.location for full page navigation to ensure session is loaded
         window.location.href = ROUTES.DASHBOARD;
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Registration failed");
+      setError(err instanceof Error ? err.message : t('registrationFailed'));
       setIsLoading(false);
     }
   };
@@ -70,9 +72,9 @@ export default function RegisterPage() {
   return (
     <div className="space-y-8 bg-white p-8 rounded-lg shadow-base">
       <div className="text-center">
-        <h1 className="text-3xl font-bold text-gray-900">Create Account</h1>
+        <h1 className="text-3xl font-bold text-gray-900">{t('title')}</h1>
         <p className="mt-2 text-sm text-gray-600">
-          Start managing your AI agent workflows
+          {t('subtitle')}
         </p>
       </div>
 
@@ -82,7 +84,7 @@ export default function RegisterPage() {
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         <FormField
-          label="Email"
+          label={t('email')}
           htmlFor="email"
           required
           error={errors.email?.message}
@@ -91,7 +93,7 @@ export default function RegisterPage() {
             id="email"
             type="email"
             autoComplete="email"
-            placeholder="you@example.com"
+            placeholder={t('emailPlaceholder')}
             error={!!errors.email}
             fullWidth
             testId="register-email-input"
@@ -100,7 +102,7 @@ export default function RegisterPage() {
         </FormField>
 
         <FormField
-          label="Username"
+          label={t('username')}
           htmlFor="username"
           required
           error={errors.username?.message}
@@ -109,7 +111,7 @@ export default function RegisterPage() {
             id="username"
             type="text"
             autoComplete="username"
-            placeholder="johndoe"
+            placeholder={t('usernamePlaceholder')}
             error={!!errors.username}
             fullWidth
             testId="register-username-input"
@@ -118,17 +120,17 @@ export default function RegisterPage() {
         </FormField>
 
         <FormField
-          label="Password"
+          label={t('password')}
           htmlFor="password"
           required
           error={errors.password?.message}
-          helperText="Min 8 characters, 1 uppercase, 1 lowercase, 1 number, 1 special character"
+          helperText={t('passwordHelp')}
         >
           <Input
             id="password"
             type="password"
             autoComplete="new-password"
-            placeholder="••••••••"
+            placeholder={t('passwordPlaceholder')}
             error={!!errors.password}
             fullWidth
             testId="register-password-input"
@@ -137,7 +139,7 @@ export default function RegisterPage() {
         </FormField>
 
         <FormField
-          label="Confirm Password"
+          label={t('confirmPassword')}
           htmlFor="confirmPassword"
           required
           error={errors.confirmPassword?.message}
@@ -146,7 +148,7 @@ export default function RegisterPage() {
             id="confirmPassword"
             type="password"
             autoComplete="new-password"
-            placeholder="••••••••"
+            placeholder={t('passwordPlaceholder')}
             error={!!errors.confirmPassword}
             fullWidth
             testId="register-confirm-password-input"
@@ -161,14 +163,14 @@ export default function RegisterPage() {
           disabled={isLoading}
           testId="register-submit-button"
         >
-          {isLoading ? "Creating account..." : "Sign Up"}
+          {isLoading ? t('submitting') : t('submit')}
         </Button>
       </form>
 
       <div className="text-center text-sm">
-        <span className="text-gray-600">Already have an account? </span>
+        <span className="text-gray-600">{t('hasAccount')} </span>
         <Link href={ROUTES.LOGIN}>
-          Sign in
+          {t('signIn')}
         </Link>
       </div>
     </div>

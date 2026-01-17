@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/shared/ui/atoms";
 import { Tooltip } from "@/shared/ui/molecules";
 import { ROUTES } from "@/shared/routes";
@@ -11,6 +12,7 @@ import { createMiniPrompt } from "@/views/workflow-constructor/actions/mini-prom
 export function QuickActions() {
   const router = useRouter();
   const [isMiniPromptModalOpen, setIsMiniPromptModalOpen] = useState(false);
+  const t = useTranslations('dashboard.quickActions');
 
   const handleCreateMiniPrompt = async (
     name: string,
@@ -26,23 +28,23 @@ export function QuickActions() {
   return (
     <>
       <div className="flex gap-4" data-testid="quick-actions">
-        <Tooltip content="Create a new workflow using the visual constructor">
+        <Tooltip content={t('newWorkflowTooltip')}>
           <Button
             variant="primary"
             onClick={() => router.push(ROUTES.LIBRARY.WORKFLOWS.NEW)}
             testId="new-workflow-button"
           >
-            New Workflow
+            {t('newWorkflow')}
           </Button>
         </Tooltip>
 
-        <Tooltip content="Create a reusable mini-prompt template">
+        <Tooltip content={t('newMiniPromptTooltip')}>
           <Button
             variant="secondary"
             onClick={() => setIsMiniPromptModalOpen(true)}
             testId="new-mini-prompt-button"
           >
-            New Mini-Prompt
+            {t('newMiniPrompt')}
           </Button>
         </Tooltip>
       </div>

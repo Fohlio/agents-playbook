@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { Filter } from "lucide-react";
 import { Button } from "@/shared/ui/atoms";
 import { Tooltip } from "@/shared/ui/molecules";
@@ -23,6 +24,7 @@ export function DiscoveryFilters({
   onSortChange,
   onFiltersChange,
 }: DiscoveryFiltersProps) {
+  const t = useTranslations("discover.filters");
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const hasFilters = () => {
@@ -72,9 +74,9 @@ export function DiscoveryFilters({
       <div className="flex flex-col sm:flex-row gap-3 mb-4">
         {/* Sort Dropdown */}
         <div className="flex-1 max-w-xs">
-        <Tooltip content="Order results by usage frequency, rating, recency, or popularity">
+        <Tooltip content={t("sortBy")}>
           <label className="block text-sm font-medium text-gray-700 mb-1">
-            Sort By
+            {t("sortBy")}
           </label>
         </Tooltip>
         <select
@@ -82,23 +84,23 @@ export function DiscoveryFilters({
           onChange={(e) => onSortChange(e.target.value as WorkflowSortOption | MiniPromptSortOption)}
           className="w-full px-3 py-2 border border-gray-300 rounded-md bg-white text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
         >
-          <option value="most_used">Most Used (default)</option>
-          <option value="highest_rated">Highest Rated</option>
-          <option value="recent">Most Recent</option>
-          <option value="popular">Popular</option>
+          <option value="most_used">{t("sortMostUsed")}</option>
+          <option value="highest_rated">{t("sortHighestRated")}</option>
+          <option value="recent">{t("sortRecent")}</option>
+          <option value="popular">{t("sortPopular")}</option>
         </select>
       </div>
 
         {/* Filters Button */}
         <div className="flex items-end">
-          <Tooltip content="Open filters modal to refine results">
+          <Tooltip content={t("filtersButton")}>
             <Button
               variant={hasFilters() ? "primary" : "secondary"}
               onClick={() => setIsModalOpen(true)}
               className="flex items-center gap-2 cursor-pointer"
             >
               <Filter className="w-4 h-4" />
-              Filters
+              {t("filtersButton")}
             </Button>
         </Tooltip>
       </div>

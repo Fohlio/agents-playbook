@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useTranslations } from 'next-intl';
 import { ROUTES } from '@/shared/routes';
 import Button from '@/shared/ui/atoms/Button';
 import { Card } from '@/shared/ui/atoms';
@@ -40,6 +41,7 @@ interface Workflow {
 }
 
 export function WorkflowsSection() {
+  const t = useTranslations('library');
   const [workflows, setWorkflows] = useState<Workflow[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [currentUserId, setCurrentUserId] = useState<string | undefined>();
@@ -105,22 +107,22 @@ export function WorkflowsSection() {
 
 
   if (isLoading) {
-    return <div className="text-center py-12">Loading...</div>;
+    return <div className="text-center py-12">{t('loading')}</div>;
   }
 
   return (
     <div className="space-y-4">
       <div className="flex justify-end">
         <Link href={ROUTES.LIBRARY.WORKFLOWS.NEW}>
-          <Button variant="primary">+ Create Workflow</Button>
+          <Button variant="primary">{t('workflows.create')}</Button>
         </Link>
       </div>
 
       {workflows.length === 0 ? (
         <Card className="text-center py-12">
-          <p className="text-text-secondary mb-4">No workflows yet</p>
+          <p className="text-text-secondary mb-4">{t('workflows.empty')}</p>
           <Link href={ROUTES.LIBRARY.WORKFLOWS.NEW}>
-            <Button variant="primary">Create Your First Workflow</Button>
+            <Button variant="primary">{t('workflows.createFirst')}</Button>
           </Link>
         </Card>
       ) : (

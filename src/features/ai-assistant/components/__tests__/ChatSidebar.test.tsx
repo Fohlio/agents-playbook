@@ -68,7 +68,8 @@ describe('ChatSidebar - Beta Badge Integration', () => {
       />
     );
 
-    expect(screen.getByText('AI Assistant')).toBeInTheDocument();
+    // Translation mock returns the key
+    expect(screen.getByText('title')).toBeInTheDocument();
   });
 
   it('should render BetaBadge in header', () => {
@@ -118,7 +119,8 @@ describe('ChatSidebar - Beta Badge Integration', () => {
       />
     );
 
-    expect(screen.queryByText('AI Assistant')).not.toBeInTheDocument();
+    // Translation mock returns the key
+    expect(screen.queryByText('title')).not.toBeInTheDocument();
     expect(screen.queryByTestId('beta-badge')).not.toBeInTheDocument();
   });
 
@@ -131,7 +133,8 @@ describe('ChatSidebar - Beta Badge Integration', () => {
       />
     );
 
-    const closeButton = screen.getByLabelText('Close chat');
+    // Translation mock returns the key
+    const closeButton = screen.getByLabelText('close');
     expect(closeButton).toBeInTheDocument();
   });
 
@@ -144,7 +147,8 @@ describe('ChatSidebar - Beta Badge Integration', () => {
       />
     );
 
-    const historyButton = screen.getByLabelText('Toggle session history');
+    // Translation mock returns the key
+    const historyButton = screen.getByLabelText('history');
     expect(historyButton).toBeInTheDocument();
   });
 
@@ -215,7 +219,7 @@ describe('ChatSidebar - Session Switcher', () => {
     );
 
     // Open session selector
-    const historyButton = screen.getByLabelText('Toggle session history');
+    const historyButton = screen.getByLabelText('history');
     fireEvent.click(historyButton);
 
     // Check active session has correct styling
@@ -260,7 +264,7 @@ describe('ChatSidebar - Session Switcher', () => {
     );
 
     // Open session selector
-    const historyButton = screen.getByLabelText('Toggle session history');
+    const historyButton = screen.getByLabelText('history');
     fireEvent.click(historyButton);
 
     // Check for Active badge
@@ -312,7 +316,7 @@ describe('ChatSidebar - Session Switcher', () => {
     );
 
     // Open session selector
-    const historyButton = screen.getByLabelText('Toggle session history');
+    const historyButton = screen.getByLabelText('history');
     fireEvent.click(historyButton);
 
     // Check inactive session doesn't have active styling
@@ -368,7 +372,7 @@ describe('ChatSidebar - Session Switcher', () => {
     );
 
     // Open session selector
-    const historyButton = screen.getByLabelText('Toggle session history');
+    const historyButton = screen.getByLabelText('history');
     fireEvent.click(historyButton);
 
     // Click on session
@@ -408,11 +412,11 @@ describe('ChatSidebar - Session Switcher', () => {
     );
 
     // Open session selector
-    const historyButton = screen.getByLabelText('Toggle session history');
+    const historyButton = screen.getByLabelText('history');
     fireEvent.click(historyButton);
 
-    // Click "New Chat"
-    const newChatButton = screen.getByText('New Chat');
+    // Click "New Chat" - Translation mock returns the key
+    const newChatButton = screen.getByText('newChat');
     fireEvent.click(newChatButton);
 
     expect(mockLoadSession).toHaveBeenCalledWith('', []);
@@ -468,7 +472,7 @@ describe('ChatSidebar - Session Switcher', () => {
     );
 
     // Open session selector
-    const historyButton = screen.getByLabelText('Toggle session history');
+    const historyButton = screen.getByLabelText('history');
     fireEvent.click(historyButton);
 
     // Check all sessions are displayed

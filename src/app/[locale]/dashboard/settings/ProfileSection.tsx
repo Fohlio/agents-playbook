@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useTranslations } from "next-intl";
 import { z } from "zod";
 import { Input, Button, FormField, Alert, Badge, Card, CardHeader, CardActions } from "@/shared/ui/atoms";
 import { useSession } from "next-auth/react";
@@ -38,6 +39,7 @@ interface ProfileSectionProps {
  * - View tier badge (FREE/PREMIUM)
  */
 export default function ProfileSection({ user }: ProfileSectionProps) {
+  const t = useTranslations("settings.profile");
   const { update } = useSession();
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
@@ -72,7 +74,7 @@ export default function ProfileSection({ user }: ProfileSectionProps) {
         throw new Error(result.error || "Failed to update username");
       }
 
-      setSuccess("Username updated successfully");
+      setSuccess(t("updated"));
 
       // Update session with new username
       await update({
@@ -80,7 +82,7 @@ export default function ProfileSection({ user }: ProfileSectionProps) {
         username: data.username,
       });
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to update username");
+      setError(err instanceof Error ? err.message : t("updateFailed"));
     } finally {
       setIsLoading(false);
     }
@@ -89,8 +91,8 @@ export default function ProfileSection({ user }: ProfileSectionProps) {
   return (
     <Card testId="profile-section">
       <CardHeader
-        title="Profile"
-        description="Update your profile information"
+        title={t("title")}
+        description={t("subtitle")}
         testId="profile-heading"
       />
 
@@ -99,7 +101,7 @@ export default function ProfileSection({ user }: ProfileSectionProps) {
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           {/* Email (read-only) */}
-          <FormField label="Email" htmlFor="email">
+          <FormField label={t("email")} htmlFor="email">
             <Input
               id="email"
               type="email"
@@ -109,13 +111,13 @@ export default function ProfileSection({ user }: ProfileSectionProps) {
               testId="profile-email-input"
             />
             <p className="mt-1 text-xs text-gray-500">
-              Email cannot be changed
+              {t("emailCannotChange")}
             </p>
           </FormField>
 
           {/* Username (editable) */}
           <FormField
-            label="Username"
+            label={t("username")}
             htmlFor="username"
             required
             error={errors.username?.message}
@@ -123,7 +125,7 @@ export default function ProfileSection({ user }: ProfileSectionProps) {
             <Input
               id="username"
               type="text"
-              placeholder="johndoe"
+              placeholder={t("usernamePlaceholder")}
               error={!!errors.username}
               fullWidth
               testId="profile-username-input"
@@ -132,7 +134,7 @@ export default function ProfileSection({ user }: ProfileSectionProps) {
           </FormField>
 
           {/* Tier Badge */}
-          <FormField label="Account Tier" htmlFor="tier">
+          <FormField label={t("accountTier")} htmlFor="tier">
             <div>
               <Badge variant="primary" testId="profile-tier-badge">
                 {user.tier || "FREE"}
@@ -147,7 +149,7 @@ export default function ProfileSection({ user }: ProfileSectionProps) {
               disabled={isLoading}
               testId="profile-save-button"
             >
-              {isLoading ? "Saving..." : "Save Changes"}
+              {isLoading ? t("saving") : t("saveChanges")}
             </Button>
           </CardActions>
         </form>

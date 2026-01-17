@@ -1,6 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { useWizardNavigation } from '../hooks/use-wizard-navigation';
 import { WelcomeStep } from './WelcomeStep';
 import { DiscoverStep } from './DiscoverStep';
@@ -27,6 +28,8 @@ const TOTAL_STEPS = 6;
  */
 export function GettingStartedWizard() {
   const router = useRouter();
+  const t = useTranslations('gettingStarted');
+  const tCommon = useTranslations('common');
   const { currentStep, nextStep, prevStep, goToStep, progress, isFirstStep, isLastStep } =
     useWizardNavigation(TOTAL_STEPS);
 
@@ -39,12 +42,12 @@ export function GettingStartedWizard() {
   };
 
   const stepLabels = [
-    { label: '🎉 Welcome', key: 'welcome' },
-    { label: '🔍 Discover', key: 'discover' },
-    { label: '📚 Library', key: 'library' },
-    { label: '🏗️ Create', key: 'create' },
+    { label: '🎉 ' + t('welcome.title').split(' ')[0], key: 'welcome' },
+    { label: '🔍 ' + t('discover.title').split(' ')[0], key: 'discover' },
+    { label: '📚 ' + t('library.title').split(' ')[0], key: 'library' },
+    { label: '🏗️ ' + tCommon('create'), key: 'create' },
     { label: '🔌 MCP', key: 'mcp' },
-    { label: '🔗 Combine', key: 'combinations' },
+    { label: '🔗 ' + t('combinations.title').split(' ')[0], key: 'combinations' },
   ];
 
   const steps = [
@@ -61,8 +64,8 @@ export function GettingStartedWizard() {
       <div className="max-w-4xl mx-auto px-4 py-8">
         {/* Header */}
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Getting Started</h1>
-          <p className="text-gray-600 mt-2">Learn the platform in 6 quick steps</p>
+          <h1 className="text-3xl font-bold text-gray-900">{t('title')}</h1>
+          <p className="text-gray-600 mt-2">{t('welcome.subtitle')}</p>
         </div>
 
         {/* Tab Navigation */}
@@ -108,23 +111,23 @@ export function GettingStartedWizard() {
         {/* Navigation */}
         <div className="flex justify-between items-center">
           <Button variant="ghost" onClick={handleSkip} size="md">
-            Skip Tutorial
+            {tCommon('skip')}
           </Button>
 
           <div className="flex gap-3">
             {!isFirstStep && (
               <Button variant="secondary" onClick={prevStep} size="md">
-                ← Previous
+                ← {tCommon('previous')}
               </Button>
             )}
 
             {!isLastStep ? (
               <Button variant="primary" onClick={nextStep} size="md">
-                Next →
+                {tCommon('next')} →
               </Button>
             ) : (
               <Button variant="primary" onClick={handleFinish} size="md">
-                Get Started! 🚀
+                {tCommon('finish')} 🚀
               </Button>
             )}
           </div>

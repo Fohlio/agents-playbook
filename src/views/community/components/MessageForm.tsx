@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useCallback, useEffect } from "react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/shared/ui/atoms";
 import { UserMentionDropdown } from "./UserMentionDropdown";
 import { createMessage } from "../actions/message-actions";
@@ -14,6 +15,8 @@ interface MessageFormProps {
 }
 
 export function MessageForm({ topicId, isClosed, onMessageCreated }: MessageFormProps) {
+  const t = useTranslations("community.messageForm");
+  const tCommunity = useTranslations("community");
   const [content, setContent] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showMentionDropdown, setShowMentionDropdown] = useState(false);
@@ -141,13 +144,13 @@ export function MessageForm({ topicId, isClosed, onMessageCreated }: MessageForm
       } else {
         // Restore content on error
         setContent(submittedContent);
-        alert(result.error || "Failed to create message");
+        alert(result.error || t("failedToSend"));
         setIsSubmitting(false);
       }
     } catch {
       // Restore content on error
       setContent(submittedContent);
-      alert("Failed to create message");
+      alert(t("failedToSend"));
       setIsSubmitting(false);
     }
   };
@@ -164,7 +167,7 @@ export function MessageForm({ topicId, isClosed, onMessageCreated }: MessageForm
   if (isClosed) {
     return (
       <div className="text-center py-4 text-gray-500 bg-gray-50 rounded-lg">
-        Topic is closed. No new messages can be added.
+        {tCommunity("topicClosed")}
       </div>
     );
   }
@@ -176,7 +179,7 @@ export function MessageForm({ topicId, isClosed, onMessageCreated }: MessageForm
           ref={textareaRef}
           value={content}
           onChange={handleChange}
-          placeholder="Type your message... (Use @ to mention users)"
+          placeholder={t("placeholder")}
           className="w-full px-4 py-3 border border-gray-300 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
           rows={4}
           maxLength={10000}
@@ -194,7 +197,7 @@ export function MessageForm({ topicId, isClosed, onMessageCreated }: MessageForm
         variant="primary"
         disabled={!content.trim() || isSubmitting}
       >
-        {isSubmitting ? "Sending..." : "Send Message"}
+        {isSubmitting ? t("sending") : t("send")}
       </Button>
 
       {showMentionDropdown && mentionUsers.length > 0 && (

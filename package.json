@@ -59,6 +59,7 @@
     "lucide-react": "^0.545.0",
     "next": "15.3.8",
     "next-auth": "^5.0.0-beta.29",
+    "next-intl": "^4.7.0",
     "openai": "^5.8.2",
     "react": "19.1.2",
     "react-dnd": "^16.0.1",

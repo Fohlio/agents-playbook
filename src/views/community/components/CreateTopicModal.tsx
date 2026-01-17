@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { Button, Modal, ModalHeader, ModalBody, ModalActions } from "@/shared/ui/atoms";
 import { createTopic } from "../actions/topic-actions";
 
@@ -11,6 +12,8 @@ interface CreateTopicModalProps {
 }
 
 export function CreateTopicModal({ isOpen, onClose }: CreateTopicModalProps) {
+  const t = useTranslations("community.createTopicModal");
+  const tCommon = useTranslations("common");
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -31,24 +34,24 @@ export function CreateTopicModal({ isOpen, onClose }: CreateTopicModalProps) {
         setContent("");
         router.push(`/dashboard/community/${result.data.topicId}`);
       } else {
-        setError(result.error || "Failed to create topic");
+        setError(result.error || t("failedToCreate"));
         setIsSubmitting(false);
       }
     } catch {
-      setError("Failed to create topic");
+      setError(t("failedToCreate"));
       setIsSubmitting(false);
     }
   };
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} className="max-w-2xl">
-      <ModalHeader title="Create New Topic" />
+      <ModalHeader title={t("title")} />
 
       <form onSubmit={handleSubmit}>
         <ModalBody>
           <div className="mb-4">
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Title *
+              {t("titleLabel")} *
             </label>
             <input
               type="text"
@@ -63,7 +66,7 @@ export function CreateTopicModal({ isOpen, onClose }: CreateTopicModalProps) {
 
           <div className="mb-4">
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Message *
+              {t("messageLabel")} *
             </label>
             <textarea
               value={content}
@@ -88,14 +91,14 @@ export function CreateTopicModal({ isOpen, onClose }: CreateTopicModalProps) {
             onClick={onClose}
             disabled={isSubmitting}
           >
-            Cancel
+            {tCommon("cancel")}
           </Button>
           <Button
             type="submit"
             variant="primary"
             disabled={!title.trim() || !content.trim() || isSubmitting}
           >
-            {isSubmitting ? "Creating..." : "Create Topic"}
+            {isSubmitting ? t("creating") : t("create")}
           </Button>
         </ModalActions>
       </form>

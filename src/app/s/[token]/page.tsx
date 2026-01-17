@@ -13,7 +13,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const { token } = await params;
   const result = await getSharedContent(token, false);
   const baseUrl = process.env.NEXTAUTH_URL || 'https://agents-playbook.com';
-  const url = `${baseUrl}/${token}`;
+  const url = `${baseUrl}/s/${token}`;
 
   if (!result.success) {
     return {
@@ -236,4 +236,3 @@ export default async function SharedContentPage({ params }: PageProps) {
   // Should not reach here, but handle just in case
   notFound();
 }
-

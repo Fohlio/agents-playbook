@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useTranslations } from "next-intl";
 import { z } from "zod";
 import { Input, Button, FormField, Alert, Card, CardHeader, CardActions } from "@/shared/ui/atoms";
 
@@ -29,6 +30,7 @@ type PasswordInput = z.infer<typeof passwordSchema>;
  * - Password complexity validation
  */
 export default function PasswordSection() {
+  const t = useTranslations("settings.password");
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -60,10 +62,10 @@ export default function PasswordSection() {
         throw new Error(result.error || "Failed to change password");
       }
 
-      setSuccess("Password changed successfully");
+      setSuccess(t("changed"));
       reset(); // Clear form fields
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to change password");
+      setError(err instanceof Error ? err.message : t("changeFailed"));
     } finally {
       setIsLoading(false);
     }
@@ -72,8 +74,8 @@ export default function PasswordSection() {
   return (
     <Card testId="password-section">
       <CardHeader
-        title="Change Password"
-        description="Update your password to keep your account secure"
+        title={t("title")}
+        description={t("subtitle")}
         testId="password-heading"
       />
 
@@ -83,7 +85,7 @@ export default function PasswordSection() {
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           {/* Current Password */}
           <FormField
-            label="Current Password"
+            label={t("currentPassword")}
             htmlFor="currentPassword"
             required
             error={errors.currentPassword?.message}
@@ -102,11 +104,11 @@ export default function PasswordSection() {
 
           {/* New Password */}
           <FormField
-            label="New Password"
+            label={t("newPassword")}
             htmlFor="newPassword"
             required
             error={errors.newPassword?.message}
-            helperText="Min 8 characters, 1 uppercase, 1 lowercase, 1 number, 1 special character"
+            helperText={t("newPasswordHelp")}
           >
             <Input
               id="newPassword"
@@ -122,7 +124,7 @@ export default function PasswordSection() {
 
           {/* Confirm New Password */}
           <FormField
-            label="Confirm New Password"
+            label={t("confirmPassword")}
             htmlFor="confirmNewPassword"
             required
             error={errors.confirmNewPassword?.message}
@@ -146,7 +148,7 @@ export default function PasswordSection() {
               disabled={isLoading}
               testId="password-save-button"
             >
-              {isLoading ? "Changing..." : "Change Password"}
+              {isLoading ? t("changing") : t("changePassword")}
             </Button>
           </CardActions>
         </form>

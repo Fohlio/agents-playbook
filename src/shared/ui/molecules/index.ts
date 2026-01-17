@@ -27,3 +27,4 @@ export {
   type MiniPromptCardVisibility,
   type MiniPromptCardHandlers,
 } from "./MiniPromptDiscoveryCard";
+export { LanguageSwitcher } from "./LanguageSwitcher";

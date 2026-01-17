@@ -1,3 +1,7 @@
+'use client';
+
+import { useTranslations } from 'next-intl';
+
 /**
  * Workflow Combinations Step
  *
@@ -5,14 +9,16 @@
  * Example: PRD Creation → Feature Development
  */
 export function WorkflowCombinationsStep() {
+  const t = useTranslations('gettingStarted.combinations');
+
   return (
     <div className="space-y-6">
       <div className="text-center">
         <h2 className="text-2xl font-bold text-gray-900 mb-2">
-          🔗 Combining Workflows
+          🔗 {t('title')}
         </h2>
         <p className="text-gray-600">
-          Chain workflows together for complex projects and better results
+          {t('subtitle')}
         </p>
       </div>
 
@@ -20,7 +26,7 @@ export function WorkflowCombinationsStep() {
       <div className="bg-gradient-to-br from-purple-50 to-blue-50 border-2 border-purple-200 rounded-lg p-6">
         <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
           <span>💡</span>
-          <span>Example: Building a Complete Feature</span>
+          <span>{t('exampleTitle')}</span>
         </h3>
 
         <div className="space-y-4">
@@ -32,13 +38,13 @@ export function WorkflowCombinationsStep() {
               </div>
               <div className="flex-1">
                 <h4 className="font-bold text-gray-900 mb-2 text-lg">
-                  Start with PRD Creation Workflow
+                  {t('step1Title')}
                 </h4>
                 <p className="text-gray-700 mb-3">
-                  Use the <span className="font-semibold text-purple-600">Product Requirements Architect</span> workflow to break down your project.
+                  {t('step1Desc')}
                 </p>
                 <div className="bg-purple-50 rounded p-3 mb-3">
-                  <p className="text-sm font-semibold text-purple-900 mb-2">📋 Creates:</p>
+                  <p className="text-sm font-semibold text-purple-900 mb-2">📋 {t('step1Creates')}</p>
                   <ul className="text-sm text-purple-800 space-y-1">
                     <li>• <code className="bg-purple-100 px-2 py-0.5 rounded">.agents-playbook/[project]/prd.md</code> - Main PRD index</li>
                     <li>• <code className="bg-purple-100 px-2 py-0.5 rounded">.agents-playbook/[project]/requirements.md</code> - Product requirements</li>
@@ -49,7 +55,7 @@ export function WorkflowCombinationsStep() {
                 </div>
                 <div className="bg-yellow-50 border border-yellow-200 rounded p-3">
                   <p className="text-sm text-yellow-900">
-                    <span className="font-semibold">💡 Pro Tip:</span> Each feature file includes a ready-to-use prompt for Feature Development!
+                    <span className="font-semibold">💡 {t('step1Tip')}</span>
                   </p>
                 </div>
               </div>
@@ -69,13 +75,13 @@ export function WorkflowCombinationsStep() {
               </div>
               <div className="flex-1">
                 <h4 className="font-bold text-gray-900 mb-2 text-lg">
-                  Dive Deep with Feature Development Workflow
+                  {t('step2Title')}
                 </h4>
                 <p className="text-gray-700 mb-3">
-                  For each feature from the PRD, use the <span className="font-semibold text-blue-600">Feature Development</span> workflow.
+                  {t('step2Desc')}
                 </p>
                 <div className="bg-blue-50 rounded p-3 mb-3">
-                  <p className="text-sm font-semibold text-blue-900 mb-2">🎯 Process:</p>
+                  <p className="text-sm font-semibold text-blue-900 mb-2">🎯 {t('step2Process')}</p>
                   <ul className="text-sm text-blue-800 space-y-2">
                     <li>• Open feature file from <code className="bg-blue-100 px-1 rounded">.agents-playbook/[project]/features/[feature].md</code></li>
                     <li>• Copy the ready-to-use prompt from the feature file</li>
@@ -86,7 +92,7 @@ export function WorkflowCombinationsStep() {
                 </div>
                 <div className="bg-emerald-50 border border-emerald-200 rounded p-3">
                   <p className="text-sm text-emerald-900">
-                    <span className="font-semibold">✅ Result:</span> Production-ready implementation that follows the PRD specs exactly!
+                    <span className="font-semibold">✅ {t('step2Result')}</span>
                   </p>
                 </div>
               </div>
@@ -99,28 +105,28 @@ export function WorkflowCombinationsStep() {
       <div className="bg-gray-900 rounded-lg p-6 text-white">
         <h4 className="font-bold text-lg mb-4 flex items-center gap-2">
           <span>🚀</span>
-          <span>Why Combining Workflows Works</span>
+          <span>{t('whyWorksTitle')}</span>
         </h4>
         <div className="grid md:grid-cols-3 gap-4">
           <div className="bg-gray-800 rounded p-4">
             <div className="text-2xl mb-2">📐</div>
-            <h5 className="font-semibold mb-2">Structured Planning</h5>
+            <h5 className="font-semibold mb-2">{t('structuredPlanning')}</h5>
             <p className="text-sm text-gray-300">
-              PRD creates the blueprint. Each feature is documented with clear requirements.
+              {t('structuredPlanningDesc')}
             </p>
           </div>
           <div className="bg-gray-800 rounded p-4">
             <div className="text-2xl mb-2">🎯</div>
-            <h5 className="font-semibold mb-2">Focused Execution</h5>
+            <h5 className="font-semibold mb-2">{t('focusedExecution')}</h5>
             <p className="text-sm text-gray-300">
-              Feature Development follows the plan without deviating or hallucinating.
+              {t('focusedExecutionDesc')}
             </p>
           </div>
           <div className="bg-gray-800 rounded p-4">
             <div className="text-2xl mb-2">✨</div>
-            <h5 className="font-semibold mb-2">Better Results</h5>
+            <h5 className="font-semibold mb-2">{t('betterResults')}</h5>
             <p className="text-sm text-gray-300">
-              Each workflow stage validates against the PRD, ensuring consistency.
+              {t('betterResultsDesc')}
             </p>
           </div>
         </div>
@@ -132,18 +138,18 @@ export function WorkflowCombinationsStep() {
           <span className="text-2xl">💪</span>
           <div>
             <p className="font-semibold text-gray-900 mb-1">
-              Ready to Try Workflow Combinations?
+              {t('readyToTry')}
             </p>
             <p className="text-sm text-gray-700 mb-3">
-              Start with a simple project: Use PRD Creation to plan, then Feature Development to build each piece.
+              {t('readyToTryDesc')}
             </p>
             <div className="flex gap-2">
               <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded font-medium">
-                PRD Creation
+                {t('prdCreation')}
               </span>
               <span className="text-xs text-gray-400">→</span>
               <span className="text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded font-medium">
-                Feature Development
+                {t('featureDevelopment')}
               </span>
             </div>
           </div>

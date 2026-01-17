@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useTranslations } from "next-intl";
 import { WorkflowComplexity } from "@prisma/client";
 import { Modal } from "@/shared/ui/atoms/Modal";
 import { Button } from "@/shared/ui/atoms";
@@ -24,6 +25,7 @@ export function FiltersModal({
   currentFilters,
   onApply,
 }: FiltersModalProps) {
+  const t = useTranslations("discover.filters");
   // Local state for filter values
   const [localFilters, setLocalFilters] = useState<WorkflowFilters | MiniPromptFilters>(currentFilters);
 
@@ -67,7 +69,7 @@ export function FiltersModal({
       <div className="space-y-5">
         {/* Header */}
         <div className="flex justify-between items-center pb-4 border-b border-gray-200">
-          <h2 className="text-xl font-semibold text-gray-900">Filters</h2>
+          <h2 className="text-xl font-semibold text-gray-900">{t("title")}</h2>
           <button
             onClick={onClose}
             className="text-gray-400 hover:text-gray-600"
@@ -81,7 +83,7 @@ export function FiltersModal({
           {/* Tags Filter */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Tags
+              {t("tags")}
             </label>
             <TagMultiSelect
               selectedTagIds={localFilters.tagIds || []}
@@ -92,21 +94,21 @@ export function FiltersModal({
           {/* Models Filter */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              AI Models
+              {t("aiModels")}
             </label>
             <ModelMultiSelect
               models={models}
               selectedModelIds={localFilters.modelIds || []}
               onChange={(modelIds) => setLocalFilters({ ...localFilters, modelIds: modelIds.length > 0 ? modelIds : undefined })}
               loading={modelsLoading}
-              placeholder="Filter by AI models..."
+              placeholder={t("filterByModels")}
             />
           </div>
 
           {/* Rating Filter */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Minimum Rating
+              {t("minRating")}
             </label>
             <select
               value={localFilters.rating || ""}
@@ -116,16 +118,16 @@ export function FiltersModal({
               })}
               className="w-full px-3 py-2 border border-gray-300 rounded-md bg-white text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             >
-              <option value="">All Ratings</option>
-              <option value="4+">4+ Stars</option>
-              <option value="3+">3+ Stars</option>
+              <option value="">{t("allRatings")}</option>
+              <option value="4+">{t("rating4Plus")}</option>
+              <option value="3+">{t("rating3Plus")}</option>
             </select>
           </div>
 
           {/* Usage Filter */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Minimum Usage
+              {t("minUsage")}
             </label>
             <select
               value={localFilters.minUsage || ""}
@@ -135,9 +137,9 @@ export function FiltersModal({
               })}
               className="w-full px-3 py-2 border border-gray-300 rounded-md bg-white text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             >
-              <option value="">All Usage</option>
-              <option value="10">10+ Users</option>
-              <option value="50">50+ Users</option>
+              <option value="">{t("allUsage")}</option>
+              <option value="10">{t("usage10Plus")}</option>
+              <option value="50">{t("usage50Plus")}</option>
             </select>
           </div>
 
@@ -146,7 +148,7 @@ export function FiltersModal({
             <>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Complexity
+                  {t("complexity")}
                 </label>
                 <select
                   value={(localFilters as WorkflowFilters).complexity || ""}
@@ -156,18 +158,18 @@ export function FiltersModal({
                   } as WorkflowFilters)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md bg-white text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 >
-                  <option value="">All Complexity</option>
-                  <option value="XS">XS - Quick</option>
-                  <option value="S">S - Simple</option>
-                  <option value="M">M - Moderate</option>
-                  <option value="L">L - Complex</option>
-                  <option value="XL">XL - Advanced</option>
+                  <option value="">{t("allComplexity")}</option>
+                  <option value="XS">{t("complexityXS")}</option>
+                  <option value="S">{t("complexityS")}</option>
+                  <option value="M">{t("complexityM")}</option>
+                  <option value="L">{t("complexityL")}</option>
+                  <option value="XL">{t("complexityXL")}</option>
                 </select>
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Number of Stages
+                  {t("stageCount")}
                 </label>
                 <select
                   value={(localFilters as WorkflowFilters).phaseCount || ""}
@@ -177,10 +179,10 @@ export function FiltersModal({
                   } as WorkflowFilters)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md bg-white text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 >
-                  <option value="">All Stages</option>
-                  <option value="1-3">1-3 Stages</option>
-                  <option value="4-5">4-5 Stages</option>
-                  <option value="6+">6+ Stages</option>
+                  <option value="">{t("allStages")}</option>
+                  <option value="1-3">{t("stages1to3")}</option>
+                  <option value="4-5">{t("stages4to5")}</option>
+                  <option value="6+">{t("stages6Plus")}</option>
                 </select>
               </div>
             </>
@@ -194,14 +196,14 @@ export function FiltersModal({
             onClick={handleClear}
             disabled={!hasFilters()}
           >
-            Clear All
+            {t("clearAll")}
           </Button>
           <div className="flex gap-2">
             <Button variant="secondary" onClick={onClose}>
-              Cancel
+              {t("cancel") || "Cancel"}
             </Button>
             <Button variant="primary" onClick={handleApply}>
-              Apply Filters
+              {t("apply")}
             </Button>
           </div>
         </div>

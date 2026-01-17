@@ -1,5 +1,8 @@
+"use client";
+
 import { Badge, Button } from "@/shared/ui/atoms";
 import { Tooltip } from "@/shared/ui/molecules";
+import { useTranslations } from "next-intl";
 import { formatDistanceToNow } from "date-fns";
 import { ApiToken } from "../types";
 
@@ -9,6 +12,8 @@ interface TokenItemProps {
 }
 
 export function TokenItem({ token, onRevoke }: TokenItemProps) {
+  const t = useTranslations("settings.apiTokens");
+
   const isExpired = (expiresAt: string) => {
     return new Date(expiresAt) < new Date();
   };
@@ -26,7 +31,7 @@ export function TokenItem({ token, onRevoke }: TokenItemProps) {
             </h3>
             {isExpired(token.expiresAt) && (
               <Badge variant="error" testId={`token-expired-badge-${token.id}`}>
-                Expired
+                {t("expired")}
               </Badge>
             )}
           </div>
@@ -35,20 +40,20 @@ export function TokenItem({ token, onRevoke }: TokenItemProps) {
           </p>
           <div className="mt-2 text-xs text-gray-500 space-y-1" data-testid={`token-metadata-${token.id}`}>
             <p>
-              Created:{" "}
+              {t("created")}{" "}
               {formatDistanceToNow(new Date(token.createdAt), {
                 addSuffix: true,
               })}
             </p>
             <p>
-              Expires:{" "}
+              {t("expires")}{" "}
               {formatDistanceToNow(new Date(token.expiresAt), {
                 addSuffix: true,
               })}
             </p>
             {token.lastUsedAt && (
               <p>
-                Last used:{" "}
+                {t("lastUsed")}{" "}
                 {formatDistanceToNow(new Date(token.lastUsedAt), {
                   addSuffix: true,
                 })}
@@ -56,14 +61,14 @@ export function TokenItem({ token, onRevoke }: TokenItemProps) {
             )}
           </div>
         </div>
-        <Tooltip content="Permanently revoke this token. AI assistants using it will lose access immediately.">
+        <Tooltip content={t("revokeTooltip")}>
           <Button
             variant="danger"
             size="sm"
             onClick={() => onRevoke(token.id)}
             testId={`revoke-token-button-${token.id}`}
           >
-            Revoke
+            {t("revoke")}
           </Button>
         </Tooltip>
       </div>

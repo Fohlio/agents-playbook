@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { Card, CardHeader, Badge, Button } from "@/shared/ui/atoms";
 import { ComplexityBadge } from "@/shared/ui/atoms/ComplexityBadge";
 import { ShareButton } from "@/features/sharing/ui";
@@ -16,6 +17,8 @@ export function ActiveWorkflowsSection({ workflows }: ActiveWorkflowsSectionProp
   const router = useRouter();
   const [loading, setLoading] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const t = useTranslations('dashboard.activeWorkflows');
+  const tCommon = useTranslations('common');
 
   const handleDeactivate = async (workflowId: string) => {
     try {
@@ -33,12 +36,12 @@ export function ActiveWorkflowsSection({ workflows }: ActiveWorkflowsSectionProp
     return (
       <Card testId="active-workflows-empty">
         <CardHeader
-          title="Active Workflows"
-          description="No active workflows yet"
+          title={t('title')}
+          description={t('empty')}
           titleHref="/dashboard/library?tab=workflows"
         />
         <div className="text-center py-8">
-          <p className="text-gray-500">Create and activate your first workflow to get started</p>
+          <p className="text-gray-500">{t('emptyDescription')}</p>
         </div>
       </Card>
     );
@@ -47,8 +50,8 @@ export function ActiveWorkflowsSection({ workflows }: ActiveWorkflowsSectionProp
   return (
     <Card testId="active-workflows-section">
       <CardHeader
-        title="Active Workflows"
-        description={`${workflows.length} active workflows`}
+        title={t('title')}
+        description={t('count', { count: workflows.length })}
         titleHref="/dashboard/library?tab=workflows"
       />
 
@@ -67,17 +70,17 @@ export function ActiveWorkflowsSection({ workflows }: ActiveWorkflowsSectionProp
                 <ComplexityBadge complexity={workflow.complexity} size="sm" />
                 {workflow.isSystemWorkflow && (
                   <Badge variant="default" testId={`system-badge-${workflow.id}`}>
-                    System
+                    {tCommon('system')}
                   </Badge>
                 )}
-                <Badge variant="primary" testId="workflow-active-badge">Active</Badge>
+                <Badge variant="primary" testId="workflow-active-badge">{tCommon('active')}</Badge>
               </div>
               {workflow.description && (
                 <p className="text-sm text-gray-600 mt-1">{workflow.description}</p>
               )}
               <div className="flex items-center gap-2 mt-1">
                 <p className="text-xs text-gray-500">
-                  {workflow._count.stages} stages
+                  {tCommon('stages', { count: workflow._count.stages })}
                 </p>
                 {workflow.tags && workflow.tags.length > 0 && (
                   <>
@@ -107,7 +110,7 @@ export function ActiveWorkflowsSection({ workflows }: ActiveWorkflowsSectionProp
                   onClick={() => router.push(`/dashboard/library/workflows/${workflow.id}/constructor`)}
                   testId={`edit-button-${workflow.id}`}
                 >
-                  Edit
+                  {tCommon('edit')}
                 </Button>
               )}
               <Button
@@ -117,7 +120,7 @@ export function ActiveWorkflowsSection({ workflows }: ActiveWorkflowsSectionProp
                 disabled={loading === workflow.id}
                 testId={`deactivate-button-${workflow.id}`}
               >
-                {loading === workflow.id ? "Deactivating..." : "Deactivate"}
+                {loading === workflow.id ? t('deactivating') : t('deactivate')}
               </Button>
             </div>
           </div>

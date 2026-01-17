@@ -3,8 +3,10 @@
 import { signOut, useSession } from "next-auth/react";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { Button, Link, Badge } from "@/shared/ui/atoms";
 import { Tooltip } from "@/shared/ui/molecules";
+import { LanguageSwitcher } from "@/shared/ui/molecules/LanguageSwitcher";
 import { ROUTES, PROTECTED_ROUTES } from "@/shared/routes";
 import { useSidebar } from "./DashboardLayout";
 import { useShareCount } from "@/features/sharing/hooks/useShareCount";
@@ -33,6 +35,8 @@ export function DashboardSidebar() {
   const isAdmin = session?.user?.role === 'ADMIN';
   const { isCollapsed, setIsCollapsed } = useSidebar();
   const { count: shareCount } = useShareCount();
+  const t = useTranslations('nav');
+  const tCommon = useTranslations('common');
 
   const [isOpen, setIsOpen] = useState(false);
 
@@ -41,14 +45,14 @@ export function DashboardSidebar() {
   const closeSidebar = () => setIsOpen(false);
 
   const navItems = [
-    { href: ROUTES.GETTING_STARTED, label: 'Getting Started', icon: RocketLaunchIcon, testId: 'getting-started-nav-link' },
-    { href: ROUTES.DASHBOARD, label: 'Dashboard', icon: DashboardIcon, testId: 'dashboard-nav-link' },
-    { href: ROUTES.DISCOVER, label: 'Discover', icon: ExploreIcon, testId: 'discover-nav-link' },
-    { href: PROTECTED_ROUTES.LIBRARY, label: 'Library', icon: LibraryBooksIcon, testId: 'library-nav-link' },
-    { href: PROTECTED_ROUTES.SHARING, label: 'My Shares', icon: ShareIcon, testId: 'sharing-nav-link', badgeCount: shareCount },
-    { href: PROTECTED_ROUTES.COMMUNITY, label: 'Community', icon: ForumIcon, testId: 'community-nav-link' },
-    ...(isAdmin ? [{ href: ROUTES.ADMIN.SYSTEM_WORKFLOWS, label: 'Admin', icon: AdminPanelSettingsIcon, testId: 'admin-nav-link', badge: 'System' }] : []),
-    { href: ROUTES.SETTINGS, label: 'Settings', icon: SettingsIcon, testId: 'settings-nav-link' },
+    { href: ROUTES.GETTING_STARTED, labelKey: 'gettingStarted', icon: RocketLaunchIcon, testId: 'getting-started-nav-link' },
+    { href: ROUTES.DASHBOARD, labelKey: 'dashboard', icon: DashboardIcon, testId: 'dashboard-nav-link' },
+    { href: ROUTES.DISCOVER, labelKey: 'discover', icon: ExploreIcon, testId: 'discover-nav-link' },
+    { href: PROTECTED_ROUTES.LIBRARY, labelKey: 'library', icon: LibraryBooksIcon, testId: 'library-nav-link' },
+    { href: PROTECTED_ROUTES.SHARING, labelKey: 'myShares', icon: ShareIcon, testId: 'sharing-nav-link', badgeCount: shareCount },
+    { href: PROTECTED_ROUTES.COMMUNITY, labelKey: 'community', icon: ForumIcon, testId: 'community-nav-link' },
+    ...(isAdmin ? [{ href: ROUTES.ADMIN.SYSTEM_WORKFLOWS, labelKey: 'admin', icon: AdminPanelSettingsIcon, testId: 'admin-nav-link', badge: tCommon('system') }] : []),
+    { href: ROUTES.SETTINGS, labelKey: 'settings', icon: SettingsIcon, testId: 'settings-nav-link' },
   ];
 
   return (
@@ -57,7 +61,7 @@ export function DashboardSidebar() {
       <button
         onClick={toggleSidebar}
         className="lg:hidden fixed top-4 left-4 z-50 p-2 bg-white rounded-lg shadow-lg border border-gray-200 hover:bg-gray-50"
-        aria-label="Toggle menu"
+        aria-label={t('toggleMenu')}
       >
         {isOpen ? <CloseIcon /> : <MenuIcon />}
       </button>
@@ -91,14 +95,14 @@ export function DashboardSidebar() {
                 testId="dashboard-logo"
                 onClick={closeSidebar}
               >
-                Agents Playbook
+                {tCommon('appName')}
               </Link>
             )}
 
             <button
               onClick={toggleCollapse}
               className="hidden lg:block p-1 hover:bg-gray-100 rounded"
-              aria-label="Toggle sidebar"
+              aria-label={t('toggleSidebar')}
             >
               {isCollapsed ? <ChevronRightIcon fontSize="small" /> : <ChevronLeftIcon fontSize="small" />}
             </button>
@@ -126,7 +130,7 @@ export function DashboardSidebar() {
                     <Icon fontSize="small" />
                     {!isCollapsed && (
                       <>
-                        <span className="flex-1">{item.label}</span>
+                        <span className="flex-1">{t(item.labelKey)}</span>
                         {item.badge && (
                           <Badge variant="primary" testId="admin-badge">
                             {item.badge}
@@ -145,7 +149,7 @@ export function DashboardSidebar() {
                 return (
                   <li key={item.href}>
                     {isCollapsed ? (
-                      <Tooltip content={item.label}>
+                      <Tooltip content={t(item.labelKey)}>
                         {linkContent}
                       </Tooltip>
                     ) : (
@@ -156,6 +160,13 @@ export function DashboardSidebar() {
               })}
             </ul>
           </nav>
+
+          {/* Language Switcher */}
+          {!isCollapsed && (
+            <div className="px-4 py-2 border-t border-gray-200">
+              <LanguageSwitcher variant="default" className="w-full" />
+            </div>
+          )}
 
           {/* User Info & Sign Out */}
           {session?.user && (
@@ -182,7 +193,7 @@ export function DashboardSidebar() {
                 testId="signout-button"
                 className="w-full"
               >
-                {isCollapsed ? 'Out' : 'Sign Out'}
+                {isCollapsed ? t('signOut').substring(0, 3) : t('signOut')}
               </Button>
             </div>
           )}

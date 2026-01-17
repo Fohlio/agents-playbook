@@ -1,4 +1,7 @@
+'use client';
+
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 import { ROUTES } from '@/shared/routes';
 
 /**
@@ -8,14 +11,16 @@ import { ROUTES } from '@/shared/routes';
  * Shows how to find and explore workflows
  */
 export function DiscoverStep() {
+  const t = useTranslations('gettingStarted.discover');
+
   return (
     <div className="space-y-6">
       <div className="text-center">
         <h2 className="text-2xl font-bold text-gray-900 mb-2">
-          Discover Workflows
+          {t('title')}
         </h2>
         <p className="text-gray-600">
-          Explore our library of battle-tested workflows designed by experts
+          {t('subtitle')}
         </p>
       </div>
 
@@ -25,10 +30,9 @@ export function DiscoverStep() {
             1
           </div>
           <div>
-            <h3 className="font-semibold text-gray-900">Search & Filter</h3>
+            <h3 className="font-semibold text-gray-900">{t('step1Title')}</h3>
             <p className="text-sm text-gray-600">
-              Use semantic search to find workflows by describing your problem.
-              Filter by complexity, tags, and ratings.
+              {t('step1Desc')}
             </p>
           </div>
         </div>
@@ -38,10 +42,9 @@ export function DiscoverStep() {
             2
           </div>
           <div>
-            <h3 className="font-semibold text-gray-900">Preview & Rate</h3>
+            <h3 className="font-semibold text-gray-900">{t('step2Title')}</h3>
             <p className="text-sm text-gray-600">
-              Click any workflow to see its stages and mini-prompts.
-              Rate workflows to help the community find the best solutions.
+              {t('step2Desc')}
             </p>
           </div>
         </div>
@@ -51,10 +54,9 @@ export function DiscoverStep() {
             3
           </div>
           <div>
-            <h3 className="font-semibold text-gray-900">Import to Library</h3>
+            <h3 className="font-semibold text-gray-900">{t('step3Title')}</h3>
             <p className="text-sm text-gray-600">
-              Found a workflow you like? Import it to your library with one click.
-              Customize it later to fit your needs.
+              {t('step3Desc')}
             </p>
           </div>
         </div>
@@ -64,17 +66,17 @@ export function DiscoverStep() {
         <div className="flex items-center justify-between">
           <div>
             <p className="text-sm font-medium text-gray-900">
-              Ready to explore?
+              {t('readyToExplore')}
             </p>
             <p className="text-xs text-gray-600 mt-1">
-              Visit Discover page to browse workflows
+              {t('visitDiscover')}
             </p>
           </div>
           <Link
             href={ROUTES.DISCOVER}
             className="px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700 transition-colors text-sm font-medium"
           >
-            Go to Discover
+            {t('goToDiscover')}
           </Link>
         </div>
       </div>

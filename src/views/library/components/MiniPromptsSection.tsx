@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useTranslations } from 'next-intl';
 import { Card } from '@/shared/ui/atoms';
 import Button from '@/shared/ui/atoms/Button';
 import { MiniPromptDiscoveryCardWidget } from '@/widgets/mini-prompt-discovery-card';
@@ -38,6 +39,7 @@ interface MiniPrompt {
 }
 
 export function MiniPromptsSection() {
+  const t = useTranslations('library');
   const [miniPrompts, setMiniPrompts] = useState<MiniPrompt[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [currentUserId, setCurrentUserId] = useState<string | undefined>();
@@ -103,22 +105,22 @@ export function MiniPromptsSection() {
   };
 
   if (isLoading) {
-    return <div className="text-center py-12">Loading...</div>;
+    return <div className="text-center py-12">{t('loading')}</div>;
   }
 
   return (
     <div className="space-y-4">
       <div className="flex justify-end">
         <Button variant="primary" onClick={() => setIsCreating(true)}>
-          + Create Mini-Prompt
+          {t('miniPrompts.create')}
         </Button>
       </div>
 
       {miniPrompts.length === 0 ? (
         <Card className="text-center py-12">
-          <p className="text-text-secondary mb-4">No mini-prompts yet</p>
+          <p className="text-text-secondary mb-4">{t('miniPrompts.empty')}</p>
           <Button variant="primary" onClick={() => setIsCreating(true)}>
-            Create Your First Mini-Prompt
+            {t('miniPrompts.createFirst')}
           </Button>
         </Card>
       ) : (

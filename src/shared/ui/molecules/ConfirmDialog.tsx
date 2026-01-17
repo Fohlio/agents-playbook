@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import {
   Modal,
   ModalHeader,
@@ -49,12 +50,15 @@ export function ConfirmDialog({
   onConfirm,
   title,
   message,
-  confirmLabel = "Confirm",
-  cancelLabel = "Cancel",
+  confirmLabel,
+  cancelLabel,
   variant = "primary",
   loading = false,
   testId,
 }: ConfirmDialogProps) {
+  const t = useTranslations("confirmDialog");
+  const resolvedConfirmLabel = confirmLabel || t("confirm");
+  const resolvedCancelLabel = cancelLabel || t("cancel");
   const handleConfirm = async () => {
     await onConfirm();
     if (!loading) {
@@ -75,7 +79,7 @@ export function ConfirmDialog({
           disabled={loading}
           testId={testId ? `${testId}-cancel` : undefined}
         >
-          {cancelLabel}
+          {resolvedCancelLabel}
         </Button>
         <Button
           variant={variant}
@@ -83,7 +87,7 @@ export function ConfirmDialog({
           disabled={loading}
           testId={testId ? `${testId}-confirm` : undefined}
         >
-          {loading ? "Processing..." : confirmLabel}
+          {loading ? t("processing") : resolvedConfirmLabel}
         </Button>
       </ModalActions>
     </Modal>

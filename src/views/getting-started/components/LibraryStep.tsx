@@ -1,4 +1,7 @@
+'use client';
+
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 import { PROTECTED_ROUTES } from '@/shared/routes';
 
 /**
@@ -8,14 +11,16 @@ import { PROTECTED_ROUTES } from '@/shared/routes';
  * Shows difference between workflows and mini-prompts
  */
 export function LibraryStep() {
+  const t = useTranslations('gettingStarted.library');
+
   return (
     <div className="space-y-6">
       <div className="text-center">
         <h2 className="text-2xl font-bold text-gray-900 mb-2">
-          Your Library
+          {t('title')}
         </h2>
         <p className="text-gray-600">
-          Organize workflows and mini-prompts for your projects
+          {t('subtitle')}
         </p>
       </div>
 
@@ -26,23 +31,23 @@ export function LibraryStep() {
             <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
               <span className="text-2xl">🔄</span>
             </div>
-            <h3 className="text-lg font-bold text-gray-900">Workflows</h3>
+            <h3 className="text-lg font-bold text-gray-900">{t('workflowsTitle')}</h3>
           </div>
           <p className="text-sm text-gray-600 mb-4">
-            Complete multi-step processes with defined stages and execution order.
+            {t('workflowsDesc')}
           </p>
           <ul className="space-y-2 text-sm text-gray-700">
             <li className="flex items-start gap-2">
               <span className="text-green-600 mt-0.5">✓</span>
-              <span>Multiple stages (Analysis, Design, Implementation)</span>
+              <span>{t('workflowsFeature1')}</span>
             </li>
             <li className="flex items-start gap-2">
               <span className="text-green-600 mt-0.5">✓</span>
-              <span>Contains multiple mini-prompts per stage</span>
+              <span>{t('workflowsFeature2')}</span>
             </li>
             <li className="flex items-start gap-2">
               <span className="text-green-600 mt-0.5">✓</span>
-              <span>Smart step skipping based on context</span>
+              <span>{t('workflowsFeature3')}</span>
             </li>
           </ul>
         </div>
@@ -53,23 +58,23 @@ export function LibraryStep() {
             <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
               <span className="text-2xl">📝</span>
             </div>
-            <h3 className="text-lg font-bold text-gray-900">Mini-Prompts</h3>
+            <h3 className="text-lg font-bold text-gray-900">{t('miniPromptsTitle')}</h3>
           </div>
           <p className="text-sm text-gray-600 mb-4">
-            Reusable prompt templates for specific tasks and operations.
+            {t('miniPromptsDesc')}
           </p>
           <ul className="space-y-2 text-sm text-gray-700">
             <li className="flex items-start gap-2">
               <span className="text-green-600 mt-0.5">✓</span>
-              <span>Single-purpose instructions</span>
+              <span>{t('miniPromptsFeature1')}</span>
             </li>
             <li className="flex items-start gap-2">
               <span className="text-green-600 mt-0.5">✓</span>
-              <span>Reusable across multiple workflows</span>
+              <span>{t('miniPromptsFeature2')}</span>
             </li>
             <li className="flex items-start gap-2">
               <span className="text-green-600 mt-0.5">✓</span>
-              <span>Markdown format with examples</span>
+              <span>{t('miniPromptsFeature3')}</span>
             </li>
           </ul>
         </div>
@@ -80,11 +85,10 @@ export function LibraryStep() {
           <span className="text-2xl">💡</span>
           <div>
             <p className="text-sm font-medium text-gray-900 mb-1">
-              Pro Tip: Start with workflows
+              {t('proTip')}
             </p>
             <p className="text-xs text-gray-700">
-              Import proven workflows from Discover, then create custom mini-prompts
-              as you identify repeated patterns in your work.
+              {t('proTipDesc')}
             </p>
           </div>
         </div>
@@ -94,17 +98,17 @@ export function LibraryStep() {
         <div className="flex items-center justify-between">
           <div>
             <p className="text-sm font-medium text-gray-900">
-              Manage your library
+              {t('manageLibrary')}
             </p>
             <p className="text-xs text-gray-600 mt-1">
-              Create, edit, and organize workflows
+              {t('manageLibraryDesc')}
             </p>
           </div>
           <Link
             href={PROTECTED_ROUTES.LIBRARY}
             className="px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700 transition-colors text-sm font-medium"
           >
-            Go to Library
+            {t('goToLibrary')}
           </Link>
         </div>
       </div>

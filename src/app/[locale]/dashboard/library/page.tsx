@@ -1,6 +1,7 @@
 'use client';
 
 import { useSearchParams } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { Tabs } from '@/shared/ui/molecules/Tabs';
 import { WorkflowsSection } from '@/views/library/components/WorkflowsSection';
 import { MiniPromptsSection } from '@/views/library/components/MiniPromptsSection';
@@ -8,13 +9,14 @@ import { MiniPromptsSection } from '@/views/library/components/MiniPromptsSectio
 export default function LibraryPage() {
   const searchParams = useSearchParams();
   const defaultTab = searchParams.get('tab') || 'workflows';
+  const t = useTranslations('library');
 
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-text-primary">Library</h1>
+        <h1 className="text-2xl font-bold text-text-primary">{t('title')}</h1>
         <p className="text-sm text-text-secondary mt-1">
-          Manage your workflows and mini-prompts
+          {t('subtitle')}
         </p>
       </div>
 
@@ -23,12 +25,12 @@ export default function LibraryPage() {
         tabs={[
           {
             id: 'workflows',
-            label: 'Workflows',
+            label: t('workflows.title'),
             content: <WorkflowsSection />,
           },
           {
             id: 'mini-prompts',
-            label: 'Mini-Prompts',
+            label: t('miniPrompts.title'),
             content: <MiniPromptsSection />,
           },
         ]}

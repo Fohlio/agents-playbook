@@ -1,0 +1,705 @@
+{
+  "common": {
+    "appName": "Agents Playbook",
+    "tagline": "Intelligent Workflow Engine",
+    "loading": "Loading...",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "create": "Create",
+    "close": "Close",
+    "copy": "Copy",
+    "copied": "Copied!",
+    "search": "Search",
+    "filter": "Filter",
+    "clear": "Clear",
+    "clearAll": "Clear All",
+    "submit": "Submit",
+    "confirm": "Confirm",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "finish": "Finish",
+    "skip": "Skip",
+    "yes": "Yes",
+    "no": "No",
+    "or": "or",
+    "and": "and",
+    "by": "By {author}",
+    "active": "Active",
+    "inactive": "Inactive",
+    "public": "Public",
+    "private": "Private",
+    "system": "System",
+    "stages": "{count, plural, =0 {0 stages} =1 {1 stage} other {# stages}}",
+    "workflows": "Workflows",
+    "miniPrompts": "Mini-Prompts",
+    "prompts": "Prompts"
+  },
+  "nav": {
+    "home": "Home",
+    "dashboard": "Dashboard",
+    "discover": "Discover",
+    "library": "Library",
+    "myShares": "My Shares",
+    "community": "Community",
+    "settings": "Settings",
+    "admin": "Admin",
+    "gettingStarted": "Getting Started",
+    "signIn": "Sign In",
+    "signOut": "Sign Out",
+    "signUp": "Sign Up",
+    "github": "GitHub",
+    "toggleMenu": "Toggle menu",
+    "toggleSidebar": "Toggle sidebar"
+  },
+  "landing": {
+    "header": {
+      "title": "AI Agents Playbook",
+      "subtitle": "Intelligent Workflow Engine"
+    },
+    "hero": {
+      "badge": "MCP Server • Cursor Compatible",
+      "title1": "AI Agents",
+      "title2": "Playbook",
+      "subtitle": "Empower AI to tackle complex tasks and navigate large codebases with precision",
+      "value1": "Reduced Hallucinations",
+      "value2": "Complex Tasks",
+      "value3": "Personal Library",
+      "description": "Build custom workflows and prompts for your team's specific needs. Maintain your personal library of reusable patterns. Guide AI through complex multi-step processes in large projects with structured, validated workflows."
+    },
+    "features": {
+      "title": "Built for Every Team",
+      "subtitle": "Empower AI to handle complex projects and maintain team-specific knowledge libraries",
+      "complexTasks": {
+        "title": "Handle Complex Tasks",
+        "description": "Multi-step workflows guide AI through intricate processes, breaking down large features into manageable, validated stages.",
+        "audience": "For Complex Projects"
+      },
+      "bigCodebases": {
+        "title": "Navigate Big Codebases",
+        "description": "Structured context helps AI understand large projects, maintain consistency across modules, and respect your architecture patterns.",
+        "audience": "For Large Projects"
+      },
+      "teamWorkflows": {
+        "title": "Team Workflows",
+        "description": "Create and share custom workflows tailored to your team's specific needs, tech stack, and development practices.",
+        "audience": "For Engineering Teams"
+      },
+      "personalLibrary": {
+        "title": "Personal Library",
+        "description": "Build and maintain your own library of reusable workflows and mini-prompts. Keep your proven patterns organized and accessible.",
+        "audience": "For All Users"
+      },
+      "reduceHallucinations": {
+        "title": "Reduce Hallucinations",
+        "description": "Structured workflows provide complete context so AI generates accurate, validated code instead of inventing APIs or hardcoding secrets.",
+        "audience": "For Quality Code"
+      },
+      "visualBuilder": {
+        "title": "Visual Workflow Builder",
+        "description": "Drag-and-drop constructor makes it easy to create sophisticated workflows without writing YAML or configuration files.",
+        "audience": "For Power Users"
+      },
+      "mcpIntegration": {
+        "title": "MCP Integration",
+        "description": "Native Model Context Protocol support for Claude Code, Cursor, and any AI assistant. Seamlessly integrates with your tools.",
+        "audience": "For Developers"
+      }
+    },
+    "setup": {
+      "title": "Quick Setup",
+      "subtitle": "Get started in minutes with Cursor",
+      "step1": {
+        "title": "Add MCP Server",
+        "description": "Configure the MCP server in your IDE settings",
+        "cursorLabel": "Cursor MCP Settings",
+        "note": "Add this configuration to your Cursor MCP settings",
+        "tokenNote": "API Token is Optional: Without a token, you'll have access to all system workflows. Add your API token (from Settings → API Tokens) to also access your personal library workflows."
+      },
+      "step2": {
+        "title": "Start Using",
+        "description": "Ask your AI assistant for intelligent workflow recommendations"
+      },
+      "step3": {
+        "title": "Create Custom Workflows",
+        "description": "Use the built-in AI assistant to design workflows tailored to your team",
+        "example1": "Help me create a workflow for implementing authentication with OAuth",
+        "example2": "Create a mini-prompt for writing API documentation",
+        "example3": "What's the best workflow structure for a microservices project?"
+      }
+    },
+    "roadmap": {
+      "title": "Roadmap",
+      "subtitle": "Upcoming features to enhance AI-driven development workflows",
+      "item1": {
+        "title": "Cursor Extension + Sub-Agents",
+        "description": "Deep Cursor integration with isolated context and multiple agents support"
+      },
+      "item2": {
+        "title": "Advanced Figma & Layout Workflows",
+        "description": "Enhanced UI implementation flows with design system integration"
+      },
+      "item3": {
+        "title": "Extended Workflow Library",
+        "description": "Enhanced bug tracing, refactoring, and integrated testing strategies"
+      }
+    },
+    "recentItems": {
+      "title": "Recent Community Additions",
+      "subtitle": "Explore the latest workflows and prompts shared by the community",
+      "tabWorkflows": "Workflows ({count})",
+      "tabPrompts": "Prompts ({count})",
+      "noWorkflows": "No public workflows yet. Be the first to share one!",
+      "noPrompts": "No public prompts yet. Be the first to share one!",
+      "copyPrompt": "Copy Prompt"
+    }
+  },
+  "auth": {
+    "login": {
+      "title": "Sign In",
+      "subtitle": "Welcome back to Agents Playbook",
+      "email": "Email",
+      "emailPlaceholder": "you@example.com",
+      "password": "Password",
+      "passwordPlaceholder": "••••••••",
+      "rememberMe": "Remember me for 90 days",
+      "submit": "Sign In",
+      "submitting": "Signing in...",
+      "noAccount": "Don't have an account?",
+      "signUp": "Sign up",
+      "invalidCredentials": "Invalid credentials",
+      "loginError": "An error occurred during login"
+    },
+    "register": {
+      "title": "Create Account",
+      "subtitle": "Start managing your AI agent workflows",
+      "email": "Email",
+      "emailPlaceholder": "you@example.com",
+      "username": "Username",
+      "usernamePlaceholder": "johndoe",
+      "password": "Password",
+      "passwordPlaceholder": "••••••••",
+      "passwordHelp": "Min 8 characters, 1 uppercase, 1 lowercase, 1 number, 1 special character",
+      "confirmPassword": "Confirm Password",
+      "submit": "Sign Up",
+      "submitting": "Creating account...",
+      "hasAccount": "Already have an account?",
+      "signIn": "Sign in",
+      "registrationFailed": "Registration failed",
+      "loginAfterRegisterFailed": "Login failed after registration"
+    }
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "subtitle": "Manage your workflows and mini-prompts",
+    "stats": {
+      "totalWorkflows": "Total Workflows",
+      "totalWorkflowsTooltip": "Total number of workflows in your library (active and inactive)",
+      "activeWorkflows": "Active Workflows",
+      "activeWorkflowsTooltip": "Active workflows available in MCP server",
+      "miniPrompts": "Mini-Prompts",
+      "miniPromptsTooltip": "Reusable prompt templates that can be used across multiple workflows",
+      "publicItems": "Public Items",
+      "publicItemsTooltip": "Number of your workflows and mini-prompts visible to the community"
+    },
+    "quickActions": {
+      "newWorkflow": "New Workflow",
+      "newWorkflowTooltip": "Create a new workflow using the visual constructor",
+      "newMiniPrompt": "New Mini-Prompt",
+      "newMiniPromptTooltip": "Create a reusable mini-prompt template"
+    },
+    "activeWorkflows": {
+      "title": "Active Workflows",
+      "empty": "No active workflows yet",
+      "emptyDescription": "Create and activate your first workflow to get started",
+      "count": "{count} active workflows",
+      "deactivate": "Deactivate",
+      "deactivating": "Deactivating..."
+    },
+    "activeMiniPrompts": {
+      "title": "Active Mini-Prompts",
+      "empty": "No active mini-prompts yet",
+      "emptyDescription": "Create and activate your first mini-prompt to get started",
+      "count": "{count} active mini-prompts",
+      "deactivate": "Deactivate",
+      "deactivating": "Deactivating..."
+    }
+  },
+  "library": {
+    "title": "Library",
+    "subtitle": "Manage your workflows and mini-prompts",
+    "loading": "Loading...",
+    "workflows": {
+      "title": "Workflows",
+      "empty": "No workflows yet",
+      "emptyDescription": "Discover workflows from the community or create your own",
+      "explore": "Explore Workflows",
+      "create": "+ Create Workflow",
+      "createFirst": "Create Your First Workflow"
+    },
+    "miniPrompts": {
+      "title": "Mini-Prompts",
+      "empty": "No mini-prompts yet",
+      "emptyDescription": "Discover mini-prompts from the community or create your own",
+      "explore": "Explore Mini-Prompts",
+      "create": "+ Create Mini-Prompt",
+      "createFirst": "Create Your First Mini-Prompt"
+    }
+  },
+  "discover": {
+    "title": "Discover",
+    "subtitle": "Browse and import public workflows and mini-prompts from the community",
+    "searchPlaceholder": "Search workflows by name, description, or author...",
+    "searchMiniPromptsPlaceholder": "Search mini-prompts by name, description, or author...",
+    "noResults": "No results found",
+    "noResultsDescription": "Try different keywords or clear your search",
+    "clearSearch": "Clear Search",
+    "noFilterResults": "No results match your filters",
+    "noFilterResultsDescription": "Try adjusting or clearing your filters to see more results",
+    "clearFilters": "Clear All Filters",
+    "emptyWorkflows": "No workflows found",
+    "emptyWorkflowsDescription": "Be the first to share a workflow with the community!",
+    "emptyMiniPrompts": "No mini-prompts found",
+    "emptyMiniPromptsDescription": "Be the first to share a mini-prompt with the community!",
+    "filters": {
+      "title": "Filters",
+      "sortBy": "Sort By",
+      "sortMostUsed": "Most Used (default)",
+      "sortHighestRated": "Highest Rated",
+      "sortRecent": "Most Recent",
+      "sortPopular": "Popular",
+      "filtersButton": "Filters",
+      "tags": "Tags",
+      "aiModels": "AI Models",
+      "filterByModels": "Filter by AI models...",
+      "minRating": "Minimum Rating",
+      "allRatings": "All Ratings",
+      "rating4Plus": "4+ Stars",
+      "rating3Plus": "3+ Stars",
+      "minUsage": "Minimum Usage",
+      "allUsage": "All Usage",
+      "usage10Plus": "10+ Users",
+      "usage50Plus": "50+ Users",
+      "complexity": "Complexity",
+      "allComplexity": "All Complexity",
+      "complexityXS": "XS - Quick",
+      "complexityS": "S - Simple",
+      "complexityM": "M - Moderate",
+      "complexityL": "L - Complex",
+      "complexityXL": "XL - Advanced",
+      "stageCount": "Number of Stages",
+      "allStages": "All Stages",
+      "stages1to3": "1-3 Stages",
+      "stages4to5": "4-5 Stages",
+      "stages6Plus": "6+ Stages",
+      "apply": "Apply Filters",
+      "clearAll": "Clear All"
+    },
+    "toast": {
+      "addedToLibrary": "Workflow added to library",
+      "removedFromLibrary": "Removed from library",
+      "failedToAdd": "Failed to add to library",
+      "failedToUndo": "Failed to undo",
+      "undo": "Undo"
+    }
+  },
+  "sharing": {
+    "title": "My Shares",
+    "empty": "You haven't shared anything yet",
+    "emptyDescription": "Share your workflows or mini-prompts to collaborate with others",
+    "goToLibrary": "Go to Library",
+    "shareButton": "Share",
+    "shareModal": {
+      "title": "Share {name}",
+      "description": "Generate a shareable link for this {type}",
+      "createLink": "Create Share Link",
+      "copyLink": "Copy Link",
+      "linkCopied": "Link copied to clipboard!",
+      "disableLink": "Disable Link",
+      "enableLink": "Enable Link"
+    }
+  },
+  "gettingStarted": {
+    "title": "Getting Started",
+    "welcome": {
+      "title": "Welcome to Agents Playbook",
+      "subtitle": "Learn how to prevent AI hallucinations and build reliable workflows in just 5 steps.",
+      "discoverWorkflows": "Discover Workflows",
+      "discoverWorkflowsDesc": "Find proven solutions",
+      "buildLibrary": "Build Library",
+      "buildLibraryDesc": "Organize your tools",
+      "integrateMcp": "Integrate MCP",
+      "integrateMcpDesc": "Connect with AI",
+      "whyWorkflows": "Why workflows?",
+      "whyWorkflowsDesc": "Planning ahead saves time on re-iteration, prevents bugs, ensures consistency in requirements, and helps AI understand context better—reducing wasted effort and improving code quality."
+    },
+    "mcpIntegration": {
+      "title": "MCP Server Integration",
+      "subtitle": "Connect Agents Playbook to Claude Code and Cursor",
+      "tokenOptional": "API Token is Optional",
+      "tokenOptionalDesc": "Without a token, you'll have access to all system workflows. Add your API token to also access your personal library workflows.",
+      "claudeCode": "Claude Code",
+      "cursor": "Cursor",
+      "addToSettings": "Add to your MCP settings:",
+      "addToConfig": "Add to MCP configuration:",
+      "getToken": "Get Your API Token (Optional)",
+      "getTokenDesc": "To access your personal library workflows, create an API token:",
+      "step1": "Go to Settings → API Tokens",
+      "step2": "Click \"Create New Token\"",
+      "step3": "Copy the token and add it to your MCP config",
+      "getApiToken": "Get API Token",
+      "usageExample": "Usage Example",
+      "usageInstructions": "In Claude Code or Cursor, type:",
+      "usageNote": "The AI will load your workflow and guide you step-by-step through requirements, design, implementation, and testing.",
+      "needHelp": "Need detailed setup instructions?",
+      "needHelpDesc": "Visit our documentation for step-by-step guides and troubleshooting."
+    },
+    "discover": {
+      "title": "Discover Workflows",
+      "subtitle": "Explore our library of battle-tested workflows designed by experts",
+      "step1Title": "Search & Filter",
+      "step1Desc": "Use semantic search to find workflows by describing your problem. Filter by complexity, tags, and ratings.",
+      "step2Title": "Preview & Rate",
+      "step2Desc": "Click any workflow to see its stages and mini-prompts. Rate workflows to help the community find the best solutions.",
+      "step3Title": "Import to Library",
+      "step3Desc": "Found a workflow you like? Import it to your library with one click. Customize it later to fit your needs.",
+      "readyToExplore": "Ready to explore?",
+      "visitDiscover": "Visit Discover page to browse workflows",
+      "goToDiscover": "Go to Discover"
+    },
+    "library": {
+      "title": "Your Library",
+      "subtitle": "Organize workflows and mini-prompts for your projects",
+      "workflowsTitle": "Workflows",
+      "workflowsDesc": "Complete multi-step processes with defined stages and execution order.",
+      "workflowsFeature1": "Multiple stages (Analysis, Design, Implementation)",
+      "workflowsFeature2": "Contains multiple mini-prompts per stage",
+      "workflowsFeature3": "Smart step skipping based on context",
+      "miniPromptsTitle": "Mini-Prompts",
+      "miniPromptsDesc": "Reusable prompt templates for specific tasks and operations.",
+      "miniPromptsFeature1": "Single-purpose instructions",
+      "miniPromptsFeature2": "Reusable across multiple workflows",
+      "miniPromptsFeature3": "Markdown format with examples",
+      "proTip": "Pro Tip: Start with workflows",
+      "proTipDesc": "Import proven workflows from Discover, then create custom mini-prompts as you identify repeated patterns in your work.",
+      "manageLibrary": "Manage your library",
+      "manageLibraryDesc": "Create, edit, and organize workflows",
+      "goToLibrary": "Go to Library"
+    },
+    "createWorkflow": {
+      "title": "Create Custom Workflows",
+      "subtitle": "Build workflows visually with our drag-and-drop constructor",
+      "step1Title": "Create Stages",
+      "step1Desc": "Organize your workflow into logical phases like \"Analysis\", \"Design\", \"Implementation\"",
+      "step2Title": "Drag Mini-Prompts",
+      "step2Desc": "Drag mini-prompts from your library into stages. Reorder them to define execution sequence.",
+      "step3Title": "Configure & Save",
+      "step3Desc": "Set complexity, tags, and visibility (PUBLIC/PRIVATE). Save to use with MCP server.",
+      "bestPractice": "Best Practice",
+      "bestPracticeDesc": "Assign one agent per stage to prevent context collapse. Use review steps between stages to maintain clarity and allow validation before proceeding.",
+      "contextManagement": "Context Management",
+      "contextManagementDesc": "Keep AI agents aligned across workflow stages with automatic mini-prompts:",
+      "memoryBoard": "Memory Board (📋):",
+      "memoryBoardDesc": "Enable \"With Review\" on stages to add handoff review prompts",
+      "multiAgentChat": "Multi-Agent Chat (🤖):",
+      "multiAgentChatDesc": "Enable globally to add coordination chat after each mini-prompt",
+      "realTimePreview": "Real-time Preview",
+      "realTimePreviewDesc": "See your workflow structure as you build",
+      "smartValidation": "Smart Validation",
+      "smartValidationDesc": "Ensures all required fields are complete",
+      "aiAssistant": "AI Assistant",
+      "aiAssistantDesc": "Need help creating your workflow? Use the built-in AI assistant to:",
+      "generateWorkflows": "Generate Workflows:",
+      "generateWorkflowsDesc": "Describe your task and get a complete workflow structure",
+      "createMiniPrompts": "Create Mini-Prompts:",
+      "createMiniPromptsDesc": "Ask AI to write custom prompts for specific tasks",
+      "getRecommendations": "Get Recommendations:",
+      "getRecommendationsDesc": "Receive suggestions for improving workflow structure",
+      "aiAssistantNote": "The AI assistant is available in the workflow constructor and library sections",
+      "tryConstructor": "Try the workflow constructor",
+      "tryConstructorDesc": "Create your first custom workflow with AI assistance",
+      "createWorkflowBtn": "Create Workflow"
+    },
+    "combinations": {
+      "title": "Combining Workflows",
+      "subtitle": "Chain workflows together for complex projects and better results",
+      "exampleTitle": "Example: Building a Complete Feature",
+      "step1Title": "Start with PRD Creation Workflow",
+      "step1Desc": "Use the Product Requirements Architect workflow to break down your project.",
+      "step1Creates": "Creates:",
+      "step1Tip": "Pro Tip: Each feature file includes a ready-to-use prompt for Feature Development!",
+      "step2Title": "Dive Deep with Feature Development Workflow",
+      "step2Desc": "For each feature from the PRD, use the Feature Development workflow.",
+      "step2Process": "Process:",
+      "step2ProcessItems": [
+        "Open feature file from .agents-playbook/[project]/features/[feature].md",
+        "Copy the ready-to-use prompt from the feature file",
+        "Run Feature Development workflow with that prompt",
+        "Workflow goes through: Analysis → Design → Planning → Implementation → Testing",
+        "References design.md and design-system.md for consistency"
+      ],
+      "step2Result": "Result: Production-ready implementation that follows the PRD specs exactly!",
+      "whyWorksTitle": "Why Combining Workflows Works",
+      "structuredPlanning": "Structured Planning",
+      "structuredPlanningDesc": "PRD creates the blueprint. Each feature is documented with clear requirements.",
+      "focusedExecution": "Focused Execution",
+      "focusedExecutionDesc": "Feature Development follows the plan without deviating or hallucinating.",
+      "betterResults": "Better Results",
+      "betterResultsDesc": "Each workflow stage validates against the PRD, ensuring consistency.",
+      "readyToTry": "Ready to Try Workflow Combinations?",
+      "readyToTryDesc": "Start with a simple project: Use PRD Creation to plan, then Feature Development to build each piece.",
+      "prdCreation": "PRD Creation",
+      "featureDevelopment": "Feature Development"
+    },
+    "docs": {
+      "title": "Documentation",
+      "subtitle": "Learn more about advanced features"
+    }
+  },
+  "community": {
+    "title": "Community Forum",
+    "subtitle": "Discuss workflows, share ideas, and get help from the community",
+    "createTopic": "Create Topic",
+    "noTopics": "No topics yet",
+    "noTopicsDescription": "Be the first to start a discussion!",
+    "reply": "Reply",
+    "replies": "{count, plural, =0 {No replies} =1 {1 reply} other {# replies}}",
+    "messages": "{count, plural, =1 {message} other {messages}}",
+    "pinnedTopic": "Pinned topic",
+    "closedTopic": "Closed topic",
+    "topicClosed": "Topic is closed. No new messages can be added.",
+    "createTopicModal": {
+      "title": "Create New Topic",
+      "titleLabel": "Title",
+      "messageLabel": "Message",
+      "creating": "Creating...",
+      "create": "Create Topic",
+      "failedToCreate": "Failed to create topic"
+    },
+    "messageForm": {
+      "placeholder": "Type your message... (Use @ to mention users)",
+      "sending": "Sending...",
+      "send": "Send Message",
+      "failedToSend": "Failed to create message"
+    }
+  },
+  "settings": {
+    "title": "Settings",
+    "profile": {
+      "title": "Profile",
+      "subtitle": "Update your profile information",
+      "email": "Email",
+      "emailCannotChange": "Email cannot be changed",
+      "username": "Username",
+      "usernamePlaceholder": "johndoe",
+      "accountTier": "Account Tier",
+      "saveChanges": "Save Changes",
+      "saving": "Saving...",
+      "updated": "Username updated successfully",
+      "updateFailed": "Failed to update username"
+    },
+    "password": {
+      "title": "Change Password",
+      "subtitle": "Update your password to keep your account secure",
+      "currentPassword": "Current Password",
+      "newPassword": "New Password",
+      "newPasswordHelp": "Min 8 characters, 1 uppercase, 1 lowercase, 1 number, 1 special character",
+      "confirmPassword": "Confirm New Password",
+      "changePassword": "Change Password",
+      "changing": "Changing...",
+      "changed": "Password changed successfully",
+      "changeFailed": "Failed to change password",
+      "currentRequired": "Current password is required",
+      "newRequired": "New password is required",
+      "confirmRequired": "Please confirm your new password",
+      "mismatch": "Passwords do not match"
+    },
+    "apiTokens": {
+      "title": "API Tokens",
+      "subtitle": "Manage API tokens for MCP server integration",
+      "create": "Create New Token",
+      "createTooltip": "Generate a new API token for authenticating MCP server requests from AI assistants",
+      "noTokens": "No API tokens yet",
+      "noTokensDescription": "Create a token to access your workflows via MCP",
+      "tokenName": "Token Name",
+      "tokenNamePlaceholder": "My MCP Token",
+      "tokenNameHelper": "A descriptive name for this token",
+      "tokenNameRequired": "Token name is required",
+      "tokenNameMax": "Token name must be at most 100 characters",
+      "permissions": "Permissions",
+      "created": "Created:",
+      "expires": "Expires:",
+      "lastUsed": "Last used:",
+      "never": "Never",
+      "expired": "Expired",
+      "revoke": "Revoke",
+      "revokeTooltip": "Permanently revoke this token. AI assistants using it will lose access immediately.",
+      "revoking": "Revoking...",
+      "createToken": "Create Token",
+      "copyToken": "Copy Token",
+      "tokenCopied": "Token copied!",
+      "tokenWarning": "Make sure to copy your token now. You won't be able to see it again!",
+      "createModal": {
+        "title": "Create API Token"
+      },
+      "revokeModal": {
+        "title": "Revoke Token",
+        "message": "Are you sure you want to revoke this token? This action cannot be undone."
+      },
+      "displayModal": {
+        "title": "Your New API Token",
+        "warning": "Copy this token now. You won't be able to see it again!",
+        "copied": "Token copied to clipboard!"
+      }
+    },
+    "openaiKey": {
+      "title": "OpenAI API Key",
+      "subtitle": "Configure your OpenAI API key for AI assistant features",
+      "placeholder": "sk-...",
+      "save": "Save Key",
+      "test": "Test Key",
+      "testing": "Testing...",
+      "valid": "API key is valid",
+      "invalid": "API key is invalid"
+    }
+  },
+  "errors": {
+    "generic": "Something went wrong",
+    "notFound": "Not found",
+    "unauthorized": "Unauthorized",
+    "forbidden": "Access denied",
+    "validation": "Validation error",
+    "network": "Network error",
+    "tryAgain": "Try Again",
+    "goBack": "Go Back",
+    "goHome": "Go Home"
+  },
+  "cookies": {
+    "title": "Cookie Consent",
+    "message": "We use essential cookies to ensure the website functions properly and to save your preferences. We do not use tracking or advertising cookies. By clicking \"Accept\", you consent to our use of cookies.",
+    "learnMore": "Learn more about our privacy policy",
+    "accept": "Accept",
+    "decline": "Decline",
+    "close": "Close cookie banner"
+  },
+  "languageSwitcher": {
+    "label": "Language",
+    "en": "English",
+    "ru": "Русский"
+  },
+  "workflowCard": {
+    "usageHint": "Use with: @agents-playbook select_workflow \"{name}\"",
+    "import": "Import",
+    "importing": "Importing...",
+    "preview": "Preview",
+    "activate": "Activate",
+    "deactivate": "Deactivate"
+  },
+  "miniPromptCard": {
+    "usedIn": "Used in {count} workflows",
+    "copy": "Copy",
+    "preview": "Preview"
+  },
+  "ratings": {
+    "title": "Rate {name}",
+    "question": "How would you rate this {type}?",
+    "workflow": "workflow",
+    "miniPrompt": "mini-prompt",
+    "yourRating": "Your rating",
+    "averageRating": "Average: {rating}",
+    "totalRatings": "{count, plural, =0 {No ratings yet} =1 {1 rating} other {# ratings}}",
+    "submit": "Submit Rating",
+    "update": "Update Rating",
+    "remove": "Remove Rating",
+    "submitting": "Submitting..."
+  },
+  "workflowConstructor": {
+    "title": "Workflow Constructor",
+    "newWorkflow": "New Workflow",
+    "editWorkflow": "Edit Workflow",
+    "workflowName": "Workflow Name",
+    "workflowNamePlaceholder": "Enter workflow name",
+    "description": "Description",
+    "descriptionPlaceholder": "Describe what this workflow does",
+    "complexity": "Complexity",
+    "visibility": "Visibility",
+    "tags": "Tags",
+    "models": "Models",
+    "stages": "Stages",
+    "addStage": "Add Stage",
+    "stageName": "Stage Name",
+    "stageNamePlaceholder": "Enter stage name",
+    "addMiniPrompt": "Add Mini-Prompt",
+    "save": "Save Workflow",
+    "saving": "Saving...",
+    "delete": "Delete Workflow",
+    "deleting": "Deleting...",
+    "confirmDelete": "Are you sure you want to delete this workflow?"
+  },
+  "miniPromptEditor": {
+    "title": "Mini-Prompt Editor",
+    "newMiniPrompt": "New Mini-Prompt",
+    "editMiniPrompt": "Edit Mini-Prompt",
+    "name": "Name",
+    "namePlaceholder": "Enter mini-prompt name",
+    "description": "Description",
+    "descriptionPlaceholder": "Describe what this mini-prompt does",
+    "content": "Content",
+    "contentPlaceholder": "Enter the prompt content...",
+    "visibility": "Visibility",
+    "tags": "Tags",
+    "save": "Save Mini-Prompt",
+    "saving": "Saving...",
+    "delete": "Delete Mini-Prompt",
+    "deleting": "Deleting...",
+    "confirmDelete": "Are you sure you want to delete this mini-prompt?"
+  },
+  "complexity": {
+    "XS": "Extra Small",
+    "S": "Small",
+    "M": "Medium",
+    "L": "Large",
+    "XL": "Extra Large"
+  },
+  "validation": {
+    "required": "This field is required",
+    "email": "Please enter a valid email address",
+    "minLength": "Must be at least {min} characters",
+    "maxLength": "Must be at most {max} characters",
+    "passwordMismatch": "Passwords do not match",
+    "invalidFormat": "Invalid format"
+  },
+  "aiAssistant": {
+    "title": "AI Assistant",
+    "beta": "Beta",
+    "newChat": "New Chat",
+    "history": "History",
+    "noHistory": "No previous sessions",
+    "loadingHistory": "Loading...",
+    "placeholder": "Ask AI to help with workflows...",
+    "send": "Send",
+    "close": "Close",
+    "tokens": "{count} tokens",
+    "error": "An error occurred. Please try again.",
+    "apiKeyRequired": "API Key Required",
+    "apiKeyRequiredDesc": "Please configure your OpenAI API key in Settings to use the AI assistant.",
+    "goToSettings": "Go to Settings"
+  },
+  "confirmDialog": {
+    "confirm": "Confirm",
+    "cancel": "Cancel",
+    "processing": "Processing..."
+  },
+  "emptyState": {
+    "noSearchResults": "No results for \"{query}\"",
+    "noSearchResultsDesc": "Try different keywords or clear your search",
+    "clearSearch": "Clear Search",
+    "noFilterResults": "No results match your filters",
+    "noFilterResultsDesc": "Try adjusting or clearing your filters",
+    "clearFilters": "Clear Filters",
+    "emptyDiscovery": "No {type}s available yet",
+    "emptyDiscoveryDesc": "Be the first to share a {type} with the community!"
+  }
+}

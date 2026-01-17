@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { Card, CardHeader, Badge, Button } from "@/shared/ui/atoms";
 import { ShareButton } from "@/features/sharing/ui";
 import { MiniPromptWithUsage } from "../lib/dashboard-service";
@@ -25,6 +26,9 @@ export function ActiveMiniPromptsSection({ miniPrompts }: ActiveMiniPromptsSecti
     tagIds?: string[];
     key?: string | null;
   } | null>(null);
+  const t = useTranslations('dashboard.activeMiniPrompts');
+  const tCommon = useTranslations('common');
+  const tMiniPromptCard = useTranslations('miniPromptCard');
 
   const handleDeactivate = async (miniPromptId: string) => {
     try {
@@ -94,12 +98,12 @@ export function ActiveMiniPromptsSection({ miniPrompts }: ActiveMiniPromptsSecti
     return (
       <Card testId="active-mini-prompts-empty">
         <CardHeader
-          title="Active Mini-Prompts"
-          description="No active mini-prompts yet"
+          title={t('title')}
+          description={t('empty')}
           titleHref="/dashboard/library?tab=mini-prompts"
         />
         <div className="text-center py-8">
-          <p className="text-gray-500">Create and activate your first mini-prompt to get started</p>
+          <p className="text-gray-500">{t('emptyDescription')}</p>
         </div>
       </Card>
     );
@@ -108,8 +112,8 @@ export function ActiveMiniPromptsSection({ miniPrompts }: ActiveMiniPromptsSecti
   return (
     <Card testId="active-mini-prompts-section">
       <CardHeader
-        title="Active Mini-Prompts"
-        description={`${miniPrompts.length} active mini-prompts`}
+        title={t('title')}
+        description={t('count', { count: miniPrompts.length })}
         titleHref="/dashboard/library?tab=mini-prompts"
       />
 
@@ -127,13 +131,13 @@ export function ActiveMiniPromptsSection({ miniPrompts }: ActiveMiniPromptsSecti
                 <h3 className="font-medium text-gray-900">{miniPrompt.name}</h3>
                 {miniPrompt.isSystemMiniPrompt && (
                   <Badge variant="default" testId={`system-badge-${miniPrompt.id}`}>
-                    System
+                    {tCommon('system')}
                   </Badge>
                 )}
-                <Badge variant="primary" testId="mini-prompt-active-badge">Active</Badge>
+                <Badge variant="primary" testId="mini-prompt-active-badge">{tCommon('active')}</Badge>
               </div>
               <p className="text-xs text-gray-500 mt-1">
-                Used in {miniPrompt._count.stageMiniPrompts} workflows
+                {tMiniPromptCard('usedIn', { count: miniPrompt._count.stageMiniPrompts })}
               </p>
             </div>
 
@@ -150,7 +154,7 @@ export function ActiveMiniPromptsSection({ miniPrompts }: ActiveMiniPromptsSecti
                   onClick={() => handleEdit(miniPrompt.id)}
                   testId={`edit-button-${miniPrompt.id}`}
                 >
-                  Edit
+                  {tCommon('edit')}
                 </Button>
               )}
               <Button
@@ -160,7 +164,7 @@ export function ActiveMiniPromptsSection({ miniPrompts }: ActiveMiniPromptsSecti
                 disabled={loading === miniPrompt.id}
                 testId={`deactivate-button-${miniPrompt.id}`}
               >
-                {loading === miniPrompt.id ? "Deactivating..." : "Deactivate"}
+                {loading === miniPrompt.id ? t('deactivating') : t('deactivate')}
               </Button>
             </div>
           </div>

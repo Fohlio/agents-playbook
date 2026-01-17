@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useTranslations } from "next-intl";
 import {
   Modal,
   ModalHeader,
@@ -50,6 +51,8 @@ export function ShareModal({
   const [expiration, setExpiration] = useState<string>("never");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const t = useTranslations('sharing.shareModal');
+  const tCommon = useTranslations('common');
 
   // Check if share link exists on mount
   useEffect(() => {
@@ -205,12 +208,14 @@ export function ShareModal({
   const getShareUrl = () => {
     if (!shareToken) return "";
     const baseUrl = window.location.origin;
-    return `${baseUrl}/${shareToken}`;
+    return `${baseUrl}/s/${shareToken}`;
   };
+
+  const typeLabel = targetType === "WORKFLOW" ? tCommon('workflows').toLowerCase() : tCommon('miniPrompts').toLowerCase();
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} testId="share-modal">
-      <ModalHeader title={`Share ${targetName}`} />
+      <ModalHeader title={t('title', { name: targetName })} />
       <ModalBody>
         {error && (
           <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded text-sm text-red-700">
@@ -221,8 +226,7 @@ export function ShareModal({
         {!shareToken ? (
           <div className="space-y-4">
             <p className="text-sm text-gray-700">
-              Create a shareable link for this {targetType === "WORKFLOW" ? "workflow" : "mini-prompt"}.
-              Anyone with the link will be able to view it.
+              {t('description', { type: typeLabel })}
             </p>
 
             <Select
@@ -249,7 +253,7 @@ export function ShareModal({
                 />
                 <CopyButton
                   textToCopy={getShareUrl()}
-                  label="Copy"
+                  label={t('copyLink')}
                   size="md"
                   testId="copy-share-url"
                 />
@@ -258,7 +262,7 @@ export function ShareModal({
 
             <div className="flex items-center justify-between p-3 bg-gray-50 rounded">
               <span className="text-sm text-gray-700">
-                Status: {isActive ? "Active" : "Disabled"}
+                Status: {isActive ? tCommon('active') : tCommon('inactive')}
               </span>
               <Button
                 variant="secondary"
@@ -266,7 +270,7 @@ export function ShareModal({
                 onClick={handleToggleActive}
                 disabled={loading}
               >
-                {isActive ? "Disable" : "Enable"}
+                {isActive ? t('disableLink') : t('enableLink')}
               </Button>
             </div>
 
@@ -289,7 +293,7 @@ export function ShareModal({
       </ModalBody>
       <ModalActions>
         <Button variant="secondary" onClick={onClose} disabled={loading}>
-          Close
+          {tCommon('close')}
         </Button>
         {!shareToken && (
           <Button
@@ -297,7 +301,7 @@ export function ShareModal({
             onClick={handleCreateShareLink}
             disabled={loading}
           >
-            {loading ? "Creating..." : "Create Share Link"}
+            {loading ? tCommon('loading') : t('createLink')}
           </Button>
         )}
       </ModalActions>

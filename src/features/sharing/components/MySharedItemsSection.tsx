@@ -130,7 +130,7 @@ export function MySharedItemsSection() {
 
   const getShareUrl = (token: string) => {
     const baseUrl = window.location.origin;
-    return `${baseUrl}/${token}`;
+    return `${baseUrl}/s/${token}`;
   };
 
   const formatDate = (dateString: string) => {

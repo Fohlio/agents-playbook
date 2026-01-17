@@ -1,54 +1,71 @@
+import createMiddleware from 'next-intl/middleware';
 import NextAuth from "next-auth";
+import { NextRequest, NextResponse } from "next/server";
 import { middlewareAuthConfig } from "@/server/auth/middleware-config";
+import { routing } from "@/i18n/routing";
 import { ROUTES } from "@/shared/routes";
 
 /**
- * NextAuth v5 Middleware for Route Protection
+ * Middleware Composition: next-intl + NextAuth v5
  * 
- * Uses Edge Runtime-safe configuration (no bcrypt/database dependencies)
- * 
- * Protects routes that require authentication:
- * - /dashboard/* - All dashboard pages
- * - /api/v1/* - All authenticated API routes
- * 
- * Unauthenticated requests are redirected to /login
+ * 1. next-intl handles locale detection and routing
+ * 2. NextAuth handles route protection
  */
+
+// Create next-intl middleware
+const intlMiddleware = createMiddleware(routing);
+
+// Create NextAuth middleware
 const { auth } = NextAuth(middlewareAuthConfig);
 
-export default auth((req) => {
-  const isAuthenticated = !!req.auth;
-  const { pathname } = req.nextUrl;
+export default async function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl;
 
-  // Allow public API routes without authentication
-  const isPublicApiRoute = pathname.startsWith("/api/v1/public");
-
-  // Allow MCP endpoint without session auth (handles API tokens and public workflows internally)
-  const isMcpRoute = pathname === "/api/v1/mcp";
-
-  // Allow /dashboard/discover without authentication
-  const isPublicDashboardRoute = pathname === "/dashboard/discover";
-
-  // Check if accessing protected route
-  const isProtectedRoute =
-    (pathname.startsWith("/dashboard") && !isPublicDashboardRoute) ||
-    (pathname.startsWith("/api/v1") && !isPublicApiRoute && !isMcpRoute);
-
-  // If not authenticated and trying to access protected route, redirect to login
-  if (!isAuthenticated && isProtectedRoute) {
-    const loginUrl = new URL(ROUTES.LOGIN, req.url);
-    loginUrl.searchParams.set("callbackUrl", req.url);
-    return Response.redirect(loginUrl);
+  // Skip i18n for API routes
+  if (pathname.startsWith('/api')) {
+    // Check auth for protected API routes
+    const isPublicApiRoute = pathname.startsWith("/api/v1/public");
+    const isMcpRoute = pathname === "/api/v1/mcp";
+    const isAuthRoute = pathname.startsWith("/api/auth");
+    
+    if (!isPublicApiRoute && !isMcpRoute && !isAuthRoute && pathname.startsWith("/api/v1")) {
+      const session = await auth();
+      if (!session?.user) {
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      }
+    }
+    
+    return NextResponse.next();
   }
-});
 
-/**
- * Matcher configuration
- * Applies middleware to specific route patterns
- */
+  // Run i18n middleware for all other routes
+  const response = intlMiddleware(request);
+
+  // Check if this is a protected route that needs auth
+  // Note: pathname here is the original, before locale prefix is stripped
+  const localePattern = /^\/(en|ru)(\/|$)/;
+  const pathWithoutLocale = pathname.replace(localePattern, '/');
+  
+  const isPublicDashboardRoute = pathWithoutLocale === "/dashboard/discover" || 
+                                  pathWithoutLocale.startsWith("/dashboard/discover/");
+  
+  const isProtectedRoute = pathWithoutLocale.startsWith("/dashboard") && !isPublicDashboardRoute;
+
+  if (isProtectedRoute) {
+    const session = await auth();
+    if (!session?.user) {
+      const loginUrl = new URL(ROUTES.LOGIN, request.url);
+      loginUrl.searchParams.set("callbackUrl", request.url);
+      return Response.redirect(loginUrl);
+    }
+  }
+
+  return response;
+}
+
 export const config = {
-  matcher: [
-    "/dashboard/:path*",  // Protect all dashboard routes
-    "/api/v1/:path*",     // Protect authenticated API routes
-  ],
+  // Match all pathnames except for
+  // - ... if they start with `/_next` or `/_vercel`
+  // - ... the ones containing a dot (e.g. `favicon.ico`)
+  matcher: ['/((?!_next|_vercel|.*\\..*).*)']
 };
-

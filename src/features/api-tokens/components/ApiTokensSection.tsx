@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { Button, Alert, Card, CardHeader } from "@/shared/ui/atoms";
 import { Tooltip } from "@/shared/ui/molecules";
 import { useApiTokens } from "../hooks/useApiTokens";
@@ -10,6 +11,7 @@ import { TokenDisplayModal } from "./TokenDisplayModal";
 import { RevokeTokenModal } from "./RevokeTokenModal";
 
 export function ApiTokensSection() {
+  const t = useTranslations("settings.apiTokens");
   const {
     tokens,
     loading,
@@ -47,18 +49,18 @@ export function ApiTokensSection() {
       <div className="space-y-6">
         <div className="flex justify-between items-start">
           <CardHeader
-            title="API Tokens"
-            description="Manage API tokens for MCP server integration"
+            title={t("title")}
+            description={t("subtitle")}
             testId="tokens-heading"
             className="mb-0"
           />
-          <Tooltip content="Generate a new API token for authenticating MCP server requests from AI assistants">
+          <Tooltip content={t("createTooltip")}>
             <Button
               variant="primary"
               onClick={() => setShowCreateModal(true)}
               testId="create-token-button"
             >
-              Create New Token
+              {t("create")}
             </Button>
           </Tooltip>
         </div>

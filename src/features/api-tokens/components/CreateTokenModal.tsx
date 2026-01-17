@@ -2,6 +2,7 @@
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useTranslations } from "next-intl";
 import { z } from "zod";
 import {
   Button,
@@ -29,6 +30,8 @@ interface CreateTokenModalProps {
 }
 
 export function CreateTokenModal({ isOpen, onClose, onSubmit }: CreateTokenModalProps) {
+  const t = useTranslations("settings.apiTokens");
+  const tCommon = useTranslations("common");
   const {
     register,
     handleSubmit,
@@ -50,20 +53,20 @@ export function CreateTokenModal({ isOpen, onClose, onSubmit }: CreateTokenModal
 
   return (
     <Modal isOpen={isOpen} onClose={handleClose} testId="create-token-modal">
-      <ModalHeader title="Create API Token" testId="create-token-modal-heading" />
+      <ModalHeader title={t("createModal.title")} testId="create-token-modal-heading" />
       <ModalBody>
         <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4">
           <FormField
-            label="Token Name"
+            label={t("tokenName")}
             htmlFor="tokenName"
             required
             error={errors.name?.message}
-            helperText="A descriptive name for this token"
+            helperText={t("tokenNameHelper")}
           >
             <Input
               id="tokenName"
               type="text"
-              placeholder="My MCP Token"
+              placeholder={t("tokenNamePlaceholder")}
               error={!!errors.name}
               fullWidth
               testId="token-name-input"
@@ -77,10 +80,10 @@ export function CreateTokenModal({ isOpen, onClose, onSubmit }: CreateTokenModal
               onClick={handleClose}
               testId="cancel-create-token-button"
             >
-              Cancel
+              {tCommon("cancel")}
             </Button>
             <Button type="submit" variant="primary" testId="submit-create-token-button">
-              Create Token
+              {t("createToken")}
             </Button>
           </ModalActions>
         </form>

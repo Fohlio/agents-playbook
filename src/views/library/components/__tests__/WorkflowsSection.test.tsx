@@ -233,7 +233,8 @@ describe('WorkflowsSection', () => {
 
   it('should render loading state initially', () => {
     renderWithProviders(<WorkflowsSection />);
-    expect(screen.getByText('Loading...')).toBeInTheDocument();
+    // Translation mock returns the key
+    expect(screen.getByText('loading')).toBeInTheDocument();
   });
 
   it('should fetch and display workflows sorted by position', async () => {
@@ -266,8 +267,9 @@ describe('WorkflowsSection', () => {
     renderWithProviders(<WorkflowsSection />);
 
     await waitFor(() => {
-      expect(screen.getByText('No workflows yet')).toBeInTheDocument();
-      expect(screen.getByText('Create Your First Workflow')).toBeInTheDocument();
+      // Translation mock returns the key
+      expect(screen.getByText('workflows.empty')).toBeInTheDocument();
+      expect(screen.getByText('workflows.createFirst')).toBeInTheDocument();
     });
   });
 
@@ -275,7 +277,8 @@ describe('WorkflowsSection', () => {
     renderWithProviders(<WorkflowsSection />);
 
     await waitFor(() => {
-      expect(screen.getByText('+ Create Workflow')).toBeInTheDocument();
+      // Translation mock returns the key
+      expect(screen.getByText('workflows.create')).toBeInTheDocument();
     });
   });
 
