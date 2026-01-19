@@ -8,6 +8,7 @@ import { prisma } from '@/server/db/client';
 import { withRetry } from '@/server/db/retry';
 import { requireAuth, mcpError, mcpSuccess, type McpResponse } from './require-auth';
 import { findOrCreateTags } from './workflow-utils';
+import { findOrCreateFolder } from './folder-utils';
 import { generateUniqueKey } from '@/shared/lib/generate-key';
 import { triggerMiniPromptEmbedding } from '@/features/mini-prompts/lib/embedding-service';
 import type { Visibility } from '@prisma/client';
@@ -18,7 +19,8 @@ export const addPromptToolSchema = {
   description: z.string().max(1000).optional().describe('Short description of the prompt'),
   visibility: z.enum(['PUBLIC', 'PRIVATE']).optional().default('PRIVATE').describe('Visibility setting'),
   tags: z.array(z.string()).optional().describe('Array of tag names to associate with the prompt'),
-  folder_id: z.string().optional().describe('Optional folder ID to add prompt to after creation'),
+  folder_id: z.string().optional().describe('Existing folder ID to add prompt to'),
+  folder: z.string().optional().describe('Folder name - uses existing or creates new folder lazily'),
 };
 
 export interface AddPromptInput {
@@ -28,6 +30,7 @@ export interface AddPromptInput {
   visibility?: 'PUBLIC' | 'PRIVATE';
   tags?: string[];
   folder_id?: string;
+  folder?: string;
 }
 
 interface AddPromptResponse {
@@ -36,6 +39,12 @@ interface AddPromptResponse {
   name: string;
   visibility: Visibility;
   createdAt: string;
+  folder?: {
+    id: string;
+    key: string;
+    name: string;
+    created: boolean;
+  };
 }
 
 export async function addPromptHandler(
@@ -48,7 +57,7 @@ export async function addPromptHandler(
       return auth.response;
     }
 
-    const { name, content, description, visibility = 'PRIVATE', tags = [], folder_id } = input;
+    const { name, content, description, visibility = 'PRIVATE', tags = [], folder_id, folder } = input;
 
     if (!name || name.trim() === '') {
       return mcpError('name is required');
@@ -94,39 +103,21 @@ export async function addPromptHandler(
 
     triggerMiniPromptEmbedding(createdPrompt.id);
 
-    // Add to folder if folder_id provided
-    let addedToFolder = false;
-    if (folder_id) {
+    // Handle folder assignment (folder_id takes precedence over folder name)
+    let folderInfo: AddPromptResponse['folder'] | undefined;
+
+    if (folder_id || folder) {
       try {
-        // Verify folder exists and belongs to user
-        const folder = await prisma.folders.findFirst({
-          where: {
-            id: folder_id,
-            user_id: auth.userId,
-            is_active: true,
-            deleted_at: null,
-          },
+        const folderResult = await findOrCreateFolder({
+          userId: auth.userId,
+          folderId: folder_id,
+          folderName: folder,
+          targetType: 'MINI_PROMPT',
+          targetId: createdPrompt.id,
         });
 
-        if (folder) {
-          // Get max position
-          const maxPosition = await prisma.folder_items.aggregate({
-            where: { folder_id },
-            _max: { position: true },
-          });
-          const newPosition = (maxPosition._max.position ?? -1) + 1;
-
-          // Add prompt to folder
-          await prisma.folder_items.create({
-            data: {
-              id: crypto.randomUUID(),
-              folder_id,
-              target_type: 'MINI_PROMPT',
-              target_id: createdPrompt.id,
-              position: newPosition,
-            },
-          });
-          addedToFolder = true;
+        if (folderResult) {
+          folderInfo = folderResult;
         }
       } catch (folderError) {
         console.error('[MCP] Failed to add prompt to folder:', folderError);
@@ -140,14 +131,16 @@ export async function addPromptHandler(
       name: createdPrompt.name,
       visibility: createdPrompt.visibility,
       createdAt: createdPrompt.createdAt.toISOString(),
+      folder: folderInfo,
     };
 
     return mcpSuccess({
-      message: addedToFolder
-        ? 'Prompt created successfully and added to folder'
+      message: folderInfo
+        ? folderInfo.created
+          ? `Prompt created and added to new folder "${folderInfo.name}"`
+          : `Prompt created and added to folder "${folderInfo.name}"`
         : 'Prompt created successfully',
       prompt: response,
-      addedToFolder,
     });
   } catch (error) {
     console.error('[MCP] Error in add_prompt:', error);

@@ -13,6 +13,7 @@ import {
   findOrCreateTags,
   type StageInput,
 } from './workflow-utils';
+import { findOrCreateFolder } from './folder-utils';
 import { generateUniqueKey } from '@/shared/lib/generate-key';
 import { userWorkflowEmbeddings } from '@/server/embeddings/user-workflow-embeddings';
 import { triggerMiniPromptEmbedding } from '@/features/mini-prompts/lib/embedding-service';
@@ -25,7 +26,8 @@ export const addWorkflowToolSchema = {
   visibility: z.enum(['PUBLIC', 'PRIVATE']).optional().default('PRIVATE').describe('Visibility setting'),
   tags: z.array(z.string()).optional().describe('Array of tag names'),
   stages: z.array(stageSchema).optional().describe('Stages with prompts'),
-  folder_id: z.string().optional().describe('Optional folder ID to add workflow to after creation'),
+  folder_id: z.string().optional().describe('Existing folder ID to add workflow to'),
+  folder: z.string().optional().describe('Folder name - uses existing or creates new folder lazily'),
 };
 
 export interface AddWorkflowInput {
@@ -36,6 +38,7 @@ export interface AddWorkflowInput {
   tags?: string[];
   stages?: StageInput[];
   folder_id?: string;
+  folder?: string;
 }
 
 interface AddWorkflowResponse {
@@ -46,6 +49,12 @@ interface AddWorkflowResponse {
   complexity: WorkflowComplexity | null;
   stageCount: number;
   createdAt: string;
+  folder?: {
+    id: string;
+    key: string;
+    name: string;
+    created: boolean;
+  };
 }
 
 export async function addWorkflowHandler(
@@ -58,7 +67,7 @@ export async function addWorkflowHandler(
       return auth.response;
     }
 
-    const { name, description, complexity, visibility = 'PRIVATE', tags = [], stages = [], folder_id } = input;
+    const { name, description, complexity, visibility = 'PRIVATE', tags = [], stages = [], folder_id, folder } = input;
 
     if (!name || name.trim() === '') {
       return mcpError('name is required');
@@ -179,39 +188,21 @@ export async function addWorkflowHandler(
       triggerMiniPromptEmbedding(miniPromptId);
     }
 
-    // Add to folder if folder_id provided
-    let addedToFolder = false;
-    if (folder_id) {
+    // Handle folder assignment (folder_id takes precedence over folder name)
+    let folderInfo: AddWorkflowResponse['folder'] | undefined;
+
+    if (folder_id || folder) {
       try {
-        // Verify folder exists and belongs to user
-        const folder = await prisma.folders.findFirst({
-          where: {
-            id: folder_id,
-            user_id: auth.userId,
-            is_active: true,
-            deleted_at: null,
-          },
+        const folderResult = await findOrCreateFolder({
+          userId: auth.userId,
+          folderId: folder_id,
+          folderName: folder,
+          targetType: 'WORKFLOW',
+          targetId: createdWorkflow.id,
         });
 
-        if (folder) {
-          // Get max position
-          const maxPosition = await prisma.folder_items.aggregate({
-            where: { folder_id },
-            _max: { position: true },
-          });
-          const newPosition = (maxPosition._max.position ?? -1) + 1;
-
-          // Add workflow to folder
-          await prisma.folder_items.create({
-            data: {
-              id: crypto.randomUUID(),
-              folder_id,
-              target_type: 'WORKFLOW',
-              target_id: createdWorkflow.id,
-              position: newPosition,
-            },
-          });
-          addedToFolder = true;
+        if (folderResult) {
+          folderInfo = folderResult;
         }
       } catch (folderError) {
         console.error('[MCP] Failed to add workflow to folder:', folderError);
@@ -227,14 +218,16 @@ export async function addWorkflowHandler(
       complexity: createdWorkflow.complexity,
       stageCount: stages.length,
       createdAt: createdWorkflow.createdAt.toISOString(),
+      folder: folderInfo,
     };
 
     return mcpSuccess({
-      message: addedToFolder
-        ? 'Workflow created successfully and added to folder'
+      message: folderInfo
+        ? folderInfo.created
+          ? `Workflow created and added to new folder "${folderInfo.name}"`
+          : `Workflow created and added to folder "${folderInfo.name}"`
         : 'Workflow created successfully',
       workflow: response,
-      addedToFolder,
     });
   } catch (error) {
     console.error('[MCP] Error in add_workflow:', error);
