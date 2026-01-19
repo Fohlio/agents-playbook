@@ -246,6 +246,20 @@
       "explore": "Explore Mini-Prompts",
       "create": "+ Create Mini-Prompt",
       "createFirst": "Create Your First Mini-Prompt"
+    },
+    "sidebar": {
+      "myLibrary": "My Library",
+      "folders": "Folders",
+      "folder": "folder",
+      "items": "items",
+      "createFolder": "Create new folder",
+      "foldersListLabel": "Folders list",
+      "noFolders": "No folders yet. Create one to organize your content.",
+      "moreOptions": "More options for",
+      "uncategorized": "Uncategorized",
+      "trash": "Trash",
+      "rename": "Rename",
+      "moveToTrash": "Move to Trash"
     }
   },
   "discover": {

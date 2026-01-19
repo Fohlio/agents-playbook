@@ -6,7 +6,7 @@
 // import { DashboardStats } from "@/views/dashboard";
 // import { WorkflowConstructor } from "@/views/workflow-constructor";
 // import { WorkflowsDiscoverySection } from "@/views/discover";
-// import { WorkflowsSection } from "@/views/library";
+// import { LibraryPage } from "@/views/library";
 // import { GettingStartedWizard } from "@/views/getting-started";
 //
 // Note: We don't re-export everything here to avoid naming conflicts

@@ -5,15 +5,11 @@ import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { Button, Link, Badge } from "@/shared/ui/atoms";
-import { Tooltip } from "@/shared/ui/molecules";
 import { LanguageSwitcher } from "@/shared/ui/molecules/LanguageSwitcher";
 import { ROUTES, PROTECTED_ROUTES } from "@/shared/routes";
-import { useSidebar } from "./DashboardLayout";
 import { useShareCount } from "@/features/sharing/hooks/useShareCount";
 import MenuIcon from '@mui/icons-material/Menu';
 import CloseIcon from '@mui/icons-material/Close';
-import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
-import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import RocketLaunchIcon from '@mui/icons-material/RocketLaunch';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import ExploreIcon from '@mui/icons-material/Explore';
@@ -26,14 +22,13 @@ import SettingsIcon from '@mui/icons-material/Settings';
 /**
  * Dashboard Sidebar
  *
- * Collapsible sidebar navigation for dashboard
- * Mobile-friendly with hamburger menu
+ * Drawer-style navigation accessed via burger menu
+ * Works consistently on all screen sizes
  */
 export function DashboardSidebar() {
   const { data: session } = useSession();
   const pathname = usePathname();
   const isAdmin = session?.user?.role === 'ADMIN';
-  const { isCollapsed, setIsCollapsed } = useSidebar();
   const { count: shareCount } = useShareCount();
   const t = useTranslations('nav');
   const tCommon = useTranslations('common');
@@ -41,7 +36,6 @@ export function DashboardSidebar() {
   const [isOpen, setIsOpen] = useState(false);
 
   const toggleSidebar = () => setIsOpen(!isOpen);
-  const toggleCollapse = () => setIsCollapsed(!isCollapsed);
   const closeSidebar = () => setIsOpen(false);
 
   const navItems = [
@@ -57,54 +51,52 @@ export function DashboardSidebar() {
 
   return (
     <>
-      {/* Mobile Menu Button */}
-      <button
-        onClick={toggleSidebar}
-        className="lg:hidden fixed top-4 left-4 z-50 p-2 bg-white rounded-lg shadow-lg border border-gray-200 hover:bg-gray-50"
-        aria-label={t('toggleMenu')}
-      >
-        {isOpen ? <CloseIcon /> : <MenuIcon />}
-      </button>
-
-      {/* Overlay for mobile */}
-      {isOpen && (
-        <div
-          className="lg:hidden fixed inset-0 bg-black bg-opacity-50 z-30"
-          onClick={closeSidebar}
-        />
+      {/* Burger Menu Button - hidden when sidebar is open */}
+      {!isOpen && (
+        <button
+          onClick={toggleSidebar}
+          className="fixed top-4 left-4 z-50 p-2 bg-white rounded-lg shadow-lg border border-gray-200 hover:bg-gray-50"
+          aria-label={t('toggleMenu')}
+        >
+          <MenuIcon />
+        </button>
       )}
 
-      {/* Sidebar */}
+      {/* Overlay */}
+      <div
+        className={`fixed inset-0 z-30 transition-opacity duration-300 ${
+          isOpen ? 'opacity-50 bg-black pointer-events-auto' : 'opacity-0 pointer-events-none'
+        }`}
+        onClick={closeSidebar}
+      />
+
+      {/* Sidebar - always hidden until opened via burger */}
       <aside
         className={`
           fixed top-0 left-0 h-screen bg-white border-r border-gray-200 z-40
-          transition-all duration-300 ease-in-out
-          ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
-          ${isCollapsed ? 'lg:w-20' : 'lg:w-64'}
-          w-64
+          transition-all duration-300 ease-in-out w-56
+          ${isOpen ? 'translate-x-0' : '-translate-x-full'}
         `}
       >
         <div className="flex flex-col h-full">
-          {/* Logo & Collapse Button */}
+          {/* Logo */}
           <div className="flex items-center justify-between p-4 border-b border-gray-200">
-            {!isCollapsed && (
-              <Link
-                href={ROUTES.DASHBOARD}
-                variant="secondary"
-                className="text-lg font-bold whitespace-nowrap"
-                testId="dashboard-logo"
-                onClick={closeSidebar}
-              >
-                {tCommon('appName')}
-              </Link>
-            )}
+            <Link
+              href={ROUTES.DASHBOARD}
+              variant="secondary"
+              className="text-lg font-bold whitespace-nowrap"
+              testId="dashboard-logo"
+              onClick={closeSidebar}
+            >
+              {tCommon('appName')}
+            </Link>
 
             <button
-              onClick={toggleCollapse}
-              className="hidden lg:block p-1 hover:bg-gray-100 rounded"
-              aria-label={t('toggleSidebar')}
+              onClick={closeSidebar}
+              className="p-1 hover:bg-gray-100 rounded"
+              aria-label={t('toggleMenu')}
             >
-              {isCollapsed ? <ChevronRightIcon fontSize="small" /> : <ChevronLeftIcon fontSize="small" />}
+              <CloseIcon fontSize="small" />
             </button>
           </div>
 
@@ -115,46 +107,31 @@ export function DashboardSidebar() {
                 const Icon = item.icon;
                 const isActive = pathname === item.href || (item.href !== ROUTES.DASHBOARD && pathname?.startsWith(item.href));
 
-                const linkContent = (
-                  <Link
-                    href={item.href}
-                    variant="secondary"
-                    testId={item.testId}
-                    onClick={closeSidebar}
-                    className={`
-                      flex items-center gap-3 px-3 py-2 rounded-lg transition-colors
-                      ${isActive ? 'bg-blue-50 text-blue-600 font-semibold' : 'hover:bg-gray-50'}
-                      ${isCollapsed ? 'justify-center' : ''}
-                    `}
-                  >
-                    <Icon fontSize="small" />
-                    {!isCollapsed && (
-                      <>
-                        <span className="flex-1">{t(item.labelKey)}</span>
-                        {item.badge && (
-                          <Badge variant="primary" testId="admin-badge">
-                            {item.badge}
-                          </Badge>
-                        )}
-                        {item.badgeCount !== undefined && item.badgeCount > 0 && (
-                          <Badge variant="default" testId={`${item.testId}-badge`}>
-                            {item.badgeCount}
-                          </Badge>
-                        )}
-                      </>
-                    )}
-                  </Link>
-                );
-
                 return (
                   <li key={item.href}>
-                    {isCollapsed ? (
-                      <Tooltip content={t(item.labelKey)}>
-                        {linkContent}
-                      </Tooltip>
-                    ) : (
-                      linkContent
-                    )}
+                    <Link
+                      href={item.href}
+                      variant="secondary"
+                      testId={item.testId}
+                      onClick={closeSidebar}
+                      className={`
+                        flex items-center gap-3 px-3 py-2 rounded-lg transition-colors
+                        ${isActive ? 'bg-blue-50 text-blue-600 font-semibold' : 'hover:bg-gray-50'}
+                      `}
+                    >
+                      <Icon fontSize="small" />
+                      <span className="flex-1">{t(item.labelKey)}</span>
+                      {item.badge && (
+                        <Badge variant="primary" testId="admin-badge">
+                          {item.badge}
+                        </Badge>
+                      )}
+                      {item.badgeCount !== undefined && item.badgeCount > 0 && (
+                        <Badge variant="default" testId={`${item.testId}-badge`}>
+                          {item.badgeCount}
+                        </Badge>
+                      )}
+                    </Link>
                   </li>
                 );
               })}
@@ -162,29 +139,25 @@ export function DashboardSidebar() {
           </nav>
 
           {/* Language Switcher */}
-          {!isCollapsed && (
-            <div className="px-4 py-2 border-t border-gray-200">
-              <LanguageSwitcher variant="default" className="w-full" />
-            </div>
-          )}
+          <div className="px-4 py-2 border-t border-gray-200">
+            <LanguageSwitcher variant="default" className="w-full" />
+          </div>
 
           {/* User Info & Sign Out */}
           {session?.user && (
             <div className="p-4 border-t border-gray-200">
-              {!isCollapsed && (
-                <div className="mb-3" data-testid="user-info">
-                  <div className="flex items-center justify-between mb-1">
-                    <span className="text-sm font-medium text-gray-700 truncate" data-testid="user-display-name">
-                      {session.user.username || session.user.email}
-                    </span>
-                    {session.user.tier && (
-                      <Badge variant="primary" testId="user-tier-badge">
-                        {session.user.tier}
-                      </Badge>
-                    )}
-                  </div>
+              <div className="mb-3" data-testid="user-info">
+                <div className="flex items-center justify-between mb-1">
+                  <span className="text-sm font-medium text-gray-700 truncate" data-testid="user-display-name">
+                    {session.user.username || session.user.email}
+                  </span>
+                  {session.user.tier && (
+                    <Badge variant="primary" testId="user-tier-badge">
+                      {session.user.tier}
+                    </Badge>
+                  )}
                 </div>
-              )}
+              </div>
 
               <Button
                 variant="secondary"
@@ -193,7 +166,7 @@ export function DashboardSidebar() {
                 testId="signout-button"
                 className="w-full"
               >
-                {isCollapsed ? t('signOut').substring(0, 3) : t('signOut')}
+                {t('signOut')}
               </Button>
             </div>
           )}

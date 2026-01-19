@@ -20,11 +20,12 @@ export const PUBLIC_ROUTES = {
 export const LIBRARY_ROUTES = {
   WORKFLOWS: {
     NEW: "/dashboard/library/workflows/new",
-    EDIT: (id: string) => `/dashboard/library/workflows/${id}/edit`,
+    EDIT: (id: string) => `/dashboard/library/workflows/${id}/constructor`,
   },
   MINI_PROMPTS: {
     NEW: "/dashboard/library/mini-prompts/new",
-    EDIT: (id: string) => `/dashboard/library/mini-prompts/${id}/edit`,
+    // Mini-prompts use modal preview in library, not separate page
+    EDIT: (id: string) => `/dashboard/library?prompt=${id}`,
   },
 } as const;
 

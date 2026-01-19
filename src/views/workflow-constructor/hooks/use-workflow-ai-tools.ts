@@ -183,6 +183,7 @@ export function useWorkflowAITools({
                         position: 0,
                         createdAt: new Date(),
                         updatedAt: new Date(),
+                        deletedAt: null,
                       },
                     };
                   }) || [],
@@ -251,6 +252,7 @@ export function useWorkflowAITools({
                       position: 0,
                       createdAt: new Date(),
                       updatedAt: new Date(),
+                      deletedAt: null,
                     },
                   }));
               }
@@ -390,6 +392,7 @@ export function useWorkflowAITools({
                 position: 0,
                 createdAt: new Date(),
                 updatedAt: new Date(),
+                deletedAt: null,
               },
             })) ?? [],
           };
