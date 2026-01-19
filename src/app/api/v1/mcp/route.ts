@@ -19,8 +19,6 @@ import { getUserId, extractUserIdFromRequest, userIdStorage } from '@/server/mcp
 import {
   getWorkflowToolSchema,
   getWorkflowHandler,
-  getAllMyPromptsToolSchema,
-  getAllMyPromptsHandler,
   addPromptToolSchema,
   addPromptHandler,
   editPromptToolSchema,
@@ -29,6 +27,11 @@ import {
   addWorkflowHandler,
   editWorkflowToolSchema,
   editWorkflowHandler,
+  // Folder tools
+  getByFolderToolSchema,
+  getByFolderHandler,
+  createFolderToolSchema,
+  createFolderHandler,
 } from '@/server/mcp-tools-db';
 // Load environment variables
 config();
@@ -288,31 +291,43 @@ const handler = createMcpHandler(
       },
     );
 
-    // Tool 7: Get all my prompts (paginated)
-    // Requires authentication
+    // Tool 7: Get folder contents by key
+    // Public folders accessible without auth, private requires auth + ownership
     server.tool(
-      'get_all_my_prompts',
-      'Get paginated list of your prompts with search support. Requires authentication.',
-      getAllMyPromptsToolSchema,
-      async ({ page, limit, search }) => {
+      'get_by_folder',
+      'Get folder contents by folder key with pagination. Public folders work without auth.',
+      getByFolderToolSchema,
+      async ({ folder_key, page, limit }) => {
         const userId = await getUserId();
-        return await getAllMyPromptsHandler({ page, limit, search }, userId);
+        return await getByFolderHandler({ folder_key, page, limit }, userId);
       },
     );
 
-    // Tool 8: Add new prompt
+    // Tool 8: Create folder
+    // Requires authentication
+    server.tool(
+      'create_folder',
+      'Create a new folder for organizing workflows and prompts. Requires authentication.',
+      createFolderToolSchema,
+      async ({ name, description, visibility, key }) => {
+        const userId = await getUserId();
+        return await createFolderHandler({ name, description, visibility, key }, userId);
+      },
+    );
+
+    // Tool 9: Add new prompt
     // Requires authentication
     server.tool(
       'add_prompt',
-      'Create a new mini-prompt with optional tags. Requires authentication.',
+      'Create a new mini-prompt with optional tags. Can optionally add to a folder. Requires authentication.',
       addPromptToolSchema,
-      async ({ name, content, description, visibility, tags }) => {
+      async ({ name, content, description, visibility, tags, folder_id }) => {
         const userId = await getUserId();
-        return await addPromptHandler({ name, content, description, visibility, tags }, userId);
+        return await addPromptHandler({ name, content, description, visibility, tags, folder_id }, userId);
       },
     );
 
-    // Tool 9: Edit existing prompt
+    // Tool 10: Edit existing prompt
     // Requires authentication and ownership
     server.tool(
       'edit_prompt',
@@ -324,19 +339,19 @@ const handler = createMcpHandler(
       },
     );
 
-    // Tool 10: Add new workflow
+    // Tool 11: Add new workflow
     // Requires authentication
     server.tool(
       'add_workflow',
-      'Create a new workflow with optional stages and prompts. Requires authentication.',
+      'Create a new workflow with optional stages and prompts. Can optionally add to a folder. Requires authentication.',
       addWorkflowToolSchema,
-      async ({ name, description, complexity, visibility, tags, stages }) => {
+      async ({ name, description, complexity, visibility, tags, stages, folder_id }) => {
         const userId = await getUserId();
-        return await addWorkflowHandler({ name, description, complexity, visibility, tags, stages }, userId);
+        return await addWorkflowHandler({ name, description, complexity, visibility, tags, stages, folder_id }, userId);
       },
     );
 
-    // Tool 11: Edit existing workflow
+    // Tool 12: Edit existing workflow
     // Requires authentication and ownership
     server.tool(
       'edit_workflow',

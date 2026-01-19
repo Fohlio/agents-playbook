@@ -13,6 +13,7 @@ import {
   findOrCreateTags,
   type StageInput,
 } from './workflow-utils';
+import { findOrCreateFolder } from './folder-utils';
 import { generateUniqueKey } from '@/shared/lib/generate-key';
 import { userWorkflowEmbeddings } from '@/server/embeddings/user-workflow-embeddings';
 import { triggerMiniPromptEmbedding } from '@/features/mini-prompts/lib/embedding-service';
@@ -25,6 +26,8 @@ export const addWorkflowToolSchema = {
   visibility: z.enum(['PUBLIC', 'PRIVATE']).optional().default('PRIVATE').describe('Visibility setting'),
   tags: z.array(z.string()).optional().describe('Array of tag names'),
   stages: z.array(stageSchema).optional().describe('Stages with prompts'),
+  folder_id: z.string().optional().describe('Existing folder ID to add workflow to'),
+  folder: z.string().optional().describe('Folder name - uses existing or creates new folder lazily'),
 };
 
 export interface AddWorkflowInput {
@@ -34,6 +37,8 @@ export interface AddWorkflowInput {
   visibility?: 'PUBLIC' | 'PRIVATE';
   tags?: string[];
   stages?: StageInput[];
+  folder_id?: string;
+  folder?: string;
 }
 
 interface AddWorkflowResponse {
@@ -44,6 +49,12 @@ interface AddWorkflowResponse {
   complexity: WorkflowComplexity | null;
   stageCount: number;
   createdAt: string;
+  folder?: {
+    id: string;
+    key: string;
+    name: string;
+    created: boolean;
+  };
 }
 
 export async function addWorkflowHandler(
@@ -56,7 +67,7 @@ export async function addWorkflowHandler(
       return auth.response;
     }
 
-    const { name, description, complexity, visibility = 'PRIVATE', tags = [], stages = [] } = input;
+    const { name, description, complexity, visibility = 'PRIVATE', tags = [], stages = [], folder_id, folder } = input;
 
     if (!name || name.trim() === '') {
       return mcpError('name is required');
@@ -177,6 +188,28 @@ export async function addWorkflowHandler(
       triggerMiniPromptEmbedding(miniPromptId);
     }
 
+    // Handle folder assignment (folder_id takes precedence over folder name)
+    let folderInfo: AddWorkflowResponse['folder'] | undefined;
+
+    if (folder_id || folder) {
+      try {
+        const folderResult = await findOrCreateFolder({
+          userId: auth.userId,
+          folderId: folder_id,
+          folderName: folder,
+          targetType: 'WORKFLOW',
+          targetId: createdWorkflow.id,
+        });
+
+        if (folderResult) {
+          folderInfo = folderResult;
+        }
+      } catch (folderError) {
+        console.error('[MCP] Failed to add workflow to folder:', folderError);
+        // Don't fail the whole operation if folder addition fails
+      }
+    }
+
     const response: AddWorkflowResponse = {
       id: createdWorkflow.id,
       key: createdWorkflow.key || workflowKey,
@@ -185,10 +218,15 @@ export async function addWorkflowHandler(
       complexity: createdWorkflow.complexity,
       stageCount: stages.length,
       createdAt: createdWorkflow.createdAt.toISOString(),
+      folder: folderInfo,
     };
 
     return mcpSuccess({
-      message: 'Workflow created successfully',
+      message: folderInfo
+        ? folderInfo.created
+          ? `Workflow created and added to new folder "${folderInfo.name}"`
+          : `Workflow created and added to folder "${folderInfo.name}"`
+        : 'Workflow created successfully',
       workflow: response,
     });
   } catch (error) {

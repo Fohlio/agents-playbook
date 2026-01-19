@@ -25,6 +25,9 @@ export { addWorkflowToolSchema, addWorkflowHandler, type AddWorkflowInput } from
 export { editWorkflowToolSchema, editWorkflowHandler, type EditWorkflowInput } from './edit-workflow-handler';
 
 // Prompt tools
-export { getAllMyPromptsToolSchema, getAllMyPromptsHandler, type GetAllMyPromptsInput } from './get-all-my-prompts-handler';
 export { addPromptToolSchema, addPromptHandler, type AddPromptInput } from './add-prompt-handler';
 export { editPromptToolSchema, editPromptHandler, type EditPromptInput } from './edit-prompt-handler';
+
+// Folder tools
+export { getByFolderToolSchema, getByFolderHandler, type GetByFolderInput } from './get-by-folder-handler';
+export { createFolderToolSchema, createFolderHandler, type CreateFolderInput } from './create-folder-handler';
