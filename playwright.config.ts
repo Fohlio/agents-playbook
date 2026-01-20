@@ -50,10 +50,14 @@ export default defineConfig({
 
   /* Run your local dev server before starting the tests */
   webServer: {
-    command: 'PORT=3012 NEXTAUTH_URL=http://localhost:3012 npm run dev',
+    command: 'npm run dev',
     url: 'http://localhost:3012',
     reuseExistingServer: !process.env.CI,
     timeout: 120 * 1000,
+    env: {
+      PORT: '3012',
+      NEXTAUTH_URL: 'http://localhost:3012',
+    },
   },
 });
 

@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { signIn } from "next-auth/react";
 import { useTranslations } from "next-intl";
 import { registerSchema, type RegisterInput } from "@/shared/lib/validators/auth";
 import { Input, Button, FormField, Alert, Link } from "@/shared/ui/atoms";
@@ -11,7 +10,7 @@ import { ROUTES } from "@/shared/routes";
 
 /**
  * Registration Page
- * 
+ *
  * Allows new users to create an account with email/password
  * Features:
  * - Form validation with Zod
@@ -50,19 +49,33 @@ export default function RegisterPage() {
         throw new Error(result.error || t('registrationFailed'));
       }
 
-      // Auto-login after successful registration
-      const signInResult = await signIn("credentials", {
-        email: data.email,
-        password: data.password,
-        redirect: false,
+      // Auto-login after successful registration using direct fetch
+      // First, get CSRF token
+      const csrfResponse = await fetch('/api/auth/csrf');
+      const csrfData = await csrfResponse.json();
+
+      // Then, submit credentials for auto-login
+      const loginResponse = await fetch('/api/auth/callback/credentials', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: new URLSearchParams({
+          email: data.email,
+          password: data.password,
+          csrfToken: csrfData.csrfToken,
+        }),
+        credentials: 'same-origin',
       });
 
-      if (signInResult?.error) {
+      // Check if auto-login succeeded
+      const finalUrl = loginResponse.url;
+      if (finalUrl.includes('/auth/login') && finalUrl.includes('error=')) {
         throw new Error(t('loginAfterRegisterFailed'));
-      } else if (signInResult?.ok) {
-        // Use window.location for full page navigation to ensure session is loaded
-        window.location.href = ROUTES.DASHBOARD;
       }
+
+      // Redirect to dashboard
+      window.location.href = ROUTES.DASHBOARD;
     } catch (err) {
       setError(err instanceof Error ? err.message : t('registrationFailed'));
       setIsLoading(false);

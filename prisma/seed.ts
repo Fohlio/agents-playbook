@@ -33,11 +33,50 @@ async function seedModels() {
   console.log(`✅ Seeded ${PREDEFINED_MODELS.length} AI models`);
 }
 
+// Test user for E2E tests
+const TEST_USER = {
+  email: 'test@agents-playbook.com',
+  username: 'testuser',
+  password: 'Test@123456',
+  tier: UserTier.FREE,
+  role: UserRole.USER,
+};
+
+async function seedTestUser() {
+  console.log('👤 Seeding test user for E2E tests...');
+
+  const passwordHash = await bcrypt.hash(TEST_USER.password, 12);
+
+  await prisma.user.upsert({
+    where: { email: TEST_USER.email },
+    update: {
+      username: TEST_USER.username,
+      passwordHash,
+      tier: TEST_USER.tier,
+      role: TEST_USER.role,
+    },
+    create: {
+      email: TEST_USER.email,
+      username: TEST_USER.username,
+      passwordHash,
+      tier: TEST_USER.tier,
+      role: TEST_USER.role,
+    },
+  });
+
+  console.log(`✅ Test user created: ${TEST_USER.email}`);
+}
+
 async function main() {
   console.log('🌱 Starting database seed...');
 
   // Seed predefined AI models
   await seedModels();
+
+  // Seed test user for E2E tests (only in non-production)
+  if (process.env.NODE_ENV !== 'production') {
+    await seedTestUser();
+  }
 }
 
 main()

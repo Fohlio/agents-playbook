@@ -29,7 +29,7 @@ export class LoginPage {
    * Navigate to login page
    */
   async goto() {
-    await this.page.goto('/login');
+    await this.page.goto('/auth/login');
     await this.page.waitForLoadState('networkidle');
   }
 
@@ -81,14 +81,33 @@ export class LoginPage {
     // Click submit - Playwright will automatically scroll into view and handle navigation
     await this.submitButton.click({ force: false });
 
-    // Wait for navigation to complete (dashboard or login with error)
-    await this.page.waitForLoadState('networkidle', { timeout: 20000 });
+    // Wait for either:
+    // 1. Redirect away from login page (success)
+    // 2. Error message appears (failure)
+    // 3. Button becomes enabled again (failure with no error message)
+    await Promise.race([
+      // Success: page navigates away from /login
+      this.page.waitForURL((url) => !url.pathname.includes('/login'), { timeout: 15000 }),
+      // Failure: error alert becomes visible
+      this.errorAlert.waitFor({ state: 'visible', timeout: 15000 }).catch(() => {}),
+      // Failure: button text changes back to enabled state (no longer "Signing in...")
+      this.page.waitForFunction(
+        () => {
+          const btn = document.querySelector('[data-testid="login-submit-button"]');
+          return btn && !btn.textContent?.includes('Signing in');
+        },
+        { timeout: 15000 }
+      ).catch(() => {}),
+    ]);
+
+    // Wait a bit for any pending navigation
+    await this.page.waitForTimeout(500);
 
     // Check final URL
     const currentUrl = this.page.url();
 
-    // If we're still on login page (not redirected to dashboard), authentication failed
-    if (currentUrl.includes('/login') && !currentUrl.includes('/dashboard')) {
+    // If we're still on login page (not redirected), authentication failed
+    if (currentUrl.includes('/login')) {
       const error = await this.getErrorMessage();
       throw new Error(`Login failed: ${error || 'Invalid credentials - check database seed'}`);
     }

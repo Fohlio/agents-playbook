@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { signIn, useSession } from "next-auth/react";
+import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { loginSchema, type LoginInput } from "@/shared/lib/validators/auth";
@@ -52,23 +52,49 @@ export default function LoginPage() {
     setError(null);
 
     try {
-      // Use signIn with redirect: false to handle the result manually
-      const result = await signIn("credentials", {
-        email: data.email,
-        password: data.password,
-        rememberMe: data.rememberMe ? "true" : "false",
-        redirect: false,
+      // Use direct fetch to avoid potential signIn client issues
+      // First, get CSRF token
+      const csrfResponse = await fetch('/api/auth/csrf');
+      const csrfData = await csrfResponse.json();
+
+      // Then, submit credentials - use redirect: 'follow' to let browser handle the redirect
+      const response = await fetch('/api/auth/callback/credentials', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: new URLSearchParams({
+          email: data.email,
+          password: data.password,
+          rememberMe: data.rememberMe ? 'true' : 'false',
+          csrfToken: csrfData.csrfToken,
+        }),
+        credentials: 'same-origin', // Include cookies
+        // Don't specify redirect - let browser handle it
       });
 
-      if (result?.error) {
+      // After redirect completes, check the final URL
+      const finalUrl = response.url;
+
+      // If we ended up on the login page with an error, authentication failed
+      if (finalUrl.includes('/auth/login') && finalUrl.includes('error=')) {
         setError(t('invalidCredentials'));
         setIsLoading(false);
-      } else if (result?.ok) {
-        // Successful login - use window.location for full page navigation
-        // This ensures the session cookie is sent with the next request
-        window.location.href = ROUTES.DASHBOARD;
+        return;
       }
-    } catch {
+
+      // If we ended up on the login page without error, something went wrong
+      if (finalUrl.includes('/auth/login')) {
+        setError(t('loginError'));
+        setIsLoading(false);
+        return;
+      }
+
+      // If response is OK and we're not on login page, login succeeded
+      // Redirect to dashboard
+      window.location.href = ROUTES.DASHBOARD;
+    } catch (err) {
+      console.error('[Login] Error:', err);
       setError(t('loginError'));
       setIsLoading(false);
     }

@@ -441,6 +441,6 @@ export class SettingsPage {
    */
   async waitForLoad() {
     await this.page.waitForLoadState('networkidle');
-    await this.settingsHeading.waitFor({ state: 'visible' });
+    await this.settingsPage.waitFor({ state: 'visible', timeout: 10000 });
   }
 }
