@@ -116,11 +116,8 @@ export default function Header() {
             </div>
           </div>
 
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-3">
             <GitHubStats />
-
-            {/* Language Switcher */}
-            <LanguageSwitcher variant="dark" className="hidden sm:flex" />
 
             {/* Authentication Buttons */}
             {status === 'authenticated' ? (
@@ -138,8 +135,8 @@ export default function Header() {
                 {tNav('signIn')}
               </Link>
             )}
-            
-            <Link 
+
+            <Link
               href="https://github.com/chernobelenkiy/agents-playbook"
               target="_blank"
               rel="noopener noreferrer"
@@ -150,6 +147,9 @@ export default function Header() {
               </svg>
               <span className="font-medium">{tNav('github')}</span>
             </Link>
+
+            {/* Language Switcher - compact, in the corner */}
+            <LanguageSwitcher variant="compact-dark" className="hidden sm:flex" />
           </div>
         </div>
       </div>

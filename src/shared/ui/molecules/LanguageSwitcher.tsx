@@ -8,7 +8,7 @@ import { Globe, Check } from 'lucide-react';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 
 interface LanguageSwitcherProps {
-  variant?: 'default' | 'dark';
+  variant?: 'default' | 'dark' | 'compact' | 'compact-dark';
   className?: string;
 }
 
@@ -31,16 +31,18 @@ export function LanguageSwitcher({ variant = 'default', className = '' }: Langua
     });
   };
 
-  const isDark = variant === 'dark';
+  const isDark = variant === 'dark' || variant === 'compact-dark';
+  const isCompact = variant === 'compact' || variant === 'compact-dark';
 
   return (
     <DropdownMenu.Root>
       <DropdownMenu.Trigger asChild disabled={isPending}>
         <button
           className={`
-            flex items-center gap-2 px-3 py-2 text-sm rounded-xl transition-all duration-200
-            ${isDark 
-              ? 'bg-white/10 backdrop-blur-sm border border-white/20 text-white hover:bg-white/20' 
+            flex items-center text-sm rounded-xl transition-all duration-200
+            ${isCompact ? 'gap-0 p-2' : 'gap-2 px-3 py-2'}
+            ${isDark
+              ? 'bg-white/10 backdrop-blur-sm border border-white/20 text-white hover:bg-white/20'
               : 'bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 hover:border-gray-300 shadow-sm'
             }
             ${isPending ? 'opacity-50 cursor-wait' : 'cursor-pointer'}
@@ -49,10 +51,14 @@ export function LanguageSwitcher({ variant = 'default', className = '' }: Langua
           aria-label={t('label')}
         >
           <Globe className="w-4 h-4" />
-          <span className="font-medium">{locale.toUpperCase()}</span>
-          <svg className="w-3.5 h-3.5 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-          </svg>
+          {!isCompact && (
+            <>
+              <span className="font-medium">{locale.toUpperCase()}</span>
+              <svg className="w-3.5 h-3.5 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </>
+          )}
         </button>
       </DropdownMenu.Trigger>
 

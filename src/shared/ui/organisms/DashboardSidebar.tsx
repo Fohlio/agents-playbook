@@ -74,7 +74,7 @@ export function DashboardSidebar() {
       <aside
         className={`
           fixed top-0 left-0 h-screen bg-white border-r border-gray-200 z-40
-          transition-all duration-300 ease-in-out w-56
+          transition-all duration-300 ease-in-out w-72
           ${isOpen ? 'translate-x-0' : '-translate-x-full'}
         `}
       >
@@ -138,17 +138,13 @@ export function DashboardSidebar() {
             </ul>
           </nav>
 
-          {/* Language Switcher */}
-          <div className="px-4 py-2 border-t border-gray-200">
-            <LanguageSwitcher variant="default" className="w-full" />
-          </div>
-
           {/* User Info & Sign Out */}
           {session?.user && (
             <div className="p-4 border-t border-gray-200">
               <div className="mb-3" data-testid="user-info">
-                <div className="flex items-center justify-between mb-1">
-                  <span className="text-sm font-medium text-gray-700 truncate" data-testid="user-display-name">
+                <div className="flex items-center gap-2 mb-1">
+                  <LanguageSwitcher variant="compact" />
+                  <span className="text-sm font-medium text-gray-700 truncate flex-1" data-testid="user-display-name">
                     {session.user.username || session.user.email}
                   </span>
                   {session.user.tier && (

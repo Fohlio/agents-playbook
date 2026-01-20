@@ -8,6 +8,8 @@ import { ROUTES } from "@/shared/routes";
 import { useRouter } from "next/navigation";
 import { MiniPromptEditorModal } from "@/views/workflow-constructor/components/MiniPromptEditorModal";
 import { createMiniPrompt } from "@/views/workflow-constructor/actions/mini-prompt-actions";
+import AddIcon from '@mui/icons-material/Add';
+import TextSnippetIcon from '@mui/icons-material/TextSnippet';
 
 export function QuickActions() {
   const router = useRouter();
@@ -27,24 +29,30 @@ export function QuickActions() {
 
   return (
     <>
-      <div className="flex gap-4" data-testid="quick-actions">
+      <div className="flex gap-2 sm:gap-4" data-testid="quick-actions">
         <Tooltip content={t('newWorkflowTooltip')}>
           <Button
             variant="primary"
+            size="sm"
             onClick={() => router.push(ROUTES.LIBRARY.WORKFLOWS.NEW)}
             testId="new-workflow-button"
+            className="sm:px-4 sm:py-2"
           >
-            {t('newWorkflow')}
+            <AddIcon className="w-4 h-4 sm:mr-1" />
+            <span className="hidden sm:inline">{t('newWorkflow')}</span>
           </Button>
         </Tooltip>
 
         <Tooltip content={t('newMiniPromptTooltip')}>
           <Button
             variant="secondary"
+            size="sm"
             onClick={() => setIsMiniPromptModalOpen(true)}
             testId="new-mini-prompt-button"
+            className="sm:px-4 sm:py-2"
           >
-            {t('newMiniPrompt')}
+            <TextSnippetIcon className="w-4 h-4 sm:mr-1" />
+            <span className="hidden sm:inline">{t('newMiniPrompt')}</span>
           </Button>
         </Tooltip>
       </div>

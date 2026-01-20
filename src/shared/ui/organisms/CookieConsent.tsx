@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
-import { X } from 'lucide-react';
+import { Cookie, X } from 'lucide-react';
 
 const COOKIE_CONSENT_KEY = 'cookie-consent';
 
@@ -14,7 +14,9 @@ export function CookieConsent() {
     // Check if user has already consented
     const consent = localStorage.getItem(COOKIE_CONSENT_KEY);
     if (!consent) {
-      setShowBanner(true);
+      // Delay showing to not interrupt initial page load
+      const timer = setTimeout(() => setShowBanner(true), 1500);
+      return () => clearTimeout(timer);
     }
   }, []);
 
@@ -31,13 +33,19 @@ export function CookieConsent() {
   if (!showBanner) return null;
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg z-50 p-4 md:p-6">
-      <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-        <div className="flex-1">
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">
-            {t('title')}
-          </h3>
-          <p className="text-sm text-gray-600">
+    <div className="fixed bottom-4 left-4 right-4 md:left-auto md:right-4 md:max-w-sm bg-white border border-gray-200 rounded-xl shadow-lg z-50 p-4 animate-in slide-in-from-bottom-4 duration-300">
+      <button
+        onClick={handleDecline}
+        className="absolute top-2 right-2 p-1 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded transition-colors"
+        aria-label={t('close')}
+      >
+        <X className="w-4 h-4" />
+      </button>
+
+      <div className="flex items-start gap-3 pr-6">
+        <Cookie className="w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5" />
+        <div className="flex-1 min-w-0">
+          <p className="text-sm text-gray-600 leading-relaxed">
             {t('message')}{' '}
             <a
               href="/privacy"
@@ -47,30 +55,22 @@ export function CookieConsent() {
             >
               {t('learnMore')}
             </a>
-            .
           </p>
-        </div>
 
-        <div className="flex items-center gap-3">
-          <button
-            onClick={handleDecline}
-            className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
-          >
-            {t('decline')}
-          </button>
-          <button
-            onClick={handleAccept}
-            className="px-4 py-2 bg-blue-600 text-white hover:bg-blue-700 rounded-lg transition-colors"
-          >
-            {t('accept')}
-          </button>
-          <button
-            onClick={handleDecline}
-            className="p-2 text-gray-500 hover:bg-gray-100 rounded-md transition-colors"
-            aria-label={t('close')}
-          >
-            <X className="w-5 h-5" />
-          </button>
+          <div className="flex items-center gap-2 mt-3">
+            <button
+              onClick={handleAccept}
+              className="px-3 py-1.5 bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 rounded-lg transition-colors"
+            >
+              {t('accept')}
+            </button>
+            <button
+              onClick={handleDecline}
+              className="px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+            >
+              {t('decline')}
+            </button>
+          </div>
         </div>
       </div>
     </div>

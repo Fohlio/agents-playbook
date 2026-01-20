@@ -1,7 +1,7 @@
 'use client';
 
 import { ReactNode, useState } from 'react';
-import { Menu, X } from 'lucide-react';
+import { FolderOpen, X } from 'lucide-react';
 import { cn } from '@/shared/lib/utils/cn';
 import { LibrarySidebar } from './LibrarySidebar';
 import { FolderWithItems } from '@/server/folders/types';
@@ -49,23 +49,21 @@ export function LibraryLayout({ sidebar, children, className }: LibraryLayoutPro
       className={cn('flex min-h-0 relative', className)}
       data-testid="library-layout"
     >
-      {/* Mobile sidebar toggle - positioned to not overlap main burger menu */}
-      <button
-        onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-        className="lg:hidden fixed top-4 left-16 z-40 p-2 bg-white rounded-md shadow-md border border-gray-200 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
-        aria-label={isSidebarOpen ? 'Close folders menu' : 'Open folders menu'}
-      >
-        {isSidebarOpen ? (
-          <X className="w-5 h-5 text-gray-600" />
-        ) : (
-          <Menu className="w-5 h-5 text-gray-600" />
-        )}
-      </button>
+      {/* Mobile sidebar toggle - inline button, not fixed */}
+      {!isSidebarOpen && (
+        <button
+          onClick={() => setIsSidebarOpen(true)}
+          className="lg:hidden absolute top-2 left-2 z-20 p-2 bg-white rounded-md shadow-sm border border-gray-200 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          aria-label="Open folders menu"
+        >
+          <FolderOpen className="w-5 h-5 text-gray-600" />
+        </button>
+      )}
 
       {/* Sidebar overlay for mobile */}
       {isSidebarOpen && (
         <div
-          className="lg:hidden fixed inset-0 bg-black/30 z-30 top-16"
+          className="lg:hidden fixed inset-0 bg-black/30 z-30"
           onClick={() => setIsSidebarOpen(false)}
           aria-hidden="true"
         />
@@ -74,10 +72,20 @@ export function LibraryLayout({ sidebar, children, className }: LibraryLayoutPro
       {/* Sidebar - hidden on mobile by default, visible on lg+ */}
       <div
         className={cn(
-          'fixed lg:relative z-40 lg:z-auto h-full transition-transform duration-200 top-16 lg:top-0',
-          isSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
+          'fixed lg:relative z-40 lg:z-auto h-full transition-transform duration-200 lg:top-0',
+          isSidebarOpen ? 'translate-x-0 top-0' : '-translate-x-full lg:translate-x-0'
         )}
       >
+        {/* Close button inside sidebar on mobile */}
+        {isSidebarOpen && (
+          <button
+            onClick={() => setIsSidebarOpen(false)}
+            className="lg:hidden absolute top-2 right-2 z-50 p-1 hover:bg-gray-200 rounded"
+            aria-label="Close folders menu"
+          >
+            <X className="w-5 h-5 text-gray-600" />
+          </button>
+        )}
         <LibrarySidebar
           folders={sidebar.folders}
           currentFolderId={sidebar.currentFolderId}
