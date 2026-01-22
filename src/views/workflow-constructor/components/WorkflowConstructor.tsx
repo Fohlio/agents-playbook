@@ -144,14 +144,17 @@ export function WorkflowConstructor({ data }: WorkflowConstructorProps) {
     onEditMiniPrompt: setEditingMiniPrompt,
   });
 
+  /* eslint-disable @typescript-eslint/no-unused-vars */
   const handleUpdateMiniPromptWrapper = async (
     name: string,
     description: string,
     content: string,
     visibility: 'PUBLIC' | 'PRIVATE',
     _tagIds: string[],
-    _newTagNames: string[]
+    _newTagNames: string[],
+    _modelIds?: string[]
   ) => {
+    /* eslint-enable @typescript-eslint/no-unused-vars */
     await handleUpdateMiniPrompt(editingMiniPrompt, name, description, content, visibility, [], []);
   };
 
