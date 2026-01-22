@@ -183,7 +183,7 @@ export function WorkflowDiscoveryCard({
         <div className="p-6 flex-1 flex flex-col">
           <div className="flex items-start justify-between mb-3 pr-8">
             <div className="flex-1">
-              <h3 className="text-xl font-bold text-gray-900 hover:text-blue-600 transition-colors">
+              <h3 className="text-xl font-bold text-cyan-100 hover:text-cyan-400 transition-colors">
                 {workflow.name}
               </h3>
             </div>
@@ -193,10 +193,10 @@ export function WorkflowDiscoveryCard({
                 workflow.rating.count > 0 && (
                   <div className="flex items-center gap-1 text-sm">
                     <span className="text-yellow-500">★</span>
-                    <span className="font-medium">
+                    <span className="font-medium text-cyan-100">
                       {workflow.rating.average.toFixed(1)}
                     </span>
-                    <span className="text-gray-400">
+                    <span className="text-cyan-100/50">
                       ({workflow.rating.count})
                     </span>
                   </div>
@@ -211,10 +211,10 @@ export function WorkflowDiscoveryCard({
             {workflow.description ? (
               <MarkdownContent
                 content={workflow.description}
-                className="text-sm text-gray-600 mb-4 line-clamp-3 leading-relaxed"
+                className="text-sm text-cyan-100/70 mb-4 line-clamp-3 leading-relaxed"
               />
             ) : (
-              <p className="text-sm text-gray-400 italic mb-4 line-clamp-3 leading-relaxed">
+              <p className="text-sm text-cyan-100/50 italic mb-4 line-clamp-3 leading-relaxed">
                 No description
               </p>
             )}
@@ -238,7 +238,7 @@ export function WorkflowDiscoveryCard({
             </div>
           )}
 
-          <div className="flex items-center gap-4 text-xs text-gray-500">
+          <div className="flex items-center gap-4 text-xs text-cyan-100/60">
             <span className="flex items-center gap-1">
               <svg
                 className="w-4 h-4"
@@ -255,7 +255,7 @@ export function WorkflowDiscoveryCard({
               </svg>
               @{workflow.user.username || "unknown"}
             </span>
-            <span className="flex items-center gap-1">
+            <span className="flex items-center gap-1 text-cyan-400">
               <svg
                 className="w-4 h-4"
                 fill="none"

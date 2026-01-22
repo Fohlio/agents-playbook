@@ -1299,5 +1299,37 @@
     "stagesCount": "{count} stages",
     "preview": "PREVIEW",
     "import": "IMPORT"
+  },
+  "libraryHeader": {
+    "searchPlaceholder": "Search library...",
+    "searchLibrary": "Search library",
+    "clearSearch": "Clear search",
+    "searchingFor": "Searching for {query}",
+    "selected": "Selected",
+    "viewMode": "View mode",
+    "gridView": "Grid view",
+    "listView": "List view",
+    "folder": "Folder",
+    "create": "Create",
+    "newWorkflow": "New Workflow",
+    "newPrompt": "New Prompt"
+  },
+  "folderContents": {
+    "scanningVault": "Scanning vault...",
+    "noResultsFound": "No results found",
+    "queryReturned": "Query \"{query}\" returned no results",
+    "recycleBinEmpty": "Recycle bin empty",
+    "deletedItemsPurged": "Deleted items have been purged from the system",
+    "allItemsOrganized": "All items organized",
+    "allAssetsCategorized": "All assets have been categorized",
+    "directoryEmpty": "Directory empty",
+    "dragItemsHere": "Drag items here or create new content",
+    "createWorkflow": "Create Workflow",
+    "welcomeTitle": "Welcome to your Library",
+    "welcomeDescription": "Start by importing workflows from Discover or create your own custom workflows and mini-prompts.",
+    "createFolder": "Create Folder",
+    "directories": "Directories",
+    "workflows": "Workflows",
+    "miniPrompts": "Mini-Prompts"
   }
 }

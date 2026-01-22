@@ -1299,5 +1299,37 @@
     "stagesCount": "{count} этапов",
     "preview": "ПРЕДПРОСМОТР",
     "import": "ИМПОРТ"
+  },
+  "libraryHeader": {
+    "searchPlaceholder": "Поиск в библиотеке...",
+    "searchLibrary": "Поиск в библиотеке",
+    "clearSearch": "Очистить поиск",
+    "searchingFor": "Поиск: {query}",
+    "selected": "Выбрано",
+    "viewMode": "Режим просмотра",
+    "gridView": "Сетка",
+    "listView": "Список",
+    "folder": "Папка",
+    "create": "Создать",
+    "newWorkflow": "Новый воркфлоу",
+    "newPrompt": "Новый промпт"
+  },
+  "folderContents": {
+    "scanningVault": "Сканирование хранилища...",
+    "noResultsFound": "Ничего не найдено",
+    "queryReturned": "Запрос \"{query}\" не дал результатов",
+    "recycleBinEmpty": "Корзина пуста",
+    "deletedItemsPurged": "Удалённые элементы очищены из системы",
+    "allItemsOrganized": "Все элементы организованы",
+    "allAssetsCategorized": "Все ресурсы распределены по категориям",
+    "directoryEmpty": "Директория пуста",
+    "dragItemsHere": "Перетащите элементы сюда или создайте новый контент",
+    "createWorkflow": "Создать воркфлоу",
+    "welcomeTitle": "Добро пожаловать в библиотеку",
+    "welcomeDescription": "Начните с импорта воркфлоу из Обзора или создайте собственные воркфлоу и мини-промпты.",
+    "createFolder": "Создать папку",
+    "directories": "Директории",
+    "workflows": "Воркфлоу",
+    "miniPrompts": "Мини-промпты"
   }
 }
