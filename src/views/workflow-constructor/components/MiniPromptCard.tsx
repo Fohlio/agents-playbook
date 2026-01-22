@@ -1,7 +1,6 @@
 'use client';
 
 import { useDrag } from 'react-dnd';
-import { Card } from '@/shared/ui/atoms/Card';
 import { cn } from '@/shared/lib/utils/cn';
 import type { MiniPrompt } from '@prisma/client';
 
@@ -36,25 +35,26 @@ export function MiniPromptCard({ miniPrompt, onClick }: MiniPromptCardProps) {
     <div
       ref={drag as unknown as React.Ref<HTMLDivElement>}
       className={cn(
-        'cursor-grab active:cursor-grabbing transition-opacity touch-manipulation',
+        'cursor-grab active:cursor-grabbing transition-all touch-manipulation',
         isDragging && 'opacity-50',
         onClick && !isDragging && 'cursor-pointer'
       )}
       onClick={handleClick}
     >
-      <Card
+      <div
         className={cn(
-          'p-2 sm:p-3 !bg-white border border-border-base hover:shadow-md hover:border-border-hover transition-all min-h-[44px]',
-          isDragging && 'shadow-lg !border-accent-primary'
+          'p-2 sm:p-3 bg-[#0a0a0f]/80 border border-pink-500/30 hover:border-pink-400/50 hover:shadow-[0_0_15px_rgba(255,0,102,0.1)] transition-all min-h-[44px]',
+          isDragging && 'shadow-[0_0_20px_rgba(0,255,255,0.3)] border-cyan-400'
         )}
-        testId={`mini-prompt-${miniPrompt.id}`}
+        style={{ clipPath: 'polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px))' }}
+        data-testid={`mini-prompt-${miniPrompt.id}`}
       >
         <div className="flex items-center justify-between gap-2">
-          <h4 className="text-xs sm:text-sm font-medium text-text-primary flex-1 truncate">
+          <h4 className="text-xs sm:text-sm font-mono text-pink-400 flex-1 truncate">
             {miniPrompt.name}
           </h4>
         </div>
-      </Card>
+      </div>
     </div>
   );
 }

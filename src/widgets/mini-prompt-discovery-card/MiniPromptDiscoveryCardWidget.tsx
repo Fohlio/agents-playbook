@@ -265,7 +265,6 @@ export function MiniPromptDiscoveryCardWidget({
           description: miniPrompt.description || "",
           content: miniPrompt.content,
           visibility: miniPrompt.visibility as "PUBLIC" | "PRIVATE",
-          tagIds: miniPrompt.tags?.map((t) => t.tag.id) ?? [],
           modelIds: miniPrompt.models?.map((m) => m.model.id) ?? [],
           key: miniPrompt.key,
         }}

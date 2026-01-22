@@ -1,39 +1,42 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
 import { z } from "zod";
-import { Input, Button, FormField, Alert, Card, CardHeader, CardActions } from "@/shared/ui/atoms";
+import { Card, CardHeader, CardActions } from "@/shared/ui/atoms";
 
-const passwordSchema = z
-  .object({
-    currentPassword: z.string().min(1, "Current password is required"),
-    newPassword: z.string().min(1, "New password is required"),
-    confirmNewPassword: z.string().min(1, "Please confirm your new password"),
-  })
-  .refine((data) => data.newPassword === data.confirmNewPassword, {
-    message: "Passwords do not match",
-    path: ["confirmNewPassword"],
-  });
-
-type PasswordInput = z.infer<typeof passwordSchema>;
+type PasswordInput = {
+  currentPassword: string;
+  newPassword: string;
+  confirmNewPassword: string;
+};
 
 /**
- * PasswordSection Component
- *
- * Allows users to change their password
- * Features:
- * - Current password verification
- * - New password with confirmation
- * - Password complexity validation
+ * PasswordSection Component - Cyberpunk Style
  */
 export default function PasswordSection() {
   const t = useTranslations("settings.password");
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+
+  // Create schema with translations
+  const passwordSchema = useMemo(
+    () =>
+      z
+        .object({
+          currentPassword: z.string().min(1, t("currentRequired")),
+          newPassword: z.string().min(1, t("newRequired")),
+          confirmNewPassword: z.string().min(1, t("confirmRequired")),
+        })
+        .refine((data) => data.newPassword === data.confirmNewPassword, {
+          message: t("mismatch"),
+          path: ["confirmNewPassword"],
+        }),
+    [t]
+  );
 
   const {
     register,
@@ -63,13 +66,20 @@ export default function PasswordSection() {
       }
 
       setSuccess(t("changed"));
-      reset(); // Clear form fields
+      reset();
     } catch (err) {
       setError(err instanceof Error ? err.message : t("changeFailed"));
     } finally {
       setIsLoading(false);
     }
   };
+
+  const getInputClassName = (hasError: boolean): string =>
+    `w-full px-4 py-2.5 bg-[#050508]/50 border font-mono text-sm text-cyan-100 placeholder:text-cyan-500/30 focus:outline-none transition-all ${
+      hasError
+        ? "border-pink-500/50 focus:border-pink-400 focus:shadow-[0_0_15px_rgba(255,0,102,0.2)]"
+        : "border-cyan-500/50 focus:border-cyan-400 focus:shadow-[0_0_15px_rgba(0,255,255,0.2)]"
+    }`;
 
   return (
     <Card testId="password-section">
@@ -79,79 +89,114 @@ export default function PasswordSection() {
         testId="password-heading"
       />
 
-      {error && <Alert variant="error" testId="password-error-alert">{error}</Alert>}
-      {success && <Alert variant="success" testId="password-success-alert">{success}</Alert>}
+      {error && (
+        <div
+          className="mb-4 p-3 bg-pink-500/10 border border-pink-500/50 text-pink-400 font-mono text-sm"
+          data-testid="password-error-alert"
+        >
+          &gt; ERROR: {error}
+        </div>
+      )}
+      {success && (
+        <div
+          className="mb-4 p-3 bg-green-500/10 border border-green-500/50 text-green-400 font-mono text-sm"
+          data-testid="password-success-alert"
+        >
+          &gt; SUCCESS: {success}
+        </div>
+      )}
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-          {/* Current Password */}
-          <FormField
-            label={t("currentPassword")}
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+        {/* Current Password */}
+        <div>
+          <label
             htmlFor="currentPassword"
-            required
-            error={errors.currentPassword?.message}
+            className="block text-xs font-mono text-cyan-400 uppercase tracking-wider mb-2"
           >
-            <Input
-              id="currentPassword"
-              type="password"
-              autoComplete="current-password"
-              placeholder="••••••••"
-              error={!!errors.currentPassword}
-              fullWidth
-              testId="password-current-input"
-              {...register("currentPassword")}
-            />
-          </FormField>
+            {t("currentPassword")} <span className="text-pink-400">*</span>
+          </label>
+          <input
+            id="currentPassword"
+            type="password"
+            autoComplete="current-password"
+            placeholder="••••••••"
+            className={getInputClassName(!!errors.currentPassword)}
+            data-testid="password-current-input"
+            {...register("currentPassword")}
+          />
+          {errors.currentPassword && (
+            <p className="mt-1 text-xs text-pink-400 font-mono">
+              {errors.currentPassword.message}
+            </p>
+          )}
+        </div>
 
-          {/* New Password */}
-          <FormField
-            label={t("newPassword")}
+        {/* New Password */}
+        <div>
+          <label
             htmlFor="newPassword"
-            required
-            error={errors.newPassword?.message}
-            helperText={t("newPasswordHelp")}
+            className="block text-xs font-mono text-cyan-400 uppercase tracking-wider mb-2"
           >
-            <Input
-              id="newPassword"
-              type="password"
-              autoComplete="new-password"
-              placeholder="••••••••"
-              error={!!errors.newPassword}
-              fullWidth
-              testId="password-new-input"
-              {...register("newPassword")}
-            />
-          </FormField>
+            {t("newPassword")} <span className="text-pink-400">*</span>
+          </label>
+          <input
+            id="newPassword"
+            type="password"
+            autoComplete="new-password"
+            placeholder="••••••••"
+            className={getInputClassName(!!errors.newPassword)}
+            data-testid="password-new-input"
+            {...register("newPassword")}
+          />
+          <p className="mt-1 text-xs text-cyan-100/30 font-mono">
+            {t("newPasswordHelp")}
+          </p>
+          {errors.newPassword && (
+            <p className="mt-1 text-xs text-pink-400 font-mono">
+              {errors.newPassword.message}
+            </p>
+          )}
+        </div>
 
-          {/* Confirm New Password */}
-          <FormField
-            label={t("confirmPassword")}
+        {/* Confirm New Password */}
+        <div>
+          <label
             htmlFor="confirmNewPassword"
-            required
-            error={errors.confirmNewPassword?.message}
+            className="block text-xs font-mono text-cyan-400 uppercase tracking-wider mb-2"
           >
-            <Input
-              id="confirmNewPassword"
-              type="password"
-              autoComplete="new-password"
-              placeholder="••••••••"
-              error={!!errors.confirmNewPassword}
-              fullWidth
-              testId="password-confirm-input"
-              {...register("confirmNewPassword")}
-            />
-          </FormField>
+            {t("confirmPassword")} <span className="text-pink-400">*</span>
+          </label>
+          <input
+            id="confirmNewPassword"
+            type="password"
+            autoComplete="new-password"
+            placeholder="••••••••"
+            className={getInputClassName(!!errors.confirmNewPassword)}
+            data-testid="password-confirm-input"
+            {...register("confirmNewPassword")}
+          />
+          {errors.confirmNewPassword && (
+            <p className="mt-1 text-xs text-pink-400 font-mono">
+              {errors.confirmNewPassword.message}
+            </p>
+          )}
+        </div>
 
-          <CardActions>
-            <Button
-              type="submit"
-              variant="primary"
-              disabled={isLoading}
-              testId="password-save-button"
-            >
-              {isLoading ? t("changing") : t("changePassword")}
-            </Button>
-          </CardActions>
-        </form>
+        <CardActions>
+          <button
+            type="submit"
+            disabled={isLoading}
+            className="px-6 py-2.5 bg-gradient-to-r from-pink-500 to-pink-400 text-white font-bold uppercase tracking-wider text-sm hover:shadow-[0_0_20px_rgba(255,0,102,0.4)] disabled:opacity-50 transition-all cursor-pointer disabled:cursor-not-allowed"
+            style={{
+              clipPath:
+                "polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px))",
+            }}
+            data-testid="password-save-button"
+          >
+            {isLoading ? t("changing") : t("changePassword")}
+          </button>
+        </CardActions>
+      </form>
     </Card>
   );
 }

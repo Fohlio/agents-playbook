@@ -107,18 +107,20 @@ export default function RecentItemsSection() {
 
   if (loading) {
     return (
-      <section className="py-16 px-4 sm:px-6 lg:px-8 bg-gray-50">
+      <section className="py-16 px-4 sm:px-6 lg:px-8 bg-[#050508]">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">
-              {t('title')}
+            <h2 className="text-3xl font-black tracking-tight mb-4">
+              <span className="cyber-text-cyan">RECENT</span>
+              <span className="text-white mx-3">{'//'}</span>
+              <span className="cyber-text-pink">ITEMS</span>
             </h2>
-            <p className="text-lg text-gray-600">
+            <p className="text-lg text-cyan-100/60 font-mono">
               {t('subtitle')}
             </p>
           </div>
           <div className="flex justify-center">
-            <div className="animate-pulse text-gray-500">{tCommon('loading')}</div>
+            <div className="font-mono text-cyan-400 animate-pulse">{tCommon('loading')}</div>
           </div>
         </div>
       </section>
@@ -126,36 +128,45 @@ export default function RecentItemsSection() {
   }
 
   return (
-    <section className="py-16 px-4 sm:px-6 lg:px-8 bg-gray-50">
-      <div className="max-w-7xl mx-auto">
+    <section className="py-16 px-4 sm:px-6 lg:px-8 bg-[#050508] relative overflow-hidden">
+      {/* Circuit background */}
+      <div className="absolute inset-0 cyber-circuit-bg opacity-20 pointer-events-none"></div>
+      
+      <div className="relative max-w-7xl mx-auto">
         <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold text-gray-900 mb-4">
-            {t('title')}
+          <h2 className="text-3xl font-black tracking-tight mb-4">
+            <span className="cyber-text-cyan">RECENT</span>
+            <span className="text-white mx-3">{'//'}</span>
+            <span className="cyber-text-pink">ITEMS</span>
           </h2>
-          <p className="text-lg text-gray-600">
+          {/* Scanner underline */}
+          <div className="relative w-48 h-0.5 mx-auto mb-6 bg-gradient-to-r from-transparent via-cyan-500 to-transparent overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-r from-cyan-400 to-pink-400 animate-pulse"></div>
+          </div>
+          <p className="text-lg text-cyan-100/60 font-mono">
             {t('subtitle')}
           </p>
         </div>
 
-        {/* Tabs */}
+        {/* Tabs - Cyberpunk Style */}
         <div className="flex justify-center mb-8">
-          <div className="inline-flex bg-white rounded-lg p-1 shadow-sm border border-gray-200">
+          <div className="inline-flex bg-[#0a0a0f] border border-cyan-500/30 p-1">
             <button
               onClick={() => setActiveTab("workflows")}
-              className={`px-6 py-2 text-sm font-medium rounded-md transition-colors ${
+              className={`px-6 py-2 text-sm font-mono uppercase tracking-wider transition-all ${
                 activeTab === "workflows"
-                  ? "bg-blue-600 text-white"
-                  : "text-gray-600 hover:text-gray-900"
+                  ? "bg-cyan-500/20 text-cyan-400 border border-cyan-500/50 shadow-[0_0_15px_rgba(0,255,255,0.2)]"
+                  : "text-cyan-100/60 hover:text-cyan-400 border border-transparent"
               }`}
             >
               {t('tabWorkflows', { count: workflows.length })}
             </button>
             <button
               onClick={() => setActiveTab("prompts")}
-              className={`px-6 py-2 text-sm font-medium rounded-md transition-colors ${
+              className={`px-6 py-2 text-sm font-mono uppercase tracking-wider transition-all ${
                 activeTab === "prompts"
-                  ? "bg-blue-600 text-white"
-                  : "text-gray-600 hover:text-gray-900"
+                  ? "bg-pink-500/20 text-pink-400 border border-pink-500/50 shadow-[0_0_15px_rgba(255,0,102,0.2)]"
+                  : "text-cyan-100/60 hover:text-pink-400 border border-transparent"
               }`}
             >
               {t('tabPrompts', { count: miniPrompts.length })}
@@ -166,7 +177,7 @@ export default function RecentItemsSection() {
         {/* Content Grid */}
         {activeTab === "workflows" ? (
           workflows.length === 0 ? (
-            <div className="text-center text-gray-500 py-12">
+            <div className="text-center text-cyan-100/40 py-12 font-mono">
               {t('noWorkflows')}
             </div>
           ) : (
@@ -206,7 +217,7 @@ export default function RecentItemsSection() {
             </div>
           )
         ) : miniPrompts.length === 0 ? (
-          <div className="text-center text-gray-500 py-12">
+          <div className="text-center text-cyan-100/40 py-12 font-mono">
             {t('noPrompts')}
           </div>
         ) : (
@@ -256,43 +267,47 @@ export default function RecentItemsSection() {
           />
         )}
 
+        {/* Mini-Prompt Preview Modal - Cyberpunk Style */}
         {previewMiniPrompt && (
           <div
-            className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50"
+            className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50"
             onClick={() => setPreviewMiniPrompt(null)}
           >
             <div
-              className="bg-white rounded-lg max-w-2xl w-full max-h-[80vh] overflow-auto p-6"
+              className="bg-[#0a0a0f] border border-cyan-500/50 max-w-2xl w-full max-h-[80vh] overflow-auto p-6 shadow-[0_0_50px_rgba(0,255,255,0.2)]"
               onClick={(e) => e.stopPropagation()}
+              style={{
+                clipPath: 'polygon(0 0, calc(100% - 20px) 0, 100% 20px, 100% 100%, 20px 100%, 0 calc(100% - 20px))',
+              }}
             >
               <div className="flex justify-between items-start mb-4">
-                <h3 className="text-xl font-bold text-gray-900">
+                <h3 className="text-xl font-bold cyber-text-cyan">
                   {previewMiniPrompt.name}
                 </h3>
                 <button
                   onClick={() => setPreviewMiniPrompt(null)}
-                  className="text-gray-500 hover:text-gray-700"
+                  className="text-cyan-400 hover:text-cyan-300 transition-colors font-mono"
                 >
-                  ✕
+                  [X]
                 </button>
               </div>
               {previewMiniPrompt.description && (
-                <p className="text-gray-600 mb-4">{previewMiniPrompt.description}</p>
+                <p className="text-cyan-100/60 mb-4">{previewMiniPrompt.description}</p>
               )}
-              <div className="bg-gray-50 rounded-lg p-4 mb-4">
-                <pre className="whitespace-pre-wrap text-sm text-gray-800 font-mono">
+              <div className="bg-[#050508] border border-cyan-500/30 p-4 mb-4">
+                <pre className="whitespace-pre-wrap text-sm text-green-400 font-mono">
                   {previewMiniPrompt.content}
                 </pre>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-sm text-gray-500">
+                <span className="text-sm text-cyan-100/40 font-mono">
                   {tCommon('by', { author: previewMiniPrompt.user.username })}
                 </span>
                 <button
                   onClick={() => {
                     handleCopyMiniPrompt(previewMiniPrompt);
                   }}
-                  className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+                  className="px-4 py-2 bg-cyan-500/20 border border-cyan-500/50 text-cyan-400 font-mono uppercase text-sm tracking-wider hover:bg-cyan-500/30 hover:shadow-[0_0_15px_rgba(0,255,255,0.3)] transition-all"
                 >
                   {t('copyPrompt')}
                 </button>

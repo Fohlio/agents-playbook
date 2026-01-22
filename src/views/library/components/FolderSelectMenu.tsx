@@ -2,6 +2,7 @@
 
 import { Menu, MenuItem, ListItemIcon, ListItemText, Divider } from '@mui/material';
 import { Folder, Plus } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { FolderWithItems } from '@/server/folders/types';
 
 export interface FolderSelectMenuProps {
@@ -43,6 +44,8 @@ export function FolderSelectMenu({
   onCreateFolder,
   placement = 'bottom',
 }: FolderSelectMenuProps) {
+  const t = useTranslations('folderSelectMenu');
+
   const handleFolderClick = (folderId: string) => {
     onSelectFolder(folderId);
     onClose();
@@ -80,8 +83,8 @@ export function FolderSelectMenu({
       {folders.length === 0 ? (
         <MenuItem disabled>
           <ListItemText
-            primary="No folders available"
-            secondary="Create a folder first"
+            primary={t('noFoldersAvailable')}
+            secondary={t('createFolderFirst')}
             slotProps={{
               primary: { sx: { fontSize: '0.875rem' } },
               secondary: { sx: { fontSize: '0.75rem' } },
@@ -100,7 +103,7 @@ export function FolderSelectMenu({
             </ListItemIcon>
             <ListItemText
               primary={folder.name}
-              secondary={`${folder.itemCount} ${folder.itemCount === 1 ? 'item' : 'items'}`}
+              secondary={t('itemCount', { count: folder.itemCount })}
               slotProps={{
                 primary: {
                   sx: {
@@ -126,7 +129,7 @@ export function FolderSelectMenu({
               <Plus className="w-4 h-4 text-gray-500" />
             </ListItemIcon>
             <ListItemText
-              primary="Create new folder"
+              primary={t('createNewFolder')}
               slotProps={{
                 primary: { sx: { fontSize: '0.875rem', color: 'primary.main' } },
               }}

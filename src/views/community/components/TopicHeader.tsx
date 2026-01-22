@@ -3,10 +3,10 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { formatDistanceToNow } from "date-fns";
+import { useTranslations } from "next-intl";
 import PushPinIcon from '@mui/icons-material/PushPin';
 import LockIcon from '@mui/icons-material/Lock';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { Button } from "@/shared/ui/atoms";
 import { togglePinTopic, toggleCloseTopic, deleteTopic } from "../actions/topic-actions";
 import type { Topic, User } from "@prisma/client";
 
@@ -17,6 +17,7 @@ interface TopicHeaderProps {
 }
 
 export function TopicHeader({ topic, isAdmin, isOwner }: TopicHeaderProps) {
+  const t = useTranslations("community.topicHeader");
   const [isPinned, setIsPinned] = useState(topic.isPinned);
   const [isClosed, setIsClosed] = useState(topic.isClosed);
   const [isLoading, setIsLoading] = useState(false);
@@ -42,35 +43,46 @@ export function TopicHeader({ topic, isAdmin, isOwner }: TopicHeaderProps) {
   };
 
   const handleDelete = async () => {
-    if (!confirm("Are you sure you want to delete this topic and all its messages?")) {
+    if (!confirm(t("confirmDelete"))) {
       return;
     }
 
-    // Optimistic update - redirect immediately
     router.push("/dashboard/community");
 
-    // Delete in background
     const result = await deleteTopic(topic.id);
     if (!result.success) {
-      // If deletion failed, show error (user already on community page)
-      alert(result.error || "Failed to delete topic");
+      alert(result.error || t("failedToDelete"));
     }
   };
 
   return (
-    <div className="bg-gradient-to-r from-primary-50 to-purple-50 border border-primary-200 rounded-lg p-6 mb-6 shadow-sm">
+    <div 
+      className="bg-[#0a0a0f]/80 backdrop-blur-sm border border-cyan-500/30 p-6 mb-6"
+      style={{ clipPath: 'polygon(0 0, calc(100% - 15px) 0, 100% 15px, 100% 100%, 15px 100%, 0 calc(100% - 15px))' }}
+    >
       <div className="flex items-start justify-between gap-4">
         <div className="flex-1">
           <div className="flex items-center gap-3 mb-3">
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-primary-600 to-purple-600 bg-clip-text text-transparent">
+            <h1 className="text-2xl font-bold font-mono text-cyan-400" style={{ textShadow: '0 0 10px #00ffff40' }}>
               {topic.title}
             </h1>
-            {isPinned && <PushPinIcon className="text-primary-600" fontSize="medium" />}
-            {isClosed && <LockIcon className="text-gray-500" fontSize="medium" />}
+            {isPinned && (
+              <PushPinIcon 
+                className="text-yellow-400" 
+                fontSize="medium" 
+                style={{ filter: 'drop-shadow(0 0 5px #eab308)' }}
+              />
+            )}
+            {isClosed && (
+              <LockIcon 
+                className="text-pink-400" 
+                fontSize="medium" 
+              />
+            )}
           </div>
 
-          <div className="text-sm text-gray-700 font-medium">
-            by @{topic.author.username} •{" "}
+          <div className="text-sm text-cyan-100/50 font-mono">
+            by <span className="text-purple-400">@{topic.author.username}</span> •{" "}
             {formatDistanceToNow(new Date(topic.createdAt), { addSuffix: true })}
           </div>
         </div>
@@ -80,34 +92,30 @@ export function TopicHeader({ topic, isAdmin, isOwner }: TopicHeaderProps) {
           <div className="flex gap-2">
             {isAdmin && (
               <>
-                <Button
-                  variant="ghost"
-                  size="sm"
+                <button
                   onClick={handlePin}
                   disabled={isLoading}
+                  className="px-3 py-1.5 bg-transparent border border-yellow-500/30 text-yellow-400 font-mono text-xs uppercase tracking-wider hover:bg-yellow-500/10 hover:border-yellow-400 disabled:opacity-50 transition-all cursor-pointer"
                 >
-                  {isPinned ? "Unpin" : "Pin"}
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
+                  {isPinned ? t("unpin") : t("pin")}
+                </button>
+                <button
                   onClick={handleClose}
                   disabled={isLoading}
+                  className="px-3 py-1.5 bg-transparent border border-cyan-500/30 text-cyan-400 font-mono text-xs uppercase tracking-wider hover:bg-cyan-500/10 hover:border-cyan-400 disabled:opacity-50 transition-all cursor-pointer"
                 >
-                  {isClosed ? "Reopen" : "Close"}
-                </Button>
+                  {isClosed ? t("reopen") : t("close")}
+                </button>
               </>
             )}
             {(isOwner || isAdmin) && (
-              <Button
-                variant="ghost"
-                size="sm"
+              <button
                 onClick={handleDelete}
                 disabled={isLoading}
-                className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                className="p-2 bg-transparent border border-pink-500/30 text-pink-400 hover:bg-pink-500/10 hover:border-pink-400 disabled:opacity-50 transition-all cursor-pointer"
               >
                 <DeleteIcon fontSize="small" />
-              </Button>
+              </button>
             )}
           </div>
         )}

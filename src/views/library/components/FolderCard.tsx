@@ -2,6 +2,7 @@
 
 import { Folder, Globe, Lock, MoreVertical } from 'lucide-react';
 import { useState, MouseEvent, KeyboardEvent } from 'react';
+import { useTranslations } from 'next-intl';
 import { cn } from '@/shared/lib/utils/cn';
 import { Visibility } from '@prisma/client';
 import {
@@ -37,14 +38,9 @@ interface FolderCardProps {
 }
 
 /**
- * FolderCard Component
+ * FolderCard Component - Cyberpunk Style
  *
- * Displays a folder in the Library grid view.
- * Features:
- * - Click on title to drill into folder
- * - Click on card body to select (for bulk operations)
- * - Selection checkbox shown on hover or when selected
- * - Context menu for folder actions
+ * Angular folder card with neon accents
  */
 export function FolderCard({
   folder,
@@ -57,11 +53,11 @@ export function FolderCard({
   viewMode = 'grid',
   className,
 }: FolderCardProps) {
+  const t = useTranslations('folderCard');
   const [menuAnchor, setMenuAnchor] = useState<null | HTMLElement>(null);
   const [isHovered, setIsHovered] = useState(false);
 
   const handleCardClick = (e: MouseEvent) => {
-    // Don't select if clicking on menu or title
     if (
       (e.target as HTMLElement).closest('[data-menu]') ||
       (e.target as HTMLElement).closest('[data-title]')
@@ -104,7 +100,7 @@ export function FolderCard({
     }
   };
 
-  // Menu component (shared between views)
+  // Cyberpunk Menu
   const menuComponent = (
     <Menu
       anchorEl={menuAnchor}
@@ -112,47 +108,62 @@ export function FolderCard({
       onClose={handleMenuClose}
       anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
       transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+      sx={{
+        '& .MuiPaper-root': {
+          backgroundColor: '#0a0a0f',
+          border: '1px solid rgba(0, 255, 255, 0.3)',
+          boxShadow: '0 0 20px rgba(0, 255, 255, 0.1)',
+        },
+        '& .MuiMenuItem-root': {
+          fontFamily: 'monospace',
+          fontSize: '0.875rem',
+          color: '#a5f3fc',
+          '&:hover': {
+            backgroundColor: 'rgba(0, 255, 255, 0.1)',
+          },
+        },
+      }}
     >
       {onRename && (
         <MenuItem onClick={() => handleMenuAction(() => onRename(folder.id))}>
-          <ListItemIcon>
+          <ListItemIcon sx={{ color: '#00ffff' }}>
             <EditIcon fontSize="small" />
           </ListItemIcon>
-          <ListItemText>Rename</ListItemText>
+          <ListItemText>{t('rename')}</ListItemText>
         </MenuItem>
       )}
       {onCopyLink && folder.visibility === 'PUBLIC' && (
         <MenuItem onClick={() => handleMenuAction(() => onCopyLink(folder.id))}>
-          <ListItemIcon>
+          <ListItemIcon sx={{ color: '#00ffff' }}>
             <ContentCopyIcon fontSize="small" />
           </ListItemIcon>
-          <ListItemText>Copy Link</ListItemText>
+          <ListItemText>{t('copyLink')}</ListItemText>
         </MenuItem>
       )}
       {onDelete && (
         <MenuItem
           onClick={() => handleMenuAction(() => onDelete(folder.id))}
-          sx={{ color: 'error.main' }}
+          sx={{ color: '#ff0066 !important' }}
         >
-          <ListItemIcon sx={{ color: 'inherit' }}>
+          <ListItemIcon sx={{ color: '#ff0066' }}>
             <DeleteIcon fontSize="small" />
           </ListItemIcon>
-          <ListItemText>Move to Trash</ListItemText>
+          <ListItemText>{t('moveToTrash')}</ListItemText>
         </MenuItem>
       )}
     </Menu>
   );
 
-  // List view
+  // List view - Cyberpunk
   if (viewMode === 'list') {
     return (
       <div
         className={cn(
-          'relative bg-white rounded-lg border px-4 py-3 transition-all duration-200 cursor-pointer',
-          'hover:shadow-sm hover:border-gray-300',
-          'focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2',
+          'relative bg-[#0a0a0f]/80 backdrop-blur-sm border px-4 py-3 transition-all duration-200 cursor-pointer',
           'flex items-center gap-4',
-          isSelected && 'border-blue-500 bg-blue-50 ring-2 ring-blue-200',
+          isSelected
+            ? 'border-yellow-400 bg-yellow-500/10 shadow-[0_0_15px_rgba(255,200,0,0.2)]'
+            : 'border-yellow-500/30 hover:border-yellow-400/60 hover:bg-yellow-500/5',
           className
         )}
         onClick={handleCardClick}
@@ -165,50 +176,45 @@ export function FolderCard({
         tabIndex={0}
         aria-label={`${folder.name} folder, ${folder.itemCount} ${folder.itemCount === 1 ? 'item' : 'items'}, ${folder.visibility === 'PUBLIC' ? 'public' : 'private'}${isSelected ? ', selected' : ''}`}
       >
-        {/* Selection checkbox */}
         <div className={cn('transition-opacity', isSelected || isHovered ? 'opacity-100' : 'opacity-0')}>
           <input
             type="checkbox"
             checked={isSelected}
             onChange={() => {}}
-            className="w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+            className="w-4 h-4 bg-transparent border-2 border-yellow-500/50 text-yellow-500 focus:ring-yellow-500/50"
             onClick={(e) => e.stopPropagation()}
             tabIndex={-1}
             aria-hidden="true"
           />
         </div>
 
-        {/* Folder icon */}
-        <div className="p-2 bg-blue-50 rounded-lg flex-shrink-0">
-          <Folder className="w-5 h-5 text-blue-500" aria-hidden="true" />
+        <div className="p-2 bg-yellow-500/10 border border-yellow-500/30 flex-shrink-0">
+          <Folder className="w-5 h-5 text-yellow-400" aria-hidden="true" />
         </div>
 
-        {/* Content */}
         <div className="flex-1 min-w-0">
           <button
             data-title
             onClick={handleTitleClick}
-            className="font-medium text-gray-900 hover:text-blue-600 transition-colors focus:outline-none focus:underline text-left"
+            className="font-mono text-cyan-100 hover:text-yellow-400 transition-colors focus:outline-none text-left"
             tabIndex={-1}
           >
-            {folder.name}
+            {folder.name}/
           </button>
           {folder.description && (
-            <p className="text-xs text-gray-400 truncate mt-0.5">{folder.description}</p>
+            <p className="text-xs text-cyan-100/40 truncate mt-0.5 font-mono">{folder.description}</p>
           )}
         </div>
 
-        {/* Meta info */}
-        <div className="flex items-center gap-3 text-sm text-gray-500 flex-shrink-0">
-          <span>{folder.itemCount} {folder.itemCount === 1 ? 'item' : 'items'}</span>
+        <div className="flex items-center gap-3 text-xs text-cyan-100/50 font-mono flex-shrink-0">
+          <span className="text-yellow-400">[{folder.itemCount}]</span>
           {folder.visibility === 'PUBLIC' ? (
-            <Globe className="w-3.5 h-3.5 text-green-500" aria-hidden="true" />
+            <Globe className="w-3.5 h-3.5 text-green-400" aria-hidden="true" />
           ) : (
-            <Lock className="w-3.5 h-3.5 text-gray-400" aria-hidden="true" />
+            <Lock className="w-3.5 h-3.5 text-cyan-500/50" aria-hidden="true" />
           )}
         </div>
 
-        {/* Menu button */}
         <div data-menu className="flex-shrink-0">
           <IconButton
             size="small"
@@ -217,8 +223,12 @@ export function FolderCard({
             sx={{
               opacity: isHovered || menuAnchor ? 1 : 0,
               transition: 'opacity 0.2s',
+              color: '#00ffff',
               minWidth: '32px',
               minHeight: '32px',
+              '&:hover': {
+                backgroundColor: 'rgba(0, 255, 255, 0.1)',
+              },
             }}
           >
             <MoreVertical className="w-4 h-4" aria-hidden="true" />
@@ -229,16 +239,17 @@ export function FolderCard({
     );
   }
 
-  // Grid view (default)
+  // Grid view - Cyberpunk
   return (
     <div
       className={cn(
-        'relative bg-white rounded-lg border p-4 transition-all duration-200 cursor-pointer',
-        'hover:shadow-md hover:border-gray-300',
-        'focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2',
-        isSelected && 'border-blue-500 bg-blue-50 ring-2 ring-blue-200',
+        'relative bg-[#0a0a0f]/80 backdrop-blur-sm border p-4 transition-all duration-200 cursor-pointer',
+        isSelected
+          ? 'border-yellow-400 bg-yellow-500/10 shadow-[0_0_20px_rgba(255,200,0,0.2)]'
+          : 'border-yellow-500/30 hover:border-yellow-400/60 hover:bg-yellow-500/5',
         className
       )}
+      style={{ clipPath: 'polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px))' }}
       onClick={handleCardClick}
       onDoubleClick={handleDoubleClick}
       onKeyDown={handleKeyDown}
@@ -249,7 +260,10 @@ export function FolderCard({
       tabIndex={0}
       aria-label={`${folder.name} folder, ${folder.itemCount} ${folder.itemCount === 1 ? 'item' : 'items'}, ${folder.visibility === 'PUBLIC' ? 'public' : 'private'}${isSelected ? ', selected' : ''}`}
     >
-      {/* Selection checkbox */}
+      {/* Corner accents */}
+      <div className="absolute top-0 right-0 w-3 h-3 border-t border-r border-yellow-500/50"></div>
+      <div className="absolute bottom-0 left-0 w-3 h-3 border-b border-l border-yellow-500/50"></div>
+
       <div
         className={cn(
           'absolute top-3 left-3 transition-opacity',
@@ -260,14 +274,13 @@ export function FolderCard({
           type="checkbox"
           checked={isSelected}
           onChange={() => {}}
-          className="w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+          className="w-4 h-4 bg-transparent border-2 border-yellow-500/50 text-yellow-500 focus:ring-yellow-500/50"
           onClick={(e) => e.stopPropagation()}
           tabIndex={-1}
           aria-hidden="true"
         />
       </div>
 
-      {/* Menu button */}
       <div className="absolute top-2 right-2" data-menu>
         <IconButton
           size="small"
@@ -276,11 +289,12 @@ export function FolderCard({
           sx={{
             opacity: isHovered || menuAnchor ? 1 : 0,
             transition: 'opacity 0.2s',
-            backgroundColor: 'rgba(255, 255, 255, 0.9)',
-            minWidth: '36px',
-            minHeight: '36px',
+            color: '#00ffff',
+            backgroundColor: 'rgba(0, 255, 255, 0.1)',
+            minWidth: '32px',
+            minHeight: '32px',
             '&:hover': {
-              backgroundColor: 'rgba(255, 255, 255, 1)',
+              backgroundColor: 'rgba(0, 255, 255, 0.2)',
             },
           }}
         >
@@ -289,43 +303,37 @@ export function FolderCard({
         {menuComponent}
       </div>
 
-      {/* Folder icon */}
       <div className="flex justify-center mb-3 mt-4">
-        <div className="p-3 bg-blue-50 rounded-lg">
-          <Folder className="w-8 h-8 text-blue-500" aria-hidden="true" />
+        <div className="p-3 bg-yellow-500/10 border border-yellow-500/30">
+          <Folder className="w-8 h-8 text-yellow-400" aria-hidden="true" />
         </div>
       </div>
 
-      {/* Folder name (clickable for drill-down) */}
       <button
         data-title
         onClick={handleTitleClick}
-        className="w-full text-center font-medium text-gray-900 hover:text-blue-600 transition-colors focus:outline-none focus:underline min-h-[44px] flex items-center justify-center px-1 break-words"
+        className="w-full text-center font-mono text-cyan-100 hover:text-yellow-400 transition-colors focus:outline-none min-h-[44px] flex items-center justify-center px-1 break-words"
         style={{ wordBreak: 'break-word' }}
         tabIndex={-1}
       >
-        {folder.name}
+        {folder.name}/
       </button>
 
-      {/* Item count and visibility */}
-      <div className="flex items-center justify-center gap-2 mt-2 text-sm text-gray-500">
-        <span>
-          {folder.itemCount} {folder.itemCount === 1 ? 'item' : 'items'}
-        </span>
+      <div className="flex items-center justify-center gap-2 mt-2 text-xs font-mono">
+        <span className="text-yellow-400">[{folder.itemCount}]</span>
         {folder.visibility === 'PUBLIC' ? (
           <span title="Public folder" aria-label="Public folder">
-            <Globe className="w-3.5 h-3.5 text-green-500" aria-hidden="true" />
+            <Globe className="w-3.5 h-3.5 text-green-400" aria-hidden="true" />
           </span>
         ) : (
           <span title="Private folder" aria-label="Private folder">
-            <Lock className="w-3.5 h-3.5 text-gray-400" aria-hidden="true" />
+            <Lock className="w-3.5 h-3.5 text-cyan-500/50" aria-hidden="true" />
           </span>
         )}
       </div>
 
-      {/* Description (if present) */}
       {folder.description && (
-        <p className="mt-2 text-xs text-gray-400 text-center line-clamp-2">
+        <p className="mt-2 text-xs text-cyan-100/30 text-center line-clamp-2 font-mono">
           {folder.description}
         </p>
       )}

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { Button, Modal, ModalHeader, ModalBody, ModalActions } from "@/shared/ui/atoms";
+import { Modal } from "@/shared/ui/atoms";
 import { createTopic } from "../actions/topic-actions";
 
 interface CreateTopicModalProps {
@@ -45,62 +45,71 @@ export function CreateTopicModal({ isOpen, onClose }: CreateTopicModalProps) {
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} className="max-w-2xl">
-      <ModalHeader title={t("title")} />
+      <h3 className="text-lg font-mono font-bold text-cyan-400 uppercase tracking-wider mb-4" style={{ textShadow: '0 0 10px #00ffff40' }}>
+        {t("title")}
+      </h3>
 
       <form onSubmit={handleSubmit}>
-        <ModalBody>
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              {t("titleLabel")} *
+        <div className="space-y-4 mb-6">
+          <div>
+            <label className="block text-xs font-mono text-cyan-400 uppercase tracking-wider mb-2">
+              {t("titleLabel")} <span className="text-pink-400">*</span>
             </label>
             <input
               type="text"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+              className="w-full px-3 py-2 bg-[#050508]/50 border border-cyan-500/50 text-cyan-100 font-mono text-sm placeholder:text-cyan-500/30 focus:outline-none focus:border-cyan-400 focus:shadow-[0_0_15px_rgba(0,255,255,0.2)] transition-all"
               maxLength={200}
               required
             />
-            <div className="text-xs text-gray-500 mt-1">{title.length}/200</div>
+            <div className={`text-xs font-mono mt-1 ${title.length > 180 ? 'text-pink-400' : 'text-cyan-500/40'}`}>
+              {title.length}/200
+            </div>
           </div>
 
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              {t("messageLabel")} *
+          <div>
+            <label className="block text-xs font-mono text-cyan-400 uppercase tracking-wider mb-2">
+              {t("messageLabel")} <span className="text-pink-400">*</span>
             </label>
             <textarea
               value={content}
               onChange={(e) => setContent(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-primary-500"
+              className="w-full px-3 py-2 bg-[#050508]/50 border border-cyan-500/50 text-cyan-100 font-mono text-sm placeholder:text-cyan-500/30 focus:outline-none focus:border-cyan-400 focus:shadow-[0_0_15px_rgba(0,255,255,0.2)] transition-all resize-none"
               rows={6}
               maxLength={10000}
               required
             />
-            <div className="text-xs text-gray-500 mt-1">{content.length}/10000</div>
+            <div className={`text-xs font-mono mt-1 ${content.length > 9500 ? 'text-pink-400' : 'text-cyan-500/40'}`}>
+              {content.length}/10000
+            </div>
           </div>
 
           {error && (
-            <div className="text-sm text-red-600">{error}</div>
+            <div className="p-3 bg-pink-500/10 border border-pink-500/50 text-pink-400 font-mono text-sm">
+              &gt; ERROR: {error}
+            </div>
           )}
-        </ModalBody>
+        </div>
 
-        <ModalActions>
-          <Button
+        <div className="flex gap-3 justify-end">
+          <button
             type="button"
-            variant="secondary"
             onClick={onClose}
             disabled={isSubmitting}
+            className="px-4 py-2 bg-transparent border border-cyan-500/30 text-cyan-400 font-mono text-sm uppercase tracking-wider hover:bg-cyan-500/10 hover:border-cyan-400 disabled:opacity-50 transition-all cursor-pointer"
           >
             {tCommon("cancel")}
-          </Button>
-          <Button
+          </button>
+          <button
             type="submit"
-            variant="primary"
             disabled={!title.trim() || !content.trim() || isSubmitting}
+            className="px-6 py-2.5 bg-gradient-to-r from-cyan-500 to-cyan-400 text-[#050508] font-bold uppercase tracking-wider text-sm hover:shadow-[0_0_20px_rgba(0,255,255,0.4)] disabled:opacity-50 disabled:cursor-not-allowed transition-all cursor-pointer"
+            style={{ clipPath: 'polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px))' }}
           >
             {isSubmitting ? t("creating") : t("create")}
-          </Button>
-        </ModalActions>
+          </button>
+        </div>
       </form>
     </Modal>
   );

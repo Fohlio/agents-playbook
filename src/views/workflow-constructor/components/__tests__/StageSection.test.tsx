@@ -70,8 +70,11 @@ describe('StageSection', () => {
       />
     );
 
-    const colorIndicator = screen.getByTestId('stage-section-stage-1').querySelector('.w-3.h-3.rounded-full');
-    expect(colorIndicator).toHaveStyle({ backgroundColor: '#3b82f6' });
+    // The color indicator now uses a diamond shape (clip-path) instead of rounded-full
+    const colorIndicator = screen.getByTestId('stage-section-stage-1').querySelector('.w-3.h-3');
+    expect(colorIndicator).toBeInTheDocument();
+    // The color is now controlled via Tailwind classes (bg-blue-500 for #3b82f6)
+    expect(colorIndicator).toHaveClass('bg-blue-500');
   });
 
   it('should render remove stage button', () => {

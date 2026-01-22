@@ -19,8 +19,12 @@ export default async function CommunityPage({
     <div className="max-w-4xl mx-auto p-6">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">{t("title")}</h1>
-          <p className="text-gray-600 mt-1">
+          <h1 className="text-3xl font-black tracking-tight mb-1">
+            <span className="cyber-text-glitch" data-text={t("title")} style={{ color: '#00ffff', textShadow: '0 0 10px #00ffff, 0 0 20px #00ffff40' }}>
+              {t("title")}
+            </span>
+          </h1>
+          <p className="text-cyan-100/60 font-mono text-sm uppercase tracking-wider">
             {t("subtitle")}
           </p>
         </div>

@@ -1,8 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Card } from '@/shared/ui/atoms/Card';
-import IconButton from '@/shared/ui/atoms/IconButton';
+import { useTranslations } from 'next-intl';
 import type { MiniPrompt } from '@prisma/client';
 import { MiniPromptEditorModal } from './MiniPromptEditorModal';
 import { MiniPromptCard } from './MiniPromptCard';
@@ -21,22 +20,22 @@ interface MiniPromptLibraryProps {
   onSelectionChange?: (selectedIds: string[]) => void;
 }
 
-export function MiniPromptLibrary({ 
-  miniPrompts, 
+export function MiniPromptLibrary({
+  miniPrompts,
   selectedMiniPromptIds: controlledSelection,
-  onMiniPromptCreated, 
+  onMiniPromptCreated,
   onMiniPromptUpdated,
   onMiniPromptDeleted,
-  onSelectionChange 
+  onSelectionChange
 }: MiniPromptLibraryProps) {
+  const t = useTranslations('miniPromptLibrary');
   const [internalSelection, setInternalSelection] = useState<string[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingMiniPrompt, setEditingMiniPrompt] = useState<MiniPrompt | null>(null);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [editingTagIds, setEditingTagIds] = useState<string[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
 
-  // Sync viewingMiniPromptId with editingMiniPrompt - when a mini-prompt is opened for editing, set viewingMiniPromptId
-  // This ensures the AI assistant knows which mini-prompt is currently being viewed/edited
   const setViewingMiniPromptId = useWorkflowConstructorStore((state) => state.setViewingMiniPromptId);
   useEffect(() => {
     if (editingMiniPrompt && setViewingMiniPromptId) {
@@ -44,7 +43,6 @@ export function MiniPromptLibrary({
     }
   }, [editingMiniPrompt, setViewingMiniPromptId]);
 
-  // Use controlled selection if provided, otherwise use internal state
   const selectedMiniPromptIds = controlledSelection ?? internalSelection;
   const setSelectedMiniPromptIds = (ids: string[]) => {
     if (onSelectionChange) {
@@ -54,7 +52,6 @@ export function MiniPromptLibrary({
     }
   };
 
-  // Sync editingMiniPrompt when miniPrompts array changes (e.g., AI updates it)
   useEffect(() => {
     if (editingMiniPrompt) {
       const updated = miniPrompts.find(mp => mp.id === editingMiniPrompt.id);
@@ -63,7 +60,6 @@ export function MiniPromptLibrary({
         updated.description !== editingMiniPrompt.description ||
         updated.content !== editingMiniPrompt.content
       )) {
-        console.log('[MiniPromptLibrary] Detected external update to editing mini-prompt, refreshing modal');
         setEditingMiniPrompt(updated);
       }
     }
@@ -92,11 +88,9 @@ export function MiniPromptLibrary({
   ) => {
     if (!editingMiniPrompt) return;
 
-    // Check if this is a temp mini-prompt (not saved to database yet)
     const isTempMiniPrompt = editingMiniPrompt.id.startsWith('temp-');
 
     if (isTempMiniPrompt) {
-      // For temp mini-prompts, just update locally
       const updated: MiniPrompt = {
         ...editingMiniPrompt,
         name,
@@ -108,7 +102,6 @@ export function MiniPromptLibrary({
       onMiniPromptUpdated?.(updated);
       setEditingMiniPrompt(null);
     } else {
-      // For saved mini-prompts, update in database
       const updated = await updateMiniPrompt({
         id: editingMiniPrompt.id,
         name,
@@ -129,13 +122,10 @@ export function MiniPromptLibrary({
     setEditingTagIds([]);
   };
 
-  // Fetch tags when editing a saved mini-prompt
   const handleEditMiniPrompt = async (miniPrompt: MiniPrompt) => {
-    // Check if this is a temp mini-prompt (not saved to database yet)
     const isTempMiniPrompt = miniPrompt.id.startsWith('temp-');
     
     if (!isTempMiniPrompt) {
-      // Fetch tags from API for saved mini-prompts
       try {
         const response = await fetch(`/api/mini-prompts/${miniPrompt.id}`);
         if (response.ok) {
@@ -154,7 +144,6 @@ export function MiniPromptLibrary({
     setIsModalOpen(true);
   };
 
-  // Filter mini-prompts based on search query
   const filteredMiniPrompts = miniPrompts.filter(mp => {
     if (!searchQuery.trim()) return true;
     const query = searchQuery.toLowerCase();
@@ -168,7 +157,7 @@ export function MiniPromptLibrary({
     const miniPrompt = miniPrompts.find(mp => mp.id === miniPromptId);
     if (!miniPrompt) return;
 
-    if (!confirm(`Are you sure you want to delete "${miniPrompt.name}"? This action cannot be undone.`)) {
+    if (!confirm(t('deleteConfirm', { name: miniPrompt.name }))) {
       return;
     }
 
@@ -176,7 +165,6 @@ export function MiniPromptLibrary({
       await deleteMiniPrompt(miniPromptId);
       onMiniPromptDeleted?.(miniPromptId);
       
-      // Remove from selection if selected
       if (selectedMiniPromptIds.includes(miniPromptId)) {
         setSelectedMiniPromptIds(selectedMiniPromptIds.filter(id => id !== miniPromptId));
       }
@@ -187,57 +175,64 @@ export function MiniPromptLibrary({
 
   return (
     <>
-      <Card className="h-full flex flex-col" testId="mini-prompt-library">
+      <div 
+        className="h-full flex flex-col bg-[#0a0a0f]/80 backdrop-blur-sm border border-pink-500/30 p-4"
+        style={{ clipPath: 'polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px))' }}
+        data-testid="mini-prompt-library"
+      >
         <div className="mb-4">
           <div className="flex items-center justify-between mb-3">
-            <h2 className="text-lg font-semibold text-text-primary">
-              Mini-Prompts
+            <h2 className="text-sm font-mono font-bold text-pink-400 uppercase tracking-wider" style={{ textShadow: '0 0 10px #ff006640' }}>
+              {t('title')}
             </h2>
-            <IconButton
-              variant="primary"
-              size="sm"
-              icon={<AddIcon fontSize="small" />}
-              ariaLabel="Create new mini-prompt"
+            <button
               onClick={() => setIsModalOpen(true)}
-              testId="create-mini-prompt-button"
-            />
+              className="p-2 bg-gradient-to-r from-pink-500 to-pink-400 text-white hover:shadow-[0_0_15px_rgba(255,0,102,0.4)] transition-all cursor-pointer"
+              style={{ clipPath: 'polygon(0 0, calc(100% - 4px) 0, 100% 4px, 100% 100%, 4px 100%, 0 calc(100% - 4px))' }}
+              aria-label={t('createTooltip')}
+              data-testid="create-mini-prompt-button"
+            >
+              <AddIcon fontSize="small" />
+            </button>
           </div>
-          
+
           {/* Search/Filter Input */}
           <div className="relative">
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search mini-prompts..."
-              className="w-full text-sm px-3 py-2 pr-8 rounded-md border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              placeholder={t('searchPlaceholder')}
+              className="w-full text-xs px-3 py-2 pr-8 bg-[#050508]/50 border border-pink-500/30 text-cyan-100 font-mono placeholder:text-pink-500/30 focus:outline-none focus:border-pink-400 focus:shadow-[0_0_10px_rgba(255,0,102,0.1)] transition-all"
             />
             {searchQuery && (
               <button
                 onClick={() => setSearchQuery('')}
-                className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                className="absolute right-2 top-1/2 -translate-y-1/2 text-pink-400 hover:text-pink-300 cursor-pointer"
                 aria-label="Clear search"
               >
-                ×
+                x
               </button>
             )}
           </div>
-          
+
           {searchQuery && (
-            <p className="text-xs text-gray-500 mt-1">
-              Showing {filteredMiniPrompts.length} of {miniPrompts.length}
+            <p className="text-xs text-cyan-100/40 font-mono mt-1">
+              {t('found', { found: filteredMiniPrompts.length, total: miniPrompts.length })}
             </p>
           )}
         </div>
 
         <div className="flex-1 overflow-y-auto space-y-2">
           {miniPrompts.length === 0 ? (
-            <div className="text-center py-8 text-gray-500 text-sm">
-              No mini-prompts available. Create one to get started.
+            <div className="text-center py-8 text-cyan-100/40 font-mono text-xs">
+              {t('noPrompts')}
+              <br />
+              <span className="text-pink-400">{t('createNew')}</span>
             </div>
           ) : filteredMiniPrompts.length === 0 ? (
-            <div className="text-center py-8 text-gray-500 text-sm">
-              No mini-prompts match your search.
+            <div className="text-center py-8 text-cyan-100/40 font-mono text-xs">
+              {t('noMatches')}
             </div>
           ) : (
             filteredMiniPrompts.map((miniPrompt) => {
@@ -251,7 +246,6 @@ export function MiniPromptLibrary({
                   <MiniPromptCard 
                     miniPrompt={miniPrompt}
                     onClick={(mp) => {
-                      // Set viewingMiniPromptId immediately when card is clicked
                       if (setViewingMiniPromptId) {
                         setViewingMiniPromptId(mp.id);
                       }
@@ -264,25 +258,26 @@ export function MiniPromptLibrary({
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
-                        // Set viewingMiniPromptId immediately (synchronously) before opening modal
                         if (setViewingMiniPromptId) {
                           setViewingMiniPromptId(miniPrompt.id);
                         }
                         handleEditMiniPrompt(miniPrompt);
                       }}
-                      className="bg-blue-500 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-blue-600"
+                      className="bg-cyan-500 text-[#050508] w-6 h-6 flex items-center justify-center hover:bg-cyan-400 transition-all cursor-pointer"
+                      style={{ clipPath: 'polygon(0 0, calc(100% - 3px) 0, 100% 3px, 100% 100%, 3px 100%, 0 calc(100% - 3px))' }}
                       aria-label={`Edit ${miniPrompt.name}`}
-                      title="Edit mini-prompt"
+                      title={t('editTooltip')}
                     >
                       <EditIcon sx={{ fontSize: 14 }} />
                     </button>
-                    
+
                     {canDelete && (
                       <button
                         onClick={(e) => handleDeleteMiniPrompt(miniPrompt.id, e)}
-                        className="bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-600"
+                        className="bg-pink-500 text-white w-6 h-6 flex items-center justify-center hover:bg-pink-400 transition-all cursor-pointer"
+                        style={{ clipPath: 'polygon(0 0, calc(100% - 3px) 0, 100% 3px, 100% 100%, 3px 100%, 0 calc(100% - 3px))' }}
                         aria-label={`Delete ${miniPrompt.name}`}
-                        title="Delete mini-prompt"
+                        title={t('deleteTooltip')}
                       >
                         <DeleteIcon sx={{ fontSize: 14 }} />
                       </button>
@@ -293,7 +288,7 @@ export function MiniPromptLibrary({
             })
           )}
         </div>
-      </Card>
+      </div>
 
       <MiniPromptEditorModal
         isOpen={isModalOpen}
@@ -304,7 +299,6 @@ export function MiniPromptLibrary({
           description: editingMiniPrompt.description || '',
           content: editingMiniPrompt.content,
           visibility: editingMiniPrompt.visibility,
-          tagIds: editingTagIds,
           key: editingMiniPrompt.key,
         } : undefined}
       />

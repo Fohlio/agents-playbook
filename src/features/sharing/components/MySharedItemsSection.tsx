@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Card, Button, Badge } from "@/shared/ui/atoms";
+import { useTranslations } from "next-intl";
+import { Card } from "@/shared/ui/atoms";
 import { CopyButton, EmptyState } from "@/shared/ui/molecules";
 import { noSharedItems } from "@/shared/ui/molecules/empty-state-presets";
 import { useToast } from "@/shared/ui/providers/ToastProvider";
@@ -20,48 +21,39 @@ interface SharedItem {
   createdAt: string;
 }
 
-/**
- * MySharedItemsSection Component
- *
- * Dashboard section displaying user's shared items
- * - Shows all share links created by the user
- * - Displays target name, type, view count, active status
- * - Copy share URL button
- * - Toggle enable/disable button
- * - Shows expiration info if set
- * - Empty state when no items
- */
 export function MySharedItemsSection() {
+  const t = useTranslations('sharing');
+  const tCommon = useTranslations('common');
+
   const [items, setItems] = useState<SharedItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { showToast } = useToast();
 
   useEffect(() => {
-    fetchSharedItems();
-  }, []);
+    const doFetch = async () => {
+      try {
+        setLoading(true);
+        setError(null);
 
-  const fetchSharedItems = async () => {
-    try {
-      setLoading(true);
-      setError(null);
+        const response = await fetch("/api/v1/share/my-items");
+        if (!response.ok) {
+          throw new Error(t('failedToLoad'));
+        }
 
-      const response = await fetch("/api/v1/share/my-items");
-      if (!response.ok) {
-        throw new Error("Failed to fetch shared items");
+        const data = await response.json();
+        setItems(data.items || []);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : t('failedToLoad'));
+      } finally {
+        setLoading(false);
       }
+    };
+    doFetch();
+  }, [t]);
 
-      const data = await response.json();
-      setItems(data.items || []);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to load shared items");
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const toggleActive = async (itemId: string, currentStatus: boolean) => {
-    // Optimistic update
     const previousItems = items;
     setItems((prev) =>
       prev.map((item) =>
@@ -77,30 +69,27 @@ export function MySharedItemsSection() {
       });
 
       if (!response.ok) {
-        throw new Error("Failed to toggle share link");
+        throw new Error(t('failedToToggle'));
       }
 
       showToast({
-        message: currentStatus ? "Share link disabled" : "Share link enabled",
+        message: currentStatus ? t('linkDisabled') : t('linkEnabled'),
         variant: "success",
       });
     } catch (err) {
-      // Revert on error
       setItems(previousItems);
       showToast({
-        message: err instanceof Error ? err.message : "Failed to toggle share link",
+        message: err instanceof Error ? err.message : t('failedToToggle'),
         variant: "error",
       });
     }
   };
 
   const deleteShare = async (itemId: string, itemName: string) => {
-    // Confirm before deleting
-    if (!confirm(`Are you sure you want to permanently delete the share link for "${itemName}"? This action cannot be undone.`)) {
+    if (!confirm(t('confirmDelete', { name: itemName }))) {
       return;
     }
 
-    // Optimistic update - remove item immediately
     const previousItems = items;
     setItems((prev) => prev.filter((item) => item.id !== itemId));
 
@@ -111,18 +100,17 @@ export function MySharedItemsSection() {
 
       if (!response.ok) {
         const data = await response.json();
-        throw new Error(data.error || "Failed to delete share link");
+        throw new Error(data.error || t('failedToDelete'));
       }
 
       showToast({
-        message: "Share link deleted",
+        message: t('linkDeleted'),
         variant: "success",
       });
     } catch (err) {
-      // Revert on error
       setItems(previousItems);
       showToast({
-        message: err instanceof Error ? err.message : "Failed to delete share link",
+        message: err instanceof Error ? err.message : t('failedToDelete'),
         variant: "error",
       });
     }
@@ -144,10 +132,13 @@ export function MySharedItemsSection() {
   if (loading) {
     return (
       <Card className="p-6">
-        <h2 className="text-xl font-semibold text-gray-900 mb-4">
-          My Shared Items
+        <h2 className="text-lg font-mono font-bold text-cyan-400 uppercase tracking-wider mb-4" style={{ textShadow: '0 0 10px #00ffff40' }}>
+          {t('header')}
         </h2>
-        <p className="text-sm text-gray-500">Loading...</p>
+        <div className="flex items-center gap-2">
+          <div className="w-4 h-4 border-2 border-cyan-500/30 border-t-cyan-400 rounded-full animate-spin" />
+          <span className="text-sm font-mono text-cyan-100/40">{t('loading')}</span>
+        </div>
       </Card>
     );
   }
@@ -155,11 +146,11 @@ export function MySharedItemsSection() {
   if (error) {
     return (
       <Card className="p-6">
-        <h2 className="text-xl font-semibold text-gray-900 mb-4">
-          My Shared Items
+        <h2 className="text-lg font-mono font-bold text-cyan-400 uppercase tracking-wider mb-4" style={{ textShadow: '0 0 10px #00ffff40' }}>
+          {t('header')}
         </h2>
-        <div className="p-3 bg-red-50 border border-red-200 rounded text-sm text-red-700">
-          {error}
+        <div className="p-3 bg-pink-500/10 border border-pink-500/50 text-pink-400 font-mono text-sm">
+          &gt; ERROR: {error}
         </div>
       </Card>
     );
@@ -168,8 +159,12 @@ export function MySharedItemsSection() {
   return (
     <Card className="p-6">
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-xl font-semibold text-gray-900">My Shared Items</h2>
-        <Badge variant="default">{items.length}</Badge>
+        <h2 className="text-lg font-mono font-bold text-cyan-400 uppercase tracking-wider" style={{ textShadow: '0 0 10px #00ffff40' }}>
+          {t('header')}
+        </h2>
+        <span className="px-2 py-1 bg-cyan-500/20 text-cyan-400 font-mono text-sm border border-cyan-500/50">
+          {items.length}
+        </span>
       </div>
 
       {items.length === 0 ? (
@@ -179,25 +174,26 @@ export function MySharedItemsSection() {
           {items.map((item) => (
             <div
               key={item.id}
-              className="p-4 border border-gray-200 rounded-lg hover:shadow-md transition-shadow"
+              className="p-4 bg-[#050508]/50 border border-cyan-500/30 hover:border-cyan-400/50 transition-all"
+              style={{ clipPath: 'polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px))' }}
             >
               <div className="flex items-start justify-between mb-3">
                 <div className="flex-1">
-                  <h3 className="font-semibold text-gray-900 mb-1">
+                  <h3 className="font-mono font-bold text-pink-400 mb-2" style={{ textShadow: '0 0 10px #ff006640' }}>
                     {item.targetName}
                   </h3>
-                  <div className="flex items-center gap-2 text-sm text-gray-600">
-                    <Badge variant="default">
-                      {item.targetType === "WORKFLOW" ? "Workflow" : "Mini-Prompt"}
-                    </Badge>
-                    <Badge
-                      variant={
-                        item.targetVisibility === "PUBLIC" ? "success" : "warning"
-                      }
-                    >
-                      {item.targetVisibility}
-                    </Badge>
-                    <span className="flex items-center gap-1">
+                  <div className="flex items-center gap-2 text-sm font-mono flex-wrap">
+                    <span className="px-2 py-0.5 text-xs bg-cyan-500/20 text-cyan-400 border border-cyan-500/50">
+                      {item.targetType === "WORKFLOW" ? tCommon('workflows') : tCommon('miniPrompts')}
+                    </span>
+                    <span className={`px-2 py-0.5 text-xs border ${
+                      item.targetVisibility === "PUBLIC"
+                        ? "bg-green-500/20 text-green-400 border-green-500/50"
+                        : "bg-yellow-500/20 text-yellow-400 border-yellow-500/50"
+                    }`}>
+                      {item.targetVisibility === "PUBLIC" ? t('public') : t('private')}
+                    </span>
+                    <span className="flex items-center gap-1 text-cyan-100/50">
                       <svg
                         className="w-4 h-4"
                         fill="none"
@@ -217,13 +213,17 @@ export function MySharedItemsSection() {
                           d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
                         />
                       </svg>
-                      {item.viewCount} {item.viewCount === 1 ? "view" : "views"}
+                      {t('views', { count: item.viewCount })}
                     </span>
                   </div>
                 </div>
-                <Badge variant={item.isActive ? "success" : "default"}>
-                  {item.isActive ? "Active" : "Disabled"}
-                </Badge>
+                <span className={`px-2 py-1 text-xs font-mono border ${
+                  item.isActive
+                    ? "bg-green-500/20 text-green-400 border-green-500/50"
+                    : "bg-cyan-500/10 text-cyan-100/40 border-cyan-500/30"
+                }`}>
+                  {item.isActive ? t('statusActive') : t('statusDisabled')}
+                </span>
               </div>
 
               <div className="flex items-center gap-2 mb-3">
@@ -231,7 +231,7 @@ export function MySharedItemsSection() {
                   type="text"
                   value={getShareUrl(item.shareToken)}
                   readOnly
-                  className="flex-1 px-3 py-1.5 text-sm border border-gray-300 rounded-md bg-gray-50"
+                  className="flex-1 px-3 py-1.5 bg-[#050508]/50 border border-cyan-500/30 text-cyan-100 font-mono text-sm"
                 />
                 <CopyButton
                   textToCopy={getShareUrl(item.shareToken)}
@@ -239,28 +239,26 @@ export function MySharedItemsSection() {
                 />
               </div>
 
-              <div className="flex items-center justify-between text-xs text-gray-500">
+              <div className="flex items-center justify-between text-xs font-mono text-cyan-100/40">
                 <div>
-                  Created: {formatDate(item.createdAt)}
+                  {t('created')}: {formatDate(item.createdAt)}
                   {item.expiresAt && (
-                    <> • Expires: {formatDate(item.expiresAt)}</>
+                    <span className="text-yellow-400"> {t('expires')}: {formatDate(item.expiresAt)}</span>
                   )}
                 </div>
                 <div className="flex items-center gap-2">
-                  <Button
-                    variant="secondary"
-                    size="sm"
+                  <button
                     onClick={() => toggleActive(item.id, item.isActive)}
+                    className="px-3 py-1.5 bg-transparent border border-cyan-500/30 text-cyan-400 font-mono text-xs uppercase tracking-wider hover:bg-cyan-500/10 hover:border-cyan-400 transition-all cursor-pointer"
                   >
-                    {item.isActive ? "Disable" : "Enable"}
-                  </Button>
-                  <Button
-                    variant="danger"
-                    size="sm"
+                    {item.isActive ? t('disable') : t('enable')}
+                  </button>
+                  <button
                     onClick={() => deleteShare(item.id, item.targetName)}
+                    className="px-3 py-1.5 bg-pink-500/20 border border-pink-500/50 text-pink-400 font-mono text-xs uppercase tracking-wider hover:bg-pink-500/30 hover:border-pink-400 transition-all cursor-pointer"
                   >
-                    Delete
-                  </Button>
+                    {tCommon('delete')}
+                  </button>
                 </div>
               </div>
             </div>

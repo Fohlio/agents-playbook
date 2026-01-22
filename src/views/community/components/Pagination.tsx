@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Button } from "@/shared/ui/atoms";
+import { useTranslations } from "next-intl";
 
 interface PaginationProps {
   currentPage: number;
@@ -14,6 +14,7 @@ export function Pagination({
   totalPages,
   basePath,
 }: PaginationProps) {
+  const t = useTranslations("pagination");
   if (totalPages <= 1) {
     return null;
   }
@@ -21,11 +22,9 @@ export function Pagination({
   const pages: number[] = [];
   const maxVisiblePages = 5;
 
-  // Calculate visible page range
   let startPage = Math.max(1, currentPage - 2);
   let endPage = Math.min(totalPages, currentPage + 2);
 
-  // Adjust if we're near the beginning or end
   if (currentPage <= 3) {
     endPage = Math.min(maxVisiblePages, totalPages);
   }
@@ -42,27 +41,31 @@ export function Pagination({
       {/* Previous button */}
       {currentPage > 1 ? (
         <Link href={`${basePath}?page=${currentPage - 1}`}>
-          <Button variant="secondary" size="sm">
-            Previous
-          </Button>
+          <button className="px-3 py-1.5 bg-transparent border border-cyan-500/30 text-cyan-400 font-mono text-xs uppercase tracking-wider hover:bg-cyan-500/10 hover:border-cyan-400 transition-all cursor-pointer">
+            {`← ${t("previous")}`}
+          </button>
         </Link>
       ) : (
-        <Button variant="secondary" size="sm" disabled>
-          Previous
-        </Button>
+        <button className="px-3 py-1.5 bg-transparent border border-cyan-500/20 text-cyan-500/30 font-mono text-xs uppercase tracking-wider cursor-not-allowed" disabled>
+          {`← ${t("previous")}`}
+        </button>
       )}
 
       {/* Page numbers */}
       {pages.map((page) =>
         page === currentPage ? (
-          <Button key={page} variant="primary" size="sm" disabled>
-            {page}
-          </Button>
+          <button
+            key={page}
+            className="px-3 py-1.5 bg-cyan-500/20 border border-cyan-500/50 text-cyan-400 font-mono text-xs shadow-[0_0_10px_rgba(0,255,255,0.3)]"
+            disabled
+          >
+            {String(page).padStart(2, '0')}
+          </button>
         ) : (
           <Link key={page} href={`${basePath}?page=${page}`}>
-            <Button variant="secondary" size="sm">
-              {page}
-            </Button>
+            <button className="px-3 py-1.5 bg-transparent border border-cyan-500/30 text-cyan-100/60 font-mono text-xs hover:bg-cyan-500/10 hover:text-cyan-400 hover:border-cyan-400 transition-all cursor-pointer">
+              {String(page).padStart(2, '0')}
+            </button>
           </Link>
         )
       )}
@@ -70,14 +73,14 @@ export function Pagination({
       {/* Next button */}
       {currentPage < totalPages ? (
         <Link href={`${basePath}?page=${currentPage + 1}`}>
-          <Button variant="secondary" size="sm">
-            Next
-          </Button>
+          <button className="px-3 py-1.5 bg-transparent border border-cyan-500/30 text-cyan-400 font-mono text-xs uppercase tracking-wider hover:bg-cyan-500/10 hover:border-cyan-400 transition-all cursor-pointer">
+            {`${t("next")} →`}
+          </button>
         </Link>
       ) : (
-        <Button variant="secondary" size="sm" disabled>
-          Next
-        </Button>
+        <button className="px-3 py-1.5 bg-transparent border border-cyan-500/20 text-cyan-500/30 font-mono text-xs uppercase tracking-wider cursor-not-allowed" disabled>
+          {`${t("next")} →`}
+        </button>
       )}
     </div>
   );

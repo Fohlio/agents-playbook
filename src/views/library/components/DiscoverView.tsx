@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, useMemo, useRef, MouseEvent } from 'react';
 import { useRouter } from 'next/navigation';
-import { EmptyState, EmptyStateIcons } from '@/shared/ui/molecules/EmptyState';
+import { useTranslations } from 'next-intl';
 import { cn } from '@/shared/lib/utils/cn';
 import { ROUTES } from '@/shared/routes';
 import { PublicWorkflow, PublicPrompt } from '../services/discover-service';
@@ -20,14 +20,9 @@ interface DiscoverData {
 }
 
 /**
- * DiscoverView Component
+ * DiscoverView Component - Cyberpunk Style
  *
- * Displays public workflows and prompts in a grid layout similar to FolderContentsView.
- * Features:
- * - Grid layout with cards for workflows and prompts
- * - Search functionality with 300ms debounce
- * - Context menu with Preview and Import to Library options
- * - Click on card shows preview/details
+ * Public content browser with neon-styled cards
  */
 export function DiscoverView({
   searchQuery,
@@ -35,6 +30,7 @@ export function DiscoverView({
   onImportPrompt,
   className,
 }: DiscoverViewProps) {
+  const t = useTranslations('discoverView');
   const router = useRouter();
   const [data, setData] = useState<DiscoverData>({ workflows: [], prompts: [] });
   const [isLoading, setIsLoading] = useState(true);
@@ -45,10 +41,8 @@ export function DiscoverView({
     item: { id: string; type: 'workflow' | 'prompt'; name: string } | null;
   }>({ x: 0, y: 0, item: null });
 
-  // Debounce search query
   const debouncedSearch = useDebounce(searchQuery, 300);
 
-  // Fetch discover data
   const fetchData = useCallback(async (search?: string) => {
     setIsLoading(true);
     setError(null);
@@ -77,12 +71,10 @@ export function DiscoverView({
     }
   }, []);
 
-  // Fetch on mount and when search changes
   useEffect(() => {
     fetchData(debouncedSearch || undefined);
   }, [fetchData, debouncedSearch]);
 
-  // Filter items based on search query (client-side filtering as backup)
   const filteredWorkflows = useMemo(() => {
     if (!searchQuery) return data.workflows;
     const query = searchQuery.toLowerCase();
@@ -106,7 +98,6 @@ export function DiscoverView({
   const isEmpty = filteredWorkflows.length === 0 && filteredPrompts.length === 0;
   const hasContent = data.workflows.length > 0 || data.prompts.length > 0;
 
-  // Context menu handlers
   const handleContextMenu = useCallback(
     (e: MouseEvent, item: { id: string; type: 'workflow' | 'prompt'; name: string }) => {
       e.preventDefault();
@@ -143,7 +134,6 @@ export function DiscoverView({
     closeContextMenu();
   }, [contextMenu.item, onImportWorkflow, onImportPrompt, closeContextMenu]);
 
-  // Open workflow/prompt handlers
   const handleOpenWorkflow = useCallback(
     (workflowId: string) => {
       router.push(ROUTES.LIBRARY.WORKFLOWS.EDIT(workflowId));
@@ -158,7 +148,6 @@ export function DiscoverView({
     [router]
   );
 
-  // Close context menu on click outside
   useEffect(() => {
     const handleClick = () => closeContextMenu();
     if (contextMenu.item) {
@@ -167,68 +156,75 @@ export function DiscoverView({
     }
   }, [contextMenu.item, closeContextMenu]);
 
-  // Render loading state
+  // Loading state - Cyberpunk
   if (isLoading) {
     return (
       <div className={cn('flex items-center justify-center py-20', className)}>
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600" />
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-12 h-12 border-2 border-cyan-500/30 border-t-cyan-400 rounded-full animate-spin" style={{ boxShadow: '0 0 20px rgba(0,255,255,0.2)' }} />
+          <span className="text-cyan-400 font-mono text-sm uppercase tracking-wider">{t('scanning')}</span>
+        </div>
       </div>
     );
   }
 
-  // Render error state
+  // Error state - Cyberpunk
   if (error) {
     return (
-      <EmptyState
-        icon={
+      <div className={cn('flex flex-col items-center justify-center py-16', className)}>
+        <div className="text-pink-500/30 mb-4">
           <svg className="w-16 h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={1.5}
-              d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-            />
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
-        }
-        title="Failed to load content"
-        description={error}
-        actions={[{ label: 'Try Again', onClick: () => fetchData(debouncedSearch || undefined) }]}
-        className={className}
-      />
+        </div>
+        <h3 className="text-pink-400 font-mono text-lg uppercase mb-2">{t('connectionError')}</h3>
+        <p className="text-cyan-100/40 font-mono text-sm mb-4">{error}</p>
+        <button
+          onClick={() => fetchData(debouncedSearch || undefined)}
+          className="px-4 py-2 bg-cyan-500/20 border border-cyan-500/50 text-cyan-400 font-mono text-sm uppercase hover:bg-cyan-500/30 hover:border-cyan-400 transition-all"
+        >
+          [{t('retryConnection')}]
+        </button>
+      </div>
     );
   }
 
-  // Render empty state
+  // Empty state - Cyberpunk
   if (isEmpty) {
-    // Search with no results
     if (searchQuery && hasContent) {
       return (
-        <EmptyState
-          icon={EmptyStateIcons.search}
-          title="No results found"
-          description={`No public items match "${searchQuery}". Try a different search term.`}
-          className={className}
-        />
+        <div className={cn('flex flex-col items-center justify-center py-16', className)}>
+          <div className="text-cyan-500/30 mb-4">
+            <svg className="w-16 h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+          </div>
+          <h3 className="text-cyan-400 font-mono text-lg uppercase mb-2">{t('noMatchesFound')}</h3>
+          <p className="text-cyan-100/40 font-mono text-sm">{t('queryReturned', { query: searchQuery })}</p>
+        </div>
       );
     }
 
     return (
-      <EmptyState
-        icon={EmptyStateIcons.library}
-        title="No public content yet"
-        description="There are no public workflows or prompts available at the moment. Check back later or create your own!"
-        className={className}
-      />
+      <div className={cn('flex flex-col items-center justify-center py-16', className)}>
+        <div className="text-cyan-500/30 mb-4">
+          <svg className="w-16 h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+          </svg>
+        </div>
+        <h3 className="text-cyan-400 font-mono text-lg uppercase mb-2">{t('archiveEmpty')}</h3>
+        <p className="text-cyan-100/40 font-mono text-sm">{t('noPublicAssets')}</p>
+      </div>
     );
   }
 
   return (
-    <div className={cn('space-y-6', className)}>
+    <div className={cn('space-y-8', className)}>
       {/* Workflows section */}
       {filteredWorkflows.length > 0 && (
         <section>
-          <h3 className="text-sm font-medium text-gray-500 mb-3">
-            Public Workflows ({filteredWorkflows.length})
+          <h3 className="text-xs font-mono text-cyan-500/70 uppercase tracking-wider mb-3">
+            {'//'} {t('publicWorkflows')} [{filteredWorkflows.length}]
           </h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {filteredWorkflows.map((workflow) => (
@@ -248,8 +244,8 @@ export function DiscoverView({
       {/* Prompts section */}
       {filteredPrompts.length > 0 && (
         <section>
-          <h3 className="text-sm font-medium text-gray-500 mb-3">
-            Public Prompts ({filteredPrompts.length})
+          <h3 className="text-xs font-mono text-pink-500/70 uppercase tracking-wider mb-3">
+            {'//'} {t('publicPrompts')} [{filteredPrompts.length}]
           </h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {filteredPrompts.map((prompt) => (
@@ -266,50 +262,35 @@ export function DiscoverView({
         </section>
       )}
 
-      {/* Context Menu */}
+      {/* Context Menu - Cyberpunk */}
       {contextMenu.item && (
         <div
-          className="fixed z-50 bg-white rounded-lg shadow-lg border py-1 min-w-[160px]"
+          className="fixed z-50 bg-[#0a0a0f]/95 backdrop-blur-md border border-cyan-500/50 py-1 min-w-[180px] shadow-[0_0_20px_rgba(0,255,255,0.2)]"
           style={{ top: contextMenu.y, left: contextMenu.x }}
           onClick={(e) => e.stopPropagation()}
           role="menu"
           aria-label={`Actions for ${contextMenu.item.name}`}
         >
           <button
-            className="w-full px-4 py-3 text-left text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2 focus:outline-none focus:bg-gray-100 min-h-[44px]"
+            className="w-full px-4 py-3 text-left text-sm text-cyan-100 hover:bg-cyan-500/10 hover:text-cyan-400 flex items-center gap-2 focus:outline-none font-mono uppercase tracking-wider"
             onClick={handlePreview}
             role="menuitem"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-              />
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-              />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
             </svg>
-            Preview
+            {t('preview')}
           </button>
           <button
-            className="w-full px-4 py-3 text-left text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2 focus:outline-none focus:bg-gray-100 min-h-[44px]"
+            className="w-full px-4 py-3 text-left text-sm text-cyan-100 hover:bg-cyan-500/10 hover:text-cyan-400 flex items-center gap-2 focus:outline-none font-mono uppercase tracking-wider"
             onClick={handleImport}
             role="menuitem"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 4v16m8-8H4"
-              />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
             </svg>
-            Import to Library
+            {t('import')}
           </button>
         </div>
       )}
@@ -317,7 +298,7 @@ export function DiscoverView({
   );
 }
 
-// Internal workflow card component for discover
+// Cyberpunk Public Workflow Card
 interface PublicWorkflowCardProps {
   workflow: PublicWorkflow;
   onOpen: () => void;
@@ -325,51 +306,49 @@ interface PublicWorkflowCardProps {
 }
 
 function PublicWorkflowCard({ workflow, onOpen, onContextMenu }: PublicWorkflowCardProps) {
+  const t = useTranslations('discoverView');
+  const tCommon = useTranslations('common');
+
   return (
     <div
       className={cn(
-        'relative bg-white rounded-lg border p-4 transition-all duration-200 cursor-pointer',
-        'hover:shadow-md hover:border-gray-300'
+        'relative bg-[#0a0a0f]/80 backdrop-blur-sm border p-4 transition-all duration-200 cursor-pointer',
+        'border-cyan-500/30 hover:border-cyan-400/60 hover:bg-cyan-500/5 hover:shadow-[0_0_20px_rgba(0,255,255,0.15)]'
       )}
+      style={{ clipPath: 'polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px))' }}
       onClick={onOpen}
       onContextMenu={onContextMenu}
       data-testid={`discover-workflow-card-${workflow.id}`}
     >
+      {/* Corner accents */}
+      <div className="absolute top-0 right-0 w-3 h-3 border-t border-r border-cyan-500/50"></div>
+      <div className="absolute bottom-0 left-0 w-3 h-3 border-b border-l border-cyan-500/50"></div>
+
       {/* Public badge */}
       <div className="absolute top-3 right-3">
-        <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">
-          Public
+        <span className="px-2 py-0.5 text-xs font-mono bg-green-500/20 text-green-400 border border-green-500/50 uppercase">
+          {tCommon('public')}
         </span>
       </div>
 
       {/* Workflow icon */}
       <div className="flex justify-center mb-3 mt-4">
-        <div className="p-3 bg-purple-50 rounded-lg">
-          <svg
-            className="w-8 h-8 text-purple-500"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={1.5}
-              d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"
-            />
+        <div className="p-3 bg-cyan-500/10 border border-cyan-500/30">
+          <svg className="w-8 h-8 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
           </svg>
         </div>
       </div>
 
       {/* Workflow name */}
-      <h4 className="text-center font-medium text-gray-900 truncate">{workflow.name}</h4>
+      <h4 className="text-center font-mono text-cyan-100 truncate">{workflow.name}</h4>
 
       {/* Meta info */}
-      <div className="flex items-center justify-center gap-2 mt-2 text-sm text-gray-500">
-        <span>{workflow.stageCount} stages</span>
+      <div className="flex items-center justify-center gap-2 mt-2 text-xs text-cyan-100/50 font-mono">
+        <span className="text-cyan-400">{t('stagesCount', { count: workflow.stageCount })}</span>
         {workflow.authorName && (
           <>
-            <span className="text-gray-300">|</span>
+            <span className="text-cyan-500/30">|</span>
             <span>{workflow.authorName}</span>
           </>
         )}
@@ -377,7 +356,7 @@ function PublicWorkflowCard({ workflow, onOpen, onContextMenu }: PublicWorkflowC
 
       {/* Description */}
       {workflow.description && (
-        <p className="mt-2 text-xs text-gray-400 text-center line-clamp-2">
+        <p className="mt-2 text-xs text-cyan-100/30 text-center line-clamp-2 font-mono">
           {workflow.description}
         </p>
       )}
@@ -385,7 +364,7 @@ function PublicWorkflowCard({ workflow, onOpen, onContextMenu }: PublicWorkflowC
   );
 }
 
-// Internal prompt card component for discover
+// Cyberpunk Public Prompt Card
 interface PublicPromptCardProps {
   prompt: PublicPrompt;
   onOpen: () => void;
@@ -393,55 +372,52 @@ interface PublicPromptCardProps {
 }
 
 function PublicPromptCard({ prompt, onOpen, onContextMenu }: PublicPromptCardProps) {
+  const tCommon = useTranslations('common');
+
   return (
     <div
       className={cn(
-        'relative bg-white rounded-lg border p-4 transition-all duration-200 cursor-pointer',
-        'hover:shadow-md hover:border-gray-300'
+        'relative bg-[#0a0a0f]/80 backdrop-blur-sm border p-4 transition-all duration-200 cursor-pointer',
+        'border-pink-500/30 hover:border-pink-400/60 hover:bg-pink-500/5 hover:shadow-[0_0_20px_rgba(255,0,102,0.15)]'
       )}
+      style={{ clipPath: 'polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px))' }}
       onClick={onOpen}
       onContextMenu={onContextMenu}
       data-testid={`discover-prompt-card-${prompt.id}`}
     >
+      {/* Corner accents */}
+      <div className="absolute top-0 right-0 w-3 h-3 border-t border-r border-pink-500/50"></div>
+      <div className="absolute bottom-0 left-0 w-3 h-3 border-b border-l border-pink-500/50"></div>
+
       {/* Public badge */}
       <div className="absolute top-3 right-3">
-        <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">
-          Public
+        <span className="px-2 py-0.5 text-xs font-mono bg-green-500/20 text-green-400 border border-green-500/50 uppercase">
+          {tCommon('public')}
         </span>
       </div>
 
       {/* Prompt icon */}
       <div className="flex justify-center mb-3 mt-4">
-        <div className="p-3 bg-green-50 rounded-lg">
-          <svg
-            className="w-8 h-8 text-green-500"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={1.5}
-              d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-            />
+        <div className="p-3 bg-pink-500/10 border border-pink-500/30">
+          <svg className="w-8 h-8 text-pink-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
           </svg>
         </div>
       </div>
 
       {/* Prompt name */}
-      <h4 className="text-center font-medium text-gray-900 truncate">{prompt.name}</h4>
+      <h4 className="text-center font-mono text-cyan-100 truncate">{prompt.name}</h4>
 
       {/* Meta info */}
       {prompt.authorName && (
-        <div className="flex items-center justify-center gap-2 mt-2 text-sm text-gray-500">
+        <div className="flex items-center justify-center gap-2 mt-2 text-xs text-cyan-100/50 font-mono">
           <span>{prompt.authorName}</span>
         </div>
       )}
 
       {/* Description */}
       {prompt.description && (
-        <p className="mt-2 text-xs text-gray-400 text-center line-clamp-2">
+        <p className="mt-2 text-xs text-cyan-100/30 text-center line-clamp-2 font-mono">
           {prompt.description}
         </p>
       )}

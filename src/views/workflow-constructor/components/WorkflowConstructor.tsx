@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useTranslations } from 'next-intl';
 import type { WorkflowConstructorData } from '@/shared/lib/types/workflow-constructor-types';
 import { useWorkflowConstructor } from '../hooks/use-workflow-constructor';
 import { useWorkflowConstructorStore } from '../lib/workflow-constructor-store';
@@ -22,8 +23,8 @@ interface WorkflowConstructorProps {
 
 export function WorkflowConstructor({ data }: WorkflowConstructorProps) {
   const { workflow, miniPrompts: initialMiniPrompts } = data;
+  const t = useTranslations('workflowConstructor');
 
-  // Initialize store with workflow data
   const initializeFromWorkflow = useWorkflowConstructorStore((s) => s.initializeFromWorkflow);
   const reset = useWorkflowConstructorStore((s) => s.reset);
 
@@ -34,7 +35,6 @@ export function WorkflowConstructor({ data }: WorkflowConstructorProps) {
     return () => reset();
   }, [workflow, initialMiniPrompts, initializeFromWorkflow, reset]);
 
-  // Get state from store
   const {
     workflowId,
     workflowName,
@@ -43,7 +43,6 @@ export function WorkflowConstructor({ data }: WorkflowConstructorProps) {
     isActive,
     isPublic,
     includeMultiAgentChat,
-    selectedTagIds,
     selectedModelIds,
     localStages,
     miniPrompts,
@@ -62,16 +61,13 @@ export function WorkflowConstructor({ data }: WorkflowConstructorProps) {
   } = useWorkflowConstructorStore();
 
   const [editingMiniPrompt, setEditingMiniPrompt] = useState<typeof miniPrompts[0] | null>(null);
-  const [editingTagIds, setEditingTagIds] = useState<string[]>([]);
 
-  // Sync viewingMiniPromptId with editingMiniPrompt - when a mini-prompt is opened for editing, set viewingMiniPromptId
   useEffect(() => {
     if (editingMiniPrompt) {
       setViewingMiniPromptId(editingMiniPrompt.id);
     }
   }, [editingMiniPrompt, setViewingMiniPromptId]);
 
-  // Build a synthetic workflow from Zustand state for the chat context
   const currentWorkflow = workflowId
     ? {
         id: workflowId,
@@ -90,11 +86,9 @@ export function WorkflowConstructor({ data }: WorkflowConstructorProps) {
       }
     : workflow;
 
-  // Use the existing useWorkflowConstructor hook for saving
   const { isSaving: hookSaving, handleSave } = useWorkflowConstructor(workflow);
   const isSaving = storeSaving || hookSaving;
 
-  // Use extracted hooks
   const workflowContext = useWorkflowContext({
     workflowId,
     workflowName,
@@ -112,7 +106,6 @@ export function WorkflowConstructor({ data }: WorkflowConstructorProps) {
     handleWorkflowDescriptionChange,
     handleIsActiveChange,
     handleIsPublicChange,
-    handleSelectedTagIdsChange,
     handleSelectedModelIdsChange,
     handleSaveWorkflow: handleSaveWorkflowFromHook,
   } = useWorkflowActions({
@@ -129,14 +122,13 @@ export function WorkflowConstructor({ data }: WorkflowConstructorProps) {
         isActive: data.isActive,
         visibility: data.visibility,
         includeMultiAgentChat: data.includeMultiAgentChat,
-        tagIds: data.tagIds,
+        tagIds: [],
         modelIds: data.modelIds,
         stages: data.stages,
       });
     },
   });
 
-  // Get handlers
   const {
     handleCreateStage,
     handleRemoveStage,
@@ -150,7 +142,6 @@ export function WorkflowConstructor({ data }: WorkflowConstructorProps) {
     miniPrompts,
     setMiniPrompts,
     onEditMiniPrompt: setEditingMiniPrompt,
-    onEditTagIds: setEditingTagIds,
   });
 
   const handleUpdateMiniPromptWrapper = async (
@@ -158,21 +149,18 @@ export function WorkflowConstructor({ data }: WorkflowConstructorProps) {
     description: string,
     content: string,
     visibility: 'PUBLIC' | 'PRIVATE',
-    tagIds: string[],
-    newTagNames: string[]
+    _tagIds: string[],
+    _newTagNames: string[]
   ) => {
-    await handleUpdateMiniPrompt(editingMiniPrompt, name, description, content, visibility, tagIds, newTagNames);
+    await handleUpdateMiniPrompt(editingMiniPrompt, name, description, content, visibility, [], []);
   };
 
-  // Get AI integration
   const { handleToolCall } = useWorkflowAIIntegration();
 
-  // Drag and drop handler for stages
   const onDropMiniPrompts = (stageId: string, miniPromptIds: string[]) => {
     handleMiniPromptDragEnd(miniPromptIds, stageId, miniPrompts);
   };
 
-  // Wrapper functions for stage handlers to match component interface
   const handleCreateStageWrapper = (data: {
     name: string;
     description?: string;
@@ -183,7 +171,7 @@ export function WorkflowConstructor({ data }: WorkflowConstructorProps) {
     handleCreateStage(data.name, data.description || '', data.color || '', data.withReview, data.includeMultiAgentChat ?? false);
   };
 
-  const handleUpdateStageWrapper = (stageId: string, data: {
+  const handleUpdateStageWrapper = (_stageId: string, data: {
     name: string;
     description?: string;
     color?: string;
@@ -195,20 +183,20 @@ export function WorkflowConstructor({ data }: WorkflowConstructorProps) {
 
   if (!currentWorkflow) {
     return (
-      <div className="p-8 text-center">
-        <p className="text-text-tertiary">No workflow selected</p>
+      <div className="p-8 text-center bg-[#050508] min-h-screen flex items-center justify-center">
+        <div className="bg-[#0a0a0f]/80 border border-cyan-500/30 p-8" style={{ clipPath: 'polygon(0 0, calc(100% - 15px) 0, 100% 15px, 100% 100%, 15px 100%, 0 calc(100% - 15px))' }}>
+          <p className="text-cyan-100/40 font-mono uppercase tracking-wider">{t('noWorkflowSelected')}</p>
+        </div>
       </div>
     );
   }
 
-  // Handlers for mini-prompt updates
   const handleMiniPromptUpdated = (updatedMiniPrompt: typeof miniPrompts[0]) => {
     setMiniPrompts(
       miniPrompts.map((mp) =>
         mp.id === updatedMiniPrompt.id ? updatedMiniPrompt : mp
       )
     );
-    // Also update mini-prompts in stages
     const { setLocalStages } = useWorkflowConstructorStore.getState();
     setLocalStages((prevStages) =>
       prevStages.map((stage) => ({
@@ -224,10 +212,8 @@ export function WorkflowConstructor({ data }: WorkflowConstructorProps) {
   };
 
   const handleMiniPromptDeleted = (deletedMiniPromptId: string) => {
-    // Remove from library
     setMiniPrompts(miniPrompts.filter(mp => mp.id !== deletedMiniPromptId));
     
-    // Remove from all stages
     const { setLocalStages } = useWorkflowConstructorStore.getState();
     setLocalStages((prevStages) =>
       prevStages.map((stage) => ({
@@ -241,14 +227,13 @@ export function WorkflowConstructor({ data }: WorkflowConstructorProps) {
   };
 
   return (
-    <div className="h-screen flex flex-col">
+    <div className="h-screen flex flex-col bg-[#050508]">
       <WorkflowHeader
         workflowName={workflowName}
         workflowDescription={workflowDescription}
         workflowKey={workflow?.key}
         isActive={isActive}
         isPublic={isPublic}
-        selectedTagIds={selectedTagIds}
         selectedModelIds={selectedModelIds}
         isDirty={isDirty}
         isSaving={isSaving}
@@ -256,7 +241,6 @@ export function WorkflowConstructor({ data }: WorkflowConstructorProps) {
         onWorkflowDescriptionChange={handleWorkflowDescriptionChange}
         onIsActiveChange={handleIsActiveChange}
         onIsPublicChange={handleIsPublicChange}
-        onSelectedTagIdsChange={handleSelectedTagIdsChange}
         onSelectedModelIdsChange={handleSelectedModelIdsChange}
         onSave={handleSaveWorkflowFromHook}
       />
@@ -287,7 +271,6 @@ export function WorkflowConstructor({ data }: WorkflowConstructorProps) {
           }}
         />
 
-        {/* AI Assistant Chat Sidebar */}
         <ChatSidebar
           isOpen={isChatOpen}
           onClose={() => {
@@ -298,13 +281,13 @@ export function WorkflowConstructor({ data }: WorkflowConstructorProps) {
           onToolCall={handleToolCall}
         />
 
-        {/* Floating AI Assistant Button */}
         <DraggableButton>
-          <Tooltip content="Open AI Assistant to help design your workflow">
+          <Tooltip content={t('aiAssistantTooltip')}>
             <button
               onClick={() => setIsChatOpen(true)}
-              className="bg-primary-600 hover:bg-primary-700 text-white rounded-full p-4 shadow-lg transition-all hover:scale-110"
-              aria-label="Open AI Assistant"
+              className="bg-gradient-to-r from-purple-500 to-pink-500 text-white p-4 shadow-[0_0_20px_rgba(168,85,247,0.4)] hover:shadow-[0_0_30px_rgba(168,85,247,0.6)] transition-all hover:scale-110 cursor-pointer"
+              style={{ clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)' }}
+              aria-label={t('openAiAssistant')}
             >
               <Sparkles className="w-6 h-6" />
             </button>
@@ -312,12 +295,10 @@ export function WorkflowConstructor({ data }: WorkflowConstructorProps) {
         </DraggableButton>
       </div>
 
-      {/* Mini Prompt Edit Modal */}
       <MiniPromptEditorModal
         isOpen={!!editingMiniPrompt}
         onClose={() => {
           setEditingMiniPrompt(null);
-          setEditingTagIds([]);
         }}
         onSave={handleUpdateMiniPromptWrapper}
         initialData={editingMiniPrompt ? {
@@ -325,7 +306,6 @@ export function WorkflowConstructor({ data }: WorkflowConstructorProps) {
           description: editingMiniPrompt.description || '',
           content: editingMiniPrompt.content,
           visibility: editingMiniPrompt.visibility as 'PUBLIC' | 'PRIVATE',
-          tagIds: editingTagIds,
           key: editingMiniPrompt.key,
         } : undefined}
       />

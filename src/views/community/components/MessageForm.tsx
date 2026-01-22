@@ -2,7 +2,6 @@
 
 import { useState, useRef, useCallback, useEffect } from "react";
 import { useTranslations } from "next-intl";
-import { Button } from "@/shared/ui/atoms";
 import { UserMentionDropdown } from "./UserMentionDropdown";
 import { createMessage } from "../actions/message-actions";
 import { searchUsers } from "../actions/user-actions";
@@ -26,7 +25,6 @@ export function MessageForm({ topicId, isClosed, onMessageCreated }: MessageForm
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const searchTimeoutRef = useRef<NodeJS.Timeout | undefined>(undefined);
 
-  // Handle textarea input
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const value = e.target.value;
     const cursorPos = e.target.selectionStart;
@@ -34,7 +32,6 @@ export function MessageForm({ topicId, isClosed, onMessageCreated }: MessageForm
     setContent(value);
     setCursorPosition(cursorPos);
 
-    // Check for @ mention trigger
     const textBeforeCursor = value.slice(0, cursorPos);
     const mentionMatch = textBeforeCursor.match(/@(\w*)$/);
 
@@ -42,7 +39,6 @@ export function MessageForm({ topicId, isClosed, onMessageCreated }: MessageForm
       const query = mentionMatch[1];
       setShowMentionDropdown(true);
 
-      // Calculate dropdown position relative to form container
       if (textareaRef.current) {
         const textarea = textareaRef.current;
         const container = textarea.offsetParent as HTMLElement;
@@ -52,11 +48,10 @@ export function MessageForm({ topicId, isClosed, onMessageCreated }: MessageForm
           const containerRect = container.getBoundingClientRect();
 
           setDropdownPosition({
-            top: textareaRect.top - containerRect.top + 30, // Below the textarea
+            top: textareaRect.top - containerRect.top + 30,
             left: textareaRect.left - containerRect.left + 10,
           });
         } else {
-          // Fallback to offsetTop/offsetLeft if no offsetParent
           setDropdownPosition({
             top: textarea.offsetTop + 30,
             left: textarea.offsetLeft + 10,
@@ -64,7 +59,6 @@ export function MessageForm({ topicId, isClosed, onMessageCreated }: MessageForm
         }
       }
 
-      // Debounced user search
       if (searchTimeoutRef.current) {
         clearTimeout(searchTimeoutRef.current);
       }
@@ -83,7 +77,6 @@ export function MessageForm({ topicId, isClosed, onMessageCreated }: MessageForm
     }
   };
 
-  // Handle user selection from dropdown
   const handleUserSelect = useCallback(
     (username: string) => {
       const textBeforeCursor = content.slice(0, cursorPosition);
@@ -98,11 +91,10 @@ export function MessageForm({ topicId, isClosed, onMessageCreated }: MessageForm
         const newContent = `${beforeMention}@${username} ${textAfterCursor}`;
         setContent(newContent);
 
-        // Focus and set cursor position
         setTimeout(() => {
           if (textareaRef.current) {
             const newCursorPos =
-              beforeMention.length + username.length + 2; // +2 for @ and space
+              beforeMention.length + username.length + 2;
             textareaRef.current.focus();
             textareaRef.current.setSelectionRange(newCursorPos, newCursorPos);
           }
@@ -115,7 +107,6 @@ export function MessageForm({ topicId, isClosed, onMessageCreated }: MessageForm
     [content, cursorPosition]
   );
 
-  // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -125,7 +116,6 @@ export function MessageForm({ topicId, isClosed, onMessageCreated }: MessageForm
 
     const submittedContent = content.trim();
 
-    // Optimistic update - clear form immediately
     setContent("");
     setIsSubmitting(true);
 
@@ -136,26 +126,22 @@ export function MessageForm({ topicId, isClosed, onMessageCreated }: MessageForm
       });
 
       if (result.success && result.data) {
-        // Success - add message to list without reload
         if (onMessageCreated) {
           onMessageCreated(result.data.message);
         }
         setIsSubmitting(false);
       } else {
-        // Restore content on error
         setContent(submittedContent);
         alert(result.error || t("failedToSend"));
         setIsSubmitting(false);
       }
     } catch {
-      // Restore content on error
       setContent(submittedContent);
       alert(t("failedToSend"));
       setIsSubmitting(false);
     }
   };
 
-  // Cleanup timeout on unmount
   useEffect(() => {
     return () => {
       if (searchTimeoutRef.current) {
@@ -166,7 +152,7 @@ export function MessageForm({ topicId, isClosed, onMessageCreated }: MessageForm
 
   if (isClosed) {
     return (
-      <div className="text-center py-4 text-gray-500 bg-gray-50 rounded-lg">
+      <div className="text-center py-4 bg-pink-500/10 border border-pink-500/30 font-mono text-pink-400 text-sm uppercase">
         {tCommunity("topicClosed")}
       </div>
     );
@@ -180,25 +166,26 @@ export function MessageForm({ topicId, isClosed, onMessageCreated }: MessageForm
           value={content}
           onChange={handleChange}
           placeholder={t("placeholder")}
-          className="w-full px-4 py-3 border border-gray-300 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+          className="w-full px-4 py-3 bg-[#050508]/50 border border-cyan-500/30 text-cyan-100 font-mono text-sm placeholder:text-cyan-500/30 focus:outline-none focus:border-cyan-400 focus:shadow-[0_0_15px_rgba(0,255,255,0.2)] transition-all resize-none"
           rows={4}
           maxLength={10000}
           disabled={isSubmitting}
         />
         <div className="flex items-center justify-between mt-1">
-          <span className="text-xs text-gray-500">
+          <span className={`text-xs font-mono ${content.length > 9500 ? 'text-pink-400' : 'text-cyan-500/40'}`}>
             {content.length}/10000
           </span>
         </div>
       </div>
 
-      <Button
+      <button
         type="submit"
-        variant="primary"
         disabled={!content.trim() || isSubmitting}
+        className="px-6 py-2.5 bg-gradient-to-r from-cyan-500 to-cyan-400 text-[#050508] font-bold uppercase tracking-wider text-sm hover:shadow-[0_0_20px_rgba(0,255,255,0.4)] disabled:opacity-50 disabled:cursor-not-allowed transition-all cursor-pointer"
+        style={{ clipPath: 'polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px))' }}
       >
         {isSubmitting ? t("sending") : t("send")}
-      </Button>
+      </button>
 
       {showMentionDropdown && mentionUsers.length > 0 && (
         <UserMentionDropdown

@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { WorkflowComplexity } from "@prisma/client";
 import { Modal } from "@/shared/ui/atoms/Modal";
-import { Button } from "@/shared/ui/atoms";
 import { TagMultiSelect } from "@/shared/ui/molecules/TagMultiSelect";
 import { ModelMultiSelect } from "@/shared/ui/molecules/ModelMultiSelect";
 import { useModels } from "@/entities/models";
@@ -26,13 +25,9 @@ export function FiltersModal({
   onApply,
 }: FiltersModalProps) {
   const t = useTranslations("discover.filters");
-  // Local state for filter values
   const [localFilters, setLocalFilters] = useState<WorkflowFilters | MiniPromptFilters>(currentFilters);
-
-  // Fetch models from entities layer
   const { models, loading: modelsLoading } = useModels();
 
-  // Reset local filters when modal opens
   useEffect(() => {
     if (isOpen) {
       setLocalFilters(currentFilters);
@@ -60,6 +55,8 @@ export function FiltersModal({
     );
   };
 
+  const selectClassName = "w-full px-3 py-2 bg-[#050508]/50 border border-cyan-500/50 text-cyan-100 font-mono text-sm focus:outline-none focus:border-cyan-400 focus:shadow-[0_0_15px_rgba(0,255,255,0.2)] transition-all cursor-pointer";
+
   return (
     <Modal
       isOpen={isOpen}
@@ -68,11 +65,13 @@ export function FiltersModal({
     >
       <div className="space-y-5">
         {/* Header */}
-        <div className="flex justify-between items-center pb-4 border-b border-gray-200">
-          <h2 className="text-xl font-semibold text-gray-900">{t("title")}</h2>
+        <div className="flex justify-between items-center pb-4 border-b border-cyan-500/20">
+          <h2 className="text-lg font-mono font-bold text-cyan-400 uppercase tracking-wider" style={{ textShadow: '0 0 10px #00ffff40' }}>
+            {t("title")}
+          </h2>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600"
+            className="p-2 text-cyan-400 hover:text-cyan-300 hover:bg-cyan-500/10 transition-all cursor-pointer"
           >
             ✕
           </button>
@@ -82,7 +81,7 @@ export function FiltersModal({
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
           {/* Tags Filter */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-xs font-mono text-cyan-400 uppercase tracking-wider mb-2">
               {t("tags")}
             </label>
             <TagMultiSelect
@@ -93,7 +92,7 @@ export function FiltersModal({
 
           {/* Models Filter */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-xs font-mono text-cyan-400 uppercase tracking-wider mb-2">
               {t("aiModels")}
             </label>
             <ModelMultiSelect
@@ -107,7 +106,7 @@ export function FiltersModal({
 
           {/* Rating Filter */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-xs font-mono text-cyan-400 uppercase tracking-wider mb-2">
               {t("minRating")}
             </label>
             <select
@@ -116,7 +115,7 @@ export function FiltersModal({
                 ...localFilters,
                 rating: e.target.value === "" ? undefined : (e.target.value as "4+" | "3+"),
               })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md bg-white text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className={selectClassName}
             >
               <option value="">{t("allRatings")}</option>
               <option value="4+">{t("rating4Plus")}</option>
@@ -126,7 +125,7 @@ export function FiltersModal({
 
           {/* Usage Filter */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-xs font-mono text-cyan-400 uppercase tracking-wider mb-2">
               {t("minUsage")}
             </label>
             <select
@@ -135,7 +134,7 @@ export function FiltersModal({
                 ...localFilters,
                 minUsage: e.target.value === "" ? undefined : (e.target.value as "10" | "50"),
               })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md bg-white text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className={selectClassName}
             >
               <option value="">{t("allUsage")}</option>
               <option value="10">{t("usage10Plus")}</option>
@@ -147,7 +146,7 @@ export function FiltersModal({
           {type === "workflow" && (
             <>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-xs font-mono text-cyan-400 uppercase tracking-wider mb-2">
                   {t("complexity")}
                 </label>
                 <select
@@ -156,7 +155,7 @@ export function FiltersModal({
                     ...localFilters,
                     complexity: e.target.value === "" ? undefined : (e.target.value as WorkflowComplexity),
                   } as WorkflowFilters)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md bg-white text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className={selectClassName}
                 >
                   <option value="">{t("allComplexity")}</option>
                   <option value="XS">{t("complexityXS")}</option>
@@ -168,7 +167,7 @@ export function FiltersModal({
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-xs font-mono text-cyan-400 uppercase tracking-wider mb-2">
                   {t("stageCount")}
                 </label>
                 <select
@@ -177,7 +176,7 @@ export function FiltersModal({
                     ...localFilters,
                     phaseCount: e.target.value === "" ? undefined : (e.target.value as "1-3" | "4-5" | "6+"),
                   } as WorkflowFilters)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md bg-white text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className={selectClassName}
                 >
                   <option value="">{t("allStages")}</option>
                   <option value="1-3">{t("stages1to3")}</option>
@@ -190,25 +189,31 @@ export function FiltersModal({
         </div>
 
         {/* Actions */}
-        <div className="flex justify-between pt-4 border-t border-gray-200">
-          <Button
-            variant="ghost"
+        <div className="flex justify-between pt-4 border-t border-cyan-500/20">
+          <button
             onClick={handleClear}
             disabled={!hasFilters()}
+            className="px-4 py-2 bg-transparent text-cyan-400 font-mono text-sm uppercase tracking-wider hover:text-pink-400 disabled:opacity-30 disabled:cursor-not-allowed transition-all cursor-pointer"
           >
             {t("clearAll")}
-          </Button>
+          </button>
           <div className="flex gap-2">
-            <Button variant="secondary" onClick={onClose}>
-              {t("cancel") || "Cancel"}
-            </Button>
-            <Button variant="primary" onClick={handleApply}>
+            <button
+              onClick={onClose}
+              className="px-4 py-2 bg-transparent border border-cyan-500/30 text-cyan-400 font-mono text-sm uppercase tracking-wider hover:bg-cyan-500/10 hover:border-cyan-400 transition-all cursor-pointer"
+            >
+              {t("cancel")}
+            </button>
+            <button
+              onClick={handleApply}
+              className="px-6 py-2.5 bg-gradient-to-r from-cyan-500 to-cyan-400 text-[#050508] font-bold uppercase tracking-wider text-sm hover:shadow-[0_0_20px_rgba(0,255,255,0.4)] transition-all cursor-pointer"
+              style={{ clipPath: 'polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px))' }}
+            >
               {t("apply")}
-            </Button>
+            </button>
           </div>
         </div>
       </div>
     </Modal>
   );
 }
-

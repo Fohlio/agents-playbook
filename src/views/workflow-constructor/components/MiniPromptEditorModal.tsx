@@ -1,9 +1,9 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
-import { Button, Input, Textarea, FormField, Radio } from '@/shared/ui/atoms';
+import { useState, useEffect } from 'react';
+import { useTranslations } from 'next-intl';
 import { Modal } from '@/shared/ui/atoms/Modal';
-import { TagMultiSelect, CopyButton, KeyDisplay, type Tag } from '@/shared/ui/molecules';
+import { CopyButton } from '@/shared/ui/molecules';
 import { ModelMultiSelect } from '@/shared/ui/molecules/ModelMultiSelect';
 import { MarkdownContent } from '@/shared/ui/atoms/MarkdownContent';
 import { useModels } from '@/entities/models';
@@ -18,7 +18,6 @@ interface MiniPromptEditorModalProps {
     description?: string;
     content: string;
     visibility: 'PUBLIC' | 'PRIVATE';
-    tagIds?: string[];
     modelIds?: string[];
     key?: string | null;
   };
@@ -34,36 +33,29 @@ export function MiniPromptEditorModal({
   viewOnly = false,
   isSystemPrompt = false,
 }: MiniPromptEditorModalProps) {
+  const t = useTranslations('miniPromptEditorModal');
+  const tCommon = useTranslations('common');
+
   const [name, setName] = useState(initialData?.name ?? '');
   const [description, setDescription] = useState(initialData?.description ?? '');
   const [content, setContent] = useState(initialData?.content ?? '');
   const [visibility, setVisibility] = useState<'PUBLIC' | 'PRIVATE'>(
     initialData?.visibility ?? 'PRIVATE'
   );
-  const [selectedTagIds, setSelectedTagIds] = useState<string[]>(initialData?.tagIds ?? []);
   const [selectedModelIds, setSelectedModelIds] = useState<string[]>(initialData?.modelIds ?? []);
-  const [allTags, setAllTags] = useState<Tag[]>([]);
   const [showPreview, setShowPreview] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [key, setKey] = useState(initialData?.key ?? '');
   const [keyError, setKeyError] = useState<string | null>(null);
 
-  // Fetch models from entities layer
   const { models, loading: modelsLoading } = useModels();
 
-  // Track tags from TagMultiSelect to know which are temporary
-  const handleTagsChanged = useCallback((tags: Tag[]) => {
-    setAllTags(tags);
-  }, []);
-
-  // Update state when initialData changes (for edit mode)
   useEffect(() => {
     if (initialData) {
       setName(initialData.name);
       setDescription(initialData.description ?? '');
       setContent(initialData.content);
       setVisibility(initialData.visibility);
-      setSelectedTagIds(initialData.tagIds ?? []);
       setSelectedModelIds(initialData.modelIds ?? []);
       setKey(initialData.key ?? '');
     } else {
@@ -71,7 +63,6 @@ export function MiniPromptEditorModal({
       setDescription('');
       setContent('');
       setVisibility('PRIVATE');
-      setSelectedTagIds([]);
       setSelectedModelIds([]);
       setKey('');
     }
@@ -82,39 +73,21 @@ export function MiniPromptEditorModal({
   const handleSave = async () => {
     if (!name.trim() || !content.trim() || !onSave) return;
 
-    // Validate key if provided (for system prompts)
     const trimmedKey = key.trim();
     if (isSystemPrompt && trimmedKey && !isValidKey(trimmedKey)) {
-      setKeyError('Key must be 2-100 characters, lowercase letters, numbers, and hyphens only');
+      setKeyError(t('keyError'));
       return;
     }
 
     setIsSaving(true);
     setKeyError(null);
     try {
-      // Separate existing tags from temporary (new) tags
-      const existingTagIds: string[] = [];
-      const newTagNames: string[] = [];
-
-      for (const tagId of selectedTagIds) {
-        const tag = allTags.find(t => t.id === tagId);
-        if (tag?.isTemporary) {
-          // This is a new tag that needs to be created
-          newTagNames.push(tag.name);
-        } else {
-          // This is an existing tag
-          existingTagIds.push(tagId);
-        }
-      }
-
-      await onSave(name.trim(), description.trim(), content.trim(), visibility, existingTagIds, newTagNames, selectedModelIds, isSystemPrompt ? trimmedKey || undefined : undefined);
+      await onSave(name.trim(), description.trim(), content.trim(), visibility, [], [], selectedModelIds, isSystemPrompt ? trimmedKey || undefined : undefined);
       setName('');
       setDescription('');
       setContent('');
       setVisibility('PRIVATE');
-      setSelectedTagIds([]);
       setSelectedModelIds([]);
-      setAllTags([]);
       setShowPreview(false);
       setKey('');
       setKeyError(null);
@@ -132,7 +105,6 @@ export function MiniPromptEditorModal({
       setDescription(initialData?.description ?? '');
       setContent(initialData?.content ?? '');
       setVisibility(initialData?.visibility ?? 'PRIVATE');
-      setSelectedTagIds(initialData?.tagIds ?? []);
       setSelectedModelIds(initialData?.modelIds ?? []);
       setKey(initialData?.key ?? '');
       setKeyError(null);
@@ -141,57 +113,66 @@ export function MiniPromptEditorModal({
     }
   };
 
+  const getTitle = () => {
+    if (viewOnly) return name || t('viewTitle');
+    return initialData ? t('editTitle') : t('createTitle');
+  };
+
   return (
     <Modal isOpen={isOpen} onClose={handleClose} className="max-w-4xl max-h-[85vh] overflow-y-auto">
-      <div className="p-6">
+      <div className="p-2">
         <div className="mb-6">
-          <h2 className="text-2xl font-bold text-text-primary mb-2">
-            {viewOnly ? name || 'Mini-Prompt' : initialData ? 'Edit Mini-Prompt' : 'Create New Mini-Prompt'}
+          <h2 className="text-xl font-mono font-bold text-pink-400 uppercase tracking-wider mb-2" style={{ textShadow: '0 0 10px #ff006640' }}>
+            {getTitle()}
           </h2>
           {key && (
-            <KeyDisplay keyValue={key} />
+            <div className="px-2 py-1 bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 font-mono text-xs inline-block">
+              {t('key')}: {key}
+            </div>
           )}
         </div>
 
         <div className="space-y-4 mb-6">
           {!viewOnly && (
             <>
-              <FormField label="Name" htmlFor="mini-prompt-name" required>
-                <Input
+              <div>
+                <label htmlFor="mini-prompt-name" className="block text-xs font-mono text-cyan-400 uppercase tracking-wider mb-2">
+                  {t('name')} <span className="text-pink-400">*</span>
+                </label>
+                <input
                   id="mini-prompt-name"
                   type="text"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  placeholder="e.g., Create Implementation Plan"
+                  placeholder={t('namePlaceholder')}
                   required
                   autoFocus
-                  fullWidth
+                  className="w-full px-3 py-2 bg-[#050508]/50 border border-cyan-500/50 text-cyan-100 font-mono text-sm placeholder:text-cyan-500/30 focus:outline-none focus:border-cyan-400 focus:shadow-[0_0_15px_rgba(0,255,255,0.2)] transition-all"
                 />
-              </FormField>
-              <FormField 
-                label="Description" 
-                htmlFor="mini-prompt-description"
-                helperText={`${description.length}/1000 characters`}
-              >
-                <Textarea
+              </div>
+              <div>
+                <label htmlFor="mini-prompt-description" className="block text-xs font-mono text-cyan-400 uppercase tracking-wider mb-2">
+                  {t('description')}
+                </label>
+                <textarea
                   id="mini-prompt-description"
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
-                  placeholder="Brief description for search and discovery (optional, max 1000 chars)"
+                  placeholder={t('descriptionPlaceholder')}
                   maxLength={1000}
-                  rows={3}
-                  fullWidth
+                  rows={2}
+                  className="w-full px-3 py-2 bg-[#050508]/50 border border-cyan-500/50 text-cyan-100 font-mono text-sm placeholder:text-cyan-500/30 focus:outline-none focus:border-cyan-400 focus:shadow-[0_0_15px_rgba(0,255,255,0.2)] transition-all resize-none"
                 />
-              </FormField>
-              {/* For system prompts, show editable key field */}
+                <p className={`text-xs font-mono mt-1 ${description.length > 900 ? 'text-pink-400' : 'text-cyan-500/40'}`}>
+                  {description.length}/1000
+                </p>
+              </div>
               {isSystemPrompt && (
-                <FormField 
-                  label="Key" 
-                  htmlFor="mini-prompt-key"
-                  helperText="Unique identifier for MCP lookup (e.g., 'code-review-checklist'). Lowercase, numbers, hyphens only."
-                  error={keyError || undefined}
-                >
-                  <Input
+                <div>
+                  <label htmlFor="mini-prompt-key" className="block text-xs font-mono text-cyan-400 uppercase tracking-wider mb-2">
+                    {t('key')}
+                  </label>
+                  <input
                     id="mini-prompt-key"
                     type="text"
                     value={key}
@@ -199,104 +180,112 @@ export function MiniPromptEditorModal({
                       setKey(e.target.value.toLowerCase());
                       setKeyError(null);
                     }}
-                    placeholder="e.g., memory-board, code-review"
+                    placeholder={t('keyPlaceholder')}
                     maxLength={100}
-                    fullWidth
+                    className={`w-full px-3 py-2 bg-[#050508]/50 border font-mono text-sm text-cyan-100 placeholder:text-cyan-500/30 focus:outline-none transition-all ${
+                      keyError
+                        ? 'border-pink-500/50 focus:border-pink-400 focus:shadow-[0_0_15px_rgba(255,0,102,0.2)]'
+                        : 'border-cyan-500/50 focus:border-cyan-400 focus:shadow-[0_0_15px_rgba(0,255,255,0.2)]'
+                    }`}
                   />
-                </FormField>
+                  <p className="text-xs font-mono text-cyan-100/40 mt-1">
+                    {t('keyHelp')}
+                  </p>
+                  {keyError && (
+                    <p className="text-xs font-mono text-pink-400 mt-1">&gt; {t('error')}: {keyError}</p>
+                  )}
+                </div>
               )}
             </>
           )}
 
           <div className="space-y-1">
-            <div className="flex items-center justify-between mb-1">
-              <label htmlFor="mini-prompt-content" className="block text-sm font-medium text-gray-700">
-                Content (Markdown) {!viewOnly && <span className="text-red-500 ml-1">*</span>}
+            <div className="flex items-center justify-between mb-2">
+              <label htmlFor="mini-prompt-content" className="block text-xs font-mono text-cyan-400 uppercase tracking-wider">
+                {t('contentMarkdown')} {!viewOnly && <span className="text-pink-400">*</span>}
               </label>
               <div className="flex items-center gap-2">
                 {viewOnly && (
                   <CopyButton
                     textToCopy={content || ""}
-                    label="Copy"
+                    label={tCommon('copy')}
                     variant="secondary"
                     size="sm"
                     testId="copy-mini-prompt-content"
                   />
                 )}
                 {!viewOnly && (
-                  <Button
+                  <button
                     type="button"
-                    variant="secondary"
-                    size="sm"
                     onClick={() => setShowPreview(!showPreview)}
-                    className="text-sm"
+                    className="px-3 py-1.5 bg-transparent border border-cyan-500/30 text-cyan-400 font-mono text-xs uppercase tracking-wider hover:bg-cyan-500/10 hover:border-cyan-400 transition-all cursor-pointer"
                   >
-                    {showPreview ? 'Edit' : 'Preview'}
-                  </Button>
+                    {showPreview ? t('edit') : t('preview')}
+                  </button>
                 )}
               </div>
             </div>
             {viewOnly ? (
-              <div className="w-full min-h-[300px] max-h-[500px] overflow-y-auto px-4 py-3 border border-border-base rounded-lg bg-surface-base">
+              <div className="w-full min-h-[200px] max-h-[400px] overflow-y-auto px-4 py-3 bg-[#050508]/50 border border-cyan-500/30">
                 <MarkdownContent content={content} />
               </div>
             ) : showPreview ? (
-              <div className="w-full min-h-[300px] max-h-[500px] overflow-y-auto px-4 py-3 border border-border-base rounded-lg bg-surface-base">
+              <div className="w-full min-h-[200px] max-h-[400px] overflow-y-auto px-4 py-3 bg-[#050508]/50 border border-cyan-500/30">
                 <MarkdownContent content={content} />
               </div>
             ) : (
-              <Textarea
+              <textarea
                 id="mini-prompt-content"
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
-                placeholder="Enter markdown content for this mini-prompt...&#10;&#10;Supported formatting:&#10;# Heading 1&#10;## Heading 2&#10;### Heading 3&#10;**bold text**&#10;*italic text*&#10;`code`&#10;- bullet point"
-                rows={10}
-                fullWidth
-                className="font-mono min-h-[200px] max-h-[400px]"
+                placeholder={t('contentPlaceholder')}
+                rows={8}
+                className="w-full px-3 py-2 bg-[#050508]/50 border border-cyan-500/50 text-cyan-100 font-mono text-sm placeholder:text-cyan-500/30 focus:outline-none focus:border-cyan-400 focus:shadow-[0_0_15px_rgba(0,255,255,0.2)] transition-all resize-none min-h-[200px] max-h-[400px]"
               />
             )}
           </div>
 
           {!viewOnly && (
             <>
-              <FormField label="Visibility" htmlFor="visibility-private">
-                <div className="flex gap-4">
-                  <Radio
+              <div className="flex gap-4">
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="radio"
                     name="visibility"
-                    id="visibility-private"
                     value="PRIVATE"
                     checked={visibility === 'PRIVATE'}
                     onChange={(e) => setVisibility(e.target.value as 'PRIVATE')}
-                    label="Private (Only Me)"
+                    className="w-4 h-4 accent-cyan-500 cursor-pointer"
                   />
-                  <Radio
+                  <span className={`text-sm font-mono ${visibility === 'PRIVATE' ? 'text-cyan-400' : 'text-cyan-100/50'}`}>
+                    {t('private')}
+                  </span>
+                </label>
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="radio"
                     name="visibility"
-                    id="visibility-public"
                     value="PUBLIC"
                     checked={visibility === 'PUBLIC'}
                     onChange={(e) => setVisibility(e.target.value as 'PUBLIC')}
-                    label="Public (Everyone)"
+                    className="w-4 h-4 accent-purple-500 cursor-pointer"
                   />
-                </div>
-              </FormField>
-              {/* Tags and Models in same row */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <FormField label="Tags" htmlFor="mini-prompt-tags">
-                  <TagMultiSelect
-                    selectedTagIds={selectedTagIds}
-                    onChange={setSelectedTagIds}
-                    onTagsChanged={handleTagsChanged}
-                  />
-                </FormField>
-                <FormField label="AI Models" htmlFor="mini-prompt-models">
-                  <ModelMultiSelect
-                    models={models}
-                    selectedModelIds={selectedModelIds}
-                    onChange={setSelectedModelIds}
-                    loading={modelsLoading}
-                    placeholder="Select AI models..."
-                  />
-                </FormField>
+                  <span className={`text-sm font-mono ${visibility === 'PUBLIC' ? 'text-purple-400' : 'text-cyan-100/50'}`}>
+                    {t('public')}
+                  </span>
+                </label>
+              </div>
+              <div>
+                <label className="block text-xs font-mono text-cyan-400 uppercase tracking-wider mb-2">
+                  {t('aiModels')}
+                </label>
+                <ModelMultiSelect
+                  models={models}
+                  selectedModelIds={selectedModelIds}
+                  onChange={setSelectedModelIds}
+                  loading={modelsLoading}
+                  placeholder={t('aiModelsPlaceholder')}
+                />
               </div>
             </>
           )}
@@ -304,25 +293,30 @@ export function MiniPromptEditorModal({
 
         <div className="flex gap-3 justify-end">
           {viewOnly ? (
-            <Button variant="primary" onClick={handleClose}>
-              Close
-            </Button>
+            <button
+              onClick={handleClose}
+              className="px-6 py-2.5 bg-gradient-to-r from-cyan-500 to-cyan-400 text-[#050508] font-bold uppercase tracking-wider text-sm hover:shadow-[0_0_20px_rgba(0,255,255,0.4)] transition-all cursor-pointer"
+              style={{ clipPath: 'polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px))' }}
+            >
+              {t('close')}
+            </button>
           ) : (
             <>
-              <Button
-                variant="secondary"
+              <button
                 onClick={handleClose}
                 disabled={isSaving}
+                className="px-4 py-2 bg-transparent border border-cyan-500/30 text-cyan-400 font-mono text-sm uppercase tracking-wider hover:bg-cyan-500/10 hover:border-cyan-400 disabled:opacity-50 transition-all cursor-pointer"
               >
-                Cancel
-              </Button>
-              <Button
-                variant="primary"
+                {t('cancel')}
+              </button>
+              <button
                 onClick={handleSave}
                 disabled={!name.trim() || !content.trim() || isSaving}
+                className="px-6 py-2.5 bg-gradient-to-r from-pink-500 to-pink-400 text-white font-bold uppercase tracking-wider text-sm hover:shadow-[0_0_20px_rgba(255,0,102,0.4)] disabled:opacity-50 disabled:cursor-not-allowed transition-all cursor-pointer"
+                style={{ clipPath: 'polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px))' }}
               >
-                {isSaving ? 'Saving...' : initialData ? 'Update' : 'Create'}
-              </Button>
+                {isSaving ? t('saving') : initialData ? t('update') : t('create')}
+              </button>
             </>
           )}
         </div>

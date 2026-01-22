@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo } from 'react';
+import { useTranslations } from 'next-intl';
 import { Trash2, RotateCcw, AlertTriangle, FileText, Folder } from 'lucide-react';
 import { TrashedItem } from '@/server/folders/types';
 import { cn } from '@/shared/lib/utils/cn';
@@ -46,6 +47,7 @@ export function TrashView({
   onEmptyTrash,
   className,
 }: TrashViewProps) {
+  const t = useTranslations('trash');
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [confirmEmptyTrash, setConfirmEmptyTrash] = useState(false);
   const [confirmDeleteSelected, setConfirmDeleteSelected] = useState(false);
@@ -121,11 +123,11 @@ export function TrashView({
   const getTypeLabel = (type: TrashedItem['type']) => {
     switch (type) {
       case 'WORKFLOW':
-        return 'Workflow';
+        return t('workflow');
       case 'MINI_PROMPT':
-        return 'Prompt';
+        return t('prompt');
       default:
-        return 'Folder';
+        return t('folder');
     }
   };
 
@@ -145,8 +147,8 @@ export function TrashView({
         icon={
           <Trash2 className="w-16 h-16" />
         }
-        title="Trash is empty"
-        description="Items you delete will appear here for 30 days before being permanently removed."
+        title={t('empty')}
+        description={t('emptyDescription')}
         className={className}
       />
     );
@@ -172,8 +174,8 @@ export function TrashView({
           />
           <span className="text-sm text-gray-600" role="status" aria-live="polite">
             {selectedIds.size > 0
-              ? `${selectedIds.size} of ${items.length} selected`
-              : `${items.length} ${items.length === 1 ? 'item' : 'items'} in trash`}
+              ? t('selectedOf', { selected: selectedIds.size, total: items.length })
+              : t('itemsInTrash', { count: items.length })}
           </span>
         </div>
 
@@ -186,7 +188,7 @@ export function TrashView({
                 onClick={handleRestoreSelected}
               >
                 <RotateCcw className="w-4 h-4 mr-1.5" />
-                Restore Selected
+                {t('restoreSelected')}
               </Button>
               <Button
                 variant={confirmDeleteSelected ? "primary" : "secondary"}
@@ -195,7 +197,7 @@ export function TrashView({
                 className={confirmDeleteSelected ? "bg-red-600 hover:bg-red-700" : "text-red-600 hover:bg-red-50"}
               >
                 <Trash2 className="w-4 h-4 mr-1.5" />
-                {confirmDeleteSelected ? "Confirm Delete" : "Delete Selected"}
+                {confirmDeleteSelected ? t('confirmDelete') : t('deleteSelected')}
               </Button>
             </>
           ) : (
@@ -206,7 +208,7 @@ export function TrashView({
               className={confirmEmptyTrash ? "bg-red-600 hover:bg-red-700" : "text-red-600 hover:bg-red-50"}
             >
               <AlertTriangle className="w-4 h-4 mr-1.5" />
-              {confirmEmptyTrash ? "Confirm Empty Trash" : "Empty Trash"}
+              {confirmEmptyTrash ? t('confirmEmptyTrash') : t('emptyTrash')}
             </Button>
           )}
         </div>
@@ -242,7 +244,7 @@ export function TrashView({
                 <span>{getTypeLabel(item.type)}</span>
                 <span className="text-gray-300" aria-hidden="true">|</span>
                 <span>
-                  Deleted {formatDistanceToNow(item.deletedAt, { addSuffix: true })}
+                  {t('deleted', { time: formatDistanceToNow(item.deletedAt, { addSuffix: true }) })}
                 </span>
               </div>
             </div>
@@ -252,18 +254,18 @@ export function TrashView({
               <button
                 onClick={() => onRestore(item.type, item.id)}
                 className="flex items-center gap-1 px-3 py-2.5 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[44px]"
-                aria-label={`Restore ${item.name}`}
+                aria-label={`${t('restore')} ${item.name}`}
               >
                 <RotateCcw className="w-4 h-4" aria-hidden="true" />
-                <span className="hidden sm:inline">Restore</span>
+                <span className="hidden sm:inline">{t('restore')}</span>
               </button>
               <button
                 onClick={() => onDeletePermanently(item.type, item.id)}
                 className="flex items-center gap-1 px-3 py-2.5 text-sm text-gray-600 hover:text-red-600 hover:bg-red-50 rounded transition-colors focus:outline-none focus:ring-2 focus:ring-red-500 min-h-[44px]"
-                aria-label={`Permanently delete ${item.name}`}
+                aria-label={`${t('deletePermanently')} ${item.name}`}
               >
                 <Trash2 className="w-4 h-4" aria-hidden="true" />
-                <span className="hidden sm:inline">Delete</span>
+                <span className="hidden sm:inline">{t('deletePermanently')}</span>
               </button>
             </div>
           </div>
@@ -272,7 +274,7 @@ export function TrashView({
 
       {/* Auto-delete notice */}
       <p className="text-sm text-gray-500 text-center py-2">
-        Items in trash will be automatically deleted after 30 days
+        {t('autoDeleteNotice')}
       </p>
     </div>
   );

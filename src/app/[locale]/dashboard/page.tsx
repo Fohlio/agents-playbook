@@ -13,7 +13,7 @@ import {
 } from "@/views/dashboard";
 
 /**
- * Dashboard Page
+ * Dashboard Page - Cyberpunk Command Center
  *
  * Main landing page after user authentication.
  * Displays user statistics, active workflows, active mini-prompts, and quick actions.
@@ -33,13 +33,21 @@ export default async function DashboardPage() {
     getActiveMiniPrompts(session.user.id),
   ]);
 
+  const header = t('header');
+
   return (
-    <div className="space-y-8">
-      {/* Quick Actions */}
-      <div className="flex justify-between items-center">
+    <div className="space-y-8 max-w-7xl mx-auto">
+      {/* Header with glitch effect */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">{t('title')}</h1>
-          <p className="text-gray-600 mt-1">{t('subtitle')}</p>
+          <h1 className="text-3xl font-black tracking-tight mb-1">
+            <span className="cyber-text-glitch" data-text={header} style={{ color: '#00ffff', textShadow: '0 0 10px #00ffff, 0 0 20px #00ffff40' }}>
+              {header}
+            </span>
+          </h1>
+          <p className="text-cyan-100/60 font-mono text-sm uppercase tracking-wider">
+            {t('subtitle')}
+          </p>
         </div>
         <QuickActions />
       </div>

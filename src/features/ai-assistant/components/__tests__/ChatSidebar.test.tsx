@@ -72,7 +72,7 @@ describe('ChatSidebar - Beta Badge Integration', () => {
     expect(screen.getByText('title')).toBeInTheDocument();
   });
 
-  it('should render BetaBadge in header', () => {
+  it('should render beta badge in header', () => {
     render(
       <ChatSidebar
         isOpen={true}
@@ -81,9 +81,8 @@ describe('ChatSidebar - Beta Badge Integration', () => {
       />
     );
 
-    const betaBadge = screen.getByTestId('beta-badge');
-    expect(betaBadge).toBeInTheDocument();
-    expect(betaBadge).toHaveTextContent('BETA');
+    // Translation mock returns the key 'beta'
+    expect(screen.getByText('beta')).toBeInTheDocument();
   });
 
   it('should render workflow mode indicator', () => {
@@ -95,7 +94,8 @@ describe('ChatSidebar - Beta Badge Integration', () => {
       />
     );
 
-    expect(screen.getByText('(Workflow)')).toBeInTheDocument();
+    // Translation mock returns the key 'mode.workflow'
+    expect(screen.getByText('(mode.workflow)')).toBeInTheDocument();
   });
 
   it('should render mini-prompt mode indicator', () => {
@@ -107,7 +107,8 @@ describe('ChatSidebar - Beta Badge Integration', () => {
       />
     );
 
-    expect(screen.getByText('(Mini-Prompt)')).toBeInTheDocument();
+    // Translation mock returns the key 'mode.prompt'
+    expect(screen.getByText('(mode.prompt)')).toBeInTheDocument();
   });
 
   it('should not render when closed', () => {
@@ -152,7 +153,7 @@ describe('ChatSidebar - Beta Badge Integration', () => {
     expect(historyButton).toBeInTheDocument();
   });
 
-  it('should render BetaBadge with small size', () => {
+  it('should render beta badge with small size styling', () => {
     render(
       <ChatSidebar
         isOpen={true}
@@ -161,8 +162,10 @@ describe('ChatSidebar - Beta Badge Integration', () => {
       />
     );
 
-    const betaBadge = screen.getByTestId('beta-badge');
-    expect(betaBadge).toHaveClass('text-xs');
+    // Translation mock returns the key 'beta'
+    const betaBadge = screen.getByText('beta');
+    // Check it has the small styling (text-[10px])
+    expect(betaBadge).toHaveClass('text-[10px]');
   });
 });
 
@@ -176,7 +179,7 @@ describe('ChatSidebar - Session Switcher', () => {
     jest.clearAllMocks();
   });
 
-  it('should show active session with blue background and border', () => {
+  it('should show active session with cyberpunk styling', () => {
     const mockSessions = [
       {
         id: 'session-1',
@@ -222,12 +225,12 @@ describe('ChatSidebar - Session Switcher', () => {
     const historyButton = screen.getByLabelText('history');
     fireEvent.click(historyButton);
 
-    // Check active session has correct styling
+    // Check active session has correct cyberpunk styling
     const activeSession = screen.getByTestId('active-session');
-    expect(activeSession).toHaveClass('bg-blue-50', 'border-l-4', 'border-blue-600');
+    expect(activeSession).toHaveClass('bg-purple-500/20', 'border-l-2', 'border-purple-400');
   });
 
-  it('should show "Active" badge on current session', () => {
+  it('should show active badge on current session', () => {
     const mockSessions = [
       {
         id: 'session-1',
@@ -267,10 +270,10 @@ describe('ChatSidebar - Session Switcher', () => {
     const historyButton = screen.getByLabelText('history');
     fireEvent.click(historyButton);
 
-    // Check for Active badge
+    // Check for Active badge - translation mock returns the key 'activeBadge'
     const activeBadge = screen.getByTestId('active-badge');
     expect(activeBadge).toBeInTheDocument();
-    expect(activeBadge).toHaveTextContent('Active');
+    expect(activeBadge).toHaveTextContent('activeBadge');
   });
 
   it('should not show active styling on inactive sessions', () => {
@@ -322,7 +325,7 @@ describe('ChatSidebar - Session Switcher', () => {
     // Check inactive session doesn't have active styling
     const inactiveSessions = screen.getAllByTestId('inactive-session');
     expect(inactiveSessions).toHaveLength(1);
-    expect(inactiveSessions[0]).not.toHaveClass('bg-blue-50');
+    expect(inactiveSessions[0]).not.toHaveClass('bg-purple-500/20');
   });
 
   it('should call handleSelectSession when clicking on session', async () => {

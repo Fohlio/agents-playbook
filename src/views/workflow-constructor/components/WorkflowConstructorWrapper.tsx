@@ -1,10 +1,10 @@
 'use client';
 
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
-import { Button, Input, Checkbox } from '@/shared/ui/atoms';
 import type { MiniPrompt } from '@prisma/client';
 import { useWorkflowConstructorStore } from '../lib/workflow-constructor-store';
 import { useWorkflowHandlers } from '../lib/use-workflow-handlers';
@@ -13,7 +13,6 @@ import { MiniPromptLibrary } from './MiniPromptLibrary';
 import { StageSection } from './StageSection';
 import { StageCreateForm } from './StageCreateForm';
 import { createWorkflow } from '../actions/workflow-actions';
-import { TagMultiSelect, type Tag } from '@/shared/ui/molecules';
 import { Tooltip } from '@/shared/ui/molecules';
 import { ChatSidebar } from '@/features/ai-assistant/components/ChatSidebar';
 import { Sparkles } from 'lucide-react';
@@ -29,15 +28,12 @@ export function WorkflowConstructorWrapper({
   miniPrompts: initialMiniPrompts,
 }: WorkflowConstructorWrapperProps) {
   const router = useRouter();
-  const [allTags, setAllTags] = useState<Tag[]>([]);
+  const t = useTranslations('workflowConstructorWrapper');
 
-  // Initialize store for new workflow
   const reset = useWorkflowConstructorStore((s) => s.reset);
   const setMiniPrompts = useWorkflowConstructorStore((s) => s.setMiniPrompts);
 
   useEffect(() => {
-    // Only reset if this is a true reset (e.g., component mount or miniPrompts actually changed)
-    // Don't reset on every render - this was causing the chat modal to close
     const currentMiniPrompts = useWorkflowConstructorStore.getState().miniPrompts;
     const miniPromptsChanged = JSON.stringify(currentMiniPrompts.map(mp => mp.id).sort()) !== 
                                JSON.stringify(initialMiniPrompts.map(mp => mp.id).sort());
@@ -47,18 +43,15 @@ export function WorkflowConstructorWrapper({
       reset();
       setMiniPrompts(initialMiniPrompts);
     } else {
-      // Just update mini-prompts without full reset to preserve UI state
       setMiniPrompts(initialMiniPrompts);
     }
   }, [initialMiniPrompts, reset, setMiniPrompts]);
 
-  // Get state from store
   const {
     workflowName,
     isActive,
     isPublic,
     includeMultiAgentChat,
-    selectedTagIds,
     localStages,
     miniPrompts,
     isCreatingStage,
@@ -69,7 +62,6 @@ export function WorkflowConstructorWrapper({
     setWorkflowName,
     setIsActive,
     setIsPublic,
-    setSelectedTagIds,
     setLocalStages,
     setIsCreatingStage,
     setEditingStageId,
@@ -78,7 +70,6 @@ export function WorkflowConstructorWrapper({
     setIsSaving,
   } = useWorkflowConstructorStore();
 
-  // Get handlers
   const {
     handleCreateStage,
     handleRemoveStage,
@@ -89,10 +80,8 @@ export function WorkflowConstructorWrapper({
     handleReorderItems,
   } = useWorkflowHandlers();
 
-  // Get AI integration
   const { handleToolCall } = useWorkflowAIIntegration();
 
-  // Drag and drop handler for stages
   const onDropMiniPrompts = (stageId: string, miniPromptIds: string[]) => {
     handleMiniPromptDragEnd(miniPromptIds, stageId, miniPrompts);
   };
@@ -104,7 +93,6 @@ export function WorkflowConstructorWrapper({
 
     setIsSaving(true);
     try {
-      // Collect temp mini-prompts that need to be created
       const tempMiniPromptsData: Record<string, { name: string; description: string; content: string; visibility: 'PUBLIC' | 'PRIVATE' }> = {};
 
       for (const stage of localStages) {
@@ -121,26 +109,15 @@ export function WorkflowConstructorWrapper({
         }
       }
 
-      // Separate temp tags from existing tags
-      const existingTagIds = selectedTagIds.filter(id => !id.startsWith('temp-tag-'));
-      const tempTagIds = selectedTagIds.filter(id => id.startsWith('temp-tag-'));
-      const newTagNames = tempTagIds
-        .map(id => allTags.find(t => t.id === id)?.name)
-        .filter((name): name is string => !!name);
-
-      console.log('[WorkflowConstructorWrapper] Existing tags:', existingTagIds);
-      console.log('[WorkflowConstructorWrapper] New tags to create:', newTagNames);
-      console.log('[WorkflowConstructorWrapper] Temp mini-prompts:', Object.keys(tempMiniPromptsData));
-
       const workflowData = {
         name: workflowName,
         userId,
         isActive,
         complexity: undefined,
         visibility: isPublic ? 'PUBLIC' : 'PRIVATE' as 'PUBLIC' | 'PRIVATE',
-        includeMultiAgentChat: false, // Deprecated - now per-stage
-        tagIds: existingTagIds,
-        newTagNames,
+        includeMultiAgentChat: false,
+        tagIds: [],
+        newTagNames: [],
         tempMiniPrompts: tempMiniPromptsData,
         stages: localStages.map((stage, index) => ({
           name: stage.name,
@@ -165,12 +142,12 @@ export function WorkflowConstructorWrapper({
         router.push(`/dashboard/library`);
       } else {
         console.error('[WorkflowConstructorWrapper] Workflow creation failed:', result.error);
-        alert(`Failed to create workflow: ${result.error || 'Unknown error'}`);
+        alert(t('createFailed', { error: result.error || 'Unknown error' }));
       }
     } catch (error) {
       console.error('[WorkflowConstructorWrapper] Failed to create workflow:', error);
       console.error('[WorkflowConstructorWrapper] Error stack:', error instanceof Error ? error.stack : 'No stack');
-      alert(`Failed to create workflow: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      alert(t('createFailed', { error: error instanceof Error ? error.message : 'Unknown error' }));
     } finally {
       setIsSaving(false);
       console.log('[WorkflowConstructorWrapper] Finished handleSaveWorkflow');
@@ -178,51 +155,57 @@ export function WorkflowConstructorWrapper({
   };
 
   return (
-    <div className="h-screen flex flex-col">
-      <div className="bg-surface-base border-b border-border-base px-6 py-4">
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex-1">
-            <Input
+    <div className="h-screen flex flex-col bg-[#050508]">
+      {/* Cyberpunk Header */}
+      <div className="bg-[#0a0a0f]/95 backdrop-blur-md border-b border-cyan-500/30 px-6 py-4">
+        <div className="flex items-center justify-between mb-3 gap-4">
+          <div className="flex-1 min-w-0 max-w-4xl">
+            <input
               type="text"
               value={workflowName}
               onChange={(e) => setWorkflowName(e.target.value)}
-              placeholder="Workflow Name"
-              className="text-2xl font-bold border-0 bg-transparent focus:ring-0 px-0 w-full max-w-4xl"
+              placeholder={t('workflowNamePlaceholder')}
+              className="text-2xl font-bold font-mono text-cyan-400 bg-transparent border-0 focus:outline-none focus:ring-0 px-0 w-full uppercase tracking-wider placeholder:text-cyan-500/30"
+              style={{ textShadow: '0 0 10px #00ffff40' }}
             />
           </div>
           <div className="flex gap-3">
-            <Button
+            <button
               onClick={handleSaveWorkflow}
               disabled={isSaving || localStages.length === 0}
+              className="px-6 py-2.5 bg-gradient-to-r from-cyan-500 to-cyan-400 text-[#050508] font-bold uppercase tracking-wider text-sm hover:shadow-[0_0_20px_rgba(0,255,255,0.4)] disabled:opacity-50 disabled:cursor-not-allowed transition-all cursor-pointer"
+              style={{ clipPath: 'polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px))' }}
             >
-              {isSaving ? 'Creating...' : 'Create Workflow'}
-            </Button>
+              {isSaving ? t('creating') : t('createWorkflow')}
+            </button>
           </div>
         </div>
 
-        <div className="flex items-center justify-between gap-4">
-          <div className="flex items-center gap-6">
-            <Checkbox
+        <div className="flex items-center gap-6">
+          <label className="flex items-center gap-2 cursor-pointer">
+            <input
+              type="checkbox"
               checked={isActive}
               onChange={(e) => setIsActive(e.target.checked)}
               id="new-workflow-active-checkbox"
-              label="Active"
+              className="w-4 h-4 accent-cyan-500 cursor-pointer"
             />
-            <Checkbox
+            <span className={`text-xs font-mono uppercase tracking-wider ${isActive ? 'text-green-400' : 'text-cyan-100/40'}`}>
+              {isActive ? t('active') : t('inactive')}
+            </span>
+          </label>
+          <label className="flex items-center gap-2 cursor-pointer">
+            <input
+              type="checkbox"
               checked={isPublic}
               onChange={(e) => setIsPublic(e.target.checked)}
               id="new-workflow-public-checkbox"
-              label="Public"
+              className="w-4 h-4 accent-cyan-500 cursor-pointer"
             />
-          </div>
-        </div>
-
-        <div className="mt-4">
-          <TagMultiSelect
-            selectedTagIds={selectedTagIds}
-            onChange={setSelectedTagIds}
-            onTagsChanged={setAllTags}
-          />
+            <span className={`text-xs font-mono uppercase tracking-wider ${isPublic ? 'text-purple-400' : 'text-cyan-100/40'}`}>
+              {isPublic ? t('public') : t('private')}
+            </span>
+          </label>
         </div>
       </div>
 
@@ -241,7 +224,6 @@ export function WorkflowConstructorWrapper({
                       mp.id === updatedMiniPrompt.id ? updatedMiniPrompt : mp
                     )
                   );
-                  // Also update mini-prompts in stages
                   setLocalStages((prevStages) =>
                     prevStages.map((stage) => ({
                       ...stage,
@@ -254,10 +236,8 @@ export function WorkflowConstructorWrapper({
                   );
                 }}
                 onMiniPromptDeleted={(deletedMiniPromptId) => {
-                  // Remove from library
                   setMiniPrompts(miniPrompts.filter(mp => mp.id !== deletedMiniPromptId));
                   
-                  // Remove from all stages
                   setLocalStages((prevStages) =>
                     prevStages.map((stage) => ({
                       ...stage,
@@ -314,9 +294,10 @@ export function WorkflowConstructorWrapper({
                 ) : (
                   <button
                     onClick={() => setIsCreatingStage(true)}
-                    className="w-full border-2 border-dashed border-border-base rounded-lg p-6 text-center hover:border-border-hover hover:bg-surface-hover transition-colors"
+                    className="w-full border-2 border-dashed border-cyan-500/30 p-6 text-center hover:border-cyan-400/50 hover:bg-cyan-500/5 transition-all cursor-pointer"
+                    style={{ clipPath: 'polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px))' }}
                   >
-                    <span className="text-text-secondary">+ Add Stage</span>
+                    <span className="text-cyan-400 font-mono uppercase tracking-wider">+ {t('addStage')}</span>
                   </button>
                 )}
               </div>
@@ -329,18 +310,13 @@ export function WorkflowConstructorWrapper({
           isOpen={isChatOpen}
           onClose={() => {
             setIsChatOpen(false);
-            // Don't clear viewingMiniPromptId when closing chat - user might want to keep viewing it
-            // setViewingMiniPromptId(null);
           }}
           mode="workflow"
           workflowContext={useMemo(() => {
-            // Find current mini-prompt
             let currentMiniPrompt = undefined;
             if (viewingMiniPromptId) {
-              // First try to find in main miniPrompts array
               let mp = miniPrompts.find((m) => m.id === viewingMiniPromptId);
               
-              // If not found, search in stages
               if (!mp) {
                 for (const stage of localStages) {
                   const stageMp = stage.miniPrompts.find(
@@ -415,11 +391,11 @@ export function WorkflowConstructorWrapper({
 
         {/* Floating AI Assistant Button */}
         <DraggableButton>
-          <Tooltip content="Open AI Assistant to help design your workflow">
+          <Tooltip content={t('aiAssistantTooltip')}>
             <button
               onClick={() => setIsChatOpen(true)}
-              className="bg-primary-600 hover:bg-primary-700 text-white rounded-full p-4 shadow-lg transition-all hover:scale-110"
-              aria-label="Open AI Assistant"
+              className="bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-full p-4 shadow-[0_0_20px_rgba(168,85,247,0.4)] transition-all hover:scale-110 hover:shadow-[0_0_30px_rgba(168,85,247,0.6)] cursor-pointer"
+              aria-label={t('openAiAssistant')}
             >
               <Sparkles className="w-6 h-6" />
             </button>

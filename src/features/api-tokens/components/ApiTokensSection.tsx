@@ -2,8 +2,7 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { Button, Alert, Card, CardHeader } from "@/shared/ui/atoms";
-import { Tooltip } from "@/shared/ui/molecules";
+import { Card, CardHeader } from "@/shared/ui/atoms";
 import { useApiTokens } from "../hooks/useApiTokens";
 import { TokensList } from "./TokensList";
 import { CreateTokenModal } from "./CreateTokenModal";
@@ -54,19 +53,27 @@ export function ApiTokensSection() {
             testId="tokens-heading"
             className="mb-0"
           />
-          <Tooltip content={t("createTooltip")}>
-            <Button
-              variant="primary"
-              onClick={() => setShowCreateModal(true)}
-              testId="create-token-button"
-            >
-              {t("create")}
-            </Button>
-          </Tooltip>
+          <button
+            onClick={() => setShowCreateModal(true)}
+            className="px-4 py-2 bg-gradient-to-r from-cyan-500 to-cyan-400 text-[#050508] font-bold uppercase tracking-wider text-sm hover:shadow-[0_0_20px_rgba(0,255,255,0.4)] transition-all cursor-pointer"
+            style={{ clipPath: 'polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px))' }}
+            data-testid="create-token-button"
+            title={t("createTooltip")}
+          >
+            {t("create")}
+          </button>
         </div>
 
-        {error && <Alert variant="error" testId="tokens-error-alert">{error}</Alert>}
-        {success && <Alert variant="success" testId="tokens-success-alert">{success}</Alert>}
+        {error && (
+          <div className="p-3 bg-pink-500/10 border border-pink-500/50 text-pink-400 font-mono text-sm" data-testid="tokens-error-alert">
+            &gt; ERROR: {error}
+          </div>
+        )}
+        {success && (
+          <div className="p-3 bg-green-500/10 border border-green-500/50 text-green-400 font-mono text-sm" data-testid="tokens-success-alert">
+            &gt; SUCCESS: {success}
+          </div>
+        )}
 
         <TokensList
           tokens={tokens}
@@ -95,4 +102,3 @@ export function ApiTokensSection() {
     </Card>
   );
 }
-

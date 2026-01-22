@@ -1,9 +1,8 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import { useTranslations } from 'next-intl';
 import { Plus, FolderPlus, FileText, LayoutGrid, List } from 'lucide-react';
-import { Input } from '@/shared/ui/atoms';
-import Button from '@/shared/ui/atoms/Button';
 import { cn } from '@/shared/lib/utils/cn';
 import { Menu, MenuItem, ListItemIcon, ListItemText } from '@mui/material';
 
@@ -20,12 +19,9 @@ interface LibraryHeaderProps {
 }
 
 /**
- * LibraryHeader Component
+ * LibraryHeader Component - Cyberpunk Style
  *
- * Header area for the Library view containing:
- * - Search bar (300ms debounce)
- * - View toggle (grid/list) - optional
- * - Create actions (+ New Folder, + New Workflow, + New Prompt)
+ * Header with neon search bar and angular buttons
  */
 export function LibraryHeader({
   searchQuery,
@@ -38,15 +34,14 @@ export function LibraryHeader({
   selectedCount = 0,
   className,
 }: LibraryHeaderProps) {
+  const t = useTranslations('libraryHeader');
   const [localSearch, setLocalSearch] = useState(searchQuery);
   const [createMenuAnchor, setCreateMenuAnchor] = useState<null | HTMLElement>(null);
 
-  // Sync local search with external state
   useEffect(() => {
     setLocalSearch(searchQuery);
   }, [searchQuery]);
 
-  // Debounced search
   useEffect(() => {
     const timer = setTimeout(() => {
       if (localSearch !== searchQuery) {
@@ -77,20 +72,21 @@ export function LibraryHeader({
 
   return (
     <div className={cn('flex items-center gap-4 mb-6', className)} data-testid="library-header">
-      {/* Search bar */}
+      {/* Search bar - Cyberpunk Style */}
       <div className="relative flex-1 max-w-md" role="search">
-        <label htmlFor="library-search" className="sr-only">Search library</label>
-        <Input
+        <label htmlFor="library-search" className="sr-only">{t('searchLibrary')}</label>
+        <input
           id="library-search"
           value={localSearch}
           onChange={(e) => setLocalSearch(e.target.value)}
-          placeholder="Search library..."
-          testId="library-search"
-          className="w-full pl-10"
+          placeholder={t('searchPlaceholder')}
+          data-testid="library-search"
+          className="w-full px-4 py-2.5 pl-10 bg-[#0a0a0f]/80 border border-cyan-500/50 text-cyan-100 font-mono text-sm placeholder:text-cyan-500/40 focus:outline-none focus:border-cyan-400 focus:shadow-[0_0_15px_rgba(0,255,255,0.2)] transition-all"
+          style={{ clipPath: 'polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px))' }}
           aria-describedby={localSearch ? "search-status" : undefined}
         />
         <svg
-          className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400"
+          className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-cyan-500/60"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -106,9 +102,9 @@ export function LibraryHeader({
         {localSearch && (
           <button
             onClick={handleClearSearch}
-            className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-gray-400 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded"
+            className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-cyan-500/60 hover:text-cyan-400 transition-colors"
             data-testid="search-clear"
-            aria-label="Clear search"
+            aria-label={t('clearSearch')}
             type="button"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -117,33 +113,33 @@ export function LibraryHeader({
           </button>
         )}
         <span id="search-status" className="sr-only" aria-live="polite">
-          {localSearch ? `Searching for ${localSearch}` : ''}
+          {localSearch ? t('searchingFor', { query: localSearch }) : ''}
         </span>
       </div>
 
       {/* Selection count indicator */}
       {selectedCount > 0 && (
         <div
-          className="px-3 py-1.5 bg-blue-100 text-blue-700 rounded-md text-sm font-medium"
+          className="px-3 py-1.5 bg-cyan-500/20 text-cyan-400 border border-cyan-500/50 font-mono text-sm"
           role="status"
           aria-live="polite"
         >
-          {selectedCount} {selectedCount === 1 ? 'item' : 'items'} selected
+          {t('selected')}: {selectedCount}
         </div>
       )}
 
-      {/* View mode toggle */}
+      {/* View mode toggle - Cyberpunk Style */}
       {onViewModeChange && (
-        <div className="flex items-center border rounded-md overflow-hidden" role="group" aria-label="View mode">
+        <div className="flex items-center border border-cyan-500/30 overflow-hidden" role="group" aria-label={t('viewMode')}>
           <button
             onClick={() => onViewModeChange('grid')}
             className={cn(
-              'p-2.5 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-inset',
+              'p-2.5 transition-all',
               viewMode === 'grid'
-                ? 'bg-gray-100 text-gray-900'
-                : 'text-gray-500 hover:bg-gray-50'
+                ? 'bg-cyan-500/20 text-cyan-400'
+                : 'text-cyan-100/40 hover:text-cyan-400 hover:bg-cyan-500/10'
             )}
-            aria-label="Grid view"
+            aria-label={t('gridView')}
             aria-pressed={viewMode === 'grid'}
           >
             <LayoutGrid className="w-4 h-4" aria-hidden="true" />
@@ -151,12 +147,12 @@ export function LibraryHeader({
           <button
             onClick={() => onViewModeChange('list')}
             className={cn(
-              'p-2.5 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-inset',
+              'p-2.5 transition-all',
               viewMode === 'list'
-                ? 'bg-gray-100 text-gray-900'
-                : 'text-gray-500 hover:bg-gray-50'
+                ? 'bg-cyan-500/20 text-cyan-400'
+                : 'text-cyan-100/40 hover:text-cyan-400 hover:bg-cyan-500/10'
             )}
-            aria-label="List view"
+            aria-label={t('listView')}
             aria-pressed={viewMode === 'list'}
           >
             <List className="w-4 h-4" aria-hidden="true" />
@@ -164,27 +160,27 @@ export function LibraryHeader({
         </div>
       )}
 
-      {/* Create actions */}
+      {/* Create actions - Cyberpunk Style */}
       <div className="flex items-center gap-2">
-        <Button
-          variant="secondary"
+        <button
           onClick={onCreateFolder}
-          testId="create-folder-button"
-          className="flex items-center gap-2"
+          data-testid="create-folder-button"
+          className="flex items-center gap-2 px-4 py-2.5 bg-transparent border border-cyan-500/50 text-cyan-400 font-mono text-sm uppercase tracking-wider hover:bg-cyan-500/10 hover:border-cyan-400 hover:shadow-[0_0_15px_rgba(0,255,255,0.2)] transition-all"
+          style={{ clipPath: 'polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px))' }}
         >
           <FolderPlus className="w-4 h-4" />
-          <span className="hidden sm:inline">New Folder</span>
-        </Button>
+          <span className="hidden sm:inline">{t('folder')}</span>
+        </button>
 
-        <Button
-          variant="primary"
+        <button
           onClick={handleCreateMenuOpen}
-          testId="create-menu-button"
-          className="flex items-center gap-2"
+          data-testid="create-menu-button"
+          className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-cyan-500 to-cyan-400 text-[#050508] font-bold uppercase tracking-wider text-sm hover:shadow-[0_0_20px_rgba(0,255,255,0.4)] transition-all"
+          style={{ clipPath: 'polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px))' }}
         >
           <Plus className="w-4 h-4" />
-          <span className="hidden sm:inline">Create</span>
-        </Button>
+          <span className="hidden sm:inline">{t('create')}</span>
+        </button>
 
         <Menu
           anchorEl={createMenuAnchor}
@@ -192,20 +188,41 @@ export function LibraryHeader({
           onClose={handleCreateMenuClose}
           anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
           transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+          sx={{
+            '& .MuiPaper-root': {
+              backgroundColor: '#0a0a0f',
+              border: '1px solid rgba(0, 255, 255, 0.3)',
+              boxShadow: '0 0 30px rgba(0, 255, 255, 0.15)',
+              marginTop: '8px',
+            },
+            '& .MuiMenuItem-root': {
+              fontFamily: 'monospace',
+              fontSize: '0.875rem',
+              color: '#a5f3fc',
+              padding: '12px 16px',
+              '&:hover': {
+                backgroundColor: 'rgba(0, 255, 255, 0.1)',
+              },
+            },
+          }}
         >
           <MenuItem onClick={() => handleCreateAction(onCreateWorkflow)}>
             <ListItemIcon>
-              <svg className="w-5 h-5 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-5 h-5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
               </svg>
             </ListItemIcon>
-            <ListItemText>New Workflow</ListItemText>
+            <ListItemText sx={{ '& .MuiTypography-root': { fontFamily: 'monospace', textTransform: 'uppercase', letterSpacing: '0.05em' } }}>
+              {t('newWorkflow')}
+            </ListItemText>
           </MenuItem>
           <MenuItem onClick={() => handleCreateAction(onCreatePrompt)}>
             <ListItemIcon>
-              <FileText className="w-5 h-5 text-green-500" />
+              <FileText className="w-5 h-5 text-pink-400" />
             </ListItemIcon>
-            <ListItemText>New Prompt</ListItemText>
+            <ListItemText sx={{ '& .MuiTypography-root': { fontFamily: 'monospace', textTransform: 'uppercase', letterSpacing: '0.05em' } }}>
+              {t('newPrompt')}
+            </ListItemText>
           </MenuItem>
         </Menu>
       </div>

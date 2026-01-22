@@ -1,47 +1,31 @@
 "use client";
 
 import { useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { X, FolderPlus, FolderInput, FolderMinus, Trash2 } from 'lucide-react';
 import { cn } from '@/shared/lib/utils/cn';
 import { FolderWithItems } from '@/server/folders/types';
 import { FolderSelectMenu } from './FolderSelectMenu';
 
 export interface SelectionToolbarProps {
-  /** Number of selected items */
   selectedCount: number;
-  /** Available folders for move/add operations */
   folders: FolderWithItems[];
-  /** Current folder ID (for "remove from folder" action) */
   currentFolderId?: string | null;
-  /** Whether we're in a folder view (enables "remove from folder") */
   isInFolderView?: boolean;
-  /** Whether any folders are in the selection (disables folder operations) */
   hasFoldersSelected?: boolean;
-  /** Called when "Add to Folder" action is selected */
   onAddToFolder: (folderId: string) => void;
-  /** Called when "Move to Folder" action is selected */
   onMoveToFolder: (folderId: string) => void;
-  /** Called when "Remove from Folder" action is selected */
   onRemoveFromFolder: () => void;
-  /** Called when "Move to Trash" action is selected */
   onMoveToTrash: () => void;
-  /** Called when "Create Folder" is clicked (optional) */
   onCreateFolder?: () => void;
-  /** Called when selection is cleared */
   onClearSelection: () => void;
-  /** Additional class names */
   className?: string;
 }
 
 /**
- * SelectionToolbar Component
+ * SelectionToolbar Component - Cyberpunk Style
  *
- * Floating action bar displayed when items are selected.
- * Provides bulk operations like:
- * - Add to Folder
- * - Move to Folder
- * - Remove from Folder (when in folder view)
- * - Move to Trash
+ * Floating neon action bar for bulk operations
  */
 export function SelectionToolbar({
   selectedCount,
@@ -57,6 +41,7 @@ export function SelectionToolbar({
   onClearSelection,
   className,
 }: SelectionToolbarProps) {
+  const t = useTranslations('selectionToolbar');
   const [addMenuAnchor, setAddMenuAnchor] = useState<HTMLElement | null>(null);
   const [moveMenuAnchor, setMoveMenuAnchor] = useState<HTMLElement | null>(null);
 
@@ -74,42 +59,43 @@ export function SelectionToolbar({
     setMoveMenuAnchor(null);
   };
 
-  // Filter out current folder from the move/add options
   const availableFolders = folders.filter((f) => f.id !== currentFolderId);
 
   return (
     <div
       className={cn(
         'fixed bottom-6 left-1/2 -translate-x-1/2 z-50',
-        'bg-gray-900 text-white rounded-lg shadow-lg',
+        'bg-[#0a0a0f]/95 backdrop-blur-md border border-cyan-500/50',
         'flex items-center gap-2 px-4 py-3',
         'animate-in slide-in-from-bottom-4 fade-in duration-200',
+        'shadow-[0_0_30px_rgba(0,255,255,0.2)]',
         className
       )}
+      style={{ clipPath: 'polygon(10px 0, calc(100% - 10px) 0, 100% 10px, 100% calc(100% - 10px), calc(100% - 10px) 100%, 10px 100%, 0 calc(100% - 10px), 0 10px)' }}
       data-testid="selection-toolbar"
       role="toolbar"
       aria-label="Bulk actions toolbar"
     >
       {/* Selection count */}
-      <span className="text-sm font-medium mr-2" role="status" aria-live="polite">
-        {selectedCount} {selectedCount === 1 ? 'item' : 'items'} selected
+      <span className="text-sm font-mono text-cyan-400 mr-2" role="status" aria-live="polite">
+        {t('selected').toUpperCase()}: <span className="text-white">{selectedCount}</span> {selectedCount === 1 ? t('item').toUpperCase() : t('items').toUpperCase()}
       </span>
 
-      {/* Folder operations - hidden when folders are selected */}
+      {/* Folder operations */}
       {!hasFoldersSelected && (
         <>
-          <div className="h-4 w-px bg-gray-600 mx-2" aria-hidden="true" />
+          <div className="h-4 w-px bg-cyan-500/30 mx-2" aria-hidden="true" />
 
           {/* Add to Folder */}
           <button
             onClick={(e) => setAddMenuAnchor(e.currentTarget)}
-            className="flex items-center gap-1.5 px-3 py-2.5 rounded hover:bg-gray-700 transition-colors text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-900 min-h-[44px]"
-            aria-label="Add to Folder"
+            className="flex items-center gap-1.5 px-3 py-2 text-cyan-400 font-mono text-xs uppercase hover:bg-cyan-500/10 hover:text-cyan-300 transition-all"
+            aria-label={t('add')}
             aria-haspopup="true"
             aria-expanded={Boolean(addMenuAnchor)}
           >
             <FolderPlus className="w-4 h-4" aria-hidden="true" />
-            <span className="hidden sm:inline">Add to Folder</span>
+            <span className="hidden sm:inline">{t('add')}</span>
           </button>
 
           <FolderSelectMenu
@@ -124,13 +110,13 @@ export function SelectionToolbar({
           {/* Move to Folder */}
           <button
             onClick={(e) => setMoveMenuAnchor(e.currentTarget)}
-            className="flex items-center gap-1.5 px-3 py-2.5 rounded hover:bg-gray-700 transition-colors text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-900 min-h-[44px]"
-            aria-label="Move to Folder"
+            className="flex items-center gap-1.5 px-3 py-2 text-cyan-400 font-mono text-xs uppercase hover:bg-cyan-500/10 hover:text-cyan-300 transition-all"
+            aria-label={t('move')}
             aria-haspopup="true"
             aria-expanded={Boolean(moveMenuAnchor)}
           >
             <FolderInput className="w-4 h-4" aria-hidden="true" />
-            <span className="hidden sm:inline">Move</span>
+            <span className="hidden sm:inline">{t('move')}</span>
           </button>
 
           <FolderSelectMenu
@@ -142,39 +128,39 @@ export function SelectionToolbar({
             onCreateFolder={onCreateFolder}
           />
 
-          {/* Remove from Folder (only in folder view) */}
+          {/* Remove from Folder */}
           {isInFolderView && currentFolderId && (
             <button
               onClick={onRemoveFromFolder}
-              className="flex items-center gap-1.5 px-3 py-2.5 rounded hover:bg-gray-700 transition-colors text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-900 min-h-[44px]"
-              aria-label="Remove from Folder"
+              className="flex items-center gap-1.5 px-3 py-2 text-cyan-400 font-mono text-xs uppercase hover:bg-cyan-500/10 hover:text-cyan-300 transition-all"
+              aria-label={t('remove')}
             >
               <FolderMinus className="w-4 h-4" aria-hidden="true" />
-              <span className="hidden sm:inline">Remove</span>
+              <span className="hidden sm:inline">{t('remove')}</span>
             </button>
           )}
         </>
       )}
 
-      <div className="h-4 w-px bg-gray-600 mx-2" aria-hidden="true" />
+      <div className="h-4 w-px bg-cyan-500/30 mx-2" aria-hidden="true" />
 
-      {/* Move to Trash */}
+      {/* Move to Trash - Pink accent */}
       <button
         onClick={onMoveToTrash}
-        className="flex items-center gap-1.5 px-3 py-2.5 rounded hover:bg-red-600 transition-colors text-sm text-red-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-900 min-h-[44px]"
-        aria-label="Move to Trash"
+        className="flex items-center gap-1.5 px-3 py-2 text-pink-400 font-mono text-xs uppercase hover:bg-pink-500/10 hover:text-pink-300 transition-all"
+        aria-label={t('trash')}
       >
         <Trash2 className="w-4 h-4" aria-hidden="true" />
-        <span className="hidden sm:inline">Trash</span>
+        <span className="hidden sm:inline">{t('trash')}</span>
       </button>
 
-      <div className="h-4 w-px bg-gray-600 mx-2" aria-hidden="true" />
+      <div className="h-4 w-px bg-cyan-500/30 mx-2" aria-hidden="true" />
 
       {/* Clear selection */}
       <button
         onClick={onClearSelection}
-        className="p-2.5 rounded hover:bg-gray-700 transition-colors focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-900 min-w-[44px] min-h-[44px] flex items-center justify-center"
-        aria-label="Clear selection (Escape)"
+        className="p-2 text-cyan-400 hover:text-cyan-300 hover:bg-cyan-500/10 transition-all"
+        aria-label={t('clearSelection')}
       >
         <X className="w-4 h-4" aria-hidden="true" />
       </button>

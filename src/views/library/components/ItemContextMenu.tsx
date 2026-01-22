@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from 'react';
+import { useTranslations } from 'next-intl';
 import {
   Menu,
   MenuItem,
@@ -99,6 +100,7 @@ export function ItemContextMenu({
   onCopyLink,
   onCreateFolder,
 }: ItemContextMenuProps) {
+  const t = useTranslations('itemContextMenu');
   const [addFolderAnchor, setAddFolderAnchor] = useState<HTMLElement | null>(null);
   const [moveFolderAnchor, setMoveFolderAnchor] = useState<HTMLElement | null>(null);
 
@@ -158,7 +160,7 @@ export function ItemContextMenu({
                     <ListItemIcon>
                       <FolderOpen className="w-4 h-4" />
                     </ListItemIcon>
-                    <ListItemText>Open</ListItemText>
+                    <ListItemText>{t('open')}</ListItemText>
                   </MenuItem>
                 )}
                 {onRename && (
@@ -171,7 +173,7 @@ export function ItemContextMenu({
                     <ListItemIcon>
                       <Edit className="w-4 h-4" />
                     </ListItemIcon>
-                    <ListItemText>Rename</ListItemText>
+                    <ListItemText>{t('rename')}</ListItemText>
                   </MenuItem>
                 )}
                 {onCopyLink && isPublic && (
@@ -184,7 +186,7 @@ export function ItemContextMenu({
                     <ListItemIcon>
                       <Link2 className="w-4 h-4" />
                     </ListItemIcon>
-                    <ListItemText>Copy Link</ListItemText>
+                    <ListItemText>{t('copyLink')}</ListItemText>
                   </MenuItem>
                 )}
                 <Divider sx={{ my: 0.5 }} />
@@ -204,7 +206,7 @@ export function ItemContextMenu({
                     <ListItemIcon>
                       <Eye className="w-4 h-4" />
                     </ListItemIcon>
-                    <ListItemText>Preview</ListItemText>
+                    <ListItemText>{t('preview')}</ListItemText>
                   </MenuItem>
                 )}
                 {onOpen && (
@@ -218,7 +220,7 @@ export function ItemContextMenu({
                       <ExternalLink className="w-4 h-4" />
                     </ListItemIcon>
                     <ListItemText>
-                      {singleItem?.type === 'prompt' ? 'Open in Prompt Studio' : 'Edit Workflow'}
+                      {singleItem?.type === 'prompt' ? t('openInPromptStudio') : t('editWorkflow')}
                     </ListItemText>
                   </MenuItem>
                 )}
@@ -240,7 +242,7 @@ export function ItemContextMenu({
                 <ListItemIcon>
                   <FolderPlus className="w-4 h-4" />
                 </ListItemIcon>
-                <ListItemText>Add to Folder</ListItemText>
+                <ListItemText>{t('addToFolder')}</ListItemText>
               </MenuItem>
             )}
 
@@ -253,7 +255,7 @@ export function ItemContextMenu({
                 <ListItemIcon>
                   <FolderInput className="w-4 h-4" />
                 </ListItemIcon>
-                <ListItemText>Move to Folder</ListItemText>
+                <ListItemText>{t('moveToFolder')}</ListItemText>
               </MenuItem>
             )}
 
@@ -268,7 +270,7 @@ export function ItemContextMenu({
                 <ListItemIcon>
                   <FolderMinus className="w-4 h-4" />
                 </ListItemIcon>
-                <ListItemText>Remove from Folder</ListItemText>
+                <ListItemText>{t('removeFromFolder')}</ListItemText>
               </MenuItem>
             )}
 
@@ -287,7 +289,7 @@ export function ItemContextMenu({
             <ListItemIcon>
               <Copy className="w-4 h-4" />
             </ListItemIcon>
-            <ListItemText>Duplicate</ListItemText>
+            <ListItemText>{t('duplicate')}</ListItemText>
           </MenuItem>
         )}
 
@@ -303,7 +305,7 @@ export function ItemContextMenu({
             <ListItemIcon sx={{ color: 'inherit' }}>
               <Trash2 className="w-4 h-4" />
             </ListItemIcon>
-            <ListItemText>Move to Trash</ListItemText>
+            <ListItemText>{t('moveToTrash')}</ListItemText>
           </MenuItem>
         )}
       </Menu>

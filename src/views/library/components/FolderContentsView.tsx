@@ -1,6 +1,7 @@
 'use client';
 
 import { MouseEvent, useMemo, useState, KeyboardEvent } from 'react';
+import { useTranslations } from 'next-intl';
 import { FolderCard } from './FolderCard';
 import { EmptyState, EmptyStateIcons } from '@/shared/ui/molecules/EmptyState';
 import { WorkflowWithMeta, PromptWithMeta, FolderWithItems } from '@/server/folders/types';
@@ -35,14 +36,9 @@ interface FolderContentsViewProps {
 }
 
 /**
- * FolderContentsView Component
+ * FolderContentsView Component - Cyberpunk Style
  *
- * Displays the contents of a folder or special view (trash, uncategorized, root).
- * Features:
- * - Grid of folders, workflows, and prompts
- * - Selection mechanics (click to select)
- * - Click on title to drill into item
- * - Empty states with contextual actions
+ * Grid of neon-bordered cards with angular corners
  */
 export function FolderContentsView({
   view,
@@ -63,10 +59,10 @@ export function FolderContentsView({
   isLoading,
   className,
 }: FolderContentsViewProps) {
-  // Grid/list layout classes
+  const t = useTranslations('folderContents');
   const gridLayoutClass = 'grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4';
   const listLayoutClass = 'flex flex-col gap-2';
-  // Filter items based on search query
+
   const filteredFolders = useMemo(() => {
     if (!searchQuery) return folders;
     const query = searchQuery.toLowerCase();
@@ -105,73 +101,80 @@ export function FolderContentsView({
   const hasContent =
     folders.length > 0 || workflows.length > 0 || prompts.length > 0;
 
-  // Render loading state
+  // Loading state - Cyberpunk
   if (isLoading) {
     return (
       <div className={cn('flex items-center justify-center py-20', className)} role="status" aria-live="polite">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600" aria-hidden="true" />
-        <span className="sr-only">Loading library contents...</span>
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-12 h-12 border-2 border-cyan-500/30 border-t-cyan-400 rounded-full animate-spin" style={{ boxShadow: '0 0 20px rgba(0,255,255,0.2)' }} aria-hidden="true" />
+          <span className="text-cyan-400 font-mono text-sm uppercase tracking-wider">{t('scanningVault')}</span>
+        </div>
       </div>
     );
   }
 
-  // Render empty state
+  // Empty states - Cyberpunk
   if (isEmpty) {
-    // Search with no results
     if (searchQuery && hasContent) {
       return (
-        <EmptyState
-          icon={EmptyStateIcons.search}
-          title="No results found"
-          description={`No items match "${searchQuery}". Try a different search term.`}
-          className={className}
-        />
+        <div className={cn('flex flex-col items-center justify-center py-16', className)}>
+          <div className="text-cyan-500/30 mb-4">
+            <svg className="w-16 h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+          </div>
+          <h3 className="text-cyan-400 font-mono text-lg uppercase mb-2">{t('noResultsFound')}</h3>
+          <p className="text-cyan-100/40 font-mono text-sm">{t('queryReturned', { query: searchQuery })}</p>
+        </div>
       );
     }
 
-    // View-specific empty states
     switch (view) {
       case 'trash':
         return (
-          <EmptyState
-            icon={
+          <div className={cn('flex flex-col items-center justify-center py-16', className)}>
+            <div className="text-pink-500/30 mb-4">
               <svg className="w-16 h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
               </svg>
-            }
-            title="Trash is empty"
-            description="Items you delete will appear here for 30 days before being permanently removed."
-            className={className}
-          />
+            </div>
+            <h3 className="text-pink-400 font-mono text-lg uppercase mb-2">{t('recycleBinEmpty')}</h3>
+            <p className="text-cyan-100/40 font-mono text-sm">{t('deletedItemsPurged')}</p>
+          </div>
         );
 
       case 'uncategorized':
         return (
-          <EmptyState
-            icon={
+          <div className={cn('flex flex-col items-center justify-center py-16', className)}>
+            <div className="text-green-500/30 mb-4">
               <svg className="w-16 h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
-            }
-            title="All items are organized"
-            description="Great job! All your workflows and prompts are in folders."
-            className={className}
-          />
+            </div>
+            <h3 className="text-green-400 font-mono text-lg uppercase mb-2">{t('allItemsOrganized')}</h3>
+            <p className="text-cyan-100/40 font-mono text-sm">{t('allAssetsCategorized')}</p>
+          </div>
         );
 
       case 'folder':
         return (
-          <EmptyState
-            icon={EmptyStateIcons.library}
-            title="This folder is empty"
-            description="Drag items here or use 'Add to Folder' from any item's menu."
-            actions={
-              onCreateWorkflow
-                ? [{ label: 'Create Workflow', onClick: onCreateWorkflow }]
-                : undefined
-            }
-            className={className}
-          />
+          <div className={cn('flex flex-col items-center justify-center py-16', className)}>
+            <div className="text-cyan-500/30 mb-4">
+              <svg className="w-16 h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
+              </svg>
+            </div>
+            <h3 className="text-cyan-400 font-mono text-lg uppercase mb-2">{t('directoryEmpty')}</h3>
+            <p className="text-cyan-100/40 font-mono text-sm mb-4">{t('dragItemsHere')}</p>
+            {onCreateWorkflow && (
+              <button
+                onClick={onCreateWorkflow}
+                className="px-4 py-2 bg-cyan-500/20 border border-cyan-500/50 text-cyan-400 font-mono text-sm uppercase hover:bg-cyan-500/30 hover:border-cyan-400 transition-all"
+              >
+                [{t('createWorkflow')}]
+              </button>
+            )}
+          </div>
         );
 
       case 'root':
@@ -179,12 +182,12 @@ export function FolderContentsView({
         return (
           <EmptyState
             icon={EmptyStateIcons.library}
-            title="Welcome to your Library"
-            description="Create folders to organize your workflows and prompts, or start by creating your first workflow."
+            title={t('welcomeTitle')}
+            description={t('welcomeDescription')}
             actions={[
-              ...(onCreateFolder ? [{ label: 'Create Folder', onClick: onCreateFolder }] : []),
+              ...(onCreateFolder ? [{ label: t('createFolder'), onClick: onCreateFolder }] : []),
               ...(onCreateWorkflow
-                ? [{ label: 'Create Workflow', onClick: onCreateWorkflow, variant: 'secondary' as const }]
+                ? [{ label: t('createWorkflow'), onClick: onCreateWorkflow, variant: 'secondary' as const }]
                 : []),
             ]}
             className={className}
@@ -194,12 +197,12 @@ export function FolderContentsView({
   }
 
   return (
-    <div className={cn('space-y-6', className)} role="region" aria-label="Library contents">
+    <div className={cn('space-y-8', className)} role="region" aria-label="Library contents">
       {/* Folders section */}
       {filteredFolders.length > 0 && (
         <section aria-labelledby="folders-heading">
-          <h3 id="folders-heading" className="text-sm font-medium text-gray-500 mb-3">
-            Folders ({filteredFolders.length})
+          <h3 id="folders-heading" className="text-xs font-mono text-cyan-500/70 uppercase tracking-wider mb-3">
+            {'//'} {t('directories')} [{filteredFolders.length}]
           </h3>
           <div
             className={viewMode === 'grid' ? gridLayoutClass : listLayoutClass}
@@ -232,8 +235,8 @@ export function FolderContentsView({
       {/* Workflows section */}
       {filteredWorkflows.length > 0 && (
         <section aria-labelledby="workflows-heading">
-          <h3 id="workflows-heading" className="text-sm font-medium text-gray-500 mb-3">
-            Workflows ({filteredWorkflows.length})
+          <h3 id="workflows-heading" className="text-xs font-mono text-cyan-500/70 uppercase tracking-wider mb-3">
+            {'//'} {t('workflows')} [{filteredWorkflows.length}]
           </h3>
           <div
             className={viewMode === 'grid' ? gridLayoutClass : listLayoutClass}
@@ -257,8 +260,8 @@ export function FolderContentsView({
       {/* Prompts section */}
       {filteredPrompts.length > 0 && (
         <section aria-labelledby="prompts-heading">
-          <h3 id="prompts-heading" className="text-sm font-medium text-gray-500 mb-3">
-            Prompts ({filteredPrompts.length})
+          <h3 id="prompts-heading" className="text-xs font-mono text-pink-500/70 uppercase tracking-wider mb-3">
+            {'//'} {t('miniPrompts')} [{filteredPrompts.length}]
           </h3>
           <div
             className={viewMode === 'grid' ? gridLayoutClass : listLayoutClass}
@@ -282,7 +285,7 @@ export function FolderContentsView({
   );
 }
 
-// Internal workflow card component
+// Cyberpunk Workflow Card
 interface WorkflowItemCardProps {
   workflow: WorkflowWithMeta;
   isSelected: boolean;
@@ -310,16 +313,16 @@ function WorkflowItemCard({ workflow, isSelected, onSelect, onOpen, viewMode = '
     }
   };
 
-  // List view
+  // List view - Cyberpunk
   if (viewMode === 'list') {
     return (
       <div
         className={cn(
-          'relative bg-white rounded-lg border px-4 py-3 transition-all duration-200 cursor-pointer',
-          'hover:shadow-sm hover:border-gray-300',
-          'focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2',
+          'relative bg-[#0a0a0f]/80 backdrop-blur-sm border px-4 py-3 transition-all duration-200 cursor-pointer',
           'flex items-center gap-4',
-          isSelected && 'border-purple-500 bg-purple-50 ring-2 ring-purple-200'
+          isSelected
+            ? 'border-cyan-400 bg-cyan-500/10 shadow-[0_0_15px_rgba(0,255,255,0.2)]'
+            : 'border-cyan-500/30 hover:border-cyan-400/60 hover:bg-cyan-500/5'
         )}
         onClick={handleClick}
         onDoubleClick={onOpen}
@@ -331,27 +334,24 @@ function WorkflowItemCard({ workflow, isSelected, onSelect, onOpen, viewMode = '
         tabIndex={0}
         aria-label={`${workflow.name} workflow, ${workflow._count.stages} stages, by ${workflow.user.username}${isSelected ? ', selected' : ''}`}
       >
-        {/* Selection checkbox */}
         <div className={cn('transition-opacity', isSelected || isHovered ? 'opacity-100' : 'opacity-0')}>
           <input
             type="checkbox"
             checked={isSelected}
             onChange={() => {}}
-            className="w-5 h-5 rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+            className="w-4 h-4 bg-transparent border-2 border-cyan-500/50 text-cyan-500 focus:ring-cyan-500/50"
             onClick={(e) => e.stopPropagation()}
             tabIndex={-1}
             aria-hidden="true"
           />
         </div>
 
-        {/* Workflow icon */}
-        <div className="p-2 bg-purple-50 rounded-lg flex-shrink-0">
-          <svg className="w-5 h-5 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+        <div className="p-2 bg-cyan-500/10 border border-cyan-500/30 flex-shrink-0">
+          <svg className="w-5 h-5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
           </svg>
         </div>
 
-        {/* Content */}
         <div className="flex-1 min-w-0">
           <button
             data-title
@@ -359,35 +359,35 @@ function WorkflowItemCard({ workflow, isSelected, onSelect, onOpen, viewMode = '
               e.stopPropagation();
               onOpen();
             }}
-            className="font-medium text-gray-900 hover:text-purple-600 transition-colors focus:outline-none focus:underline text-left"
+            className="font-mono text-cyan-100 hover:text-cyan-400 transition-colors focus:outline-none text-left"
             tabIndex={-1}
           >
             {workflow.name}
           </button>
           {workflow.description && (
-            <p className="text-xs text-gray-400 truncate mt-0.5">{workflow.description}</p>
+            <p className="text-xs text-cyan-100/40 truncate mt-0.5 font-mono">{workflow.description}</p>
           )}
         </div>
 
-        {/* Meta info */}
-        <div className="flex items-center gap-3 text-sm text-gray-500 flex-shrink-0">
-          <span>{workflow._count.stages} stages</span>
-          <span className="text-gray-300">•</span>
+        <div className="flex items-center gap-3 text-xs text-cyan-100/50 font-mono flex-shrink-0">
+          <span className="text-cyan-400">{workflow._count.stages} stages</span>
+          <span className="text-cyan-500/30">|</span>
           <span>{workflow.user.username}</span>
         </div>
       </div>
     );
   }
 
-  // Grid view (default)
+  // Grid view - Cyberpunk
   return (
     <div
       className={cn(
-        'relative bg-white rounded-lg border p-4 transition-all duration-200 cursor-pointer',
-        'hover:shadow-md hover:border-gray-300',
-        'focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2',
-        isSelected && 'border-purple-500 bg-purple-50 ring-2 ring-purple-200'
+        'relative bg-[#0a0a0f]/80 backdrop-blur-sm border p-4 transition-all duration-200 cursor-pointer',
+        isSelected
+          ? 'border-cyan-400 bg-cyan-500/10 shadow-[0_0_20px_rgba(0,255,255,0.2)]'
+          : 'border-cyan-500/30 hover:border-cyan-400/60 hover:bg-cyan-500/5'
       )}
+      style={{ clipPath: 'polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px))' }}
       onClick={handleClick}
       onDoubleClick={onOpen}
       onKeyDown={handleKeyDown}
@@ -398,7 +398,10 @@ function WorkflowItemCard({ workflow, isSelected, onSelect, onOpen, viewMode = '
       tabIndex={0}
       aria-label={`${workflow.name} workflow, ${workflow._count.stages} stages, by ${workflow.user.username}${isSelected ? ', selected' : ''}`}
     >
-      {/* Selection checkbox */}
+      {/* Corner accents */}
+      <div className="absolute top-0 right-0 w-3 h-3 border-t border-r border-cyan-500/50"></div>
+      <div className="absolute bottom-0 left-0 w-3 h-3 border-b border-l border-cyan-500/50"></div>
+
       <div
         className={cn(
           'absolute top-3 left-3 transition-opacity',
@@ -409,46 +412,42 @@ function WorkflowItemCard({ workflow, isSelected, onSelect, onOpen, viewMode = '
           type="checkbox"
           checked={isSelected}
           onChange={() => {}}
-          className="w-5 h-5 rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+          className="w-4 h-4 bg-transparent border-2 border-cyan-500/50 text-cyan-500 focus:ring-cyan-500/50"
           onClick={(e) => e.stopPropagation()}
           tabIndex={-1}
           aria-hidden="true"
         />
       </div>
 
-      {/* Workflow icon */}
       <div className="flex justify-center mb-3 mt-4">
-        <div className="p-3 bg-purple-50 rounded-lg">
-          <svg className="w-8 h-8 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+        <div className="p-3 bg-cyan-500/10 border border-cyan-500/30">
+          <svg className="w-8 h-8 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
           </svg>
         </div>
       </div>
 
-      {/* Workflow name */}
       <button
         data-title
         onClick={(e) => {
           e.stopPropagation();
           onOpen();
         }}
-        className="w-full text-center font-medium text-gray-900 hover:text-purple-600 transition-colors focus:outline-none focus:underline min-h-[44px] flex items-center justify-center px-1 break-words"
+        className="w-full text-center font-mono text-cyan-100 hover:text-cyan-400 transition-colors focus:outline-none min-h-[44px] flex items-center justify-center px-1 break-words"
         style={{ wordBreak: 'break-word' }}
         tabIndex={-1}
       >
         {workflow.name}
       </button>
 
-      {/* Meta info */}
-      <div className="flex items-center justify-center gap-2 mt-2 text-sm text-gray-500">
-        <span>{workflow._count.stages} stages</span>
-        <span className="text-gray-300" aria-hidden="true">|</span>
+      <div className="flex items-center justify-center gap-2 mt-2 text-xs text-cyan-100/50 font-mono">
+        <span className="text-cyan-400">{workflow._count.stages}</span>
+        <span className="text-cyan-500/30">|</span>
         <span>{workflow.user.username}</span>
       </div>
 
-      {/* Description */}
       {workflow.description && (
-        <p className="mt-2 text-xs text-gray-400 text-center line-clamp-2">
+        <p className="mt-2 text-xs text-cyan-100/30 text-center line-clamp-2 font-mono">
           {workflow.description}
         </p>
       )}
@@ -456,7 +455,7 @@ function WorkflowItemCard({ workflow, isSelected, onSelect, onOpen, viewMode = '
   );
 }
 
-// Internal prompt card component
+// Cyberpunk Prompt Card
 interface PromptItemCardProps {
   prompt: PromptWithMeta;
   isSelected: boolean;
@@ -484,16 +483,16 @@ function PromptItemCard({ prompt, isSelected, onSelect, onOpen, viewMode = 'grid
     }
   };
 
-  // List view
+  // List view - Cyberpunk
   if (viewMode === 'list') {
     return (
       <div
         className={cn(
-          'relative bg-white rounded-lg border px-4 py-3 transition-all duration-200 cursor-pointer',
-          'hover:shadow-sm hover:border-green-300',
-          'focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2',
+          'relative bg-[#0a0a0f]/80 backdrop-blur-sm border px-4 py-3 transition-all duration-200 cursor-pointer',
           'flex items-center gap-4',
-          isSelected && 'border-green-500 bg-green-50 ring-2 ring-green-200'
+          isSelected
+            ? 'border-pink-400 bg-pink-500/10 shadow-[0_0_15px_rgba(255,0,102,0.2)]'
+            : 'border-pink-500/30 hover:border-pink-400/60 hover:bg-pink-500/5'
         )}
         onClick={handleClick}
         onDoubleClick={onOpen}
@@ -505,27 +504,24 @@ function PromptItemCard({ prompt, isSelected, onSelect, onOpen, viewMode = 'grid
         tabIndex={0}
         aria-label={`${prompt.name} prompt, by ${prompt.user.username}${isSelected ? ', selected' : ''}`}
       >
-        {/* Selection checkbox */}
         <div className={cn('transition-opacity', isSelected || isHovered ? 'opacity-100' : 'opacity-0')}>
           <input
             type="checkbox"
             checked={isSelected}
             onChange={() => {}}
-            className="w-5 h-5 rounded border-gray-300 text-green-600 focus:ring-green-500"
+            className="w-4 h-4 bg-transparent border-2 border-pink-500/50 text-pink-500 focus:ring-pink-500/50"
             onClick={(e) => e.stopPropagation()}
             tabIndex={-1}
             aria-hidden="true"
           />
         </div>
 
-        {/* Prompt icon */}
-        <div className="p-2 bg-green-50 rounded-lg flex-shrink-0">
-          <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+        <div className="p-2 bg-pink-500/10 border border-pink-500/30 flex-shrink-0">
+          <svg className="w-5 h-5 text-pink-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
           </svg>
         </div>
 
-        {/* Content */}
         <div className="flex-1 min-w-0">
           <button
             data-title
@@ -533,34 +529,34 @@ function PromptItemCard({ prompt, isSelected, onSelect, onOpen, viewMode = 'grid
               e.stopPropagation();
               onOpen();
             }}
-            className="font-medium text-gray-900 hover:text-green-600 transition-colors focus:outline-none focus:underline text-left"
+            className="font-mono text-cyan-100 hover:text-pink-400 transition-colors focus:outline-none text-left"
             tabIndex={-1}
           >
             {prompt.name}
           </button>
           {prompt.description && (
-            <p className="text-xs text-gray-400 truncate mt-0.5">{prompt.description}</p>
+            <p className="text-xs text-cyan-100/40 truncate mt-0.5 font-mono">{prompt.description}</p>
           )}
         </div>
 
-        {/* Meta info */}
-        <div className="flex items-center gap-3 text-sm text-gray-500 flex-shrink-0">
-          <span className="text-green-600 text-xs font-medium bg-green-50 px-2 py-0.5 rounded">Prompt</span>
-          <span>{prompt.user.username}</span>
+        <div className="flex items-center gap-3 text-xs flex-shrink-0">
+          <span className="px-2 py-0.5 font-mono bg-pink-500/20 text-pink-400 border border-pink-500/50">PROMPT</span>
+          <span className="text-cyan-100/50 font-mono">{prompt.user.username}</span>
         </div>
       </div>
     );
   }
 
-  // Grid view (default)
+  // Grid view - Cyberpunk
   return (
     <div
       className={cn(
-        'relative bg-white rounded-lg border p-4 transition-all duration-200 cursor-pointer',
-        'hover:shadow-md hover:border-green-300',
-        'focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2',
-        isSelected && 'border-green-500 bg-green-50 ring-2 ring-green-200'
+        'relative bg-[#0a0a0f]/80 backdrop-blur-sm border p-4 transition-all duration-200 cursor-pointer',
+        isSelected
+          ? 'border-pink-400 bg-pink-500/10 shadow-[0_0_20px_rgba(255,0,102,0.2)]'
+          : 'border-pink-500/30 hover:border-pink-400/60 hover:bg-pink-500/5'
       )}
+      style={{ clipPath: 'polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px))' }}
       onClick={handleClick}
       onDoubleClick={onOpen}
       onKeyDown={handleKeyDown}
@@ -571,7 +567,10 @@ function PromptItemCard({ prompt, isSelected, onSelect, onOpen, viewMode = 'grid
       tabIndex={0}
       aria-label={`${prompt.name} prompt, by ${prompt.user.username}${isSelected ? ', selected' : ''}`}
     >
-      {/* Selection checkbox */}
+      {/* Corner accents */}
+      <div className="absolute top-0 right-0 w-3 h-3 border-t border-r border-pink-500/50"></div>
+      <div className="absolute bottom-0 left-0 w-3 h-3 border-b border-l border-pink-500/50"></div>
+
       <div
         className={cn(
           'absolute top-3 left-3 transition-opacity',
@@ -582,54 +581,41 @@ function PromptItemCard({ prompt, isSelected, onSelect, onOpen, viewMode = 'grid
           type="checkbox"
           checked={isSelected}
           onChange={() => {}}
-          className="w-5 h-5 rounded border-gray-300 text-green-600 focus:ring-green-500"
+          className="w-4 h-4 bg-transparent border-2 border-pink-500/50 text-pink-500 focus:ring-pink-500/50"
           onClick={(e) => e.stopPropagation()}
           tabIndex={-1}
           aria-hidden="true"
         />
       </div>
 
-      {/* File icon - distinctive from folder */}
       <div className="flex justify-center mb-3 mt-4">
-        <div className="relative">
-          {/* File shape */}
-          <svg className="w-12 h-14 text-green-100" viewBox="0 0 48 56" fill="currentColor" aria-hidden="true">
-            <path d="M4 4C4 1.79086 5.79086 0 8 0H30L44 14V52C44 54.2091 42.2091 56 40 56H8C5.79086 56 4 54.2091 4 52V4Z" />
-            <path d="M30 0L44 14H34C31.7909 14 30 12.2091 30 10V0Z" fill="rgba(0,0,0,0.1)" />
+        <div className="p-3 bg-pink-500/10 border border-pink-500/30">
+          <svg className="w-8 h-8 text-pink-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
           </svg>
-          {/* Code icon on file */}
-          <div className="absolute inset-0 flex items-center justify-center mt-2">
-            <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
-            </svg>
-          </div>
         </div>
       </div>
 
-      {/* Prompt name - fixed text overflow */}
       <button
         data-title
         onClick={(e) => {
           e.stopPropagation();
           onOpen();
         }}
-        className="w-full text-center font-medium text-gray-900 hover:text-green-600 transition-colors focus:outline-none focus:underline min-h-[44px] flex items-center justify-center px-1 break-words"
+        className="w-full text-center font-mono text-cyan-100 hover:text-pink-400 transition-colors focus:outline-none min-h-[44px] flex items-center justify-center px-1 break-words"
         style={{ wordBreak: 'break-word' }}
         tabIndex={-1}
       >
         {prompt.name}
       </button>
 
-      {/* Meta info */}
-      <div className="flex items-center justify-center gap-2 mt-2 text-sm text-gray-500">
-        <span className="text-green-600 text-xs font-medium bg-green-50 px-2 py-0.5 rounded">Prompt</span>
-        <span>•</span>
-        <span>{prompt.user.username}</span>
+      <div className="flex items-center justify-center gap-2 mt-2 text-xs font-mono">
+        <span className="px-2 py-0.5 bg-pink-500/20 text-pink-400 border border-pink-500/50">PROMPT</span>
+        <span className="text-cyan-100/50">{prompt.user.username}</span>
       </div>
 
-      {/* Description */}
       {prompt.description && (
-        <p className="mt-2 text-xs text-gray-400 text-center line-clamp-2">
+        <p className="mt-2 text-xs text-cyan-100/30 text-center line-clamp-2 font-mono">
           {prompt.description}
         </p>
       )}

@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useMemo } from 'react';
+import { useTranslations } from 'next-intl';
 import { useDrop } from 'react-dnd';
 import { DndContext, DragEndEvent, closestCenter, PointerSensor, useSensors, useSensor } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy, useSortable } from '@dnd-kit/sortable';
@@ -8,9 +9,7 @@ import { CSS } from '@dnd-kit/utilities';
 import { cn } from '@/shared/lib/utils/cn';
 import type { WorkflowStageWithMiniPrompts, AutoPromptMetadata } from '@/shared/lib/types/workflow-constructor-types';
 import { AutoPromptCard } from './AutoPromptCard';
-import { Tooltip } from '@/shared/ui/molecules';
 import { arrayMove } from '@dnd-kit/sortable';
-import { Card } from '@/shared/ui/atoms/Card';
 import { useStageItemOrder } from '../hooks/use-stage-item-order';
 import { jsonValueToStringArray } from '@/shared/lib/utils/prisma-json';
 
@@ -28,16 +27,17 @@ type StageItem =
   | { type: 'mini-prompt'; id: string; stageMiniPrompt: WorkflowStageWithMiniPrompts['miniPrompts'][0] }
   | { type: 'auto-prompt'; id: string; autoPrompt: AutoPromptMetadata };
 
-// Sortable wrapper for MiniPromptCard
-// This wrapper handles reordering within a stage using @dnd-kit
+// Sortable wrapper for MiniPromptCard - Cyberpunk Style
 function SortableMiniPromptCard({
   stageMiniPrompt,
   onRemove,
   onClick,
+  removeTooltip,
 }: {
   stageMiniPrompt: WorkflowStageWithMiniPrompts['miniPrompts'][0];
   onRemove: () => void;
   onClick?: () => void;
+  removeTooltip: string;
 }) {
   const {
     attributes,
@@ -67,41 +67,38 @@ function SortableMiniPromptCard({
         onClick && !isDragging && 'cursor-pointer'
       )}
       onClick={(e) => {
-        // Don't trigger onClick if dragging
         if (isDragging) return;
-        // Don't trigger if clicking on a button or interactive element
         if ((e.target as HTMLElement).closest('button')) return;
         onClick?.();
       }}
     >
-      <div>
-        <Card
-          className={cn(
-            'p-2 sm:p-3 !bg-white border border-border-base hover:shadow-md hover:border-border-hover transition-all min-h-[44px]',
-            isDragging && 'shadow-lg !border-accent-primary'
-          )}
-          testId={`mini-prompt-${stageMiniPrompt.miniPrompt.id}`}
-        >
-          <div className="flex items-center justify-between gap-2">
-            <h4 className="text-xs sm:text-sm font-medium text-text-primary flex-1 truncate">
-              {stageMiniPrompt.miniPrompt.name}
-            </h4>
-          </div>
-        </Card>
+      <div
+        className={cn(
+          'p-2 sm:p-3 bg-[#0a0a0f]/80 border border-pink-500/30 hover:border-pink-400/50 hover:shadow-[0_0_15px_rgba(255,0,102,0.1)] transition-all min-h-[44px]',
+          isDragging && 'shadow-[0_0_20px_rgba(0,255,255,0.3)] border-cyan-400'
+        )}
+        style={{ clipPath: 'polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px))' }}
+        data-testid={`mini-prompt-${stageMiniPrompt.miniPrompt.id}`}
+      >
+        <div className="flex items-center justify-between gap-2">
+          <h4 className="text-xs sm:text-sm font-mono text-pink-400 flex-1 truncate">
+            {stageMiniPrompt.miniPrompt.name}
+          </h4>
+        </div>
       </div>
       <div className="absolute top-1 right-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity z-10">
-        <Tooltip content="Remove this mini-prompt from the stage">
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              onRemove();
-            }}
-            className="bg-surface-error text-text-error rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold hover:bg-red-600 hover:text-white"
-            aria-label="Remove mini-prompt"
-          >
-            ×
-          </button>
-        </Tooltip>
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            onRemove();
+          }}
+          className="bg-pink-500 text-white w-6 h-6 flex items-center justify-center text-xs font-bold hover:bg-pink-400 cursor-pointer"
+          style={{ clipPath: 'polygon(0 0, calc(100% - 3px) 0, 100% 3px, 100% 100%, 3px 100%, 0 calc(100% - 3px))' }}
+          aria-label="Remove mini-prompt"
+          title={removeTooltip}
+        >
+          x
+        </button>
       </div>
     </div>
   );
@@ -115,6 +112,8 @@ export function StageDropZone({
   onMiniPromptClick,
   includeMultiAgentChat = false
 }: StageDropZoneProps) {
+  const t = useTranslations('stageDropZone');
+
   const [{ isOver }, drop] = useDrop(() => ({
     accept: 'MINI_PROMPT',
     drop: (item: { miniPromptIds: string[] }) => {
@@ -133,19 +132,15 @@ export function StageDropZone({
     })
   );
 
-  // Use the hook to compute item order
   const { itemIds: itemIdsRaw } = useStageItemOrder({
     stage,
     includeMultiAgentChat,
   });
-  // Ensure itemIds is typed as string[]
   const itemIds: string[] = itemIdsRaw.filter((id): id is string => typeof id === 'string');
 
-  // Build map of all available items (mini-prompts + automatic prompts) with full data
   const itemsMap = useMemo(() => {
     const map = new Map<string, StageItem>();
     
-    // Add all mini-prompts to map
     stage.miniPrompts.forEach((stageMiniPrompt: typeof stage.miniPrompts[0]) => {
       map.set(stageMiniPrompt.miniPromptId, {
         type: 'mini-prompt',
@@ -154,10 +149,7 @@ export function StageDropZone({
       });
     });
 
-    // Check stored itemOrder to see if auto-prompts are already there
-    // This ensures items in stored order are preserved even if settings changed
     const storedItemOrder = jsonValueToStringArray(stage.itemOrder);
-    // Only check for auto-prompts that match the current stage ID (filter out old IDs)
     const storedIds = new Set(
       storedItemOrder?.filter((id) => {
         if (id.startsWith('multi-agent-chat-')) {
@@ -166,11 +158,10 @@ export function StageDropZone({
         if (id.startsWith('memory-board-')) {
           return id === `memory-board-${stage.id}`;
         }
-        return true; // Keep mini-prompt IDs
+        return true;
       }) || []
     );
 
-    // Add multi-agent chat auto-prompt if enabled OR if it's in the stored order (with correct stage ID)
     const multiAgentChatId = `multi-agent-chat-${stage.id}`;
     const shouldIncludeMultiAgentChat = includeMultiAgentChat || storedIds.has(multiAgentChatId);
     if (shouldIncludeMultiAgentChat) {
@@ -179,16 +170,14 @@ export function StageDropZone({
         id: multiAgentChatId,
         autoPrompt: {
           id: multiAgentChatId,
-          name: 'Internal Agents Chat',
+          name: t('internalAgentsChat'),
           type: 'multi-agent-chat',
           isAutoAttached: true,
           position: 'stage-end',
         },
       });
-      
     }
 
-    // Add memory board if enabled OR if it's in the stored order
     const memoryBoardId = `memory-board-${stage.id}`;
     if (stage.withReview || storedIds.has(memoryBoardId)) {
       map.set(memoryBoardId, {
@@ -196,7 +185,7 @@ export function StageDropZone({
         id: memoryBoardId,
         autoPrompt: {
           id: memoryBoardId,
-          name: 'Handoff Memory Board',
+          name: t('handoffMemoryBoard'),
           type: 'memory-board',
           isAutoAttached: true,
           position: 'stage-end',
@@ -205,9 +194,8 @@ export function StageDropZone({
     }
     
     return map;
-  }, [stage, stage.itemOrder, includeMultiAgentChat]);
+  }, [stage, includeMultiAgentChat, t]);
 
-  // Build items array in the correct order
   const items: StageItem[] = itemIds.map(id => itemsMap.get(id)!).filter(Boolean);
 
   const isEmpty = items.length === 0;
@@ -217,19 +205,10 @@ export function StageDropZone({
 
     if (!over || active.id === over.id || !onReorderItems) return;
 
-    // Use itemIds directly - it's already computed correctly by useStageItemOrder
-    // and matches what's in the SortableContext
     const oldIndex = itemIds.indexOf(active.id as string);
     const newIndex = itemIds.indexOf(over.id as string);
 
     if (oldIndex === -1 || newIndex === -1) {
-      console.warn('[StageDropZone] Drag end: item not found in itemIds', {
-        activeId: active.id,
-        overId: over.id,
-        itemIds,
-        activeIdInItemIds: itemIds.includes(active.id as string),
-        overIdInItemIds: itemIds.includes(over.id as string),
-      });
       return;
     }
 
@@ -241,17 +220,17 @@ export function StageDropZone({
     <div
       ref={drop as unknown as React.Ref<HTMLDivElement>}
       className={cn(
-        'min-h-32 rounded-lg border-2 border-dashed p-3 transition-colors',
+        'min-h-32 border-2 border-dashed p-3 transition-colors',
         isOver
-          ? 'border-accent-primary bg-accent-primary/10'
-          : 'border-border-base bg-surface-secondary',
+          ? 'border-cyan-400 bg-cyan-500/10 shadow-[0_0_20px_rgba(0,255,255,0.2)]'
+          : 'border-cyan-500/20 bg-[#050508]/50',
         isEmpty && 'flex items-center justify-center'
       )}
       data-testid={`stage-drop-zone-${stage.id}`}
     >
       {isEmpty ? (
-        <p className="text-sm text-text-tertiary">
-          Drop mini-prompts here
+        <p className="text-sm text-cyan-100/40 font-mono uppercase">
+          {t('dropPrompts')}
         </p>
       ) : (
         <DndContext
@@ -274,6 +253,7 @@ export function StageDropZone({
                         description: item.stageMiniPrompt.miniPrompt.description,
                         content: item.stageMiniPrompt.miniPrompt.content,
                       }) : undefined}
+                      removeTooltip={t('removeTooltip')}
                     />
                   );
                 } else {

@@ -2,9 +2,8 @@
 
 import { useState } from "react";
 import { formatDistanceToNow } from "date-fns";
+import { useTranslations } from "next-intl";
 import DeleteIcon from '@mui/icons-material/Delete';
-import { Card } from "@/shared/ui/atoms";
-import { Button } from "@/shared/ui/atoms";
 import { VoteButton } from "./VoteButton";
 import { deleteMessage } from "../actions/message-actions";
 import type { MessageWithDetails } from "../types";
@@ -22,6 +21,7 @@ export function MessageCard({
   isAdmin,
   onDelete,
 }: MessageCardProps) {
+  const t = useTranslations("community.messageCard");
   const [isDeleting, setIsDeleting] = useState(false);
   const [isHidden, setIsHidden] = useState(false);
   const isOwner = currentUserId === message.authorId;
@@ -29,11 +29,10 @@ export function MessageCard({
   const hasVoted = message.votes && message.votes.length > 0;
 
   const handleDelete = async () => {
-    if (!confirm("Are you sure you want to delete this message?")) {
+    if (!confirm(t("confirmDelete"))) {
       return;
     }
 
-    // Optimistic update - hide immediately
     setIsDeleting(true);
     setIsHidden(true);
 
@@ -41,30 +40,24 @@ export function MessageCard({
       const result = await deleteMessage(message.id);
 
       if (result.success) {
-        // Only call onDelete after successful deletion
         onDelete?.();
 
         if (result.data?.deletedTopic) {
-          // Topic was deleted, redirect to community page
           window.location.href = "/dashboard/community";
         }
-        // Message successfully deleted, keep hidden
       } else {
-        // Revert on error
         setIsHidden(false);
         setIsDeleting(false);
-        alert(result.error || "Failed to delete message");
+        alert(result.error || t("failedToDelete"));
       }
     } catch (error) {
-      // Revert on error
       setIsHidden(false);
       setIsDeleting(false);
       console.error("Delete message error:", error);
-      alert("Failed to delete message");
+      alert(t("failedToDelete"));
     }
   };
 
-  // Hide if being deleted
   if (isHidden) {
     return null;
   }
@@ -75,7 +68,7 @@ export function MessageCard({
     return parts.map((part, index) => {
       if (part.match(/^@\w+$/)) {
         return (
-          <span key={index} className="text-primary-600 font-medium">
+          <span key={index} className="text-purple-400 font-medium" style={{ textShadow: '0 0 5px #a855f740' }}>
             {part}
           </span>
         );
@@ -85,15 +78,18 @@ export function MessageCard({
   };
 
   return (
-    <Card className="p-4">
+    <div 
+      className="p-4 bg-[#0a0a0f]/80 backdrop-blur-sm border border-cyan-500/30"
+      style={{ clipPath: 'polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px))' }}
+    >
       <div className="flex items-start justify-between gap-4">
         <div className="flex-1 min-w-0">
           {/* Author and date */}
           <div className="flex items-center gap-2 mb-2">
-            <span className="text-sm font-medium text-gray-900">
+            <span className="text-sm font-mono text-purple-400">
               @{message.author.username}
             </span>
-            <span className="text-xs text-gray-500">
+            <span className="text-xs text-cyan-100/30 font-mono">
               {formatDistanceToNow(new Date(message.createdAt), {
                 addSuffix: true,
               })}
@@ -101,7 +97,7 @@ export function MessageCard({
           </div>
 
           {/* Content with line breaks and mentions */}
-          <div className="text-gray-700 whitespace-pre-wrap break-words">
+          <div className="text-cyan-100/70 font-mono text-sm whitespace-pre-wrap break-words">
             {highlightMentions(message.content)}
           </div>
 
@@ -118,17 +114,15 @@ export function MessageCard({
 
         {/* Delete button */}
         {canDelete && (
-          <Button
-            variant="ghost"
-            size="sm"
+          <button
             onClick={handleDelete}
             disabled={isDeleting}
-            className="text-red-600 hover:text-red-700 hover:bg-red-50"
+            className="p-2 bg-transparent border border-pink-500/30 text-pink-400 hover:bg-pink-500/10 hover:border-pink-400 disabled:opacity-50 transition-all cursor-pointer"
           >
             <DeleteIcon fontSize="small" />
-          </Button>
+          </button>
         )}
       </div>
-    </Card>
+    </div>
   );
 }

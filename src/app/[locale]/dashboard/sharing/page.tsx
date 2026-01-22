@@ -1,24 +1,36 @@
 import { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import { MySharedItemsSection } from "@/features/sharing/components/MySharedItemsSection";
 
-export const metadata: Metadata = {
-  title: "My Shared Items | Agents Playbook",
-  description: "Manage your shared workflows and mini-prompts",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("sharing");
+  return {
+    title: `${t("title")} | Agents Playbook`,
+    description: t("subtitle"),
+  };
+}
 
-/**
- * Sharing Management Page
- *
- * Dedicated page for managing shared items.
- * Displays all share links created by the user with management capabilities.
- */
-export default function SharingPage() {
+export default async function SharingPage() {
+  const t = await getTranslations("sharing");
+  const header = t("header");
+
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900">My Shared Items</h1>
-        <p className="mt-1 text-sm text-gray-500">
-          Manage your share links for workflows and mini-prompts
+      <div className="mb-8">
+        <h1 className="text-3xl font-black tracking-tight mb-1">
+          <span
+            className="cyber-text-glitch"
+            data-text={header}
+            style={{
+              color: "#00ffff",
+              textShadow: "0 0 10px #00ffff, 0 0 20px #00ffff40",
+            }}
+          >
+            {header}
+          </span>
+        </h1>
+        <p className="text-cyan-100/60 font-mono text-sm uppercase tracking-wider">
+          {t("subtitle")}
         </p>
       </div>
 
@@ -26,4 +38,3 @@ export default function SharingPage() {
     </div>
   );
 }
-

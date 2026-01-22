@@ -1,9 +1,9 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import type { MiniPrompt } from '@prisma/client';
-import { Button } from '@/shared/ui/atoms';
 import { MiniPromptLibrary } from './MiniPromptLibrary';
 import { WorkflowStagesSection } from './WorkflowStagesSection';
 import type { WorkflowStageWithMiniPrompts } from '@/shared/lib/types/workflow-constructor-types';
@@ -60,10 +60,21 @@ export function WorkflowLayout({
   onCreateStageClick,
   onMiniPromptClick,
 }: WorkflowLayoutProps) {
+  const t = useTranslations('workflowLayout');
+
   return (
     <DndProvider backend={HTML5Backend}>
-      <div className="grid grid-cols-4 gap-6 p-6 h-full">
-        <div className="col-span-1 overflow-y-auto">
+      <div className="grid grid-cols-4 gap-6 p-6 h-full bg-[#050508]">
+        {/* Background grid */}
+        <div className="absolute inset-0 pointer-events-none opacity-5" style={{
+          backgroundImage: `
+            linear-gradient(rgba(0, 255, 255, 0.1) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(0, 255, 255, 0.1) 1px, transparent 1px)
+          `,
+          backgroundSize: '50px 50px'
+        }}></div>
+
+        <div className="col-span-1 overflow-y-auto relative">
           <MiniPromptLibrary
             miniPrompts={miniPrompts}
             onMiniPromptCreated={onMiniPromptCreated}
@@ -72,7 +83,7 @@ export function WorkflowLayout({
           />
         </div>
 
-        <div className="col-span-3 overflow-y-auto">
+        <div className="col-span-3 overflow-y-auto relative">
           <WorkflowStagesSection
             stages={stages}
             isCreatingStage={isCreatingStage}
@@ -89,18 +100,15 @@ export function WorkflowLayout({
             onMiniPromptClick={onMiniPromptClick}
           />
           {!isCreatingStage && (
-            <Button
+            <button
               onClick={onCreateStageClick}
-              variant="secondary"
-              fullWidth
-              className="mt-4 border-2 border-dashed border-border-base hover:border-border-hover hover:bg-surface-hover py-6"
+              className="w-full mt-4 py-6 border-2 border-dashed border-cyan-500/30 bg-transparent text-cyan-400 font-mono text-sm uppercase tracking-wider hover:border-cyan-400/50 hover:bg-cyan-500/5 transition-all cursor-pointer"
             >
-              <span className="text-text-secondary">+ Add Stage</span>
-            </Button>
+              + {t('addStage')}
+            </button>
           )}
         </div>
       </div>
     </DndProvider>
   );
 }
-

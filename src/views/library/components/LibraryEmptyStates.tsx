@@ -1,6 +1,7 @@
 "use client";
 
 import { ReactNode } from 'react';
+import { useTranslations } from 'next-intl';
 import { FolderPlus, FilePlus, Search, Trash2, Inbox, Globe } from 'lucide-react';
 import Button from '@/shared/ui/atoms/Button';
 import { cn } from '@/shared/lib/utils/cn';
@@ -53,23 +54,25 @@ export function EmptyLibraryState({
   onCreateWorkflow,
   className,
 }: EmptyStateProps) {
+  const t = useTranslations('libraryEmptyStates');
+
   return (
     <BaseEmptyState
       icon={<Inbox className="h-16 w-16" />}
-      title="Welcome to your Library"
-      description="Create your first workflow or folder to get started organizing your AI content."
+      title={t('welcomeTitle')}
+      description={t('welcomeDescription')}
       actions={
         <>
           {onCreateFolder && (
             <Button variant="secondary" onClick={onCreateFolder}>
               <FolderPlus className="h-4 w-4 mr-2" />
-              Create Folder
+              {t('createFolder')}
             </Button>
           )}
           {onCreateWorkflow && (
             <Button variant="primary" onClick={onCreateWorkflow}>
               <FilePlus className="h-4 w-4 mr-2" />
-              Create Workflow
+              {t('createWorkflow')}
             </Button>
           )}
         </>
@@ -85,11 +88,13 @@ export function EmptyLibraryState({
  * Shown when a folder has no items.
  */
 export function EmptyFolderState({ className }: { className?: string }) {
+  const t = useTranslations('libraryEmptyStates');
+
   return (
     <BaseEmptyState
       icon={<FolderPlus className="h-12 w-12" />}
-      title="This folder is empty"
-      description="Drag items here or use 'Add to Folder' from any item's context menu."
+      title={t('folderEmptyTitle')}
+      description={t('folderEmptyDescription')}
       className={className}
     />
   );
@@ -108,20 +113,21 @@ export function UncategorizedPromptState({
   itemCount: number;
   onCreateFolder?: () => void;
 }) {
+  const t = useTranslations('libraryEmptyStates');
   if (itemCount < 3) return null;
 
   return (
     <div className="bg-blue-50 border border-blue-100 rounded-lg p-4 mb-4 flex items-center justify-between">
       <div>
-        <p className="font-medium text-blue-900">Organize your content</p>
+        <p className="font-medium text-blue-900">{t('organizeTitle')}</p>
         <p className="text-sm text-blue-700">
-          Create a folder to organize your {itemCount} items
+          {t('organizeDescription', { count: itemCount })}
         </p>
       </div>
       {onCreateFolder && (
         <Button variant="secondary" size="sm" onClick={onCreateFolder}>
           <FolderPlus className="h-4 w-4 mr-2" />
-          Create Folder
+          {t('createFolder')}
         </Button>
       )}
     </div>
@@ -134,11 +140,13 @@ export function UncategorizedPromptState({
  * Shown when the trash is empty.
  */
 export function EmptyTrashState({ className }: { className?: string }) {
+  const t = useTranslations('libraryEmptyStates');
+
   return (
     <BaseEmptyState
       icon={<Trash2 className="h-12 w-12" />}
-      title="Trash is empty"
-      description="Items you delete will appear here for 30 days before being permanently removed."
+      title={t('trashEmptyTitle')}
+      description={t('trashEmptyDescription')}
       className={className}
     />
   );
@@ -158,14 +166,16 @@ export function NoSearchResultsState({
   onClear: () => void;
   className?: string;
 }) {
+  const t = useTranslations('libraryEmptyStates');
+
   return (
     <BaseEmptyState
       icon={<Search className="h-12 w-12" />}
-      title="No results found"
-      description={`No items match "${query}". Try a different search term.`}
+      title={t('noResultsTitle')}
+      description={t('noResultsDescription', { query })}
       actions={
         <Button variant="secondary" size="sm" onClick={onClear}>
-          Clear search
+          {t('clearSearch')}
         </Button>
       }
       className={className}
@@ -179,11 +189,13 @@ export function NoSearchResultsState({
  * Shown when there's no public content to discover.
  */
 export function EmptyDiscoverState({ className }: { className?: string }) {
+  const t = useTranslations('libraryEmptyStates');
+
   return (
     <BaseEmptyState
       icon={<Globe className="h-12 w-12" />}
-      title="No public content yet"
-      description="Public workflows and prompts from the community will appear here."
+      title={t('discoverEmptyTitle')}
+      description={t('discoverEmptyDescription')}
       className={className}
     />
   );
@@ -199,6 +211,8 @@ export function EmptyRootState({
   onCreateWorkflow,
   className,
 }: EmptyStateProps) {
+  const t = useTranslations('libraryEmptyStates');
+
   return (
     <BaseEmptyState
       icon={
@@ -216,20 +230,20 @@ export function EmptyRootState({
           />
         </svg>
       }
-      title="Welcome to your Library"
-      description="Create folders to organize your workflows and prompts, or start by creating your first workflow."
+      title={t('rootEmptyTitle')}
+      description={t('rootEmptyDescription')}
       actions={
         <>
           {onCreateFolder && (
             <Button variant="secondary" onClick={onCreateFolder}>
               <FolderPlus className="h-4 w-4 mr-2" />
-              Create Folder
+              {t('createFolder')}
             </Button>
           )}
           {onCreateWorkflow && (
             <Button variant="primary" onClick={onCreateWorkflow}>
               <FilePlus className="h-4 w-4 mr-2" />
-              Create Workflow
+              {t('createWorkflow')}
             </Button>
           )}
         </>
@@ -245,11 +259,13 @@ export function EmptyRootState({
  * Shown while content is loading.
  */
 export function LoadingState({ className }: { className?: string }) {
+  const t = useTranslations('common');
+
   return (
     <div className={cn('flex items-center justify-center py-20', className)}>
       <div className="flex flex-col items-center gap-3">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600" />
-        <p className="text-sm text-gray-500">Loading...</p>
+        <p className="text-sm text-gray-500">{t('loading')}</p>
       </div>
     </div>
   );

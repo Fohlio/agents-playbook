@@ -12,7 +12,7 @@ interface UseWorkflowHandlersOptions {
   miniPrompts: MiniPrompt[];
   setMiniPrompts: (miniPrompts: MiniPrompt[] | ((prev: MiniPrompt[]) => MiniPrompt[])) => void;
   onEditMiniPrompt: (miniPrompt: MiniPrompt | null) => void;
-  onEditTagIds: (tagIds: string[]) => void;
+  onEditTagIds?: (tagIds: string[]) => void;
 }
 
 export function useWorkflowHandlers(options?: UseWorkflowHandlersOptions) {

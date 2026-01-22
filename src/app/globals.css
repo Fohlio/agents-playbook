@@ -40,6 +40,19 @@
   /* Border colors - Lighter defaults */
   --color-border-light: #e5e7eb;
   --color-border-default: #d1d5db;
+
+  /* Cyberpunk colors */
+  --color-cyber-bg: #050508;
+  --color-cyber-bg-light: #0a0a0f;
+  --color-cyber-cyan: #00ffff;
+  --color-cyber-cyan-dim: #00cccc;
+  --color-cyber-pink: #ff0066;
+  --color-cyber-pink-dim: #cc0052;
+  --color-cyber-green: #00ff66;
+  --color-cyber-purple: #cc00ff;
+  --color-cyber-purple-dim: #9900cc;
+  --color-cyber-yellow: #ffff00;
+  --color-cyber-border: #1a1a2e;
 }
 
 @layer base {
@@ -212,4 +225,478 @@
     opacity: 1 !important;
     transform: none !important;
   }
+}
+
+/* =====================================================
+   CYBERPUNK DESIGN SYSTEM
+   ===================================================== */
+
+/* Cyberpunk Animations */
+@keyframes glitch {
+  0%, 100% {
+    transform: translate(0);
+    text-shadow: 
+      -2px 0 #00ffff,
+      2px 0 #ff0066;
+  }
+  20% {
+    transform: translate(-2px, 2px);
+    text-shadow: 
+      -3px 0 #00ffff,
+      3px 0 #ff0066;
+  }
+  40% {
+    transform: translate(2px, -2px);
+    text-shadow: 
+      -1px 0 #00ffff,
+      1px 0 #ff0066;
+  }
+  60% {
+    transform: translate(-2px, -2px);
+    text-shadow: 
+      -4px 0 #00ffff,
+      4px 0 #ff0066;
+  }
+  80% {
+    transform: translate(2px, 2px);
+    text-shadow: 
+      -2px 0 #00ffff,
+      2px 0 #ff0066;
+  }
+}
+
+@keyframes glitchIntense {
+  0%, 100% {
+    clip-path: inset(0 0 0 0);
+    transform: translate(0);
+  }
+  5% {
+    clip-path: inset(10% 0 85% 0);
+    transform: translate(-5px, 0);
+  }
+  10% {
+    clip-path: inset(50% 0 30% 0);
+    transform: translate(5px, 0);
+  }
+  15% {
+    clip-path: inset(20% 0 60% 0);
+    transform: translate(-3px, 0);
+  }
+  20% {
+    clip-path: inset(80% 0 5% 0);
+    transform: translate(3px, 0);
+  }
+  25%, 100% {
+    clip-path: inset(0 0 0 0);
+    transform: translate(0);
+  }
+}
+
+@keyframes scanline {
+  0% {
+    transform: translateY(-100%);
+  }
+  100% {
+    transform: translateY(100%);
+  }
+}
+
+@keyframes neonPulse {
+  0%, 100% {
+    opacity: 1;
+    filter: brightness(1);
+  }
+  50% {
+    opacity: 0.8;
+    filter: brightness(1.2);
+  }
+}
+
+@keyframes neonFlicker {
+  0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% {
+    opacity: 1;
+    text-shadow: 
+      0 0 5px currentColor,
+      0 0 10px currentColor,
+      0 0 20px currentColor;
+  }
+  20%, 24%, 55% {
+    opacity: 0.6;
+    text-shadow: none;
+  }
+}
+
+@keyframes typing {
+  from { width: 0; }
+  to { width: 100%; }
+}
+
+@keyframes blink {
+  0%, 50% { border-color: #00ffff; }
+  51%, 100% { border-color: transparent; }
+}
+
+@keyframes circuitFlow {
+  0% {
+    background-position: 0% 0%;
+  }
+  100% {
+    background-position: 100% 100%;
+  }
+}
+
+@keyframes dataStream {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 0 100%;
+  }
+}
+
+@keyframes hexPulse {
+  0%, 100% {
+    box-shadow: 
+      0 0 5px #00ffff,
+      0 0 10px #00ffff40,
+      inset 0 0 5px #00ffff20;
+  }
+  50% {
+    box-shadow: 
+      0 0 10px #00ffff,
+      0 0 20px #00ffff60,
+      inset 0 0 10px #00ffff40;
+  }
+}
+
+/* Cyberpunk Animation Classes */
+.cyber-glitch {
+  animation: glitch 3s infinite;
+}
+
+.cyber-glitch-intense {
+  animation: glitchIntense 5s infinite;
+}
+
+.cyber-neon-pulse {
+  animation: neonPulse 2s ease-in-out infinite;
+}
+
+.cyber-neon-flicker {
+  animation: neonFlicker 4s linear infinite;
+}
+
+.cyber-typing {
+  overflow: hidden;
+  white-space: nowrap;
+  animation: typing 3s steps(40, end);
+}
+
+.cyber-typing-cursor {
+  border-right: 2px solid #00ffff;
+  animation: blink 1s step-end infinite;
+}
+
+/* Cyberpunk Glow Utilities */
+.cyber-glow-cyan {
+  box-shadow: 
+    0 0 5px #00ffff,
+    0 0 10px #00ffff80,
+    0 0 20px #00ffff40,
+    0 0 40px #00ffff20;
+}
+
+.cyber-glow-pink {
+  box-shadow: 
+    0 0 5px #ff0066,
+    0 0 10px #ff006680,
+    0 0 20px #ff006640,
+    0 0 40px #ff006620;
+}
+
+.cyber-glow-purple {
+  box-shadow: 
+    0 0 5px #cc00ff,
+    0 0 10px #cc00ff80,
+    0 0 20px #cc00ff40,
+    0 0 40px #cc00ff20;
+}
+
+.cyber-glow-green {
+  box-shadow: 
+    0 0 5px #00ff66,
+    0 0 10px #00ff6680,
+    0 0 20px #00ff6640,
+    0 0 40px #00ff6620;
+}
+
+/* Cyberpunk Text Glow */
+.cyber-text-cyan {
+  color: #00ffff;
+  text-shadow: 
+    0 0 5px #00ffff,
+    0 0 10px #00ffff80,
+    0 0 20px #00ffff40;
+}
+
+.cyber-text-pink {
+  color: #ff0066;
+  text-shadow: 
+    0 0 5px #ff0066,
+    0 0 10px #ff006680,
+    0 0 20px #ff006640;
+}
+
+.cyber-text-purple {
+  color: #cc00ff;
+  text-shadow: 
+    0 0 5px #cc00ff,
+    0 0 10px #cc00ff80,
+    0 0 20px #cc00ff40;
+}
+
+.cyber-text-green {
+  color: #00ff66;
+  text-shadow: 
+    0 0 5px #00ff66,
+    0 0 10px #00ff6680,
+    0 0 20px #00ff6640;
+}
+
+/* Glitch Text Effect */
+.cyber-text-glitch {
+  position: relative;
+  display: inline-block;
+}
+
+.cyber-text-glitch::before,
+.cyber-text-glitch::after {
+  content: attr(data-text);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.cyber-text-glitch::before {
+  color: #00ffff;
+  clip-path: polygon(0 0, 100% 0, 100% 45%, 0 45%);
+  transform: translate(-2px, 0);
+  animation: glitchIntense 5s infinite linear;
+}
+
+.cyber-text-glitch::after {
+  color: #ff0066;
+  clip-path: polygon(0 55%, 100% 55%, 100% 100%, 0 100%);
+  transform: translate(2px, 0);
+  animation: glitchIntense 5s infinite linear reverse;
+}
+
+/* Scanlines Overlay */
+.cyber-scanlines {
+  position: relative;
+}
+
+.cyber-scanlines::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 0, 0, 0.15) 2px,
+    rgba(0, 0, 0, 0.15) 4px
+  );
+  pointer-events: none;
+  z-index: 10;
+}
+
+/* Glass Morphism Cyber Style */
+.cyber-glass {
+  background: rgba(5, 5, 8, 0.8);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(0, 255, 255, 0.2);
+  box-shadow: 
+    0 0 10px rgba(0, 255, 255, 0.1),
+    inset 0 0 20px rgba(0, 255, 255, 0.05);
+}
+
+.cyber-glass-pink {
+  background: rgba(5, 5, 8, 0.8);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 0, 102, 0.2);
+  box-shadow: 
+    0 0 10px rgba(255, 0, 102, 0.1),
+    inset 0 0 20px rgba(255, 0, 102, 0.05);
+}
+
+/* Circuit Pattern Background */
+.cyber-circuit-bg {
+  background-image: 
+    linear-gradient(rgba(0, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 50px 50px;
+}
+
+/* Grid Pattern Background */
+.cyber-grid-bg {
+  background-image: 
+    linear-gradient(rgba(0, 255, 255, 0.1) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 255, 255, 0.1) 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+/* Data Stream Background */
+.cyber-data-stream {
+  background: 
+    linear-gradient(180deg, 
+      transparent 0%,
+      rgba(0, 255, 255, 0.02) 50%,
+      transparent 100%
+    );
+  background-size: 100% 200%;
+  animation: dataStream 3s linear infinite;
+}
+
+/* Hexagon Card Shape */
+.cyber-hexagon {
+  clip-path: polygon(5% 0%, 95% 0%, 100% 50%, 95% 100%, 5% 100%, 0% 50%);
+}
+
+/* Cyber Button Styles */
+.cyber-btn {
+  position: relative;
+  padding: 12px 24px;
+  background: linear-gradient(135deg, #00ffff 0%, #00cccc 100%);
+  color: #050508;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  border: none;
+  clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
+  transition: all 0.3s ease;
+}
+
+.cyber-btn:hover {
+  background: linear-gradient(135deg, #00ffff 0%, #00ffff 100%);
+  box-shadow: 
+    0 0 10px #00ffff,
+    0 0 20px #00ffff80;
+  transform: translateY(-2px);
+}
+
+.cyber-btn-outline {
+  position: relative;
+  padding: 12px 24px;
+  background: transparent;
+  color: #00ffff;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  border: 2px solid #00ffff;
+  clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
+  transition: all 0.3s ease;
+}
+
+.cyber-btn-outline:hover {
+  background: rgba(0, 255, 255, 0.1);
+  box-shadow: 
+    0 0 10px #00ffff40,
+    inset 0 0 10px #00ffff20;
+}
+
+.cyber-btn-pink {
+  background: linear-gradient(135deg, #ff0066 0%, #cc0052 100%);
+}
+
+.cyber-btn-pink:hover {
+  background: linear-gradient(135deg, #ff0066 0%, #ff0066 100%);
+  box-shadow: 
+    0 0 10px #ff0066,
+    0 0 20px #ff006680;
+}
+
+/* Cyber Input Styles */
+.cyber-input {
+  background: rgba(5, 5, 8, 0.9);
+  border: 1px solid rgba(0, 255, 255, 0.3);
+  color: #fff;
+  padding: 12px 16px;
+  transition: all 0.3s ease;
+}
+
+.cyber-input:focus {
+  outline: none;
+  border-color: #00ffff;
+  box-shadow: 
+    0 0 10px rgba(0, 255, 255, 0.3),
+    inset 0 0 10px rgba(0, 255, 255, 0.1);
+}
+
+.cyber-input::placeholder {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+/* Neon Border Utilities */
+.cyber-border-cyan {
+  border: 1px solid #00ffff;
+  box-shadow: 
+    0 0 5px #00ffff40,
+    inset 0 0 5px #00ffff20;
+}
+
+.cyber-border-pink {
+  border: 1px solid #ff0066;
+  box-shadow: 
+    0 0 5px #ff006640,
+    inset 0 0 5px #ff006620;
+}
+
+/* Status Indicator */
+.cyber-status-online {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #00ff66;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.cyber-status-online::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  background: #00ff66;
+  border-radius: 50%;
+  box-shadow: 0 0 10px #00ff66;
+  animation: neonPulse 2s ease-in-out infinite;
+}
+
+/* Terminal Text Style */
+.cyber-terminal {
+  font-family: 'Space Mono', 'Fira Code', 'Courier New', monospace;
+  color: #00ff66;
+  text-shadow: 0 0 5px #00ff6680;
+}
+
+/* Scrollbar for cyber theme */
+.cyber-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.cyber-scrollbar::-webkit-scrollbar-track {
+  background: #050508;
+}
+
+.cyber-scrollbar::-webkit-scrollbar-thumb {
+  background: #00ffff40;
+  border-radius: 3px;
+}
+
+.cyber-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #00ffff80;
 }

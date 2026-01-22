@@ -1,9 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Modal, ModalHeader, ModalBody, ModalActions } from "@/shared/ui/atoms/Modal";
-import Button from "@/shared/ui/atoms/Button";
-import { Input } from "@/shared/ui/atoms";
+import { useTranslations } from "next-intl";
+import { Modal } from "@/shared/ui/atoms/Modal";
 
 interface ApiKeyModalProps {
   isOpen: boolean;
@@ -12,6 +11,9 @@ interface ApiKeyModalProps {
 }
 
 export function ApiKeyModal({ isOpen, onClose, onSave }: ApiKeyModalProps) {
+  const t = useTranslations('aiAssistant.apiKeyModal');
+  const tCommon = useTranslations('common');
+
   const [apiKey, setApiKey] = useState("");
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -19,7 +21,7 @@ export function ApiKeyModal({ isOpen, onClose, onSave }: ApiKeyModalProps) {
 
   const handleSave = async () => {
     if (!apiKey.trim()) {
-      setError("Please enter an API key");
+      setError(t('enterApiKey'));
       return;
     }
 
@@ -35,22 +37,19 @@ export function ApiKeyModal({ isOpen, onClose, onSave }: ApiKeyModalProps) {
 
       if (!response.ok) {
         const data = await response.json();
-        throw new Error(data.error || "Failed to save API key");
+        throw new Error(data.error || t('failedToSave'));
       }
 
       setSuccess(true);
       setApiKey("");
-
-      // Call onSave callback if provided
       onSave?.();
 
-      // Close modal after short delay to show success message
       setTimeout(() => {
         setSuccess(false);
         onClose();
       }, 1500);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to save API key");
+      setError(err instanceof Error ? err.message : t('failedToSave'));
     } finally {
       setIsSaving(false);
     }
@@ -67,75 +66,78 @@ export function ApiKeyModal({ isOpen, onClose, onSave }: ApiKeyModalProps) {
 
   return (
     <Modal isOpen={isOpen} onClose={handleClose}>
-      <ModalHeader title="Add OpenAI API Key" />
-      <ModalBody>
-        <div className="space-y-4">
-          <div>
-            <p className="text-sm text-gray-600 mb-4">
-              Enter your OpenAI API key to enable AI-powered chat features. Your key is stored securely and never shared.
-            </p>
-            <p className="text-xs text-gray-500 mb-4">
-              Get your API key from{" "}
-              <a
-                href="https://platform.openai.com/api-keys"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-blue-600 hover:text-blue-700 underline"
-              >
-                OpenAI Platform
-              </a>
-            </p>
-          </div>
+      <h3 className="text-lg font-mono font-bold text-cyan-400 uppercase tracking-wider mb-4" style={{ textShadow: '0 0 10px #00ffff40' }}>
+        {t('title')}
+      </h3>
 
-          <div>
-            <label htmlFor="api-key" className="block text-sm font-medium text-gray-700 mb-2">
-              API Key
-            </label>
-            <Input
-              id="api-key"
-              type="password"
-              value={apiKey}
-              onChange={(e) => setApiKey(e.target.value)}
-              placeholder="sk-..."
-              disabled={isSaving || success}
-              className="w-full"
-              onKeyDown={(e) => {
-                if (e.key === "Enter" && !isSaving && !success) {
-                  handleSave();
-                }
-              }}
-            />
-          </div>
-
-          {error && (
-            <div className="p-3 bg-red-50 border border-red-200 rounded-md">
-              <p className="text-sm text-red-800">{error}</p>
-            </div>
-          )}
-
-          {success && (
-            <div className="p-3 bg-green-50 border border-green-200 rounded-md">
-              <p className="text-sm text-green-800">✓ API key saved successfully!</p>
-            </div>
-          )}
+      <div className="space-y-4 mb-6">
+        <div>
+          <p className="text-sm text-cyan-100/60 font-mono mb-4">
+            {t('description')}
+          </p>
+          <p className="text-xs font-mono text-cyan-100/40 mb-4">
+            {t('getKeyFrom')}{" "}
+            <a
+              href="https://platform.openai.com/api-keys"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-cyan-400 hover:text-cyan-300 underline"
+            >
+              {t('openaiPlatform')}
+            </a>
+          </p>
         </div>
-      </ModalBody>
-      <ModalActions>
-        <Button
-          variant="secondary"
+
+        <div>
+          <label htmlFor="api-key" className="block text-xs font-mono text-cyan-400 uppercase tracking-wider mb-2">
+            {t('apiKeyLabel')}
+          </label>
+          <input
+            id="api-key"
+            type="password"
+            value={apiKey}
+            onChange={(e) => setApiKey(e.target.value)}
+            placeholder="sk-..."
+            disabled={isSaving || success}
+            className="w-full px-3 py-2 bg-[#050508]/50 border border-cyan-500/50 text-cyan-100 font-mono text-sm placeholder:text-cyan-500/30 focus:outline-none focus:border-cyan-400 focus:shadow-[0_0_15px_rgba(0,255,255,0.2)] disabled:opacity-50 transition-all"
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && !isSaving && !success) {
+                handleSave();
+              }
+            }}
+          />
+        </div>
+
+        {error && (
+          <div className="p-3 bg-pink-500/10 border border-pink-500/50 text-pink-400 font-mono text-sm">
+            &gt; ERROR: {error}
+          </div>
+        )}
+
+        {success && (
+          <div className="p-3 bg-green-500/10 border border-green-500/50 text-green-400 font-mono text-sm">
+            &gt; {t('savedSuccess')}
+          </div>
+        )}
+      </div>
+
+      <div className="flex gap-3 justify-end">
+        <button
           onClick={handleClose}
           disabled={isSaving || success}
+          className="px-4 py-2 bg-transparent border border-cyan-500/30 text-cyan-400 font-mono text-sm uppercase tracking-wider hover:bg-cyan-500/10 hover:border-cyan-400 disabled:opacity-50 transition-all cursor-pointer"
         >
-          Cancel
-        </Button>
-        <Button
-          variant="primary"
+          {tCommon('cancel')}
+        </button>
+        <button
           onClick={handleSave}
           disabled={isSaving || success || !apiKey.trim()}
+          className="px-6 py-2.5 bg-gradient-to-r from-cyan-500 to-cyan-400 text-[#050508] font-bold uppercase tracking-wider text-sm hover:shadow-[0_0_20px_rgba(0,255,255,0.4)] disabled:opacity-50 disabled:cursor-not-allowed transition-all cursor-pointer"
+          style={{ clipPath: 'polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px))' }}
         >
-          {isSaving ? "Saving..." : success ? "Saved!" : "Save API Key"}
-        </Button>
-      </ModalActions>
+          {isSaving ? t('saving') : success ? t('saved') : t('saveKey')}
+        </button>
+      </div>
     </Modal>
   );
 }

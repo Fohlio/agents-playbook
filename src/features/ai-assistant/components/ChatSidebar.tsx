@@ -7,7 +7,6 @@ import { useAIChatSessions } from '@/features/ai-assistant/hooks/useAIChatSessio
 import { useLoadChatSession } from '@/features/ai-assistant/hooks/useLoadChatSession';
 import { AIChatMode, WorkflowContext, AIToolResult } from '@/types/ai-chat';
 import { X, Send, Sparkles, AlertCircle, Loader2, History, Clock } from 'lucide-react';
-import { BetaBadge, Badge } from '@/shared/ui/atoms';
 import { MarkdownContent } from '@/shared/ui/atoms/MarkdownContent';
 import { ApiKeyModal } from './ApiKeyModal';
 
@@ -56,7 +55,6 @@ export function ChatSidebar({
     },
   });
 
-  // Load available sessions
   const {
     sessions,
     isLoading: isLoadingSessions,
@@ -64,14 +62,12 @@ export function ChatSidebar({
   } = useAIChatSessions({
     mode,
     workflowId: workflowContext?.workflow?.id,
-    miniPromptId: undefined, // TODO: Add mini-prompt support
+    miniPromptId: undefined,
   });
 
-  // Load specific session
   const { loadSession: fetchSession, isLoading: isLoadingSession } =
     useLoadChatSession();
 
-  // Handle session selection
   const handleSelectSession = async (selectedSessionId: string) => {
     const sessionData = await fetchSession(selectedSessionId);
     if (sessionData) {
@@ -81,19 +77,16 @@ export function ChatSidebar({
     }
   };
 
-  // Handle new chat
   const handleNewChat = () => {
     loadSession('', []);
     setShowSessionSelector(false);
     refreshSessions();
   };
 
-  // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  // Focus input when sidebar opens and track open/close state
   useEffect(() => {
     console.log('[ChatSidebar] isOpen changed to:', isOpen);
     if (isOpen) {
@@ -101,7 +94,6 @@ export function ChatSidebar({
     }
   }, [isOpen]);
 
-  // Handle keyboard shortcuts
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
@@ -112,57 +104,59 @@ export function ChatSidebar({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed right-0 top-0 h-full w-96 bg-white border-l border-gray-200 shadow-lg flex flex-col z-50">
+    <div className="fixed right-0 top-0 h-full w-96 bg-[#0a0a0f] border-l border-purple-500/30 shadow-[0_0_30px_rgba(168,85,247,0.1)] flex flex-col z-50">
       {/* Header */}
-      <div className="flex items-center justify-between p-4 border-b border-gray-200">
+      <div className="flex items-center justify-between p-4 border-b border-purple-500/20 bg-[#050508]/50">
         <div className="flex items-center gap-2">
-          <Sparkles className="w-5 h-5 text-blue-600" />
-          <h2 className="font-semibold text-gray-900 flex items-center gap-2">
+          <Sparkles className="w-5 h-5 text-purple-400" />
+          <h2 className="font-mono font-bold text-purple-400 uppercase tracking-wider flex items-center gap-2" style={{ textShadow: '0 0 10px #a855f740' }}>
             {t('title')}
-            <BetaBadge size="sm" />
-            <span className="text-sm text-gray-500">
-              ({mode === 'workflow' ? 'Workflow' : 'Mini-Prompt'})
+            <span className="px-1.5 py-0.5 text-[10px] bg-purple-500/20 text-purple-300 border border-purple-500/50">
+              {t('beta')}
+            </span>
+            <span className="text-xs text-cyan-100/40">
+              ({mode === 'workflow' ? t('mode.workflow') : t('mode.prompt')})
             </span>
           </h2>
         </div>
         <div className="flex items-center gap-2">
           <button
             onClick={() => setShowSessionSelector(!showSessionSelector)}
-            className="p-1 hover:bg-gray-100 rounded-md transition-colors"
+            className="p-2 hover:bg-purple-500/10 transition-colors cursor-pointer"
             aria-label={t('history')}
             title={t('history')}
           >
-            <History className="w-5 h-5 text-gray-500" />
+            <History className="w-5 h-5 text-cyan-400" />
           </button>
           <button
             onClick={() => {
-              // Prevent closing while AI is thinking/responding
               if (isLoading) {
                 console.warn('[ChatSidebar] Prevented close during AI processing');
                 return;
               }
               onClose();
             }}
-            className="p-1 hover:bg-gray-100 rounded-md transition-colors"
+            className="p-2 hover:bg-cyan-500/10 transition-colors cursor-pointer"
             aria-label={t('close')}
             disabled={isLoading}
           >
-            <X className={`w-5 h-5 ${isLoading ? 'text-gray-300' : 'text-gray-500'}`} />
+            <X className={`w-5 h-5 ${isLoading ? 'text-cyan-100/30' : 'text-cyan-400'}`} />
           </button>
         </div>
       </div>
 
       {/* Session Selector */}
       {showSessionSelector && (
-        <div className="border-b border-gray-200 bg-gray-50 max-h-64 overflow-y-auto">
-          <div className="p-3 border-b border-gray-200 bg-white">
+        <div className="border-b border-purple-500/20 bg-[#050508]/50 max-h-64 overflow-y-auto">
+          <div className="p-3 border-b border-purple-500/20 bg-[#0a0a0f]">
             <div className="flex items-center justify-between">
-              <h3 className="font-medium text-sm text-gray-900">
+              <h3 className="font-mono font-medium text-sm text-cyan-400 uppercase">
                 {t('history')}
               </h3>
               <button
                 onClick={handleNewChat}
-                className="text-xs px-2 py-1 bg-blue-600 text-white rounded hover:bg-blue-700"
+                className="px-3 py-1.5 bg-gradient-to-r from-purple-500 to-purple-400 text-white font-mono text-xs uppercase hover:shadow-[0_0_15px_rgba(168,85,247,0.4)] transition-all cursor-pointer"
+                style={{ clipPath: 'polygon(0 0, calc(100% - 5px) 0, 100% 5px, 100% 100%, 5px 100%, 0 calc(100% - 5px))' }}
               >
                 {t('newChat')}
               </button>
@@ -171,15 +165,15 @@ export function ChatSidebar({
 
           {isLoadingSessions ? (
             <div className="p-4 text-center">
-              <Loader2 className="w-5 h-5 animate-spin text-gray-400 mx-auto" />
-              <p className="text-xs text-gray-500 mt-2">{t('loadingHistory')}</p>
+              <Loader2 className="w-5 h-5 animate-spin text-purple-400 mx-auto" />
+              <p className="text-xs font-mono text-cyan-100/40 mt-2">{t('loadingHistory')}</p>
             </div>
           ) : sessions.length === 0 ? (
             <div className="p-4 text-center">
-              <p className="text-sm text-gray-500">{t('noHistory')}</p>
+              <p className="text-sm font-mono text-cyan-100/40">{t('noHistory')}</p>
             </div>
           ) : (
-            <div className="divide-y divide-gray-200">
+            <div className="divide-y divide-purple-500/10">
               {sessions.map((session) => {
                 const isActive = session.id === currentSessionId;
                 return (
@@ -187,26 +181,26 @@ export function ChatSidebar({
                     key={session.id}
                     onClick={() => handleSelectSession(session.id)}
                     disabled={isLoadingSession}
-                    className={`w-full p-3 hover:bg-white transition-colors text-left ${
-                      isActive ? 'bg-blue-50 border-l-4 border-blue-600' : ''
+                    className={`w-full p-3 hover:bg-purple-500/10 transition-colors text-left cursor-pointer ${
+                      isActive ? 'bg-purple-500/20 border-l-2 border-purple-400' : ''
                     }`}
                     data-testid={isActive ? 'active-session' : 'inactive-session'}
                   >
                     <div className="flex items-start justify-between gap-2">
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-1">
-                          <p className="text-xs text-gray-500 flex items-center gap-1">
+                          <p className="text-xs font-mono text-cyan-100/50 flex items-center gap-1">
                             <Clock className="w-3 h-3" />
                             {new Date(session.lastMessageAt).toLocaleString()}
                           </p>
                           {isActive && (
-                            <Badge variant="primary" testId="active-badge">
-                              Active
-                            </Badge>
+                            <span className="px-1.5 py-0.5 text-[10px] font-mono bg-green-500/20 text-green-400 border border-green-500/50" data-testid="active-badge">
+                              {t('activeBadge')}
+                            </span>
                           )}
                         </div>
-                        <p className="text-xs text-gray-600">
-                          {session.messageCount} message{session.messageCount !== 1 ? 's' : ''} · {session.tokenUsage.total.toLocaleString()} tokens
+                        <p className="text-xs font-mono text-cyan-100/40">
+                          {t('sessionStats', { messages: session.messageCount, tokens: session.tokenUsage.total.toLocaleString() })}
                         </p>
                       </div>
                     </div>
@@ -219,35 +213,36 @@ export function ChatSidebar({
       )}
 
       {/* Token Counter */}
-      <div className="px-4 py-2 bg-gray-50 border-b border-gray-200 text-xs text-gray-600">
-        {t('tokens', { count: tokenCount.toLocaleString() })} / 272,000
+      <div className="px-4 py-2 bg-[#050508]/50 border-b border-cyan-500/20 text-xs font-mono text-cyan-100/50">
+        <span className="text-cyan-400">TOKENS:</span> {tokenCount.toLocaleString()} / 272,000
         {tokenCount > 220000 && (
-          <span className="text-orange-600 ml-2">
-            (Approaching limit - conversation will be summarized)
+          <span className="text-yellow-400 ml-2">
+            ({t('approachingLimit')})
           </span>
         )}
       </div>
 
       {/* Error Banner */}
       {showError && error && (
-        <div className="px-4 py-3 bg-red-50 border-b border-red-200 flex items-start gap-2">
-          <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+        <div className="px-4 py-3 bg-pink-500/10 border-b border-pink-500/30 flex items-start gap-2">
+          <AlertCircle className="w-5 h-5 text-pink-400 flex-shrink-0 mt-0.5" />
           <div className="flex-1">
-            <p className="text-sm text-red-800">{error.message}</p>
+            <p className="text-sm font-mono text-pink-400">&gt; ERROR: {error.message}</p>
             <div className="flex items-center gap-2 mt-2">
               {(error.message.toLowerCase().includes('api key') || error.message.toLowerCase().includes('apikey')) && (
                 <button
                   onClick={() => setShowApiKeyModal(true)}
-                  className="text-xs px-3 py-1.5 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+                  className="px-3 py-1.5 bg-gradient-to-r from-cyan-500 to-cyan-400 text-[#050508] font-mono text-xs uppercase hover:shadow-[0_0_15px_rgba(0,255,255,0.4)] transition-all cursor-pointer"
+                  style={{ clipPath: 'polygon(0 0, calc(100% - 5px) 0, 100% 5px, 100% 100%, 5px 100%, 0 calc(100% - 5px))' }}
                 >
-                  Add API Key
+                  {t('addKey')}
                 </button>
               )}
               <button
                 onClick={() => setShowError(false)}
-                className="text-xs text-red-600 hover:text-red-700"
+                className="text-xs font-mono text-pink-400 hover:text-pink-300 cursor-pointer"
               >
-                Dismiss
+                {t('dismiss')}
               </button>
             </div>
           </div>
@@ -257,9 +252,9 @@ export function ChatSidebar({
       {/* Messages */}
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {messages.length === 0 && (
-          <div className="text-center text-gray-500 mt-8">
-            <Sparkles className="w-12 h-12 mx-auto mb-3 text-gray-300" />
-            <p className="text-sm">
+          <div className="text-center text-cyan-100/40 mt-8">
+            <Sparkles className="w-12 h-12 mx-auto mb-3 text-purple-500/30" />
+            <p className="text-sm font-mono">
               {t('placeholder')}
             </p>
           </div>
@@ -273,23 +268,24 @@ export function ChatSidebar({
             }`}
           >
             <div
-              className={`max-w-[85%] rounded-lg px-4 py-2 break-words overflow-wrap-anywhere ${
+              className={`max-w-[85%] px-4 py-2 break-words overflow-wrap-anywhere ${
                 message.role === 'user'
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-gray-100 text-gray-900'
+                  ? 'bg-gradient-to-r from-purple-500/80 to-purple-400/80 text-white border border-purple-400/50'
+                  : 'bg-[#050508]/80 text-cyan-100 border border-cyan-500/30'
               }`}
+              style={{ clipPath: 'polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px))' }}
             >
               {message.role === 'user' ? (
-                <p className="text-sm whitespace-pre-wrap break-words">{message.content}</p>
+                <p className="text-sm font-mono whitespace-pre-wrap break-words">{message.content}</p>
               ) : (
-                <div className="text-sm break-words">
-                  <MarkdownContent content={message.content} className="prose prose-sm max-w-none prose-p:my-1 prose-headings:my-2 prose-ul:my-1 prose-ol:my-1 prose-li:my-0.5 prose-pre:my-2 prose-code:text-xs prose-code:bg-gray-200 prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-pre:bg-gray-800 prose-pre:text-white prose-pre:break-words prose-code:break-words" />
+                <div className="text-sm font-mono break-words">
+                  <MarkdownContent content={message.content} className="prose prose-sm prose-invert max-w-none prose-p:my-1 prose-headings:my-2 prose-ul:my-1 prose-ol:my-1 prose-li:my-0.5 prose-pre:my-2 prose-code:text-xs prose-code:bg-cyan-500/20 prose-code:px-1 prose-code:py-0.5 prose-pre:bg-[#0a0a0f] prose-pre:border prose-pre:border-cyan-500/30 prose-pre:break-words prose-code:break-words" />
                 </div>
               )}
               {message.toolInvocations && message.toolInvocations.length > 0 && (
-                <div className="mt-2 pt-2 border-t border-gray-200">
-                  <p className="text-xs opacity-75 mb-1">
-                    {message.toolInvocations.length} tool(s) called:
+                <div className="mt-2 pt-2 border-t border-cyan-500/20">
+                  <p className="text-xs font-mono opacity-75 mb-1 text-cyan-400">
+                    {t('toolsCalled')}: {message.toolInvocations.length}
                   </p>
                   <div className="flex flex-wrap gap-1">
                     {(message.toolInvocations as Array<{ toolName?: string }>)
@@ -298,7 +294,7 @@ export function ChatSidebar({
                         return (
                           <span
                             key={idx}
-                            className="text-xs bg-blue-100 text-blue-800 px-2 py-0.5 rounded"
+                            className="text-xs font-mono bg-green-500/20 text-green-400 px-2 py-0.5 border border-green-500/50"
                           >
                             {toolName}
                           </span>
@@ -313,9 +309,9 @@ export function ChatSidebar({
 
         {isLoading && (
           <div className="flex justify-start">
-            <div className="bg-gray-100 rounded-lg px-4 py-2 flex items-center gap-2">
-              <Loader2 className="w-4 h-4 animate-spin text-gray-600" />
-              <p className="text-sm text-gray-600">Thinking...</p>
+            <div className="bg-[#050508]/80 border border-purple-500/30 px-4 py-2 flex items-center gap-2" style={{ clipPath: 'polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px))' }}>
+              <Loader2 className="w-4 h-4 animate-spin text-purple-400" />
+              <p className="text-sm font-mono text-purple-400">{t('processing')}</p>
             </div>
           </div>
         )}
@@ -324,7 +320,7 @@ export function ChatSidebar({
       </div>
 
       {/* Input */}
-      <div className="p-4 border-t border-gray-200">
+      <div className="p-4 border-t border-purple-500/20 bg-[#050508]/50">
         <form onSubmit={(e) => { e.preventDefault(); handleSubmit(e); }} className="flex gap-2">
           <textarea
             ref={inputRef}
@@ -333,23 +329,24 @@ export function ChatSidebar({
             onKeyDown={handleKeyDown}
             placeholder={
               mode === 'workflow'
-                ? 'Describe the workflow you want to create...'
-                : 'Describe the mini-prompt you want to create...'
+                ? t('describeWorkflow')
+                : t('describePrompt')
             }
-            className="flex-1 px-3 py-2 border border-gray-300 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="flex-1 px-3 py-2 bg-[#050508]/50 border border-purple-500/50 text-cyan-100 font-mono text-sm placeholder:text-cyan-500/30 focus:outline-none focus:border-purple-400 focus:shadow-[0_0_15px_rgba(168,85,247,0.2)] resize-none transition-all"
             rows={3}
             disabled={isLoading}
           />
           <button
             type="submit"
             disabled={isLoading || !input.trim()}
-            className="self-end px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
+            className="self-end px-4 py-2 bg-gradient-to-r from-purple-500 to-purple-400 text-white hover:shadow-[0_0_20px_rgba(168,85,247,0.4)] disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center gap-2 cursor-pointer"
+            style={{ clipPath: 'polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px))' }}
           >
             <Send className="w-4 h-4" />
           </button>
         </form>
-        <p className="text-xs text-gray-500 mt-2">
-          Press Enter to send, Shift+Enter for new line
+        <p className="text-xs font-mono text-cyan-100/30 mt-2">
+          {t('inputHint')}
         </p>
       </div>
 
@@ -358,7 +355,6 @@ export function ChatSidebar({
         isOpen={showApiKeyModal}
         onClose={() => setShowApiKeyModal(false)}
         onSave={() => {
-          // Clear error after saving API key
           setShowError(false);
         }}
       />

@@ -54,6 +54,7 @@ import {
 export function LibraryPage() {
   const t = useTranslations('library');
   const tNav = useTranslations('nav');
+  const tBreadcrumbs = useTranslations('breadcrumbs');
   const router = useRouter();
   const searchParams = useSearchParams();
   const navigation = useLibraryNavigation();
@@ -239,15 +240,15 @@ export function LibraryPage() {
   // Build breadcrumbs
   const breadcrumbs = useMemo((): BreadcrumbItem[] => {
     const items: BreadcrumbItem[] = [
-      { id: 'home', label: 'My Library', type: 'home' },
+      { id: 'home', label: tBreadcrumbs('myLibrary'), type: 'home' },
     ];
 
     if (navigation.view === 'trash') {
-      items.push({ id: 'trash', label: 'Trash', type: 'trash' });
+      items.push({ id: 'trash', label: tBreadcrumbs('trash'), type: 'trash' });
     } else if (navigation.view === 'uncategorized') {
       items.push({
         id: 'uncategorized',
-        label: 'Uncategorized',
+        label: tBreadcrumbs('uncategorized'),
         type: 'uncategorized',
       });
     } else if (currentFolder) {
@@ -259,7 +260,7 @@ export function LibraryPage() {
     }
 
     return items;
-  }, [navigation.view, currentFolder]);
+  }, [navigation.view, currentFolder, tBreadcrumbs]);
 
   // Get current view data
   const currentViewData = useMemo(() => {
@@ -322,38 +323,38 @@ export function LibraryPage() {
 
   // Action handlers
   const handleCreateFolder = useCallback(async () => {
-    const name = prompt('Enter folder name:');
+    const name = prompt(t('prompts.enterFolderName'));
     if (!name) return;
 
     const result = await createFolderAction(name);
     if (result.success) {
       await fetchFolders();
     } else {
-      alert(result.error || 'Failed to create folder');
+      alert(result.error || t('errors.failedToCreateFolder'));
     }
-  }, [fetchFolders]);
+  }, [fetchFolders, t]);
 
   const handleRenameFolder = useCallback(
     async (folderId: string) => {
       const folder = folders.find((f) => f.id === folderId);
       if (!folder) return;
 
-      const newName = prompt('Enter new folder name:', folder.name);
+      const newName = prompt(t('prompts.enterNewFolderName'), folder.name);
       if (!newName || newName === folder.name) return;
 
       const result = await renameFolderAction(folderId, newName);
       if (result.success) {
         await fetchFolders();
       } else {
-        alert(result.error || 'Failed to rename folder');
+        alert(result.error || t('errors.failedToRenameFolder'));
       }
     },
-    [folders, fetchFolders]
+    [folders, fetchFolders, t]
   );
 
   const handleDeleteFolder = useCallback(
     async (folderId: string) => {
-      if (!confirm('Move this folder to trash?')) return;
+      if (!confirm(t('prompts.confirmMoveToTrash'))) return;
 
       const result = await deleteFolderAction(folderId);
       if (result.success) {
@@ -362,10 +363,10 @@ export function LibraryPage() {
           navigation.navigateToRoot();
         }
       } else {
-        alert(result.error || 'Failed to delete folder');
+        alert(result.error || t('errors.failedToDeleteFolder'));
       }
     },
-    [refreshData, navigation]
+    [refreshData, navigation, t]
   );
 
   const handleCreateWorkflow = useCallback(() => {
@@ -424,10 +425,10 @@ export function LibraryPage() {
         selection.clearSelection();
         await refreshData();
       } else {
-        alert(result.error || 'Failed to add items to folder');
+        alert(result.error || t('errors.failedToAddToFolder'));
       }
     },
-    [getSelectedFolderItems, selection, refreshData]
+    [getSelectedFolderItems, selection, refreshData, t]
   );
 
   const handleMoveToFolder = useCallback(
@@ -444,10 +445,10 @@ export function LibraryPage() {
         selection.clearSelection();
         await refreshData();
       } else {
-        alert(result.error || 'Failed to move items');
+        alert(result.error || t('errors.failedToMoveItems'));
       }
     },
-    [getSelectedFolderItems, selection, refreshData, navigation.currentFolderId]
+    [getSelectedFolderItems, selection, refreshData, navigation.currentFolderId, t]
   );
 
   const handleRemoveFromFolder = useCallback(async () => {
@@ -461,9 +462,9 @@ export function LibraryPage() {
       selection.clearSelection();
       await refreshData();
     } else {
-      alert(result.error || 'Failed to remove items from folder');
+      alert(result.error || t('errors.failedToRemoveFromFolder'));
     }
-  }, [getSelectedFolderItems, selection, refreshData, navigation.currentFolderId]);
+  }, [getSelectedFolderItems, selection, refreshData, navigation.currentFolderId, t]);
 
   async function handleBulkDelete() {
     const items = selection.getSelectedItems().map((item) => ({
@@ -478,14 +479,14 @@ export function LibraryPage() {
 
     if (items.length === 0) return;
 
-    if (!confirm(`Move ${items.length} item(s) to trash?`)) return;
+    if (!confirm(t('prompts.confirmMoveItemsToTrash', { count: items.length }))) return;
 
     const result = await bulkMoveToTrashAction(items);
     if (result.success) {
       selection.clearSelection();
       await refreshData();
     } else {
-      alert(result.error || 'Failed to move items to trash');
+      alert(result.error || t('errors.failedToMoveToTrash'));
     }
   }
 
@@ -799,21 +800,22 @@ export function LibraryPage() {
     }
   }, [refreshData]);
 
-  // Discover tab content with full DiscoverView
+  // Discover tab content with full DiscoverView - Cyberpunk Style
   const discoverContent = (
     <div className="max-w-7xl mx-auto px-4 py-6">
-      {/* Search */}
+      {/* Search - Cyberpunk Style */}
       <div className="mb-6">
         <div className="relative max-w-md">
           <input
             type="text"
-            placeholder="Search public content..."
+            placeholder="SCAN_PUBLIC_DATABASE..."
             value={discoverSearchQuery}
             onChange={(e) => setDiscoverSearchQuery(e.target.value)}
-            className="w-full px-4 py-2 pl-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full px-4 py-2.5 pl-10 bg-[#0a0a0f]/80 border border-cyan-500/50 text-cyan-100 font-mono text-sm placeholder:text-cyan-500/40 focus:outline-none focus:border-cyan-400 focus:shadow-[0_0_15px_rgba(0,255,255,0.2)] transition-all"
+            style={{ clipPath: 'polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px))' }}
           />
           <svg
-            className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400"
+            className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-cyan-500/60"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"

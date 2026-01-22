@@ -2,39 +2,32 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
-import { Badge } from '@/shared/ui/atoms';
+import { useTranslations } from 'next-intl';
 
 export interface Tag {
   id: string;
   name: string;
   color: string | null;
-  isTemporary?: boolean; // Flag for tags created inline, not yet saved to DB
+  isTemporary?: boolean;
 }
 
 export interface TagMultiSelectProps {
   selectedTagIds: string[];
   onChange: (tagIds: string[]) => void;
-  onTagsChanged?: (tags: Tag[]) => void; // Callback to sync temp tags with parent
+  onTagsChanged?: (tags: Tag[]) => void;
   label?: string;
   placeholder?: string;
 }
 
-/**
- * TagMultiSelect Component
- *
- * Multi-select dropdown for tags with search functionality
- * Displays selected tags as badges with remove buttons
- *
- * FSD Layer: Molecules
- * Imports: atoms (Badge)
- */
 export function TagMultiSelect({
   selectedTagIds,
   onChange,
   onTagsChanged,
   label,
-  placeholder = 'Select tags...'
+  placeholder
 }: TagMultiSelectProps) {
+  const t = useTranslations('tagMultiSelect');
+  const effectivePlaceholder = placeholder ?? t('placeholder');
   const [tags, setTags] = useState<Tag[]>([]);
   const [loading, setLoading] = useState(true);
   const [isOpen, setIsOpen] = useState(false);
@@ -51,7 +44,6 @@ export function TagMultiSelect({
       .finally(() => setLoading(false));
   }, []);
 
-  // Update dropdown position when opening (fixed positioning uses viewport coords directly)
   useEffect(() => {
     if (isOpen && buttonRef.current) {
       const rect = buttonRef.current.getBoundingClientRect();
@@ -79,7 +71,6 @@ export function TagMultiSelect({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // Sync temp tags with parent
   useEffect(() => {
     if (onTagsChanged) {
       onTagsChanged(tags);
@@ -91,7 +82,6 @@ export function TagMultiSelect({
     t.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  // Check if search term would create a new tag
   const searchTermTrimmed = searchTerm.trim();
   const canCreateTag = searchTermTrimmed.length > 0 &&
     !tags.some(t => t.name.toLowerCase() === searchTermTrimmed.toLowerCase());
@@ -135,12 +125,12 @@ export function TagMultiSelect({
     return (
       <div>
         {label && (
-          <label className="block text-sm font-medium text-gray-900 mb-2">
+          <label className="block text-xs font-mono text-cyan-400 uppercase tracking-wider mb-2">
             {label}
           </label>
         )}
-        <div className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-500">
-          Loading tags...
+        <div className="w-full px-3 py-2 bg-[#050508]/50 border border-cyan-500/30 text-cyan-100/50 font-mono text-sm">
+          {t('loading')}
         </div>
       </div>
     );
@@ -149,7 +139,7 @@ export function TagMultiSelect({
   return (
     <div className="relative" ref={containerRef}>
       {label && (
-        <label className="block text-sm font-medium text-gray-900 mb-2">
+        <label className="block text-xs font-mono text-cyan-400 uppercase tracking-wider mb-2">
           {label}
         </label>
       )}
@@ -158,25 +148,28 @@ export function TagMultiSelect({
         ref={buttonRef}
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white text-left focus:ring-2 focus:ring-blue-500 focus:border-blue-500 min-h-[42px]"
+        className="w-full px-3 py-2 bg-[#050508]/50 border border-cyan-500/50 text-left focus:outline-none focus:border-cyan-400 focus:shadow-[0_0_15px_rgba(0,255,255,0.2)] min-h-[42px] transition-all cursor-pointer"
         data-testid="tag-multiselect-button"
       >
         {selectedTags.length === 0 ? (
-          <span className="text-gray-500">{placeholder}</span>
+          <span className="text-cyan-500/30 font-mono text-sm">{effectivePlaceholder}</span>
         ) : (
           <div className="flex flex-wrap gap-1">
             {selectedTags.map(tag => (
-              <Badge key={tag.id} variant="default">
+              <span
+                key={tag.id}
+                className="inline-flex items-center px-2 py-0.5 text-xs font-mono bg-cyan-500/20 text-cyan-400 border border-cyan-500/50"
+              >
                 {tag.name}
                 <button
                   onClick={(e) => removeTag(tag.id, e)}
-                  className="ml-1 hover:text-red-600"
+                  className="ml-1 hover:text-pink-400 cursor-pointer"
                   type="button"
                   aria-label={`Remove ${tag.name}`}
                 >
                   ×
                 </button>
-              </Badge>
+              </span>
             ))}
           </div>
         )}
@@ -185,44 +178,43 @@ export function TagMultiSelect({
       {isOpen && typeof document !== 'undefined' && createPortal(
         <div 
           ref={dropdownRef}
-          className="fixed z-[9999] bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-auto"
+          className="fixed z-[9999] bg-[#0a0a0f] border border-cyan-500/50 shadow-[0_0_20px_rgba(0,255,255,0.1)] max-h-60 overflow-auto"
           style={{
             top: dropdownPosition.top,
             left: dropdownPosition.left,
             width: dropdownPosition.width,
           }}
         >
-          <div className="p-2 border-b border-gray-200">
+          <div className="p-2 border-b border-cyan-500/30">
             <input
               type="text"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder="Search or create tags..."
-              className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:outline-none"
+              placeholder={t('searchOrCreate')}
+              className="w-full px-2 py-1 bg-[#050508]/50 border border-cyan-500/30 text-cyan-100 font-mono text-sm placeholder:text-cyan-500/30 focus:outline-none focus:border-cyan-400"
               autoFocus
               data-testid="tag-search-input"
             />
           </div>
 
           <div className="p-1">
-            {/* Create new tag option */}
             {canCreateTag && (
               <button
                 type="button"
                 onClick={createNewTag}
-                className="w-full text-left px-3 py-2 rounded hover:bg-green-50 flex items-center gap-2 bg-green-50/50 border border-green-200"
+                className="w-full text-left px-3 py-2 hover:bg-green-500/10 flex items-center gap-2 bg-green-500/5 border border-green-500/30 cursor-pointer"
                 data-testid="create-tag-button"
               >
-                <span className="text-sm font-medium text-green-700">
-                  + Create &quot;{searchTermTrimmed}&quot;
+                <span className="text-sm font-mono text-green-400">
+                  + {t('create', { name: searchTermTrimmed })}
                 </span>
               </button>
             )}
 
             {filteredTags.length === 0 && !canCreateTag ? (
-              <div className="px-3 py-2 text-sm text-gray-500">
-                No tags found
+              <div className="px-3 py-2 text-sm font-mono text-cyan-100/40">
+                {t('noTagsFound')}
               </div>
             ) : (
               filteredTags.map(tag => {
@@ -232,8 +224,8 @@ export function TagMultiSelect({
                     key={tag.id}
                     type="button"
                     onClick={() => toggleTag(tag.id)}
-                    className={`w-full text-left px-3 py-2 rounded hover:bg-gray-50 flex items-center gap-2 ${
-                      isSelected ? 'bg-blue-50' : ''
+                    className={`w-full text-left px-3 py-2 hover:bg-cyan-500/10 flex items-center gap-2 cursor-pointer ${
+                      isSelected ? 'bg-cyan-500/20' : ''
                     }`}
                     data-testid={`tag-option-${tag.id}`}
                   >
@@ -241,12 +233,12 @@ export function TagMultiSelect({
                       type="checkbox"
                       checked={isSelected}
                       onChange={() => {}}
-                      className="rounded"
+                      className="accent-cyan-500 cursor-pointer"
                     />
-                    <span className="text-sm">
+                    <span className="text-sm font-mono text-cyan-100">
                       {tag.name}
                       {tag.isTemporary && (
-                        <span className="ml-2 text-xs text-gray-500">(new)</span>
+                        <span className="ml-2 text-xs text-cyan-500/50">({t('new')})</span>
                       )}
                     </span>
                   </button>

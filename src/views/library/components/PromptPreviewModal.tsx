@@ -2,7 +2,6 @@
 
 import { useTranslations } from 'next-intl';
 import { Modal } from '@/shared/ui/atoms/Modal';
-import Button from '@/shared/ui/atoms/Button';
 import { PromptWithMeta } from '@/server/folders/types';
 import { useState } from 'react';
 
@@ -12,9 +11,7 @@ interface PromptPreviewModalProps {
 }
 
 /**
- * PromptPreviewModal Component
- *
- * Modal for previewing prompt content with copy functionality.
+ * PromptPreviewModal Component - Cyberpunk Style
  */
 export function PromptPreviewModal({ prompt, onClose }: PromptPreviewModalProps) {
   const t = useTranslations('miniPromptCard');
@@ -42,14 +39,16 @@ export function PromptPreviewModal({ prompt, onClose }: PromptPreviewModalProps)
     >
       <div className="flex items-start justify-between mb-4">
         <div>
-          <h3 className="text-lg font-semibold text-gray-900">{prompt.name}</h3>
+          <h3 className="text-lg font-mono font-bold text-pink-400 uppercase tracking-wider" style={{ textShadow: '0 0 10px #ff006640' }}>
+            {prompt.name}
+          </h3>
           {prompt.description && (
-            <p className="text-sm text-gray-500 mt-1">{prompt.description}</p>
+            <p className="text-sm text-cyan-100/50 font-mono mt-1">{prompt.description}</p>
           )}
         </div>
         <button
           onClick={onClose}
-          className="p-1 text-gray-400 hover:text-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="p-2 text-cyan-400 hover:text-cyan-300 hover:bg-cyan-500/10 transition-all cursor-pointer"
           aria-label="Close"
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -59,37 +58,48 @@ export function PromptPreviewModal({ prompt, onClose }: PromptPreviewModalProps)
       </div>
 
       {/* Meta info */}
-      <div className="flex items-center gap-4 text-sm text-gray-500 mb-4">
+      <div className="flex items-center gap-4 text-sm font-mono text-cyan-100/50 mb-4">
         <span className="flex items-center gap-1">
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
           </svg>
-          {prompt.user.username}
+          <span className="text-purple-400">@{prompt.user.username}</span>
         </span>
-        <span className={`px-2 py-0.5 rounded text-xs font-medium ${
+        <span className={`px-2 py-0.5 text-xs font-mono uppercase border ${
           prompt.visibility === 'PUBLIC'
-            ? 'bg-green-100 text-green-700'
-            : 'bg-gray-100 text-gray-700'
+            ? 'bg-green-500/10 text-green-400 border-green-500/50'
+            : 'bg-cyan-500/10 text-cyan-400 border-cyan-500/50'
         }`}>
           {prompt.visibility === 'PUBLIC' ? tCommon('public') : tCommon('private')}
         </span>
       </div>
 
       {/* Content */}
-      <div className="flex-1 overflow-y-auto bg-gray-50 rounded-lg p-4 mb-4">
-        <pre className="text-sm text-gray-800 whitespace-pre-wrap font-mono">
+      <div className="flex-1 overflow-y-auto bg-[#050508]/50 border border-cyan-500/30 p-4 mb-4">
+        <pre className="text-sm text-cyan-100/80 whitespace-pre-wrap font-mono">
           {prompt.content}
         </pre>
       </div>
 
       {/* Actions */}
       <div className="flex justify-end gap-3">
-        <Button variant="secondary" onClick={onClose}>
+        <button
+          onClick={onClose}
+          className="px-4 py-2 bg-transparent border border-cyan-500/30 text-cyan-400 font-mono text-sm uppercase tracking-wider hover:bg-cyan-500/10 hover:border-cyan-400 transition-all cursor-pointer"
+        >
           {tCommon('close')}
-        </Button>
-        <Button variant="primary" onClick={handleCopy}>
+        </button>
+        <button
+          onClick={handleCopy}
+          className={`px-6 py-2.5 font-bold uppercase tracking-wider text-sm transition-all cursor-pointer ${
+            copied 
+              ? 'bg-gradient-to-r from-green-500 to-emerald-400 text-[#050508] hover:shadow-[0_0_20px_rgba(0,255,0,0.4)]'
+              : 'bg-gradient-to-r from-pink-500 to-pink-400 text-white hover:shadow-[0_0_20px_rgba(255,0,102,0.4)]'
+          }`}
+          style={{ clipPath: 'polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px))' }}
+        >
           {copied ? tCommon('copied') : t('copy')}
-        </Button>
+        </button>
       </div>
     </Modal>
   );

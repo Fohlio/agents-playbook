@@ -1,7 +1,6 @@
 'use client';
 
-import { Input, Button, Checkbox, Textarea } from '@/shared/ui/atoms';
-import { TagMultiSelect, KeyDisplay } from '@/shared/ui/molecules';
+import { useTranslations } from 'next-intl';
 import { ModelMultiSelect } from '@/shared/ui/molecules/ModelMultiSelect';
 import { useModels } from '@/entities/models';
 
@@ -11,7 +10,6 @@ interface WorkflowHeaderProps {
   workflowKey?: string | null;
   isActive: boolean;
   isPublic: boolean;
-  selectedTagIds: string[];
   selectedModelIds: string[];
   isDirty: boolean;
   isSaving: boolean;
@@ -19,7 +17,6 @@ interface WorkflowHeaderProps {
   onWorkflowDescriptionChange: (description: string | null) => void;
   onIsActiveChange: (isActive: boolean) => void;
   onIsPublicChange: (isPublic: boolean) => void;
-  onSelectedTagIdsChange: (tagIds: string[]) => void;
   onSelectedModelIdsChange: (modelIds: string[]) => void;
   onSave: () => void;
 }
@@ -30,7 +27,6 @@ export function WorkflowHeader({
   workflowKey,
   isActive,
   isPublic,
-  selectedTagIds,
   selectedModelIds,
   isDirty,
   isSaving,
@@ -38,96 +34,102 @@ export function WorkflowHeader({
   onWorkflowDescriptionChange,
   onIsActiveChange,
   onIsPublicChange,
-  onSelectedTagIdsChange,
   onSelectedModelIdsChange,
   onSave,
 }: WorkflowHeaderProps) {
-  // Fetch models from entities layer
+  const t = useTranslations('workflowHeader');
   const { models, loading: modelsLoading } = useModels();
 
   return (
-    <div className="bg-surface-base border-b border-border-base px-6 py-4">
+    <div className="bg-[#0a0a0f]/95 backdrop-blur-md border-b border-cyan-500/30 px-6 py-4">
       <div className="flex items-center justify-between mb-3 gap-4">
         <div className="flex-1 min-w-0 max-w-4xl">
-          <Input
+          <input
             type="text"
             value={workflowName}
             onChange={(e) => {
               onWorkflowNameChange(e.target.value);
             }}
-            placeholder="Workflow Name"
-            className="text-2xl font-bold border-0 bg-transparent focus:ring-0 px-0 w-full"
+            placeholder={t('namePlaceholder')}
+            className="text-2xl font-bold font-mono text-cyan-400 bg-transparent border-0 focus:outline-none focus:ring-0 px-0 w-full uppercase tracking-wider placeholder:text-cyan-500/30"
+            style={{ textShadow: '0 0 10px #00ffff40' }}
           />
         </div>
         <div className="flex gap-3">
-          <Button
+          <button
             onClick={onSave}
             disabled={!isDirty || isSaving}
+            className="px-6 py-2.5 bg-gradient-to-r from-cyan-500 to-cyan-400 text-[#050508] font-bold uppercase tracking-wider text-sm hover:shadow-[0_0_20px_rgba(0,255,255,0.4)] disabled:opacity-50 disabled:cursor-not-allowed transition-all cursor-pointer"
+            style={{ clipPath: 'polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px))' }}
           >
-            {isSaving ? 'Saving...' : 'Save Workflow'}
-          </Button>
+            {isSaving ? t('saving') : t('save')}
+          </button>
         </div>
       </div>
 
-      {/* System panel - single row with checkboxes and tags */}
+      {/* System panel - single row with checkboxes and models */}
       <div className="flex items-center gap-4 flex-wrap">
         <div className="flex items-center gap-6">
-          <Checkbox
-            checked={isActive}
-            onChange={(e) => onIsActiveChange(e.target.checked)}
-            id="workflow-active-checkbox"
-            label="Active"
-          />
-          <Checkbox
-            checked={isPublic}
-            onChange={(e) => onIsPublicChange(e.target.checked)}
-            id="workflow-public-checkbox"
-            label="Public"
-          />
+          <label className="flex items-center gap-2 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={isActive}
+              onChange={(e) => onIsActiveChange(e.target.checked)}
+              id="workflow-active-checkbox"
+              className="w-4 h-4 accent-cyan-500 cursor-pointer"
+            />
+            <span className={`text-xs font-mono uppercase tracking-wider ${isActive ? 'text-green-400' : 'text-cyan-100/40'}`}>
+              {isActive ? t('active') : t('inactive')}
+            </span>
+          </label>
+          <label className="flex items-center gap-2 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={isPublic}
+              onChange={(e) => onIsPublicChange(e.target.checked)}
+              id="workflow-public-checkbox"
+              className="w-4 h-4 accent-cyan-500 cursor-pointer"
+            />
+            <span className={`text-xs font-mono uppercase tracking-wider ${isPublic ? 'text-purple-400' : 'text-cyan-100/40'}`}>
+              {isPublic ? t('public') : t('private')}
+            </span>
+          </label>
           {workflowKey && (
-            <KeyDisplay keyValue={workflowKey} />
+            <div className="px-2 py-1 bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 font-mono text-xs">
+              {t('key')}: {workflowKey}
+            </div>
           )}
-        </div>
-        
-        {/* Tags multiselect */}
-        <div className="flex-1 min-w-[200px]">
-          <TagMultiSelect
-            selectedTagIds={selectedTagIds}
-            onChange={onSelectedTagIdsChange}
-          />
         </div>
 
         {/* Models multiselect */}
-        <div className="flex-1 min-w-[200px]">
+        <div className="flex-1 min-w-[200px] max-w-[400px]">
           <ModelMultiSelect
             models={models}
             selectedModelIds={selectedModelIds}
             onChange={onSelectedModelIdsChange}
             loading={modelsLoading}
-            placeholder="Select AI models..."
+            placeholder={t('selectModelsPlaceholder')}
           />
         </div>
       </div>
 
       {/* Description textarea below top panel */}
       <div className="mt-4 relative">
-        <Textarea
+        <textarea
           value={workflowDescription || ''}
           onChange={(e) => {
             const value = e.target.value || null;
             onWorkflowDescriptionChange(value);
           }}
-          placeholder="Workflow Description (optional)"
+          placeholder={t('descriptionPlaceholder')}
           maxLength={500}
-          rows={3}
-          fullWidth
-          className="text-text-secondary"
+          rows={2}
+          className="w-full px-3 py-2 bg-[#050508]/50 border border-cyan-500/30 text-cyan-100 font-mono text-sm placeholder:text-cyan-500/30 focus:outline-none focus:border-cyan-400 focus:shadow-[0_0_15px_rgba(0,255,255,0.1)] transition-all resize-none"
         />
-        <div className={`absolute bottom-2 right-2 text-xs ${(workflowDescription?.length || 0) > 480 ? 'text-red-500' : 'text-gray-400'}`}>
+        <div className={`absolute bottom-2 right-2 text-xs font-mono ${(workflowDescription?.length || 0) > 480 ? 'text-pink-400' : 'text-cyan-500/40'}`}>
           {workflowDescription?.length || 0}/500
         </div>
       </div>
     </div>
   );
 }
-

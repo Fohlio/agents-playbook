@@ -3,9 +3,9 @@
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { ROUTES } from '@/shared/routes';
-import { Button, Card, Badge } from '@/shared/ui/atoms';
-import IconButton from '@/shared/ui/atoms/IconButton';
+import { Card } from '@/shared/ui/atoms';
 import Link from 'next/link';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -30,6 +30,8 @@ interface Tag {
 export default function AdminTagsPage() {
   const { data: session } = useSession();
   const router = useRouter();
+  const t = useTranslations('admin');
+  const tt = useTranslations('admin.tags');
   const [tags, setTags] = useState<Tag[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [editingTag, setEditingTag] = useState<Tag | null>(null);
@@ -60,7 +62,7 @@ export default function AdminTagsPage() {
   };
 
   const handleRestore = async (id: string, name: string) => {
-    if (!confirm(`Restore tag "${name}"?`)) {
+    if (!confirm(tt('confirmRestore', { name }))) {
       return;
     }
 
@@ -76,14 +78,14 @@ export default function AdminTagsPage() {
       }
       fetchTags();
     } catch {
-      alert('Failed to restore tag');
+      alert(tt('failedRestore'));
     }
   };
 
   const handleMerge = async () => {
     if (!mergingTag || !mergeTargetId) return;
 
-    if (!confirm(`Merge "${mergingTag.name}" into selected tag? This will reassign all workflows/mini-prompts and delete "${mergingTag.name}".`)) {
+    if (!confirm(tt('confirmMerge', { name: mergingTag.name }))) {
       return;
     }
 
@@ -96,7 +98,7 @@ export default function AdminTagsPage() {
 
       if (!response.ok) {
         const error = await response.json();
-        alert(error.error || 'Failed to merge tags');
+        alert(error.error || tt('failedMerge'));
         return;
       }
 
@@ -104,7 +106,7 @@ export default function AdminTagsPage() {
       setMergeTargetId('');
       fetchTags();
     } catch {
-      alert('Failed to merge tags');
+      alert(tt('failedMerge'));
     }
   };
 
@@ -123,19 +125,19 @@ export default function AdminTagsPage() {
 
       if (!response.ok) {
         const error = await response.json();
-        alert(error.error || 'Failed to update tag');
+        alert(error.error || tt('failedUpdate'));
         return;
       }
 
       setEditingTag(null);
       fetchTags();
     } catch {
-      alert('Failed to update tag');
+      alert(tt('failedUpdate'));
     }
   };
 
   const handleDelete = async (id: string, name: string) => {
-    if (!confirm(`Soft delete tag "${name}"? It will be hidden from users but remain on assigned workflows/mini-prompts.`)) {
+    if (!confirm(tt('confirmDelete', { name }))) {
       return;
     }
 
@@ -146,89 +148,109 @@ export default function AdminTagsPage() {
       }
       fetchTags();
     } catch {
-      alert('Failed to delete tag');
+      alert(tt('failedDelete'));
     }
   };
 
   if (session?.user?.role !== 'ADMIN') {
     return (
       <div className="text-center py-12">
-        <p className="text-text-secondary">Access denied. Admin privileges required.</p>
+        <div className="bg-pink-500/10 border border-pink-500/30 p-6 inline-block">
+          <p className="text-pink-400 font-mono uppercase">{t('accessDenied')}</p>
+        </div>
       </div>
     );
   }
 
   if (isLoading) {
-    return <div className="text-center py-12">Loading...</div>;
+    return (
+      <div className="text-center py-12">
+        <div className="flex flex-col items-center gap-3">
+          <div className="w-8 h-8 border-2 border-cyan-500/30 border-t-cyan-400 rounded-full animate-spin" />
+          <span className="text-cyan-400 font-mono text-sm uppercase tracking-wider">{tt('loading')}</span>
+        </div>
+      </div>
+    );
   }
+
+  const header = tt('header');
 
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
           <div className="flex items-center gap-3">
-            <h1 className="text-2xl font-bold text-text-primary">Manage Tags</h1>
-            <Badge variant="primary" testId="admin-badge">
-              Admin
-            </Badge>
+            <h1 className="text-2xl font-black tracking-tight">
+              <span className="cyber-text-glitch" data-text={header} style={{ color: '#00ffff', textShadow: '0 0 10px #00ffff, 0 0 20px #00ffff40' }}>
+                {header}
+              </span>
+            </h1>
+            <span className="px-2 py-1 text-xs font-mono bg-pink-500/20 text-pink-400 border border-pink-500/50 uppercase">
+              {t('badge')}
+            </span>
           </div>
-          <p className="text-sm text-text-secondary mt-1">
-            Create and manage tags for workflows and mini-prompts
+          <p className="text-cyan-100/60 font-mono text-sm uppercase tracking-wider mt-1">
+            {tt('subtitle')}
           </p>
         </div>
         <div className="flex gap-3">
           <Link href={ROUTES.ADMIN.SYSTEM_WORKFLOWS}>
-            <Button variant="secondary">System Workflows</Button>
+            <button className="px-4 py-2 bg-transparent border border-cyan-500/30 text-cyan-400 font-mono text-sm uppercase tracking-wider hover:bg-cyan-500/10 hover:border-cyan-400 transition-all cursor-pointer">
+              {tt('navWorkflows')}
+            </button>
           </Link>
           <Link href={ROUTES.ADMIN.SYSTEM_MINI_PROMPTS}>
-            <Button variant="secondary">System Mini-Prompts</Button>
+            <button className="px-4 py-2 bg-transparent border border-pink-500/30 text-pink-400 font-mono text-sm uppercase tracking-wider hover:bg-pink-500/10 hover:border-pink-400 transition-all cursor-pointer">
+              {tt('navMiniPrompts')}
+            </button>
           </Link>
         </div>
       </div>
 
-      <Card className="p-6">
-        <div className="text-sm text-gray-600">
-          <p className="mb-2">
-            <strong>Note:</strong> Users can now create tags directly from workflow/mini-prompt editors.
-          </p>
-          <p>
-            As admin, you can manage all tags (active and deleted), merge similar tags, and restore soft-deleted tags.
-          </p>
-        </div>
+      <Card className="p-4">
+        <p className="text-cyan-100/50 font-mono text-xs">
+          <span className="text-cyan-400">&gt; {tt('note')}</span> {tt('noteText')}
+        </p>
       </Card>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {tags.map((tag) => (
-          <Card key={tag.id} className="p-4 hover:shadow-md transition-shadow">
+          <div
+            key={tag.id}
+            className="bg-[#0a0a0f]/80 backdrop-blur-sm border border-cyan-500/30 p-4 hover:border-cyan-400/50 transition-all"
+            style={{ clipPath: 'polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px))' }}
+          >
             {editingTag?.id === tag.id ? (
               <div className="space-y-3">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Name
+                  <label className="block text-xs font-mono text-cyan-400 uppercase tracking-wider mb-1">
+                    {tt('name')}
                   </label>
                   <input
                     type="text"
                     value={editingTag.name}
                     onChange={(e) => setEditingTag({ ...editingTag, name: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
+                    className="w-full px-3 py-2 bg-[#050508]/50 border border-cyan-500/50 text-cyan-100 font-mono text-sm focus:outline-none focus:border-cyan-400"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Color
+                  <label className="block text-xs font-mono text-cyan-400 uppercase tracking-wider mb-1">
+                    {tt('color')}
                   </label>
                   <input
                     type="color"
-                    value={editingTag.color || '#3B82F6'}
+                    value={editingTag.color || '#00FFFF'}
                     onChange={(e) => setEditingTag({ ...editingTag, color: e.target.value })}
-                    className="w-full h-10 border border-gray-300 rounded-md cursor-pointer"
+                    className="w-full h-10 bg-transparent border border-cyan-500/50 cursor-pointer"
                   />
                 </div>
                 <div className="flex gap-2">
-                  <Button size="sm" onClick={handleUpdate}>Save</Button>
-                  <Button size="sm" variant="secondary" onClick={() => setEditingTag(null)}>
-                    Cancel
-                  </Button>
+                  <button onClick={handleUpdate} className="px-3 py-1.5 bg-gradient-to-r from-cyan-500 to-cyan-400 text-[#050508] font-bold text-xs uppercase cursor-pointer">
+                    {tt('save')}
+                  </button>
+                  <button onClick={() => setEditingTag(null)} className="px-3 py-1.5 bg-transparent border border-cyan-500/30 text-cyan-400 font-mono text-xs uppercase cursor-pointer">
+                    {tt('cancel')}
+                  </button>
                 </div>
               </div>
             ) : (
@@ -236,116 +258,111 @@ export default function AdminTagsPage() {
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex items-center gap-2 flex-1">
                     <div
-                      className="w-4 h-4 rounded-full border border-gray-300"
-                      style={{ backgroundColor: tag.color || '#gray' }}
+                      className="w-4 h-4"
+                      style={{
+                        backgroundColor: tag.color || '#00ffff',
+                        clipPath: 'polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)',
+                        boxShadow: `0 0 10px ${tag.color || '#00ffff'}`
+                      }}
                     />
-                    <span className="font-semibold text-text-primary">{tag.name}</span>
+                    <span className="font-mono text-cyan-100">{tag.name}</span>
                     {!tag.isActive && (
-                      <Badge variant="warning" testId={`tag-deleted-badge-${tag.id}`}>
-                        Deleted
-                      </Badge>
+                      <span className="px-2 py-0.5 text-xs font-mono bg-yellow-500/20 text-yellow-400 border border-yellow-500/50 uppercase">
+                        {tt('deleted')}
+                      </span>
                     )}
                   </div>
                   <div className="flex gap-1">
                     {tag.isActive ? (
                       <>
-                        <IconButton
-                          variant="primary"
-                          size="sm"
-                          icon={<EditIcon fontSize="small" />}
-                          ariaLabel="Edit tag"
-                          onClick={() => setEditingTag(tag)}
-                        />
-                        <IconButton
-                          variant="secondary"
-                          size="sm"
-                          icon={<MergeIcon fontSize="small" />}
-                          ariaLabel="Merge tag"
-                          onClick={() => setMergingTag(tag)}
-                        />
-                        <IconButton
-                          variant="danger"
-                          size="sm"
-                          icon={<DeleteIcon fontSize="small" />}
-                          ariaLabel="Delete tag"
-                          onClick={() => handleDelete(tag.id, tag.name)}
-                        />
+                        <button className="p-1.5 bg-cyan-500/20 border border-cyan-500/30 text-cyan-400 hover:bg-cyan-500/30 transition-all cursor-pointer" onClick={() => setEditingTag(tag)}>
+                          <EditIcon sx={{ fontSize: 14 }} />
+                        </button>
+                        <button className="p-1.5 bg-purple-500/20 border border-purple-500/30 text-purple-400 hover:bg-purple-500/30 transition-all cursor-pointer" onClick={() => setMergingTag(tag)}>
+                          <MergeIcon sx={{ fontSize: 14 }} />
+                        </button>
+                        <button className="p-1.5 bg-pink-500/20 border border-pink-500/30 text-pink-400 hover:bg-pink-500/30 transition-all cursor-pointer" onClick={() => handleDelete(tag.id, tag.name)}>
+                          <DeleteIcon sx={{ fontSize: 14 }} />
+                        </button>
                       </>
                     ) : (
-                      <IconButton
-                        variant="primary"
-                        size="sm"
-                        icon={<RestoreIcon fontSize="small" />}
-                        ariaLabel="Restore tag"
-                        onClick={() => handleRestore(tag.id, tag.name)}
-                      />
+                      <button className="p-1.5 bg-green-500/20 border border-green-500/30 text-green-400 hover:bg-green-500/30 transition-all cursor-pointer" onClick={() => handleRestore(tag.id, tag.name)}>
+                        <RestoreIcon sx={{ fontSize: 14 }} />
+                      </button>
                     )}
                   </div>
                 </div>
-                <div className="text-xs text-text-tertiary space-y-1">
-                  <div>{tag._count.workflowTags} workflows</div>
-                  <div>{tag._count.miniPromptTags} mini-prompts</div>
-                  <div className="mt-2 pt-2 border-t border-gray-200">
-                    Created by: {tag.creator.username}
+                <div className="text-xs font-mono text-cyan-100/40 space-y-1">
+                  <div>{tag._count.workflowTags} {tt('workflows')}</div>
+                  <div>{tag._count.miniPromptTags} {tt('miniPrompts')}</div>
+                  <div className="mt-2 pt-2 border-t border-cyan-500/20">
+                    {tt('createdBy')} <span className="text-purple-400">@{tag.creator.username}</span>
                   </div>
                 </div>
               </div>
             )}
-          </Card>
+          </div>
         ))}
       </div>
 
       {tags.length === 0 && (
         <Card className="text-center py-12">
-          <p className="text-text-secondary mb-4">No tags found</p>
-          <p className="text-sm text-text-tertiary">Users can create tags from workflow/mini-prompt editors</p>
+          <p className="text-cyan-100/40 font-mono uppercase mb-4">{tt('empty')}</p>
+          <p className="text-xs text-cyan-100/30 font-mono">{tt('emptyNote')}</p>
         </Card>
       )}
 
       {/* Merge Modal */}
       {mergingTag && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <Card className="w-full max-w-md p-6">
-            <h3 className="font-bold text-lg mb-4">Merge Tag: {mergingTag.name}</h3>
-            <p className="text-sm text-gray-600 mb-4">
-              Select target tag to merge into. All workflows and mini-prompts will be reassigned, and &quot;{mergingTag.name}&quot; will be permanently deleted.
+        <div className="fixed inset-0 bg-[#050508]/90 backdrop-blur-sm flex items-center justify-center z-50">
+          <div
+            className="w-full max-w-md bg-[#0a0a0f] border border-cyan-500/30 p-6"
+            style={{ clipPath: 'polygon(0 0, calc(100% - 15px) 0, 100% 15px, 100% 100%, 15px 100%, 0 calc(100% - 15px))' }}
+          >
+            <h3 className="font-mono text-lg text-cyan-400 uppercase mb-4">{tt('merge.title')} {mergingTag.name}</h3>
+            <p className="text-sm text-cyan-100/50 font-mono mb-4">
+              {tt('merge.description', { name: mergingTag.name })}
             </p>
 
             <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Target Tag
+              <label className="block text-xs font-mono text-cyan-400 uppercase tracking-wider mb-2">
+                {tt('merge.targetLabel')}
               </label>
               <select
                 value={mergeTargetId}
                 onChange={(e) => setMergeTargetId(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full px-3 py-2 bg-[#050508]/50 border border-cyan-500/50 text-cyan-100 font-mono text-sm focus:outline-none focus:border-cyan-400"
               >
-                <option value="">-- Select Target Tag --</option>
+                <option value="">{tt('merge.selectTarget')}</option>
                 {tags
-                  .filter(t => t.id !== mergingTag.id && t.isActive)
-                  .map(t => (
-                    <option key={t.id} value={t.id}>
-                      {t.name} ({t._count.workflowTags} workflows, {t._count.miniPromptTags} mini-prompts)
+                  .filter(tagItem => tagItem.id !== mergingTag.id && tagItem.isActive)
+                  .map(tagItem => (
+                    <option key={tagItem.id} value={tagItem.id}>
+                      {tagItem.name} ({tagItem._count.workflowTags} {tt('workflows')}, {tagItem._count.miniPromptTags} {tt('miniPrompts')})
                     </option>
                   ))}
               </select>
             </div>
 
             <div className="flex gap-2">
-              <Button onClick={handleMerge} disabled={!mergeTargetId} variant="danger">
-                Merge & Delete
-              </Button>
-              <Button
-                variant="secondary"
+              <button
+                onClick={handleMerge}
+                disabled={!mergeTargetId}
+                className="px-4 py-2 bg-gradient-to-r from-pink-500 to-pink-400 text-white font-bold text-sm uppercase disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+              >
+                {tt('merge.button')}
+              </button>
+              <button
                 onClick={() => {
                   setMergingTag(null);
                   setMergeTargetId('');
                 }}
+                className="px-4 py-2 bg-transparent border border-cyan-500/30 text-cyan-400 font-mono text-sm uppercase cursor-pointer"
               >
-                Cancel
-              </Button>
+                {tt('merge.cancel')}
+              </button>
             </div>
-          </Card>
+          </div>
         </div>
       )}
     </div>

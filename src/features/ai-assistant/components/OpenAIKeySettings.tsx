@@ -1,10 +1,15 @@
 'use client';
 
 import { useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { useOpenAIKey } from '@/features/ai-assistant/hooks/useOpenAIKey';
 import { Key, CheckCircle2, XCircle, Loader2, Trash2, Save } from 'lucide-react';
+import { Card } from '@/shared/ui/atoms';
 
 export function OpenAIKeySettings() {
+  const t = useTranslations('aiAssistant.openaiSettings');
+  const tCommon = useTranslations('common');
+
   const { hasKey, updatedAt, isLoading, saveKey, removeKey, testKey } =
     useOpenAIKey();
 
@@ -21,7 +26,7 @@ export function OpenAIKeySettings() {
     if (!apiKey.trim()) {
       setTestResult({
         valid: false,
-        message: 'Please enter an API key',
+        message: t('enterApiKey'),
       });
       return;
     }
@@ -34,8 +39,8 @@ export function OpenAIKeySettings() {
     setTestResult({
       valid: result.valid,
       message: result.valid
-        ? 'API key is valid and working!'
-        : result.error || 'Invalid API key',
+        ? t('keyValid')
+        : result.error || t('keyInvalid'),
     });
 
     setIsTesting(false);
@@ -43,29 +48,25 @@ export function OpenAIKeySettings() {
 
   const handleSave = async () => {
     if (!apiKey.trim()) {
-      setSaveError('Please enter an API key');
+      setSaveError(t('enterApiKey'));
       return;
     }
 
     try {
       setSaveError(null);
-      await saveKey(apiKey, true); // Test connection before saving
+      await saveKey(apiKey, true);
       setApiKey('');
       setIsEditing(false);
       setTestResult(null);
     } catch (error) {
       setSaveError(
-        error instanceof Error ? error.message : 'Failed to save API key'
+        error instanceof Error ? error.message : t('enterApiKey')
       );
     }
   };
 
   const handleRemove = async () => {
-    if (
-      !confirm(
-        'Are you sure you want to remove your OpenAI API key? You will not be able to use the AI assistant without it.'
-      )
-    ) {
+    if (!confirm(t('confirmRemove'))) {
       return;
     }
 
@@ -81,23 +82,30 @@ export function OpenAIKeySettings() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center py-8">
-        <Loader2 className="w-6 h-6 animate-spin text-gray-400" />
-      </div>
+      <Card>
+        <div className="flex items-center justify-center py-8">
+          <div className="flex flex-col items-center gap-3">
+            <Loader2 className="w-6 h-6 animate-spin text-cyan-400" />
+            <span className="text-cyan-400 font-mono text-sm uppercase tracking-wider">{t('loadingConfig')}</span>
+          </div>
+        </div>
+      </Card>
     );
   }
 
   return (
-    <div className="bg-white rounded-lg border border-gray-200 p-6">
-      <div className="flex items-start justify-between mb-4">
+    <Card>
+      <div className="flex items-start justify-between mb-6">
         <div className="flex items-center gap-3">
-          <Key className="w-6 h-6 text-blue-600" />
+          <div className="p-2 bg-cyan-500/10 border border-cyan-500/30">
+            <Key className="w-5 h-5 text-cyan-400" />
+          </div>
           <div>
-            <h3 className="text-lg font-semibold text-gray-900">
-              OpenAI API Key
+            <h3 className="text-lg font-bold font-mono text-cyan-400 uppercase tracking-wider" style={{ textShadow: '0 0 10px #00ffff40' }}>
+              {t('title')}
             </h3>
-            <p className="text-sm text-gray-600">
-              Required for AI-assisted workflow creation
+            <p className="text-sm text-cyan-100/50 font-mono">
+              {t('subtitle')}
             </p>
           </div>
         </div>
@@ -105,16 +113,16 @@ export function OpenAIKeySettings() {
 
       {/* Key Status */}
       {hasKey && !isEditing && (
-        <div className="mb-4 p-4 bg-green-50 border border-green-200 rounded-lg">
+        <div className="mb-6 p-4 bg-green-500/10 border border-green-500/50">
           <div className="flex items-start gap-2">
-            <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+            <CheckCircle2 className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
             <div className="flex-1">
-              <p className="text-sm text-green-800 font-medium">
-                API key is configured
+              <p className="text-sm text-green-400 font-mono uppercase">
+                {t('keyConfigured')}
               </p>
               {updatedAt && (
-                <p className="text-xs text-green-700 mt-1">
-                  Last updated: {new Date(updatedAt).toLocaleDateString()}
+                <p className="text-xs text-green-400/60 font-mono mt-1">
+                  {t('lastUpdated')}: {new Date(updatedAt).toLocaleDateString()}
                 </p>
               )}
             </div>
@@ -128,9 +136,9 @@ export function OpenAIKeySettings() {
           <div>
             <label
               htmlFor="openai-key"
-              className="block text-sm font-medium text-gray-700 mb-2"
+              className="block text-xs font-mono text-cyan-400 uppercase tracking-wider mb-2"
             >
-              API Key
+              {t('apiKeyLabel')}
             </label>
             <input
               id="openai-key"
@@ -142,17 +150,17 @@ export function OpenAIKeySettings() {
                 setSaveError(null);
               }}
               placeholder="sk-proj-..."
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-2.5 bg-[#050508]/50 border border-cyan-500/50 text-cyan-100 font-mono text-sm placeholder:text-cyan-500/30 focus:outline-none focus:border-cyan-400 focus:shadow-[0_0_15px_rgba(0,255,255,0.2)] transition-all"
             />
-            <p className="text-xs text-gray-500 mt-1">
-              Get your API key from{' '}
+            <p className="text-xs text-cyan-100/30 font-mono mt-1">
+              {t('getKeyFrom')}{' '}
               <a
                 href="https://platform.openai.com/api-keys"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-blue-600 hover:underline"
+                className="text-cyan-400 hover:text-cyan-300 underline"
               >
-                OpenAI Platform
+                {t('openaiPlatform')}
               </a>
             </p>
           </div>
@@ -160,21 +168,21 @@ export function OpenAIKeySettings() {
           {/* Test Result */}
           {testResult && (
             <div
-              className={`p-3 rounded-lg border ${
+              className={`p-3 border ${
                 testResult.valid
-                  ? 'bg-green-50 border-green-200'
-                  : 'bg-red-50 border-red-200'
+                  ? 'bg-green-500/10 border-green-500/50'
+                  : 'bg-pink-500/10 border-pink-500/50'
               }`}
             >
               <div className="flex items-start gap-2">
                 {testResult.valid ? (
-                  <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                  <CheckCircle2 className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
                 ) : (
-                  <XCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+                  <XCircle className="w-5 h-5 text-pink-400 flex-shrink-0 mt-0.5" />
                 )}
                 <p
-                  className={`text-sm ${
-                    testResult.valid ? 'text-green-800' : 'text-red-800'
+                  className={`text-sm font-mono ${
+                    testResult.valid ? 'text-green-400' : 'text-pink-400'
                   }`}
                 >
                   {testResult.message}
@@ -185,8 +193,8 @@ export function OpenAIKeySettings() {
 
           {/* Save Error */}
           {saveError && (
-            <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
-              <p className="text-sm text-red-800">{saveError}</p>
+            <div className="p-3 bg-pink-500/10 border border-pink-500/50">
+              <p className="text-sm text-pink-400 font-mono">&gt; ERROR: {saveError}</p>
             </div>
           )}
 
@@ -195,25 +203,26 @@ export function OpenAIKeySettings() {
             <button
               onClick={handleTest}
               disabled={isTesting || !apiKey.trim()}
-              className="px-4 py-2 text-gray-700 border border-gray-300 hover:bg-gray-50 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+              className="px-4 py-2 bg-transparent border border-cyan-500/50 text-cyan-400 font-mono text-sm uppercase tracking-wider hover:bg-cyan-500/10 hover:border-cyan-400 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center gap-2 cursor-pointer"
             >
               {isTesting ? (
                 <>
                   <Loader2 className="w-4 h-4 animate-spin" />
-                  Testing...
+                  {t('testing')}
                 </>
               ) : (
-                'Test Connection'
+                t('testConnection')
               )}
             </button>
 
             <button
               onClick={handleSave}
               disabled={!apiKey.trim() || (!testResult?.valid && !!testResult)}
-              className="px-4 py-2 bg-blue-600 text-white hover:bg-blue-700 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+              className="px-4 py-2 bg-gradient-to-r from-cyan-500 to-cyan-400 text-[#050508] font-bold uppercase tracking-wider text-sm hover:shadow-[0_0_20px_rgba(0,255,255,0.4)] disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center gap-2 cursor-pointer"
+              style={{ clipPath: 'polygon(0 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 6px 100%, 0 calc(100% - 6px))' }}
             >
               <Save className="w-4 h-4" />
-              Save API Key
+              {tCommon('save')}
             </button>
 
             {isEditing && (
@@ -224,9 +233,9 @@ export function OpenAIKeySettings() {
                   setTestResult(null);
                   setSaveError(null);
                 }}
-                className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+                className="px-4 py-2 text-cyan-100/50 font-mono text-sm uppercase hover:text-cyan-400 transition-colors cursor-pointer"
               >
-                Cancel
+                {tCommon('cancel')}
               </button>
             )}
           </div>
@@ -238,19 +247,19 @@ export function OpenAIKeySettings() {
         <div className="flex items-center gap-3">
           <button
             onClick={() => setIsEditing(true)}
-            className="px-4 py-2 text-gray-700 border border-gray-300 hover:bg-gray-50 rounded-lg transition-colors"
+            className="px-4 py-2 bg-transparent border border-cyan-500/50 text-cyan-400 font-mono text-sm uppercase tracking-wider hover:bg-cyan-500/10 hover:border-cyan-400 transition-all cursor-pointer"
           >
-            Update API Key
+            {t('updateKey')}
           </button>
           <button
             onClick={handleRemove}
-            className="px-4 py-2 text-red-700 border border-red-300 hover:bg-red-50 rounded-lg transition-colors flex items-center gap-2"
+            className="px-4 py-2 bg-transparent border border-pink-500/50 text-pink-400 font-mono text-sm uppercase tracking-wider hover:bg-pink-500/10 hover:border-pink-400 transition-all flex items-center gap-2 cursor-pointer"
           >
             <Trash2 className="w-4 h-4" />
-            Remove
+            {t('remove')}
           </button>
         </div>
       )}
-    </div>
+    </Card>
   );
 }

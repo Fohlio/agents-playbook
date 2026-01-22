@@ -3,52 +3,68 @@
 import { useTranslations } from 'next-intl';
 
 /**
- * Welcome Step
- *
- * First step in Getting Started wizard
- * Introduces platform value propositions and overview
+ * Welcome Step - Cyberpunk Style
  */
 export function WelcomeStep() {
   const t = useTranslations('gettingStarted.welcome');
 
   return (
     <div className="text-center space-y-6">
+      {/* Logo */}
       <div className="flex justify-center">
         <div className="relative">
-          <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl shadow-lg"></div>
-          <div className="absolute inset-0 bg-gradient-to-br from-blue-400 to-purple-500 rounded-2xl blur-sm opacity-60"></div>
+          <div 
+            className="w-20 h-20 bg-gradient-to-br from-cyan-500 to-pink-500 shadow-[0_0_30px_rgba(0,255,255,0.4)]"
+            style={{ clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)' }}
+          ></div>
+          <div className="absolute inset-0 flex items-center justify-center">
+            <span className="text-[#050508] font-bold text-2xl">AP</span>
+          </div>
         </div>
       </div>
 
-      <h1 className="text-3xl font-bold text-gray-900">
-        {t('title')}
+      <h1 className="text-2xl font-bold font-mono">
+        <span className="text-cyan-400" style={{ textShadow: '0 0 10px #00ffff40' }}>
+          {t('title')}
+        </span>
       </h1>
 
-      <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+      <p className="text-cyan-100/60 font-mono text-sm max-w-2xl mx-auto">
         {t('subtitle')}
       </p>
 
+      {/* Feature cards */}
       <div className="grid grid-cols-3 gap-4 mt-8 max-w-2xl mx-auto">
-        <div className="text-center p-4">
-          <div className="text-4xl mb-2">🎯</div>
-          <p className="text-sm font-medium text-gray-700">{t('discoverWorkflows')}</p>
-          <p className="text-xs text-gray-500 mt-1">{t('discoverWorkflowsDesc')}</p>
+        <div 
+          className="text-center p-4 bg-[#050508]/50 border border-cyan-500/30 hover:border-cyan-400/50 transition-all"
+          style={{ clipPath: 'polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px))' }}
+        >
+          <div className="text-3xl mb-2 opacity-80">🎯</div>
+          <p className="text-xs font-mono text-cyan-400 uppercase tracking-wider mb-1">{t('discoverWorkflows')}</p>
+          <p className="text-xs text-cyan-100/40 font-mono">{t('discoverWorkflowsDesc')}</p>
         </div>
-        <div className="text-center p-4">
-          <div className="text-4xl mb-2">📚</div>
-          <p className="text-sm font-medium text-gray-700">{t('buildLibrary')}</p>
-          <p className="text-xs text-gray-500 mt-1">{t('buildLibraryDesc')}</p>
+        <div 
+          className="text-center p-4 bg-[#050508]/50 border border-pink-500/30 hover:border-pink-400/50 transition-all"
+          style={{ clipPath: 'polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px))' }}
+        >
+          <div className="text-3xl mb-2 opacity-80">📚</div>
+          <p className="text-xs font-mono text-pink-400 uppercase tracking-wider mb-1">{t('buildLibrary')}</p>
+          <p className="text-xs text-cyan-100/40 font-mono">{t('buildLibraryDesc')}</p>
         </div>
-        <div className="text-center p-4">
-          <div className="text-4xl mb-2">🚀</div>
-          <p className="text-sm font-medium text-gray-700">{t('integrateMcp')}</p>
-          <p className="text-xs text-gray-500 mt-1">{t('integrateMcpDesc')}</p>
+        <div 
+          className="text-center p-4 bg-[#050508]/50 border border-green-500/30 hover:border-green-400/50 transition-all"
+          style={{ clipPath: 'polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px))' }}
+        >
+          <div className="text-3xl mb-2 opacity-80">🚀</div>
+          <p className="text-xs font-mono text-green-400 uppercase tracking-wider mb-1">{t('integrateMcp')}</p>
+          <p className="text-xs text-cyan-100/40 font-mono">{t('integrateMcpDesc')}</p>
         </div>
       </div>
 
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 max-w-xl mx-auto mt-8">
-        <p className="text-sm text-blue-900">
-          <strong>{t('whyWorkflows')}</strong> {t('whyWorkflowsDesc')}
+      {/* Info box */}
+      <div className="bg-cyan-500/10 border border-cyan-500/30 p-4 max-w-xl mx-auto">
+        <p className="text-sm text-cyan-100/70 font-mono">
+          <span className="text-cyan-400 font-bold">&gt; INFO:</span> <strong>{t('whyWorkflows')}</strong> {t('whyWorkflowsDesc')}
         </p>
       </div>
     </div>

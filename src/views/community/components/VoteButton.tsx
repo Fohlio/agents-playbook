@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import { toggleMessageVote } from "../actions/vote-actions";
 
@@ -17,6 +18,7 @@ export function VoteButton({
   initialHasVoted,
   isOwnMessage,
 }: VoteButtonProps) {
+  const t = useTranslations("community.voteButton");
   const [voteCount, setVoteCount] = useState(initialVoteCount);
   const [hasVoted, setHasVoted] = useState(initialHasVoted);
   const [isLoading, setIsLoading] = useState(false);
@@ -29,7 +31,6 @@ export function VoteButton({
   const handleVote = async () => {
     if (isLoading) return;
 
-    // Optimistic update
     const previousVoteCount = voteCount;
     const previousHasVoted = hasVoted;
 
@@ -41,16 +42,13 @@ export function VoteButton({
       const result = await toggleMessageVote(messageId);
 
       if (result.success && result.data) {
-        // Update with server response
         setVoteCount(result.data.voteCount);
         setHasVoted(result.data.hasVoted);
       } else {
-        // Revert on error
         setVoteCount(previousVoteCount);
         setHasVoted(previousHasVoted);
       }
     } catch {
-      // Revert on error
       setVoteCount(previousVoteCount);
       setHasVoted(previousHasVoted);
     } finally {
@@ -63,17 +61,17 @@ export function VoteButton({
       onClick={handleVote}
       disabled={isLoading}
       className={`
-        flex items-center gap-1 px-2 py-1 rounded transition-colors
+        flex items-center gap-1 px-2 py-1 font-mono text-xs transition-all cursor-pointer
         ${hasVoted
-          ? 'bg-primary-100 text-primary-700 hover:bg-primary-200'
-          : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+          ? 'bg-green-500/20 text-green-400 border border-green-500/50 shadow-[0_0_10px_rgba(0,255,0,0.2)]'
+          : 'bg-transparent text-cyan-100/50 border border-cyan-500/30 hover:border-cyan-400/50 hover:text-cyan-400'
         }
-        ${isLoading ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
+        ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}
       `}
-      aria-label={hasVoted ? 'Remove vote' : 'Upvote'}
+      aria-label={hasVoted ? t("removeVote") : t("upvote")}
     >
       <ArrowUpwardIcon fontSize="small" />
-      <span className="text-sm font-medium">{voteCount}</span>
+      <span className="font-bold">{voteCount}</span>
     </button>
   );
 }

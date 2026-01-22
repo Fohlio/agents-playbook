@@ -52,12 +52,14 @@
     "signUp": "Sign Up",
     "github": "GitHub",
     "toggleMenu": "Toggle menu",
-    "toggleSidebar": "Toggle sidebar"
+    "toggleSidebar": "Toggle sidebar",
+    "systemOnline": "System Online"
   },
   "landing": {
     "header": {
       "title": "AI Agents Playbook",
-      "subtitle": "Intelligent Workflow Engine"
+      "subtitle": "Intelligent Workflow Engine",
+      "systemOnline": "System Online"
     },
     "hero": {
       "badge": "MCP Server • Cursor Compatible",
@@ -68,7 +70,11 @@
       "value1": "Reduced Hallucinations",
       "value2": "Complex Tasks",
       "value3": "Personal Library",
-      "description": "Build custom workflows and prompts for your team's specific needs. Maintain your personal library of reusable patterns. Guide AI through complex multi-step processes in large projects with structured, validated workflows."
+      "description": "Build custom workflows and prompts for your team's specific needs. Maintain your personal library of reusable patterns. Guide AI through complex multi-step processes in large projects with structured, validated workflows.",
+      "statAccuracy": "Accuracy",
+      "statWorkflows": "Workflows",
+      "statWorkflowsValue": "Unlimited",
+      "statRuntime": "Runtime"
     },
     "features": {
       "title": "Built for Every Team",
@@ -107,7 +113,9 @@
         "title": "MCP Integration",
         "description": "Native Model Context Protocol support for Claude Code, Cursor, and any AI assistant. Seamlessly integrates with your tools.",
         "audience": "For Developers"
-      }
+      },
+      "status": "Status",
+      "active": "Active"
     },
     "setup": {
       "title": "Quick Setup",
@@ -158,8 +166,19 @@
     }
   },
   "auth": {
+    "layout": {
+      "title": "Authentication - Agents Playbook",
+      "description": "Sign in or create an account to manage your AI agent workflows",
+      "logoAlt": "Agents Playbook Logo",
+      "initializingAccess": "INITIALIZING SECURE ACCESS...",
+      "encryptionActive": "ENCRYPTION: ACTIVE",
+      "featureWorkflow": "AI Workflow Orchestration",
+      "featureMcp": "MCP Server Integration",
+      "featureCursor": "Cursor IDE Compatible"
+    },
     "login": {
       "title": "Sign In",
+      "header": "AUTHENTICATE",
       "subtitle": "Welcome back to Agents Playbook",
       "email": "Email",
       "emailPlaceholder": "you@example.com",
@@ -167,14 +186,18 @@
       "passwordPlaceholder": "••••••••",
       "rememberMe": "Remember me for 90 days",
       "submit": "Sign In",
+      "submitButton": "INITIALIZE SESSION",
       "submitting": "Signing in...",
       "noAccount": "Don't have an account?",
       "signUp": "Sign up",
       "invalidCredentials": "Invalid credentials",
-      "loginError": "An error occurred during login"
+      "loginError": "An error occurred during login",
+      "orConnectWith": "OR CONNECT WITH",
+      "encryptedConnection": "ENCRYPTED CONNECTION"
     },
     "register": {
       "title": "Create Account",
+      "header": "CREATE IDENTITY",
       "subtitle": "Start managing your AI agent workflows",
       "email": "Email",
       "emailPlaceholder": "you@example.com",
@@ -185,15 +208,28 @@
       "passwordHelp": "Min 8 characters, 1 uppercase, 1 lowercase, 1 number, 1 special character",
       "confirmPassword": "Confirm Password",
       "submit": "Sign Up",
+      "submitButton": "REGISTER OPERATIVE",
       "submitting": "Creating account...",
       "hasAccount": "Already have an account?",
       "signIn": "Sign in",
       "registrationFailed": "Registration failed",
-      "loginAfterRegisterFailed": "Login failed after registration"
+      "loginAfterRegisterFailed": "Login failed after registration",
+      "acceptTerms": "I accept the",
+      "protocolTerms": "PROTOCOL TERMS",
+      "secureRegistration": "SECURE REGISTRATION",
+      "passwordStrength": {
+        "none": "NONE",
+        "weak": "WEAK",
+        "fair": "FAIR",
+        "good": "GOOD",
+        "strong": "STRONG",
+        "label": "STRENGTH"
+      }
     }
   },
   "dashboard": {
     "title": "Dashboard",
+    "header": "COMMAND CENTER",
     "subtitle": "Manage your workflows and mini-prompts",
     "stats": {
       "totalWorkflows": "Total Workflows",
@@ -217,7 +253,9 @@
       "emptyDescription": "Create and activate your first workflow to get started",
       "count": "{count} active workflows",
       "deactivate": "Deactivate",
-      "deactivating": "Deactivating..."
+      "deactivating": "Deactivating...",
+      "viewAll": "VIEW ALL",
+      "failedToDeactivate": "Failed to deactivate workflow"
     },
     "activeMiniPrompts": {
       "title": "Active Mini-Prompts",
@@ -225,7 +263,11 @@
       "emptyDescription": "Create and activate your first mini-prompt to get started",
       "count": "{count} active mini-prompts",
       "deactivate": "Deactivate",
-      "deactivating": "Deactivating..."
+      "deactivating": "Deactivating...",
+      "viewAll": "VIEW ALL",
+      "failedToDeactivate": "Failed to deactivate mini-prompt",
+      "failedToLoad": "Failed to load mini-prompt for editing",
+      "failedToUpdate": "Failed to update mini-prompt"
     }
   },
   "library": {
@@ -261,6 +303,21 @@
       "trash": "Trash",
       "rename": "Rename",
       "moveToTrash": "Move to Trash"
+    },
+    "prompts": {
+      "enterFolderName": "Enter folder name:",
+      "enterNewFolderName": "Enter new folder name:",
+      "confirmMoveToTrash": "Move this folder to trash?",
+      "confirmMoveItemsToTrash": "Move {count} item(s) to trash?"
+    },
+    "errors": {
+      "failedToCreateFolder": "Failed to create folder",
+      "failedToRenameFolder": "Failed to rename folder",
+      "failedToDeleteFolder": "Failed to delete folder",
+      "failedToAddToFolder": "Failed to add items to folder",
+      "failedToMoveItems": "Failed to move items",
+      "failedToRemoveFromFolder": "Failed to remove items from folder",
+      "failedToMoveToTrash": "Failed to move items to trash"
     }
   },
   "discover": {
@@ -310,7 +367,8 @@
       "stages4to5": "4-5 Stages",
       "stages6Plus": "6+ Stages",
       "apply": "Apply Filters",
-      "clearAll": "Clear All"
+      "clearAll": "Clear All",
+      "cancel": "Cancel"
     },
     "toast": {
       "addedToLibrary": "Workflow added to library",
@@ -322,10 +380,25 @@
   },
   "sharing": {
     "title": "My Shares",
+    "header": "My Shared Items",
+    "subtitle": "Manage your share links for workflows and mini-prompts",
     "empty": "You haven't shared anything yet",
     "emptyDescription": "Share your workflows or mini-prompts to collaborate with others",
     "goToLibrary": "Go to Library",
     "shareButton": "Share",
+    "loading": "Loading...",
+    "failedToLoad": "Failed to load shared items",
+    "views": "{count} views",
+    "created": "Created",
+    "expires": "Expires",
+    "disable": "Disable",
+    "enable": "Enable",
+    "linkDisabled": "Share link disabled",
+    "linkEnabled": "Share link enabled",
+    "failedToToggle": "Failed to toggle share link",
+    "linkDeleted": "Share link deleted",
+    "failedToDelete": "Failed to delete share link",
+    "confirmDelete": "Are you sure you want to permanently delete the share link for \"{name}\"? This action cannot be undone.",
     "shareModal": {
       "title": "Share {name}",
       "description": "Generate a shareable link for this {type}",
@@ -333,8 +406,27 @@
       "copyLink": "Copy Link",
       "linkCopied": "Link copied to clipboard!",
       "disableLink": "Disable Link",
-      "enableLink": "Enable Link"
-    }
+      "enableLink": "Enable Link",
+      "expiration": "Expiration",
+      "never": "Never",
+      "hours24": "24 Hours",
+      "days7": "7 Days",
+      "days30": "30 Days",
+      "shareUrl": "Share URL",
+      "status": "Status",
+      "regenerateToken": "Regenerate Token",
+      "regenerateNote": "Regenerating will invalidate the old link",
+      "failedToCreateLink": "Failed to create share link",
+      "shareLinkNotFound": "Share link not found",
+      "failedToRegenerateToken": "Failed to regenerate token",
+      "failedToToggleLink": "Failed to toggle share link",
+      "statusActive": "ACTIVE",
+      "statusInactive": "INACTIVE"
+    },
+    "public": "PUBLIC",
+    "private": "PRIVATE",
+    "statusActive": "ACTIVE",
+    "statusDisabled": "DISABLED"
   },
   "gettingStarted": {
     "title": "Getting Started",
@@ -477,6 +569,7 @@
     "title": "Community Forum",
     "subtitle": "Discuss workflows, share ideas, and get help from the community",
     "createTopic": "Create Topic",
+    "newTopic": "NEW_TOPIC",
     "noTopics": "No topics yet",
     "noTopicsDescription": "Be the first to start a discussion!",
     "reply": "Reply",
@@ -498,10 +591,28 @@
       "sending": "Sending...",
       "send": "Send Message",
       "failedToSend": "Failed to create message"
+    },
+    "messageCard": {
+      "confirmDelete": "Are you sure you want to delete this message?",
+      "failedToDelete": "Failed to delete message"
+    },
+    "topicHeader": {
+      "pin": "PIN",
+      "unpin": "UNPIN",
+      "close": "CLOSE",
+      "reopen": "REOPEN",
+      "confirmDelete": "Are you sure you want to delete this topic and all its messages?",
+      "failedToDelete": "Failed to delete topic"
+    },
+    "voteButton": {
+      "upvote": "Upvote",
+      "removeVote": "Remove vote"
     }
   },
   "settings": {
     "title": "Settings",
+    "header": "SYSTEM_CONFIG",
+    "subtitle": "User profile and security settings",
     "profile": {
       "title": "Profile",
       "subtitle": "Update your profile information",
@@ -538,6 +649,7 @@
       "createTooltip": "Generate a new API token for authenticating MCP server requests from AI assistants",
       "noTokens": "No API tokens yet",
       "noTokensDescription": "Create a token to access your workflows via MCP",
+      "loading": "Loading Tokens...",
       "tokenName": "Token Name",
       "tokenNamePlaceholder": "My MCP Token",
       "tokenNameHelper": "A descriptive name for this token",
@@ -556,15 +668,18 @@
       "copyToken": "Copy Token",
       "tokenCopied": "Token copied!",
       "tokenWarning": "Make sure to copy your token now. You won't be able to see it again!",
+      "yourApiToken": "Your API Token",
+      "tokenSaved": "Token Saved",
       "createModal": {
         "title": "Create API Token"
       },
       "revokeModal": {
         "title": "Revoke Token",
-        "message": "Are you sure you want to revoke this token? This action cannot be undone."
+        "message": "This will permanently revoke the token. Any applications using this token will no longer be able to authenticate.",
+        "confirm": "Revoke"
       },
       "displayModal": {
-        "title": "Your New API Token",
+        "title": "Token Created",
         "warning": "Copy this token now. You won't be able to see it again!",
         "copied": "Token copied to clipboard!"
       }
@@ -651,7 +766,10 @@
     "saving": "Saving...",
     "delete": "Delete Workflow",
     "deleting": "Deleting...",
-    "confirmDelete": "Are you sure you want to delete this workflow?"
+    "confirmDelete": "Are you sure you want to delete this workflow?",
+    "noWorkflowSelected": "NO_WORKFLOW_SELECTED",
+    "aiAssistantTooltip": "Open AI Assistant to help design your workflow",
+    "openAiAssistant": "Open AI Assistant"
   },
   "miniPromptEditor": {
     "title": "Mini-Prompt Editor",
@@ -700,7 +818,65 @@
     "error": "An error occurred. Please try again.",
     "apiKeyRequired": "API Key Required",
     "apiKeyRequiredDesc": "Please configure your OpenAI API key in Settings to use the AI assistant.",
-    "goToSettings": "Go to Settings"
+    "goToSettings": "Go to Settings",
+    "approachingLimit": "Approaching Limit",
+    "toolsCalled": "Tools Called",
+    "processing": "Processing...",
+    "describeWorkflow": "Describe workflow...",
+    "describePrompt": "Describe prompt...",
+    "inputHint": "Enter = Send | Shift+Enter = Newline",
+    "addKey": "Add Key",
+    "dismiss": "Dismiss",
+    "activeBadge": "ACTIVE",
+    "sessionStats": "{messages} msg · {tokens} tokens",
+    "mode": {
+      "workflow": "Workflow",
+      "prompt": "Prompt"
+    },
+    "apiKeyModal": {
+      "title": "Add OpenAI API Key",
+      "description": "Enter your OpenAI API key to enable AI-powered chat features. Your key is stored securely and never shared.",
+      "getKeyFrom": "Get your API key from",
+      "openaiPlatform": "OpenAI Platform",
+      "apiKeyLabel": "API Key",
+      "enterApiKey": "Please enter an API key",
+      "failedToSave": "Failed to save API key",
+      "savedSuccess": "API key saved successfully!",
+      "saving": "Saving...",
+      "saved": "Saved!",
+      "saveKey": "Save Key"
+    },
+    "executionPlan": {
+      "title": "Review Execution Plan",
+      "description": "The AI assistant has proposed the following changes. Please review them carefully before approving.",
+      "summary": "Summary",
+      "workflow": "Workflow",
+      "stage": "Stage",
+      "stageCount": "{count} stage(s)",
+      "position": "Position",
+      "miniPrompt": "Mini-Prompt",
+      "stageIndex": "Stage Index",
+      "warning": "These changes will modify your workflow or mini-prompt. Make sure you review all details before approving.",
+      "approveChanges": "Approve Changes"
+    },
+    "openaiSettings": {
+      "title": "OpenAI API Key",
+      "subtitle": "Required for AI-assisted workflow creation",
+      "loadingConfig": "Loading Config...",
+      "keyConfigured": "API Key Configured",
+      "lastUpdated": "Last updated",
+      "apiKeyLabel": "API Key",
+      "getKeyFrom": "Get your API key from",
+      "openaiPlatform": "OpenAI Platform",
+      "enterApiKey": "Please enter an API key",
+      "keyValid": "API key is valid and working!",
+      "keyInvalid": "Invalid API key",
+      "testConnection": "Test Connection",
+      "testing": "Testing...",
+      "updateKey": "Update API Key",
+      "remove": "Remove",
+      "confirmRemove": "Are you sure you want to remove your OpenAI API key? You will not be able to use the AI assistant without it."
+    }
   },
   "confirmDialog": {
     "confirm": "Confirm",
@@ -716,5 +892,412 @@
     "clearFilters": "Clear Filters",
     "emptyDiscovery": "No {type}s available yet",
     "emptyDiscoveryDesc": "Be the first to share a {type} with the community!"
+  },
+  "pagination": {
+    "previous": "Prev",
+    "next": "Next"
+  },
+  "selectionToolbar": {
+    "selected": "Selected",
+    "item": "item",
+    "items": "items",
+    "add": "Add",
+    "move": "Move",
+    "remove": "Remove",
+    "trash": "Trash",
+    "clearSelection": "Clear selection"
+  },
+  "stageForm": {
+    "newStage": "New Stage",
+    "editStage": "Edit Stage",
+    "stageName": "Stage Name",
+    "stageNamePlaceholder": "e.g., Analysis, Planning, Implementation",
+    "description": "Description",
+    "descriptionPlaceholder": "Optional description for this stage...",
+    "color": "Color",
+    "withReview": "With Review",
+    "withReviewTooltip": "Add review step after this stage to validate progress before moving forward",
+    "withReviewHelp": "Recommended: Add review between stages to prevent context collapse",
+    "multiAgentChat": "Multi-Agent Chat",
+    "multiAgentChatTooltip": "Enable AI coordination prompts after each mini-prompt in this stage",
+    "multiAgentChatHelp": "Adds coordination prompts for multi-agent collaboration"
+  },
+  "miniPromptModal": {
+    "viewTitle": "Mini-Prompt",
+    "editTitle": "Edit Prompt",
+    "createTitle": "Create Prompt",
+    "name": "Name",
+    "namePlaceholder": "e.g., Create Implementation Plan",
+    "nameRequired": "Name is required",
+    "description": "Description",
+    "descriptionPlaceholder": "Brief description for search and discovery...",
+    "key": "Key",
+    "keyPlaceholder": "e.g., memory-board, code-review",
+    "keyHelp": "Unique identifier for MCP lookup (lowercase, numbers, hyphens only)",
+    "keyError": "Key must be 2-100 characters, lowercase letters, numbers, and hyphens only",
+    "content": "Content",
+    "contentMarkdown": "Content (Markdown)",
+    "contentPlaceholder": "Enter markdown content...",
+    "visibility": "Visibility",
+    "aiModels": "AI Models",
+    "aiModelsPlaceholder": "Select AI models...",
+    "preview": "Preview",
+    "edit": "Edit",
+    "update": "Update",
+    "saving": "Saving..."
+  },
+  "workflowHeader": {
+    "namePlaceholder": "WORKFLOW_NAME",
+    "descriptionPlaceholder": "WORKFLOW_DESCRIPTION (optional)...",
+    "selectModelsPlaceholder": "SELECT_AI_MODELS...",
+    "key": "KEY",
+    "saving": "SAVING...",
+    "save": "SAVE",
+    "active": "ACTIVE",
+    "inactive": "INACTIVE",
+    "public": "PUBLIC",
+    "private": "PRIVATE"
+  },
+  "stageSection": {
+    "editStageTooltip": "Edit stage details",
+    "removeStageTooltip": "Remove this stage",
+    "addStage": "Add Stage"
+  },
+  "trash": {
+    "title": "Trash",
+    "empty": "Trash is empty",
+    "emptyDescription": "Items you delete will appear here for 30 days before being permanently removed.",
+    "itemsInTrash": "{count} {count, plural, =1 {item} other {items}} in trash",
+    "selectedOf": "{selected} of {total} selected",
+    "restoreSelected": "Restore Selected",
+    "deleteSelected": "Delete Selected",
+    "confirmDelete": "Confirm Delete",
+    "emptyTrash": "Empty Trash",
+    "confirmEmptyTrash": "Confirm Empty Trash",
+    "restore": "Restore",
+    "deletePermanently": "Delete",
+    "deleted": "Deleted {time}",
+    "autoDeleteNotice": "Items in trash will be automatically deleted after 30 days",
+    "workflow": "Workflow",
+    "prompt": "Prompt",
+    "folder": "Folder"
+  },
+  "breadcrumbs": {
+    "myLibrary": "My Library",
+    "trash": "Trash",
+    "uncategorized": "Uncategorized"
+  },
+  "gettingStartedWizard": {
+    "title": "INITIALIZATION_PROTOCOL",
+    "phase": "PHASE {current}/{total}",
+    "complete": "{percent}% COMPLETE",
+    "steps": {
+      "init": "INIT",
+      "scan": "SCAN",
+      "vault": "VAULT",
+      "build": "BUILD",
+      "mcp": "MCP",
+      "sync": "SYNC"
+    }
+  },
+  "docsStep": {
+    "title": "DOCUMENTATION",
+    "subtitle": "Quick reference guides for all platform features",
+    "proTip": "Pro Tip",
+    "proTipContent": "You can always access this documentation from the Getting Started section in the navigation bar.",
+    "tabs": {
+      "discovery": "SCAN",
+      "library": "VAULT",
+      "workflows": "BUILD",
+      "mcp": "MCP",
+      "sharing": "SHARE"
+    },
+    "discovery": {
+      "title": "Finding Workflows",
+      "semanticSearch": "Semantic Search",
+      "semanticSearchDesc": "Describe what you need in natural language. Our AI-powered search understands intent, not just keywords.",
+      "filters": "Filters",
+      "filtersDesc": "Narrow results by complexity (XS-XL), rating (3-5 stars), usage count, tags, and number of stages.",
+      "systemVsUser": "System vs User Workflows",
+      "systemVsUserDesc": "System workflows are curated by the platform. User workflows are community-contributed."
+    },
+    "library": {
+      "title": "Managing Your Library",
+      "workflows": "Workflows",
+      "workflowsDesc": "Multi-stage processes with mini-prompts. Create custom workflows or import from Discovery.",
+      "miniPrompts": "Mini-Prompts",
+      "miniPromptsDesc": "Reusable prompt templates for specific tasks. Drag them into workflow stages.",
+      "activeVsInactive": "Active vs Inactive",
+      "activeVsInactiveDesc": "Only active workflows appear in your MCP server. Toggle status to control availability.",
+      "publicVsPrivate": "Public vs Private",
+      "publicVsPrivateDesc": "PUBLIC workflows appear in Discovery. PRIVATE workflows are user-only."
+    },
+    "workflows": {
+      "title": "Building Workflows",
+      "visualConstructor": "Visual Constructor",
+      "visualConstructorDesc": "Drag-and-drop interface. Create stages, add mini-prompts, and organize your workflow visually.",
+      "stages": "Stages",
+      "stagesDesc": "Organize workflow into phases like Analysis, Design, Implementation, Testing, Review.",
+      "miniPrompts": "Mini-Prompts",
+      "miniPromptsDesc": "Drag mini-prompts from your library into stages. Reorder them by dragging.",
+      "complexity": "Complexity",
+      "complexityDesc": "Set T-shirt size: XS (quick fix), S (simple), M (moderate), L (complex), XL (advanced).",
+      "tags": "Tags",
+      "tagsDesc": "Categorize workflows for discovery (Testing, Security, Refactoring, etc.)."
+    },
+    "mcp": {
+      "title": "MCP Integration",
+      "setupClaudeCode": "Setup for Claude Code",
+      "setupClaudeCodeDesc": "Add configuration to your MCP settings with the platform URL and your API token.",
+      "setupCursor": "Setup for Cursor",
+      "setupCursorDesc": "Add to mcpServers section in your Cursor configuration file.",
+      "gettingApiToken": "Getting API Token",
+      "gettingApiTokenDesc": "Go to Settings > API Tokens > Create New Token. Copy and add to MCP config as the \"apiKey\" field.",
+      "usage": "Usage",
+      "usageDesc": "In your AI assistant, type: \"{hint}\"",
+      "troubleshooting": "Troubleshooting",
+      "troubleshootingDesc": "Check token is active, URL is correct, and workflow is marked as Active."
+    },
+    "sharing": {
+      "title": "Sharing & Collaboration",
+      "visibilitySettings": "Visibility Settings",
+      "visibilitySettingsDesc": "PUBLIC workflows appear in Discovery. PRIVATE workflows are user-only.",
+      "shareLinks": "Share Links",
+      "shareLinksDesc": "Create time-limited links (1-30 days) to share with anyone, even non-users.",
+      "ratingSystem": "Rating System",
+      "ratingSystemDesc": "Rate workflows 1-5 stars. Ratings help others discover quality content.",
+      "importing": "Importing",
+      "importingDesc": "Add any public workflow to your library. Imported workflows become your own copy."
+    }
+  },
+  "combinationsStep": {
+    "processItems": {
+      "item1": "Open feature file from .agents-playbook/[project]/features/[feature].md",
+      "item2": "Copy the ready-to-use prompt from the feature file",
+      "item3": "Run Feature Development workflow with that prompt",
+      "item4": "Workflow goes through: Analysis > Design > Planning > Implementation > Testing",
+      "item5": "References design.md and design-system.md for consistency"
+    }
+  },
+  "miniPromptLibrary": {
+    "title": "MINI_PROMPTS",
+    "searchPlaceholder": "SCAN_PROMPTS...",
+    "found": "FOUND: {found}/{total}",
+    "noPrompts": "NO_PROMPTS_FOUND",
+    "createNew": "CREATE_NEW",
+    "noMatches": "NO_MATCHES",
+    "deleteConfirm": "Are you sure you want to delete \"{name}\"? This action cannot be undone.",
+    "editTooltip": "Edit mini-prompt",
+    "deleteTooltip": "Delete mini-prompt",
+    "createTooltip": "Create new mini-prompt"
+  },
+  "miniPromptEditorModal": {
+    "viewTitle": "MINI_PROMPT",
+    "editTitle": "EDIT_PROMPT",
+    "createTitle": "CREATE_PROMPT",
+    "name": "NAME",
+    "nameRequired": "required",
+    "namePlaceholder": "e.g., Create Implementation Plan",
+    "description": "DESCRIPTION",
+    "descriptionPlaceholder": "Brief description for search and discovery...",
+    "key": "KEY",
+    "keyPlaceholder": "e.g., memory-board, code-review",
+    "keyHelp": "Unique identifier for MCP lookup (lowercase, numbers, hyphens only)",
+    "keyError": "Key must be 2-100 characters, lowercase letters, numbers, and hyphens only",
+    "content": "CONTENT",
+    "contentMarkdown": "CONTENT (Markdown)",
+    "contentPlaceholder": "Enter markdown content...\n\n# Heading 1\n## Heading 2\n**bold** *italic* `code`\n- bullet point",
+    "visibility": "VISIBILITY",
+    "aiModels": "AI_MODELS",
+    "aiModelsPlaceholder": "SELECT_AI_MODELS...",
+    "preview": "PREVIEW",
+    "edit": "EDIT",
+    "close": "CLOSE",
+    "cancel": "CANCEL",
+    "saving": "SAVING...",
+    "update": "UPDATE",
+    "create": "CREATE",
+    "private": "PRIVATE",
+    "public": "PUBLIC",
+    "error": "ERROR"
+  },
+  "stageDropZone": {
+    "dropPrompts": "DROP_PROMPTS_HERE",
+    "removeTooltip": "Remove this mini-prompt from the stage",
+    "internalAgentsChat": "Internal Agents Chat",
+    "handoffMemoryBoard": "Handoff Memory Board"
+  },
+  "workflowConstructorPage": {
+    "noWorkflowSelected": "NO_WORKFLOW_SELECTED",
+    "aiAssistantTooltip": "Open AI Assistant to help design your workflow"
+  },
+  "workflowConstructorWrapper": {
+    "workflowNamePlaceholder": "WORKFLOW_NAME",
+    "creating": "CREATING...",
+    "createWorkflow": "CREATE_WORKFLOW",
+    "active": "ACTIVE",
+    "inactive": "INACTIVE",
+    "public": "PUBLIC",
+    "private": "PRIVATE",
+    "addStage": "ADD_STAGE",
+    "aiAssistantTooltip": "Open AI Assistant to help design your workflow",
+    "openAiAssistant": "Open AI Assistant",
+    "createFailed": "Failed to create workflow: {error}"
+  },
+  "workflowHeaderSection": {
+    "namePlaceholder": "WORKFLOW_NAME",
+    "descriptionPlaceholder": "WORKFLOW_DESCRIPTION (optional)...",
+    "saving": "SAVING...",
+    "save": "SAVE",
+    "active": "ACTIVE",
+    "inactive": "INACTIVE",
+    "public": "PUBLIC",
+    "private": "PRIVATE",
+    "key": "KEY",
+    "selectModels": "SELECT_AI_MODELS..."
+  },
+  "workflowLayout": {
+    "addStage": "ADD_STAGE"
+  },
+  "admin": {
+    "badge": "ADMIN",
+    "accessDenied": "ACCESS_DENIED: ADMIN_PRIVILEGES_REQUIRED",
+    "workflows": {
+      "header": "SYSTEM_WORKFLOWS",
+      "subtitle": "Manage system workflows available to all users",
+      "loading": "LOADING_WORKFLOWS...",
+      "empty": "NO_SYSTEM_WORKFLOWS_FOUND",
+      "createFirst": "CREATE_FIRST",
+      "create": "+ CREATE",
+      "stages": "{count} stages",
+      "active": "ACTIVE",
+      "inactive": "INACTIVE",
+      "system": "SYSTEM",
+      "confirmDelete": "Are you sure you want to delete this system workflow?",
+      "failedUpdate": "Failed to update workflow",
+      "failedDelete": "Failed to delete workflow",
+      "navMiniPrompts": "MINI_PROMPTS",
+      "navTags": "TAGS"
+    },
+    "miniPrompts": {
+      "header": "SYSTEM_PROMPTS",
+      "subtitle": "Manage system mini-prompts available to all users",
+      "loading": "LOADING_PROMPTS...",
+      "empty": "NO_SYSTEM_PROMPTS_FOUND",
+      "createFirst": "CREATE_FIRST",
+      "create": "+ CREATE",
+      "active": "ACTIVE",
+      "inactive": "INACTIVE",
+      "system": "SYSTEM",
+      "key": "KEY",
+      "confirmDelete": "Are you sure you want to delete this system mini-prompt?",
+      "failedFetch": "Failed to load mini prompt for editing",
+      "failedCreate": "Failed to create system mini prompt",
+      "failedUpdate": "Failed to update mini prompt",
+      "failedToggle": "Failed to update mini-prompt",
+      "failedDelete": "Failed to delete mini-prompt",
+      "navWorkflows": "WORKFLOWS",
+      "navTags": "TAGS"
+    },
+    "tags": {
+      "header": "TAG_MANAGER",
+      "subtitle": "Create and manage tags for workflows and mini-prompts",
+      "loading": "LOADING_TAGS...",
+      "empty": "NO_TAGS_FOUND",
+      "emptyNote": "Users can create tags from workflow/mini-prompt editors",
+      "note": "NOTE:",
+      "noteText": "Users can create tags from workflow/mini-prompt editors. Admins can manage all tags, merge similar ones, and restore soft-deleted tags.",
+      "name": "NAME",
+      "color": "COLOR",
+      "save": "SAVE",
+      "cancel": "CANCEL",
+      "deleted": "DELETED",
+      "workflows": "workflows",
+      "miniPrompts": "mini-prompts",
+      "createdBy": "Created by:",
+      "confirmRestore": "Restore tag \"{name}\"?",
+      "confirmDelete": "Soft delete tag \"{name}\"? It will be hidden from users but remain on assigned workflows/mini-prompts.",
+      "confirmMerge": "Merge \"{name}\" into selected tag? This will reassign all workflows/mini-prompts and delete \"{name}\".",
+      "failedRestore": "Failed to restore tag",
+      "failedUpdate": "Failed to update tag",
+      "failedDelete": "Failed to delete tag",
+      "failedMerge": "Failed to merge tags",
+      "navWorkflows": "WORKFLOWS",
+      "navMiniPrompts": "MINI_PROMPTS",
+      "merge": {
+        "title": "MERGE_TAG:",
+        "description": "Select target tag to merge into. All workflows and mini-prompts will be reassigned, and \"{name}\" will be permanently deleted.",
+        "targetLabel": "TARGET_TAG",
+        "selectTarget": "-- SELECT_TARGET --",
+        "button": "MERGE_&_DELETE",
+        "cancel": "CANCEL"
+      }
+    }
+  },
+  "modelMultiSelect": {
+    "placeholder": "Select models...",
+    "loading": "Loading models...",
+    "search": "Search models...",
+    "noModelsFound": "No models found",
+    "languageModels": "Language Models",
+    "imageModels": "Image Models"
+  },
+  "tagMultiSelect": {
+    "placeholder": "Select tags...",
+    "loading": "Loading tags...",
+    "searchOrCreate": "Search or create...",
+    "noTagsFound": "No tags found",
+    "create": "Create \"{name}\"",
+    "new": "New"
+  },
+  "workflowPreview": {
+    "users": "users",
+    "key": "Key",
+    "description": "Description",
+    "noDescription": "No description available",
+    "multiAgentChat": "Multi-Agent Chat",
+    "stages": "Stages",
+    "loadingStages": "Loading stages...",
+    "noStages": "No stages defined",
+    "stageNumber": "Stage {number}",
+    "withReview": "With Review",
+    "miniPrompts": "Mini-Prompts",
+    "noPromptText": "No prompt text available",
+    "inLibrary": "In Library",
+    "addToLibrary": "Add to Library",
+    "loginToImport": "Login to Import"
+  },
+  "libraryEmptyStates": {
+    "welcomeTitle": "Welcome to your Library",
+    "welcomeDescription": "Start by importing workflows from Discover or create your own custom workflows and mini-prompts.",
+    "createFolder": "Create Folder",
+    "createWorkflow": "Create Workflow",
+    "folderEmptyTitle": "This folder is empty",
+    "folderEmptyDescription": "Drag and drop workflows or mini-prompts here to organize your content.",
+    "organizeTitle": "Time to organize?",
+    "organizeDescription": "You have {count} uncategorized items. Create folders to keep your library tidy.",
+    "trashEmptyTitle": "Trash is empty",
+    "trashEmptyDescription": "Items you delete will appear here for 30 days before being permanently removed.",
+    "noResultsTitle": "No results found",
+    "noResultsDescription": "No items match \"{query}\". Try a different search term.",
+    "clearSearch": "Clear Search",
+    "discoverEmptyTitle": "No public content yet",
+    "discoverEmptyDescription": "Public workflows and prompts from the community will appear here.",
+    "rootEmptyTitle": "Welcome to your Library",
+    "rootEmptyDescription": "Create folders to organize your workflows and prompts, or start by creating your first workflow."
+  },
+  "discoverView": {
+    "scanning": "SCANNING_DATABASE...",
+    "connectionError": "CONNECTION_ERROR",
+    "retryConnection": "RETRY_CONNECTION",
+    "noMatchesFound": "NO_MATCHES_FOUND",
+    "queryReturned": "Query \"{query}\" returned no results",
+    "archiveEmpty": "ARCHIVE_EMPTY",
+    "noPublicAssets": "No public assets available in the database",
+    "publicWorkflows": "PUBLIC_WORKFLOWS",
+    "publicPrompts": "PUBLIC_PROMPTS",
+    "stagesCount": "{count} stages",
+    "preview": "PREVIEW",
+    "import": "IMPORT"
   }
 }
