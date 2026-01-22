@@ -212,6 +212,7 @@ export function WorkflowDiscoveryCard({
               <MarkdownContent
                 content={workflow.description}
                 className="text-sm text-cyan-100/70 mb-4 line-clamp-3 leading-relaxed"
+                variant="dark"
               />
             ) : (
               <p className="text-sm text-cyan-100/50 italic mb-4 line-clamp-3 leading-relaxed">

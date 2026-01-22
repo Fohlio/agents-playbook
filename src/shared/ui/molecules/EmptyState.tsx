@@ -45,14 +45,14 @@ export function EmptyState({
     >
       {/* Icon */}
       {icon && (
-        <div className="mb-4 text-gray-300" data-testid="empty-state-icon">
+        <div className="mb-4 text-cyan-500/60" data-testid="empty-state-icon">
           {icon}
         </div>
       )}
 
       {/* Title */}
       <h3
-        className="text-lg font-semibold text-gray-900 mb-2"
+        className="text-lg font-semibold text-cyan-100 mb-2"
         data-testid="empty-state-title"
       >
         {title}
@@ -61,7 +61,7 @@ export function EmptyState({
       {/* Description */}
       {description && (
         <p
-          className="text-sm text-gray-500 max-w-md mb-6"
+          className="text-sm text-cyan-100/60 max-w-md mb-6"
           data-testid="empty-state-description"
         >
           {description}

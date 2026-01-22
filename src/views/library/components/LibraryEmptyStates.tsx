@@ -36,9 +36,9 @@ function BaseEmptyState({
         className
       )}
     >
-      <div className="mb-4 text-gray-300">{icon}</div>
-      <h3 className="text-lg font-semibold text-gray-900 mb-2">{title}</h3>
-      <p className="text-sm text-gray-500 mb-6 max-w-md">{description}</p>
+      <div className="mb-4 text-cyan-500/60">{icon}</div>
+      <h3 className="text-lg font-semibold text-cyan-100 mb-2">{title}</h3>
+      <p className="text-sm text-cyan-100/60 mb-6 max-w-md">{description}</p>
       {actions && <div className="flex flex-wrap gap-3 justify-center">{actions}</div>}
     </div>
   );
@@ -117,10 +117,10 @@ export function UncategorizedPromptState({
   if (itemCount < 3) return null;
 
   return (
-    <div className="bg-blue-50 border border-blue-100 rounded-lg p-4 mb-4 flex items-center justify-between">
+    <div className="bg-cyan-500/10 border border-cyan-500/30 rounded-lg p-4 mb-4 flex items-center justify-between">
       <div>
-        <p className="font-medium text-blue-900">{t('organizeTitle')}</p>
-        <p className="text-sm text-blue-700">
+        <p className="font-medium text-cyan-100">{t('organizeTitle')}</p>
+        <p className="text-sm text-cyan-100/70">
           {t('organizeDescription', { count: itemCount })}
         </p>
       </div>
@@ -264,8 +264,8 @@ export function LoadingState({ className }: { className?: string }) {
   return (
     <div className={cn('flex items-center justify-center py-20', className)}>
       <div className="flex flex-col items-center gap-3">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600" />
-        <p className="text-sm text-gray-500">{t('loading')}</p>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-cyan-500" />
+        <p className="text-sm text-cyan-100/60">{t('loading')}</p>
       </div>
     </div>
   );
