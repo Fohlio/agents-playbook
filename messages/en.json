@@ -1298,7 +1298,9 @@
     "publicPrompts": "PUBLIC_PROMPTS",
     "stagesCount": "{count} stages",
     "preview": "PREVIEW",
-    "import": "IMPORT"
+    "import": "IMPORT",
+    "addToLibrary": "ADD_TO_LIBRARY",
+    "inLibrary": "IN_LIBRARY"
   },
   "libraryHeader": {
     "searchPlaceholder": "Search library...",

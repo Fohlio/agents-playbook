@@ -13,6 +13,7 @@ interface WorkflowHeaderProps {
   selectedModelIds: string[];
   isDirty: boolean;
   isSaving: boolean;
+  readOnly?: boolean;
   onWorkflowNameChange: (name: string) => void;
   onWorkflowDescriptionChange: (description: string | null) => void;
   onIsActiveChange: (isActive: boolean) => void;
@@ -30,6 +31,7 @@ export function WorkflowHeader({
   selectedModelIds,
   isDirty,
   isSaving,
+  readOnly,
   onWorkflowNameChange,
   onWorkflowDescriptionChange,
   onIsActiveChange,
@@ -50,45 +52,50 @@ export function WorkflowHeader({
             onChange={(e) => {
               onWorkflowNameChange(e.target.value);
             }}
+            readOnly={readOnly}
             placeholder={t('namePlaceholder')}
             className="text-2xl font-bold font-mono text-cyan-400 bg-transparent border-0 focus:outline-none focus:ring-0 px-0 w-full uppercase tracking-wider placeholder:text-cyan-500/30"
             style={{ textShadow: '0 0 10px #00ffff40' }}
           />
         </div>
-        <div className="flex gap-3">
-          <button
-            onClick={onSave}
-            disabled={!isDirty || isSaving}
-            className="px-6 py-2.5 bg-gradient-to-r from-cyan-500 to-cyan-400 text-[#050508] font-bold uppercase tracking-wider text-sm hover:shadow-[0_0_20px_rgba(0,255,255,0.4)] disabled:opacity-50 disabled:cursor-not-allowed transition-all cursor-pointer"
-            style={{ clipPath: 'polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px))' }}
-          >
-            {isSaving ? t('saving') : t('save')}
-          </button>
-        </div>
+        {!readOnly && (
+          <div className="flex gap-3">
+            <button
+              onClick={onSave}
+              disabled={!isDirty || isSaving}
+              className="px-6 py-2.5 bg-gradient-to-r from-cyan-500 to-cyan-400 text-[#050508] font-bold uppercase tracking-wider text-sm hover:shadow-[0_0_20px_rgba(0,255,255,0.4)] disabled:opacity-50 disabled:cursor-not-allowed transition-all cursor-pointer"
+              style={{ clipPath: 'polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px))' }}
+            >
+              {isSaving ? t('saving') : t('save')}
+            </button>
+          </div>
+        )}
       </div>
 
       {/* System panel - single row with checkboxes and models */}
       <div className="flex items-center gap-4 flex-wrap">
         <div className="flex items-center gap-6">
-          <label className="flex items-center gap-2 cursor-pointer">
+          <label className={`flex items-center gap-2 ${readOnly ? 'cursor-default' : 'cursor-pointer'}`}>
             <input
               type="checkbox"
               checked={isActive}
               onChange={(e) => onIsActiveChange(e.target.checked)}
+              disabled={readOnly}
               id="workflow-active-checkbox"
-              className="w-4 h-4 accent-cyan-500 cursor-pointer"
+              className="w-4 h-4 accent-cyan-500 cursor-pointer disabled:cursor-default disabled:opacity-50"
             />
             <span className={`text-xs font-mono uppercase tracking-wider ${isActive ? 'text-green-400' : 'text-cyan-100/40'}`}>
               {isActive ? t('active') : t('inactive')}
             </span>
           </label>
-          <label className="flex items-center gap-2 cursor-pointer">
+          <label className={`flex items-center gap-2 ${readOnly ? 'cursor-default' : 'cursor-pointer'}`}>
             <input
               type="checkbox"
               checked={isPublic}
               onChange={(e) => onIsPublicChange(e.target.checked)}
+              disabled={readOnly}
               id="workflow-public-checkbox"
-              className="w-4 h-4 accent-cyan-500 cursor-pointer"
+              className="w-4 h-4 accent-cyan-500 cursor-pointer disabled:cursor-default disabled:opacity-50"
             />
             <span className={`text-xs font-mono uppercase tracking-wider ${isPublic ? 'text-purple-400' : 'text-cyan-100/40'}`}>
               {isPublic ? t('public') : t('private')}
@@ -121,6 +128,7 @@ export function WorkflowHeader({
             const value = e.target.value || null;
             onWorkflowDescriptionChange(value);
           }}
+          readOnly={readOnly}
           placeholder={t('descriptionPlaceholder')}
           maxLength={500}
           rows={2}

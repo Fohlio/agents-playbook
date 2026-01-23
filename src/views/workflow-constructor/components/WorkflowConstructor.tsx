@@ -19,9 +19,10 @@ import { Tooltip } from '@/shared/ui/molecules';
 
 interface WorkflowConstructorProps {
   data: WorkflowConstructorData;
+  readOnly?: boolean;
 }
 
-export function WorkflowConstructor({ data }: WorkflowConstructorProps) {
+export function WorkflowConstructor({ data, readOnly }: WorkflowConstructorProps) {
   const { workflow, miniPrompts: initialMiniPrompts } = data;
   const t = useTranslations('workflowConstructor');
 
@@ -240,6 +241,7 @@ export function WorkflowConstructor({ data }: WorkflowConstructorProps) {
         selectedModelIds={selectedModelIds}
         isDirty={isDirty}
         isSaving={isSaving}
+        readOnly={readOnly}
         onWorkflowNameChange={handleWorkflowNameChange}
         onWorkflowDescriptionChange={handleWorkflowDescriptionChange}
         onIsActiveChange={handleIsActiveChange}

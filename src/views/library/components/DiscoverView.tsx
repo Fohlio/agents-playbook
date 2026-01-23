@@ -12,6 +12,8 @@ interface DiscoverViewProps {
   onImportWorkflow: (workflowId: string) => Promise<void>;
   onImportPrompt: (promptId: string) => Promise<void>;
   className?: string;
+  importedWorkflowIds?: Set<string>;
+  importedPromptIds?: Set<string>;
 }
 
 interface DiscoverData {
@@ -29,6 +31,8 @@ export function DiscoverView({
   onImportWorkflow,
   onImportPrompt,
   className,
+  importedWorkflowIds,
+  importedPromptIds,
 }: DiscoverViewProps) {
   const t = useTranslations('discoverView');
   const router = useRouter();
@@ -41,6 +45,7 @@ export function DiscoverView({
     item: { id: string; type: 'workflow' | 'prompt'; name: string } | null;
   }>({ x: 0, y: 0, item: null });
 
+  const [importedIds, setImportedIds] = useState<Set<string>>(new Set());
   const debouncedSearch = useDebounce(searchQuery, 300);
 
   const fetchData = useCallback(async (search?: string) => {
@@ -128,11 +133,25 @@ export function DiscoverView({
       } else {
         await onImportPrompt(contextMenu.item.id);
       }
+      setImportedIds((prev) => new Set(prev).add(contextMenu.item!.id));
     } catch (err) {
       console.error('Import error:', err);
     }
     closeContextMenu();
   }, [contextMenu.item, onImportWorkflow, onImportPrompt, closeContextMenu]);
+
+  const handleCardImport = useCallback(async (id: string, type: 'workflow' | 'prompt') => {
+    try {
+      if (type === 'workflow') {
+        await onImportWorkflow(id);
+      } else {
+        await onImportPrompt(id);
+      }
+      setImportedIds((prev) => new Set(prev).add(id));
+    } catch (err) {
+      console.error('Import error:', err);
+    }
+  }, [onImportWorkflow, onImportPrompt]);
 
   const handleOpenWorkflow = useCallback(
     (workflowId: string) => {
@@ -231,7 +250,9 @@ export function DiscoverView({
               <PublicWorkflowCard
                 key={workflow.id}
                 workflow={workflow}
+                isImported={importedIds.has(workflow.id) || !!importedWorkflowIds?.has(workflow.id)}
                 onOpen={() => handleOpenWorkflow(workflow.id)}
+                onImport={() => handleCardImport(workflow.id, 'workflow')}
                 onContextMenu={(e) =>
                   handleContextMenu(e, { id: workflow.id, type: 'workflow', name: workflow.name })
                 }
@@ -252,7 +273,9 @@ export function DiscoverView({
               <PublicPromptCard
                 key={prompt.id}
                 prompt={prompt}
+                isImported={importedIds.has(prompt.id) || !!importedPromptIds?.has(prompt.id)}
                 onOpen={() => handleOpenPrompt(prompt.id)}
+                onImport={() => handleCardImport(prompt.id, 'prompt')}
                 onContextMenu={(e) =>
                   handleContextMenu(e, { id: prompt.id, type: 'prompt', name: prompt.name })
                 }
@@ -301,11 +324,13 @@ export function DiscoverView({
 // Cyberpunk Public Workflow Card
 interface PublicWorkflowCardProps {
   workflow: PublicWorkflow;
+  isImported?: boolean;
   onOpen: () => void;
+  onImport: () => void;
   onContextMenu: (e: MouseEvent) => void;
 }
 
-function PublicWorkflowCard({ workflow, onOpen, onContextMenu }: PublicWorkflowCardProps) {
+function PublicWorkflowCard({ workflow, isImported, onOpen, onImport, onContextMenu }: PublicWorkflowCardProps) {
   const t = useTranslations('discoverView');
   const tCommon = useTranslations('common');
 
@@ -360,6 +385,23 @@ function PublicWorkflowCard({ workflow, onOpen, onContextMenu }: PublicWorkflowC
           {workflow.description}
         </p>
       )}
+
+      {/* Add to Library button */}
+      <button
+        onClick={(e) => {
+          e.stopPropagation();
+          if (!isImported) onImport();
+        }}
+        disabled={isImported}
+        className={cn(
+          'mt-3 w-full py-2 text-xs font-mono uppercase tracking-wider border transition-all',
+          isImported
+            ? 'border-green-500/50 text-green-400 bg-green-500/10 cursor-default'
+            : 'border-cyan-500/50 text-cyan-400 bg-cyan-500/10 hover:bg-cyan-500/20 hover:border-cyan-400 cursor-pointer'
+        )}
+      >
+        {isImported ? t('inLibrary') : t('addToLibrary')}
+      </button>
     </div>
   );
 }
@@ -367,11 +409,14 @@ function PublicWorkflowCard({ workflow, onOpen, onContextMenu }: PublicWorkflowC
 // Cyberpunk Public Prompt Card
 interface PublicPromptCardProps {
   prompt: PublicPrompt;
+  isImported?: boolean;
   onOpen: () => void;
+  onImport: () => void;
   onContextMenu: (e: MouseEvent) => void;
 }
 
-function PublicPromptCard({ prompt, onOpen, onContextMenu }: PublicPromptCardProps) {
+function PublicPromptCard({ prompt, isImported, onOpen, onImport, onContextMenu }: PublicPromptCardProps) {
+  const t = useTranslations('discoverView');
   const tCommon = useTranslations('common');
 
   return (
@@ -421,6 +466,23 @@ function PublicPromptCard({ prompt, onOpen, onContextMenu }: PublicPromptCardPro
           {prompt.description}
         </p>
       )}
+
+      {/* Add to Library button */}
+      <button
+        onClick={(e) => {
+          e.stopPropagation();
+          if (!isImported) onImport();
+        }}
+        disabled={isImported}
+        className={cn(
+          'mt-3 w-full py-2 text-xs font-mono uppercase tracking-wider border transition-all',
+          isImported
+            ? 'border-green-500/50 text-green-400 bg-green-500/10 cursor-default'
+            : 'border-pink-500/50 text-pink-400 bg-pink-500/10 hover:bg-pink-500/20 hover:border-pink-400 cursor-pointer'
+        )}
+      >
+        {isImported ? t('inLibrary') : t('addToLibrary')}
+      </button>
     </div>
   );
 }

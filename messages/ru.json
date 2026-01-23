@@ -1298,7 +1298,9 @@
     "publicPrompts": "ПУБЛИЧНЫЕ_ПРОМПТЫ",
     "stagesCount": "{count} этапов",
     "preview": "ПРЕДПРОСМОТР",
-    "import": "ИМПОРТ"
+    "import": "ИМПОРТ",
+    "addToLibrary": "В_БИБЛИОТЕКУ",
+    "inLibrary": "В_БИБЛИОТЕКЕ"
   },
   "libraryHeader": {
     "searchPlaceholder": "Поиск в библиотеке...",

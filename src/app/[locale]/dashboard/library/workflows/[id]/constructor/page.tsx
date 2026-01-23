@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation';
 import { auth } from '@/server/auth/auth';
 import { getWorkflowWithStages, getAllAvailableMiniPrompts } from '@/views/workflow-constructor/actions/workflow-actions';
 import { WorkflowConstructor } from '@/views/workflow-constructor/components/WorkflowConstructor';
+import { prisma } from '@/server/db/client';
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -29,8 +30,19 @@ export default async function WorkflowConstructorPage({ params }: PageProps) {
   const isAdminEditingSystem = session.user.role === 'ADMIN' && workflow.isSystemWorkflow;
 
   if (!isOwner && !isAdminEditingSystem) {
-    notFound();
+    // Also allow access if workflow is public or user has a reference (read-only)
+    const isPublic = workflow.visibility === 'PUBLIC';
+    const hasReference = await prisma.workflowReference.findFirst({
+      where: { workflowId: id, userId: session.user.id },
+      select: { id: true },
+    });
+
+    if (!isPublic && !hasReference) {
+      notFound();
+    }
   }
+
+  const readOnly = !isOwner && !isAdminEditingSystem;
 
   return (
     <WorkflowConstructor
@@ -38,6 +50,7 @@ export default async function WorkflowConstructorPage({ params }: PageProps) {
         workflow,
         miniPrompts,
       }}
+      readOnly={readOnly}
     />
   );
 }
