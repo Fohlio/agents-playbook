@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/server/db/client";
+import { del } from "@vercel/blob";
 
 /**
  * Trash Cleanup Cron Job
@@ -127,6 +128,61 @@ export async function GET(request: NextRequest) {
 
     console.log(`[Trash Cleanup] Deleted ${deletedPrompts.count} prompts`);
 
+    // Delete old trashed skills (with blob cleanup)
+    const oldSkills = await prisma.skill.findMany({
+      where: {
+        deletedAt: {
+          lt: thirtyDaysAgo,
+          not: null,
+        },
+      },
+      select: {
+        id: true,
+        attachments: {
+          select: { blobUrl: true },
+        },
+      },
+    });
+
+    const skillIds = oldSkills.map((s) => s.id);
+
+    if (skillIds.length > 0) {
+      // Delete skill embeddings
+      await prisma.skillEmbedding.deleteMany({
+        where: { skillId: { in: skillIds } },
+      });
+
+      // Delete folder_items references
+      await prisma.folder_items.deleteMany({
+        where: {
+          target_type: "SKILL",
+          target_id: { in: skillIds },
+        },
+      });
+
+      // Delete blob attachments (best-effort, log errors)
+      for (const skill of oldSkills) {
+        for (const attachment of skill.attachments) {
+          try {
+            await del(attachment.blobUrl);
+          } catch (blobError) {
+            console.error(`[Trash Cleanup] Failed to delete blob for skill ${skill.id}:`, blobError);
+          }
+        }
+      }
+    }
+
+    const deletedSkills = await prisma.skill.deleteMany({
+      where: {
+        deletedAt: {
+          lt: thirtyDaysAgo,
+          not: null,
+        },
+      },
+    });
+
+    console.log(`[Trash Cleanup] Deleted ${deletedSkills.count} skills`);
+
     // Clean up orphaned folder_items (items pointing to non-existent folders)
     const orphanedItems = await prisma.$executeRaw`
       DELETE FROM folder_items
@@ -141,6 +197,7 @@ export async function GET(request: NextRequest) {
         folders: deletedFolders.count,
         workflows: deletedWorkflows.count,
         prompts: deletedPrompts.count,
+        skills: deletedSkills.count,
         orphanedItems: Number(orphanedItems),
       },
       timestamp: new Date().toISOString(),

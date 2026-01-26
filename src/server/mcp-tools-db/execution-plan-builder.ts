@@ -32,7 +32,7 @@ import type { JsonValue } from '@prisma/client/runtime/library';
  */
 export interface ExecutionPlanItem {
   index: number;
-  type: 'stage' | 'mini-prompt' | 'auto-prompt';
+  type: 'stage' | 'mini-prompt' | 'auto-prompt' | 'skill';
   stageIndex?: number;
   stageName?: string;
   name: string;
@@ -40,6 +40,12 @@ export interface ExecutionPlanItem {
   content?: string;
   isAutoAttached?: boolean;
   autoPromptType?: 'memory-board' | 'multi-agent-chat';
+  attachments?: Array<{
+    fileName: string;
+    fileSize: number;
+    mimeType: string;
+    blobUrl: string;
+  }>;
 }
 
 /**
@@ -61,7 +67,7 @@ export class ExecutionPlanBuilder {
    * Build complete execution plan for a workflow
    */
   async buildExecutionPlan(workflowId: string): Promise<ExecutionPlan | null> {
-    // Fetch workflow with stages and mini-prompts
+    // Fetch workflow with stages, mini-prompts, and skills
     const workflow = await prisma.workflow.findUnique({
       where: { id: workflowId },
       include: {
@@ -72,6 +78,23 @@ export class ExecutionPlanBuilder {
               orderBy: { order: 'asc' },
               include: {
                 miniPrompt: true
+              }
+            },
+            stageSkills: {
+              orderBy: { order: 'asc' },
+              include: {
+                skill: {
+                  include: {
+                    attachments: {
+                      select: {
+                        fileName: true,
+                        fileSize: true,
+                        mimeType: true,
+                        blobUrl: true,
+                      }
+                    }
+                  }
+                }
               }
             }
           }
@@ -133,10 +156,26 @@ export class ExecutionPlanBuilder {
       withReview: boolean;
       miniPrompts: Array<{
         miniPromptId: string;
+        order: number;
         miniPrompt: {
           name: string;
           description: string | null;
           content: string;
+        };
+      }>;
+      stageSkills: Array<{
+        skillId: string;
+        order: number;
+        skill: {
+          name: string;
+          description: string | null;
+          content: string;
+          attachments: Array<{
+            fileName: string;
+            fileSize: number;
+            mimeType: string;
+            blobUrl: string;
+          }>;
         };
       }>;
     },
@@ -160,6 +199,19 @@ export class ExecutionPlanBuilder {
         name: stageMiniPrompt.miniPrompt.name,
         description: stageMiniPrompt.miniPrompt.description || undefined,
         content: stageMiniPrompt.miniPrompt.content,
+      });
+    }
+
+    // Add skills to map
+    for (const stageSkill of stage.stageSkills) {
+      itemsMap.set(stageSkill.skillId, {
+        type: 'skill',
+        stageIndex,
+        stageName: stage.name,
+        name: stageSkill.skill.name,
+        description: stageSkill.skill.description || undefined,
+        content: stageSkill.skill.content,
+        attachments: stageSkill.skill.attachments.length > 0 ? stageSkill.skill.attachments : undefined,
       });
     }
 
@@ -229,21 +281,23 @@ export class ExecutionPlanBuilder {
       return finalOrder.map((id) => itemsMap.get(id)!);
     }
 
-    // Default order: mini-prompts, then multi-agent chats, then memory board
+    // Default order: merge mini-prompts and skills by order field, then auto-prompts
     const result: Omit<ExecutionPlanItem, 'index'>[] = [];
 
-    // Add mini-prompts
-    for (const stageMiniPrompt of stage.miniPrompts) {
-      result.push({
-        type: 'mini-prompt',
-        stageIndex,
-        stageName: stage.name,
-        name: stageMiniPrompt.miniPrompt.name,
-        description: stageMiniPrompt.miniPrompt.description || undefined,
-        content: stageMiniPrompt.miniPrompt.content,
-      });
+    // Merge mini-prompts and skills by their order field
+    type OrderedItem = { order: number; type: 'mini-prompt' | 'skill'; id: string };
+    const orderedItems: OrderedItem[] = [
+      ...stage.miniPrompts.map(mp => ({ order: mp.order, type: 'mini-prompt' as const, id: mp.miniPromptId })),
+      ...stage.stageSkills.map(ss => ({ order: ss.order, type: 'skill' as const, id: ss.skillId })),
+    ].sort((a, b) => a.order - b.order);
 
-      // Add Internal Agents Chat after each mini-prompt if enabled
+    for (const orderedItem of orderedItems) {
+      const item = itemsMap.get(orderedItem.id);
+      if (item) {
+        result.push(item);
+      }
+
+      // Add Internal Agents Chat after each content item if enabled
       if (stage.includeMultiAgentChat && multiAgentChatPrompt) {
         result.push({
           type: 'auto-prompt',
@@ -314,6 +368,14 @@ export class ExecutionPlanBuilder {
         const icon = item.autoPromptType === 'memory-board' ? '📋' : '🤖';
         const badge = item.autoPromptType === 'memory-board' ? '[REVIEW]' : '[AUTO]';
         output += `### ${item.index + 1}. ${icon} ${item.name} ${badge}\n\n`;
+      } else if (item.type === 'skill') {
+        output += `### ${item.index + 1}. 🛠️ ${item.name} [SKILL]\n\n`;
+        if (item.description) {
+          output += `${item.description}\n\n`;
+        }
+        if (item.attachments && item.attachments.length > 0) {
+          output += `📎 Attachments: ${item.attachments.map(a => a.fileName).join(', ')}\n\n`;
+        }
       } else {
         output += `### ${item.index + 1}. ${item.name}\n\n`;
         if (item.description) {

@@ -44,7 +44,7 @@ export interface ContextRequest {
   /**
    * AI assistant mode
    */
-  mode: 'workflow' | 'mini-prompt';
+  mode: 'workflow' | 'mini-prompt' | 'skill';
 
   /**
    * Workflow context (if available)
@@ -106,7 +106,17 @@ export interface WorkflowContext {
   };
 
   /**
+   * Currently viewing/editing skill
+   */
+  currentSkill?: {
+    id: string;
+    name: string;
+    description?: string | null;
+    content: string;
+  };
+
+  /**
    * Current mode context
    */
-  mode?: 'workflow' | 'mini-prompt';
+  mode?: 'workflow' | 'mini-prompt' | 'skill';
 }

@@ -108,7 +108,7 @@ export function ItemContextMenu({
   const isMultiSelect = items.length > 1;
   const singleItem = items.length === 1 ? items[0] : null;
   const isFolderItem = singleItem?.type === 'folder';
-  const isWorkflowOrPrompt = singleItem?.type === 'workflow' || singleItem?.type === 'prompt';
+  const isWorkflowOrPromptOrSkill = singleItem?.type === 'workflow' || singleItem?.type === 'prompt' || singleItem?.type === 'skill';
   const isPublic = singleItem?.visibility === 'PUBLIC';
 
   // Filter out current folder from available folders
@@ -194,7 +194,7 @@ export function ItemContextMenu({
             )}
 
             {/* Workflow/Prompt-specific actions */}
-            {isWorkflowOrPrompt && (
+            {isWorkflowOrPromptOrSkill && (
               <>
                 {onPreview && (
                   <MenuItem
@@ -279,7 +279,7 @@ export function ItemContextMenu({
         )}
 
         {/* Duplicate (single workflow/prompt only) */}
-        {!isMultiSelect && isWorkflowOrPrompt && onDuplicate && (
+        {!isMultiSelect && isWorkflowOrPromptOrSkill && onDuplicate && (
           <MenuItem
             onClick={() => {
               onDuplicate(singleItem!.id);

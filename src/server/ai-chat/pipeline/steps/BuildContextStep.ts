@@ -32,7 +32,7 @@ export class BuildContextStep implements PipelineStep {
     // Build base system prompt
     const baseSystemPrompt = aiAssistantBasePrompt;
 
-    // Get mode-specific prompt
+    // Get mode-specific prompt (skill mode uses mini-prompt instructions as a reasonable default)
     const modePrompt = context.mode === 'workflow'
       ? aiAssistantWorkflowPrompt
       : aiAssistantMiniPromptPrompt;

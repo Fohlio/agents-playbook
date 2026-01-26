@@ -3,10 +3,56 @@ import { auth } from "@/server/auth/auth";
 import { getSharedContent } from "@/features/sharing/lib/share-service";
 import { SharedWorkflowView } from "@/features/sharing/components/SharedWorkflowView";
 import { SharedMiniPromptView } from "@/features/sharing/components/SharedMiniPromptView";
+import { SharedSkillView } from "@/features/sharing/components/SharedSkillView";
 import { Metadata } from "next";
 
 interface PageProps {
   params: Promise<{ token: string }>;
+}
+
+interface SharedContentBase {
+  name: string;
+  description?: string | null;
+  content?: string;
+  user: { username: string };
+  tags?: Array<{ tag: { name: string } }>;
+}
+
+/**
+ * Build consistent metadata for shared content
+ */
+function buildSharedMetadata(
+  content: SharedContentBase,
+  typeLabel: string,
+  extraInfo: string,
+  url: string,
+  logoUrl: string
+): Metadata {
+  const title = `${content.name} - Shared ${typeLabel}`;
+  const baseDescription = content.description || content.content?.substring(0, 160) || `View shared ${typeLabel.toLowerCase()}: ${content.name}`;
+  const tagsText = content.tags?.length ? `Tags: ${content.tags.map(t => t.tag.name).join(', ')}` : '';
+  const fullDescription = [baseDescription, extraInfo, tagsText, `By @${content.user.username}`]
+    .filter(Boolean)
+    .join(' \u2022 ');
+
+  return {
+    title,
+    description: fullDescription,
+    openGraph: {
+      title,
+      description: fullDescription,
+      url,
+      type: "website",
+      siteName: "Agents Playbook",
+      images: [{ url: logoUrl, width: 1200, height: 630, alt: title }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description: fullDescription,
+      images: [logoUrl],
+    },
+  };
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
@@ -16,112 +62,59 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const url = `${baseUrl}/s/${token}`;
 
   if (!result.success) {
-    return {
+    const notFoundMeta = {
       title: "Shared Content Not Found",
       description: "This shared link is invalid or has expired.",
-      openGraph: {
-        title: "Shared Content Not Found",
-        description: "This shared link is invalid or has expired.",
-        url,
-        type: "website",
-      },
-      twitter: {
-        card: "summary",
-        title: "Shared Content Not Found",
-        description: "This shared link is invalid or has expired.",
-      },
+    };
+    return {
+      ...notFoundMeta,
+      openGraph: { ...notFoundMeta, url, type: "website" },
+      twitter: { card: "summary", ...notFoundMeta },
     };
   }
 
   const logoUrl = `${baseUrl}/logo.png`;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const content = result.content as any;
 
   if (result.targetType === "WORKFLOW") {
-    const workflow = result.content as unknown as {
-      id: string;
-      name: string;
-      description: string | null;
-      visibility: "PUBLIC" | "PRIVATE";
-      user: { id: string; username: string };
-      stages: unknown[];
-      tags: Array<{ tag: { name: string; id: string; color: string | null } }>;
-    };
-
-    const title = `${workflow.name} - Shared Workflow`;
-    const description = workflow.description || `View shared workflow: ${workflow.name}`;
-    const stagesCount = Array.isArray(workflow.stages) ? workflow.stages.length : 0;
-    const tagsText = workflow.tags?.length > 0 
-      ? `Tags: ${workflow.tags.map(t => t.tag.name).join(', ')}` 
-      : '';
-    const fullDescription = `${description}${stagesCount > 0 ? ` • ${stagesCount} stage${stagesCount !== 1 ? 's' : ''}` : ''}${tagsText ? ` • ${tagsText}` : ''} • By @${workflow.user.username}`;
-
-    return {
-      title,
-      description: fullDescription,
-      openGraph: {
-        title,
-        description: fullDescription,
-        url,
-        type: "website",
-        siteName: "Agents Playbook",
-        images: [
-          {
-            url: logoUrl,
-            width: 1200,
-            height: 630,
-            alt: title,
-          }
-        ],
-      },
-      twitter: {
-        card: "summary_large_image",
-        title,
-        description: fullDescription,
-        images: [logoUrl],
-      },
-    };
-  } else {
-    const miniPrompt = result.content as {
-      id: string;
-      name: string;
-      content: string;
-      visibility: "PUBLIC" | "PRIVATE";
-      user: { id: string; username: string };
-      tags: Array<{ tag: { name: string; id: string; color: string | null } }>;
-    };
-
-    const title = `${miniPrompt.name} - Shared Mini-Prompt`;
-    const description = miniPrompt.content?.substring(0, 160) || `View shared mini-prompt: ${miniPrompt.name}`;
-    const tagsText = miniPrompt.tags?.length > 0 
-      ? `Tags: ${miniPrompt.tags.map(t => t.tag.name).join(', ')}` 
-      : '';
-    const fullDescription = `${description}${tagsText ? ` • ${tagsText}` : ''} • By @${miniPrompt.user.username}`;
-
-    return {
-      title,
-      description: fullDescription,
-      openGraph: {
-        title,
-        description: fullDescription,
-        url,
-        type: "website",
-        siteName: "Agents Playbook",
-        images: [
-          {
-            url: logoUrl,
-            width: 1200,
-            height: 630,
-            alt: title,
-          }
-        ],
-      },
-      twitter: {
-        card: "summary_large_image",
-        title,
-        description: fullDescription,
-        images: [logoUrl],
-      },
-    };
+    const stagesCount = Array.isArray(content.stages) ? content.stages.length : 0;
+    const extraInfo = stagesCount > 0 ? `${stagesCount} stage${stagesCount !== 1 ? 's' : ''}` : '';
+    return buildSharedMetadata(content, "Workflow", extraInfo, url, logoUrl);
   }
+
+  if (result.targetType === "SKILL") {
+    const attachmentsCount = Array.isArray(content.attachments) ? content.attachments.length : 0;
+    const extraInfo = attachmentsCount > 0 ? `${attachmentsCount} attachment${attachmentsCount !== 1 ? 's' : ''}` : '';
+    return buildSharedMetadata(content, "Skill", extraInfo, url, logoUrl);
+  }
+
+  return buildSharedMetadata(content, "Mini-Prompt", '', url, logoUrl);
+}
+
+/**
+ * Create import handler for shared content
+ */
+function createImportHandler(apiPath: string, itemType: string) {
+  return async () => {
+    "use server";
+    const session = await auth();
+    if (!session?.user?.id) {
+      throw new Error("Not authenticated");
+    }
+
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3012";
+    const response = await fetch(`${baseUrl}${apiPath}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to import ${itemType}`);
+    }
+
+    return response.json();
+  };
 }
 
 export default async function SharedContentPage({ params }: PageProps) {
@@ -129,110 +122,54 @@ export default async function SharedContentPage({ params }: PageProps) {
   const session = await auth();
   const isAuthenticated = !!session?.user?.id;
 
-  // Fetch shared content
   const result = await getSharedContent(token, true);
 
-  // Handle errors
   if (!result.success) {
     notFound();
   }
 
-  // Handle workflow
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const content = result.content as any;
+  const isPublic = content.visibility === "PUBLIC";
+
   if (result.targetType === "WORKFLOW") {
-    const workflow = result.content as unknown as {
-      id: string;
-      name: string;
-      description: string | null;
-      visibility: "PUBLIC" | "PRIVATE";
-      user: { id: string; username: string };
-      stages: unknown[];
-      tags: Array<{ tag: { name: string; id: string; color: string | null } }>;
-    };
-
-    // Import handler (client-side action)
-    const handleImport = async () => {
-      "use server";
-      const session = await auth();
-      if (!session?.user?.id) {
-        throw new Error("Not authenticated");
-      }
-
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3012"}/api/v1/workflows/import/${workflow.id}`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error("Failed to import workflow");
-      }
-
-      return response.json();
-    };
-
+    const handleImport = createImportHandler(`/api/v1/workflows/import/${content.id}`, "workflow");
     return (
       <div className="min-h-screen bg-gray-50 py-8">
         <SharedWorkflowView
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          workflow={workflow as any}
+          workflow={content}
           isAuthenticated={isAuthenticated}
-          onImport={workflow.visibility === "PUBLIC" ? handleImport : undefined}
+          onImport={isPublic ? handleImport : undefined}
         />
       </div>
     );
   }
 
-  // Handle mini-prompt
+  if (result.targetType === "SKILL") {
+    const handleImport = createImportHandler(`/api/skills/${content.id}/import`, "skill");
+    return (
+      <div className="min-h-screen bg-gray-50 py-8">
+        <SharedSkillView
+          skill={content}
+          isAuthenticated={isAuthenticated}
+          onImport={isPublic ? handleImport : undefined}
+        />
+      </div>
+    );
+  }
+
   if (result.targetType === "MINI_PROMPT") {
-    const miniPrompt = result.content as {
-      id: string;
-      name: string;
-      content: string;
-      visibility: "PUBLIC" | "PRIVATE";
-      user: { id: string; username: string };
-      tags: Array<{ tag: { name: string; id: string; color: string | null } }>;
-    };
-
-    // Import handler (client-side action)
-    const handleImport = async () => {
-      "use server";
-      const session = await auth();
-      if (!session?.user?.id) {
-        throw new Error("Not authenticated");
-      }
-
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3012"}/api/v1/mini-prompts/import/${miniPrompt.id}`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error("Failed to import mini-prompt");
-      }
-
-      return response.json();
-    };
-
+    const handleImport = createImportHandler(`/api/v1/mini-prompts/import/${content.id}`, "mini-prompt");
     return (
       <div className="min-h-screen bg-gray-50 py-8">
         <SharedMiniPromptView
-          miniPrompt={miniPrompt}
+          miniPrompt={content}
           isAuthenticated={isAuthenticated}
-          onImport={miniPrompt.visibility === "PUBLIC" ? handleImport : undefined}
+          onImport={isPublic ? handleImport : undefined}
         />
       </div>
     );
   }
 
-  // Should not reach here, but handle just in case
   notFound();
 }

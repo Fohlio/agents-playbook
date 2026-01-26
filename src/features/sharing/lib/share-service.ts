@@ -79,6 +79,28 @@ export async function createShareLink(
 }
 
 /**
+ * Verify user owns a share link and return it
+ */
+async function verifyShareLinkOwnership(
+  userId: string,
+  shareLinkId: string
+): Promise<{ success: true; shareLink: NonNullable<Awaited<ReturnType<typeof prisma.sharedLink.findUnique>>> } | { success: false; message: string }> {
+  const shareLink = await prisma.sharedLink.findUnique({
+    where: { id: shareLinkId },
+  });
+
+  if (!shareLink) {
+    return { success: false, message: "Share link not found" };
+  }
+
+  if (shareLink.userId !== userId) {
+    return { success: false, message: "You do not own this share link" };
+  }
+
+  return { success: true, shareLink };
+}
+
+/**
  * Toggle share link active status (enable/disable)
  */
 export async function toggleShareLink(
@@ -87,26 +109,9 @@ export async function toggleShareLink(
   isActive: boolean
 ): Promise<{ success: boolean; message: string }> {
   try {
-    // Verify ownership
-    const shareLink = await prisma.sharedLink.findUnique({
-      where: { id: shareLinkId },
-    });
+    const result = await verifyShareLinkOwnership(userId, shareLinkId);
+    if (!result.success) return result;
 
-    if (!shareLink) {
-      return {
-        success: false,
-        message: "Share link not found",
-      };
-    }
-
-    if (shareLink.userId !== userId) {
-      return {
-        success: false,
-        message: "You do not own this share link",
-      };
-    }
-
-    // Update active status
     await prisma.sharedLink.update({
       where: { id: shareLinkId },
       data: { isActive },
@@ -118,10 +123,7 @@ export async function toggleShareLink(
     };
   } catch (error) {
     console.error("Error toggling share link:", error);
-    return {
-      success: false,
-      message: "Failed to toggle share link",
-    };
+    return { success: false, message: "Failed to toggle share link" };
   }
 }
 
@@ -133,26 +135,9 @@ export async function regenerateShareToken(
   shareLinkId: string
 ): Promise<{ success: boolean; shareToken?: string; message: string }> {
   try {
-    // Verify ownership
-    const shareLink = await prisma.sharedLink.findUnique({
-      where: { id: shareLinkId },
-    });
+    const result = await verifyShareLinkOwnership(userId, shareLinkId);
+    if (!result.success) return result;
 
-    if (!shareLink) {
-      return {
-        success: false,
-        message: "Share link not found",
-      };
-    }
-
-    if (shareLink.userId !== userId) {
-      return {
-        success: false,
-        message: "You do not own this share link",
-      };
-    }
-
-    // Generate new token and update
     const newToken = generateShareToken();
     const updated = await prisma.sharedLink.update({
       where: { id: shareLinkId },
@@ -166,10 +151,7 @@ export async function regenerateShareToken(
     };
   } catch (error) {
     console.error("Error regenerating share token:", error);
-    return {
-      success: false,
-      message: "Failed to regenerate share token",
-    };
+    return { success: false, message: "Failed to regenerate share token" };
   }
 }
 
@@ -182,43 +164,38 @@ export async function updateShareLinkExpiration(
   expiresAt: Date | null
 ): Promise<{ success: boolean; message: string }> {
   try {
-    // Verify ownership
-    const shareLink = await prisma.sharedLink.findUnique({
-      where: { id: shareLinkId },
-    });
+    const result = await verifyShareLinkOwnership(userId, shareLinkId);
+    if (!result.success) return result;
 
-    if (!shareLink) {
-      return {
-        success: false,
-        message: "Share link not found",
-      };
-    }
-
-    if (shareLink.userId !== userId) {
-      return {
-        success: false,
-        message: "You do not own this share link",
-      };
-    }
-
-    // Update expiration
     await prisma.sharedLink.update({
       where: { id: shareLinkId },
       data: { expiresAt },
     });
 
-    return {
-      success: true,
-      message: "Expiration updated successfully",
-    };
+    return { success: true, message: "Expiration updated successfully" };
   } catch (error) {
     console.error("Error updating expiration:", error);
-    return {
-      success: false,
-      message: "Failed to update expiration",
-    };
+    return { success: false, message: "Failed to update expiration" };
   }
 }
+
+/**
+ * Target lookup configuration for enriching shared items
+ */
+const targetLookupConfig = {
+  WORKFLOW: {
+    findFn: (id: string) => prisma.workflow.findUnique({ where: { id }, select: { name: true, visibility: true } }),
+    defaultName: "Unknown Workflow",
+  },
+  SKILL: {
+    findFn: (id: string) => prisma.skill.findUnique({ where: { id }, select: { name: true, visibility: true } }),
+    defaultName: "Unknown Skill",
+  },
+  MINI_PROMPT: {
+    findFn: (id: string) => prisma.miniPrompt.findUnique({ where: { id }, select: { name: true, visibility: true } }),
+    defaultName: "Unknown Mini-Prompt",
+  },
+} as const;
 
 /**
  * Get user's shared items with enriched target data
@@ -230,32 +207,15 @@ export async function getUserSharedItems(userId: string) {
       orderBy: { createdAt: "desc" },
     });
 
-    // Enrich with target details
     const enriched = await Promise.all(
       sharedLinks.map(async (link) => {
-        let targetName = "";
-        let targetVisibility: "PUBLIC" | "PRIVATE" = "PRIVATE";
-
-        if (link.targetType === "WORKFLOW") {
-          const workflow = await prisma.workflow.findUnique({
-            where: { id: link.targetId },
-            select: { name: true, visibility: true },
-          });
-          targetName = workflow?.name || "Unknown Workflow";
-          targetVisibility = workflow?.visibility || "PRIVATE";
-        } else {
-          const miniPrompt = await prisma.miniPrompt.findUnique({
-            where: { id: link.targetId },
-            select: { name: true, visibility: true },
-          });
-          targetName = miniPrompt?.name || "Unknown Mini-Prompt";
-          targetVisibility = miniPrompt?.visibility || "PRIVATE";
-        }
+        const config = targetLookupConfig[link.targetType];
+        const target = await config.findFn(link.targetId);
 
         return {
           ...link,
-          targetName,
-          targetVisibility,
+          targetName: target?.name || config.defaultName,
+          targetVisibility: target?.visibility || "PRIVATE" as const,
         };
       })
     );
@@ -343,6 +303,40 @@ export async function getSharedContent(
         content: workflow,
         shareLink,
       };
+    } else if (shareLink.targetType === "SKILL") {
+      const skill = await prisma.skill.findUnique({
+        where: { id: shareLink.targetId },
+        include: {
+          user: {
+            select: { id: true, username: true },
+          },
+          tags: {
+            include: {
+              tag: true,
+            },
+          },
+          attachments: {
+            select: {
+              id: true,
+              fileName: true,
+              fileSize: true,
+              mimeType: true,
+              createdAt: true,
+            },
+          },
+        },
+      });
+
+      if (!skill) {
+        return { success: false, message: "Skill not found" };
+      }
+
+      return {
+        success: true,
+        targetType: "SKILL" as const,
+        content: skill,
+        shareLink,
+      };
     } else {
       const miniPrompt = await prisma.miniPrompt.findUnique({
         where: { id: shareLink.targetId },
@@ -376,7 +370,7 @@ export async function getSharedContent(
 }
 
 /**
- * Verify user owns a workflow or mini-prompt
+ * Verify user owns a workflow, mini-prompt, or skill
  */
 async function verifyOwnership(
   userId: string,
@@ -388,6 +382,11 @@ async function verifyOwnership(
       where: { id: targetId, userId },
     });
     return !!workflow;
+  } else if (targetType === "SKILL") {
+    const skill = await prisma.skill.findFirst({
+      where: { id: targetId, userId },
+    });
+    return !!skill;
   } else {
     const miniPrompt = await prisma.miniPrompt.findFirst({
       where: { id: targetId, userId },

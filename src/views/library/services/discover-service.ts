@@ -1,7 +1,7 @@
 /**
  * Discover Service
  *
- * Provides data access for public workflows and prompts displayed in the Discover tab.
+ * Provides data access for public workflows and skills displayed in the Discover tab.
  * Returns only PUBLIC visibility items that are active and not deleted.
  */
 
@@ -10,7 +10,7 @@ import { withRetry } from '@/server/db/retry';
 
 export interface PublicItem {
   id: string;
-  type: 'workflow' | 'prompt';
+  type: 'workflow' | 'skill';
   name: string;
   description?: string | null;
   authorId: string;
@@ -23,8 +23,9 @@ export interface PublicWorkflow extends PublicItem {
   stageCount: number;
 }
 
-export interface PublicPrompt extends PublicItem {
-  type: 'prompt';
+export interface PublicSkill extends PublicItem {
+  type: 'skill';
+  attachmentCount: number;
 }
 
 /**
@@ -65,18 +66,15 @@ export async function getPublicWorkflows(search?: string): Promise<PublicWorkflo
 }
 
 /**
- * Get public prompts with optional search filter
- * Excludes prompts that are part of workflows (only standalone prompts)
+ * Get public skills with optional search filter
  */
-export async function getPublicPrompts(search?: string): Promise<PublicPrompt[]> {
+export async function getPublicSkills(search?: string): Promise<PublicSkill[]> {
   return withRetry(async () => {
-    const prompts = await prisma.miniPrompt.findMany({
+    const skills = await prisma.skill.findMany({
       where: {
         visibility: 'PUBLIC',
         isActive: true,
         deletedAt: null,
-        // Exclude prompts that are part of workflows
-        stageMiniPrompts: { none: {} },
         ...(search && {
           OR: [
             { name: { contains: search, mode: 'insensitive' } },
@@ -86,35 +84,37 @@ export async function getPublicPrompts(search?: string): Promise<PublicPrompt[]>
       },
       include: {
         user: { select: { id: true, username: true } },
+        _count: { select: { attachments: true } },
       },
       orderBy: { createdAt: 'desc' },
     });
 
-    return prompts.map((p) => ({
-      id: p.id,
-      type: 'prompt' as const,
-      name: p.name,
-      description: p.description,
-      authorId: p.userId,
-      authorName: p.user?.username || null,
-      createdAt: p.createdAt,
+    return skills.map((s) => ({
+      id: s.id,
+      type: 'skill' as const,
+      name: s.name,
+      description: s.description,
+      authorId: s.userId,
+      authorName: s.user?.username || null,
+      createdAt: s.createdAt,
+      attachmentCount: s._count.attachments,
     }));
   });
 }
 
 /**
- * Get all public content (workflows and prompts) with optional search filter
+ * Get all public content (workflows and skills) with optional search filter
  */
 export async function getPublicContent(search?: string): Promise<{
   workflows: PublicWorkflow[];
-  prompts: PublicPrompt[];
+  skills: PublicSkill[];
 }> {
-  const [workflows, prompts] = await Promise.all([
+  const [workflows, skills] = await Promise.all([
     getPublicWorkflows(search),
-    getPublicPrompts(search),
+    getPublicSkills(search),
   ]);
 
-  return { workflows, prompts };
+  return { workflows, skills };
 }
 
 /**
@@ -137,19 +137,19 @@ export async function isWorkflowInLibrary(workflowId: string, userId: string): P
 }
 
 /**
- * Check if a prompt is already in user's library (either owned or referenced)
+ * Check if a skill is already in user's library (either owned or referenced)
  */
-export async function isPromptInLibrary(promptId: string, userId: string): Promise<boolean> {
-  // Check if user owns the prompt
-  const owned = await prisma.miniPrompt.findFirst({
-    where: { id: promptId, userId },
+export async function isSkillInLibrary(skillId: string, userId: string): Promise<boolean> {
+  // Check if user owns the skill
+  const owned = await prisma.skill.findFirst({
+    where: { id: skillId, userId },
     select: { id: true },
   });
   if (owned) return true;
 
-  // Check if user has a reference to the prompt
-  const reference = await prisma.miniPromptReference.findFirst({
-    where: { miniPromptId: promptId, userId },
+  // Check if user has a reference to the skill
+  const reference = await prisma.skillReference.findFirst({
+    where: { skillId, userId },
     select: { id: true },
   });
   return !!reference;

@@ -7,6 +7,7 @@ import {
   FolderContents,
   WorkflowWithMeta,
   PromptWithMeta,
+  SkillWithFolderMeta,
   TrashedItem,
   CreateFolderInput,
   UpdateFolderInput,
@@ -243,11 +244,59 @@ export async function getUncategorizedItems(userId: string): Promise<FolderServi
         isStandalone: true,
       }));
 
+    // Get all skill IDs that are in folders
+    const skillsInFolders = await prisma.folder_items.findMany({
+      where: { target_type: 'SKILL' },
+      select: { target_id: true },
+    });
+    const skillIdsInFolders = new Set(skillsInFolders.map((s) => s.target_id));
+
+    // Fetch uncategorized skills
+    const skills = await withRetry(() =>
+      prisma.skill.findMany({
+        where: {
+          userId,
+          isActive: true,
+          deletedAt: null,
+        },
+        include: {
+          user: {
+            select: { id: true, username: true, email: true },
+          },
+          _count: {
+            select: { attachments: true },
+          },
+        },
+        orderBy: { createdAt: 'desc' },
+      })
+    );
+
+    const uncategorizedSkills: SkillWithFolderMeta[] = skills
+      .filter((s) => !skillIdsInFolders.has(s.id))
+      .map((s) => ({
+        id: s.id,
+        name: s.name,
+        description: s.description,
+        visibility: s.visibility,
+        isActive: s.isActive,
+        createdAt: s.createdAt,
+        updatedAt: s.updatedAt,
+        key: s.key,
+        user: {
+          id: s.user.id,
+          username: getDisplayUsername(s.user),
+          email: s.user.email,
+        },
+        folderPosition: 0,
+        attachmentCount: s._count.attachments,
+      }));
+
     return {
       success: true,
       data: {
         workflows: uncategorizedWorkflows,
         prompts: uncategorizedPrompts,
+        skills: uncategorizedSkills,
       },
     };
   } catch (error) {
@@ -296,6 +345,23 @@ export async function getTrashedItems(userId: string): Promise<FolderServiceResu
       })
     );
 
+    // Get trashed skills
+    const trashedSkills = await withRetry(() =>
+      prisma.skill.findMany({
+        where: {
+          userId,
+          deletedAt: { not: null },
+        },
+        select: {
+          id: true,
+          name: true,
+          description: true,
+          deletedAt: true,
+        },
+        orderBy: { deletedAt: 'desc' },
+      })
+    );
+
     const trashedItems: TrashedItem[] = [
       ...trashedWorkflows.map((w) => ({
         id: w.id,
@@ -310,6 +376,13 @@ export async function getTrashedItems(userId: string): Promise<FolderServiceResu
         type: 'MINI_PROMPT' as FolderTargetType,
         deletedAt: p.deletedAt!,
         description: p.description,
+      })),
+      ...trashedSkills.map((s) => ({
+        id: s.id,
+        name: s.name,
+        type: 'SKILL' as FolderTargetType,
+        deletedAt: s.deletedAt!,
+        description: s.description,
       })),
     ];
 
@@ -451,15 +524,61 @@ export async function getFolderContents(
         };
       });
 
+    // Get skills in this folder
+    const skillIds = folderItems
+      .filter((item) => item.target_type === 'SKILL')
+      .map((item) => ({ id: item.target_id, position: item.position }));
+
+    const skills = await withRetry(() =>
+      prisma.skill.findMany({
+        where: {
+          id: { in: skillIds.map((s) => s.id) },
+          isActive: true,
+          deletedAt: null,
+        },
+        include: {
+          user: {
+            select: { id: true, username: true, email: true },
+          },
+          _count: {
+            select: { attachments: true },
+          },
+        },
+      })
+    );
+
+    const skillsWithMeta: SkillWithFolderMeta[] = skills.map((s) => {
+      const folderItem = skillIds.find((item) => item.id === s.id);
+      return {
+        id: s.id,
+        name: s.name,
+        description: s.description,
+        visibility: s.visibility,
+        isActive: s.isActive,
+        createdAt: s.createdAt,
+        updatedAt: s.updatedAt,
+        key: s.key,
+        user: {
+          id: s.user.id,
+          username: getDisplayUsername(s.user),
+          email: s.user.email,
+        },
+        folderPosition: folderItem?.position ?? 0,
+        attachmentCount: s._count.attachments,
+      };
+    });
+
     // Sort by position
     workflowsWithMeta.sort((a, b) => a.folderPosition - b.folderPosition);
     promptsWithMeta.sort((a, b) => a.folderPosition - b.folderPosition);
+    skillsWithMeta.sort((a, b) => a.folderPosition - b.folderPosition);
 
     return {
       success: true,
       data: {
         workflows: workflowsWithMeta,
         prompts: promptsWithMeta,
+        skills: skillsWithMeta,
       },
     };
   } catch (error) {
@@ -652,6 +771,13 @@ export async function addItemToFolder(
       if (!workflow) {
         return { success: false, error: 'Workflow not found' };
       }
+    } else if (targetType === 'SKILL') {
+      const skill = await prisma.skill.findFirst({
+        where: { id: targetId, userId, deletedAt: null },
+      });
+      if (!skill) {
+        return { success: false, error: 'Skill not found' };
+      }
     } else {
       const prompt = await prisma.miniPrompt.findFirst({
         where: { id: targetId, userId, deletedAt: null },
@@ -753,7 +879,6 @@ export async function moveItemToTrash(
 ): Promise<FolderServiceResult<void>> {
   try {
     if (targetType === 'WORKFLOW') {
-      // Verify ownership
       const workflow = await prisma.workflow.findFirst({
         where: { id: targetId, userId },
       });
@@ -763,19 +888,35 @@ export async function moveItemToTrash(
 
       await withRetry(() =>
         prisma.$transaction([
-          // Remove from all folders
           prisma.folder_items.deleteMany({
             where: { target_type: 'WORKFLOW', target_id: targetId },
           }),
-          // Soft delete
           prisma.workflow.update({
             where: { id: targetId },
             data: { deletedAt: new Date() },
           }),
         ])
       );
+    } else if (targetType === 'SKILL') {
+      const skill = await prisma.skill.findFirst({
+        where: { id: targetId, userId },
+      });
+      if (!skill) {
+        return { success: false, error: 'Skill not found' };
+      }
+
+      await withRetry(() =>
+        prisma.$transaction([
+          prisma.folder_items.deleteMany({
+            where: { target_type: 'SKILL', target_id: targetId },
+          }),
+          prisma.skill.update({
+            where: { id: targetId },
+            data: { deletedAt: new Date() },
+          }),
+        ])
+      );
     } else {
-      // Verify ownership
       const prompt = await prisma.miniPrompt.findFirst({
         where: { id: targetId, userId },
       });
@@ -785,11 +926,9 @@ export async function moveItemToTrash(
 
       await withRetry(() =>
         prisma.$transaction([
-          // Remove from all folders
           prisma.folder_items.deleteMany({
             where: { target_type: 'MINI_PROMPT', target_id: targetId },
           }),
-          // Soft delete
           prisma.miniPrompt.update({
             where: { id: targetId },
             data: { deletedAt: new Date() },
@@ -816,7 +955,6 @@ export async function restoreFromTrash(
 ): Promise<FolderServiceResult<void>> {
   try {
     if (targetType === 'WORKFLOW') {
-      // Verify ownership
       const workflow = await prisma.workflow.findFirst({
         where: { id: targetId, userId, deletedAt: { not: null } },
       });
@@ -830,8 +968,21 @@ export async function restoreFromTrash(
           data: { deletedAt: null },
         })
       );
+    } else if (targetType === 'SKILL') {
+      const skill = await prisma.skill.findFirst({
+        where: { id: targetId, userId, deletedAt: { not: null } },
+      });
+      if (!skill) {
+        return { success: false, error: 'Skill not found in trash' };
+      }
+
+      await withRetry(() =>
+        prisma.skill.update({
+          where: { id: targetId },
+          data: { deletedAt: null },
+        })
+      );
     } else {
-      // Verify ownership
       const prompt = await prisma.miniPrompt.findFirst({
         where: { id: targetId, userId, deletedAt: { not: null } },
       });
@@ -864,7 +1015,6 @@ export async function permanentDelete(
 ): Promise<FolderServiceResult<void>> {
   try {
     if (targetType === 'WORKFLOW') {
-      // Verify ownership and that it's trashed
       const workflow = await prisma.workflow.findFirst({
         where: { id: targetId, userId, deletedAt: { not: null } },
       });
@@ -873,8 +1023,29 @@ export async function permanentDelete(
       }
 
       await withRetry(() => prisma.workflow.delete({ where: { id: targetId } }));
+    } else if (targetType === 'SKILL') {
+      const skill = await prisma.skill.findFirst({
+        where: { id: targetId, userId, deletedAt: { not: null } },
+        include: { attachments: { select: { blobUrl: true } } },
+      });
+      if (!skill) {
+        return { success: false, error: 'Skill not found in trash' };
+      }
+
+      // Delete blob attachments asynchronously
+      if (skill.attachments.length > 0) {
+        const { del } = await import('@vercel/blob');
+        for (const attachment of skill.attachments) {
+          try {
+            await del(attachment.blobUrl);
+          } catch (blobError) {
+            console.error('[FolderService] Failed to delete blob:', blobError);
+          }
+        }
+      }
+
+      await withRetry(() => prisma.skill.delete({ where: { id: targetId } }));
     } else {
-      // Verify ownership and that it's trashed
       const prompt = await prisma.miniPrompt.findFirst({
         where: { id: targetId, userId, deletedAt: { not: null } },
       });

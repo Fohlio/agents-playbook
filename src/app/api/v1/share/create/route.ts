@@ -35,9 +35,9 @@ export async function POST(request: NextRequest) {
     }
 
     // Validate targetType
-    if (targetType !== "WORKFLOW" && targetType !== "MINI_PROMPT") {
+    if (targetType !== "WORKFLOW" && targetType !== "MINI_PROMPT" && targetType !== "SKILL") {
       return NextResponse.json(
-        { error: "Invalid targetType. Must be WORKFLOW or MINI_PROMPT" },
+        { error: "Invalid targetType. Must be WORKFLOW, MINI_PROMPT, or SKILL" },
         { status: 400 }
       );
     }

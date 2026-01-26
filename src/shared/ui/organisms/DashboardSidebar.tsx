@@ -18,6 +18,7 @@ import ShareIcon from '@mui/icons-material/Share';
 import ForumIcon from '@mui/icons-material/Forum';
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import SettingsIcon from '@mui/icons-material/Settings';
+import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 
 /**
  * Dashboard Sidebar - Cyberpunk Style
@@ -42,6 +43,7 @@ export function DashboardSidebar() {
     { href: ROUTES.DASHBOARD, labelKey: 'dashboard', icon: DashboardIcon, testId: 'dashboard-nav-link' },
     { href: ROUTES.DISCOVER, labelKey: 'discover', icon: ExploreIcon, testId: 'discover-nav-link' },
     { href: PROTECTED_ROUTES.LIBRARY, labelKey: 'library', icon: LibraryBooksIcon, testId: 'library-nav-link' },
+    { href: PROTECTED_ROUTES.SKILLS_STUDIO, labelKey: 'skills', icon: AutoAwesomeIcon, testId: 'skills-nav-link' },
     { href: PROTECTED_ROUTES.SHARING, labelKey: 'myShares', icon: ShareIcon, testId: 'sharing-nav-link', badgeCount: shareCount },
     { href: PROTECTED_ROUTES.COMMUNITY, labelKey: 'community', icon: ForumIcon, testId: 'community-nav-link' },
     ...(isAdmin ? [{ href: ROUTES.ADMIN.SYSTEM_WORKFLOWS, labelKey: 'admin', icon: AdminPanelSettingsIcon, testId: 'admin-nav-link', badge: tCommon('system') }] : []),

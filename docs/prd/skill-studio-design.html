@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Skill Studio Editor | Agents Playbook</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#00ffff",
+                        "background-light": "#f5f8f8",
+                        "background-dark": "#050508",
+                        "surface": "#0f2323",
+                    },
+                    fontFamily: {
+                        "display": ["Space Grotesk", "sans-serif"],
+                        "mono": ["JetBrains Mono", "monospace"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        .cyber-grid {
+            background-image: linear-gradient(rgba(0, 255, 255, 0.03) 1px, transparent 1px),
+                              linear-gradient(90deg, rgba(0, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 30px 30px;
+        }
+        .glow-cyan {
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.4);
+        }
+        .glow-text {
+            text-shadow: 0 0 8px rgba(0, 255, 255, 0.6);
+        }
+        .scanline {
+            background: linear-gradient(to bottom, rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            background-size: 100% 2px, 3px 100%;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 min-h-screen flex flex-col selection:bg-primary/30 selection:text-primary overflow-hidden">
+<!-- Top Navigation Bar -->
+<header class="border-b border-primary/20 bg-background-dark/80 backdrop-blur-md px-6 py-3 flex items-center justify-between sticky top-0 z-50">
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-2">
+<div class="size-8 bg-primary/10 rounded border border-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-primary text-xl">terminal</span>
+</div>
+<h2 class="text-white text-lg font-bold tracking-tight glow-text uppercase">Skill Studio</h2>
+</div>
+<nav class="hidden md:flex items-center gap-1">
+<a class="px-3 py-1.5 text-primary text-sm font-medium border-b-2 border-primary" href="#">Editor</a>
+<a class="px-3 py-1.5 text-slate-400 hover:text-white text-sm font-medium transition-colors" href="#">Preview</a>
+<a class="px-3 py-1.5 text-slate-400 hover:text-white text-sm font-medium transition-colors" href="#">History</a>
+<a class="px-3 py-1.5 text-slate-400 hover:text-white text-sm font-medium transition-colors" href="#">Settings</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-3 mr-4 border-r border-primary/20 pr-4">
+<button class="p-2 hover:bg-primary/10 rounded transition-colors text-slate-400 hover:text-primary">
+<span class="material-symbols-outlined text-[20px]">cloud_upload</span>
+</button>
+<button class="p-2 hover:bg-primary/10 rounded transition-colors text-slate-400 hover:text-primary">
+<span class="material-symbols-outlined text-[20px]">share</span>
+</button>
+<button class="p-2 hover:bg-primary/10 rounded transition-colors text-slate-400 hover:text-primary">
+<span class="material-symbols-outlined text-[20px]">more_vert</span>
+</button>
+</div>
+<button class="bg-primary text-black px-6 py-2 text-sm font-bold uppercase tracking-widest rounded glow-cyan hover:brightness-110 transition-all flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">save</span>
+                Save
+            </button>
+<div class="size-9 rounded-full border border-primary/50 overflow-hidden p-0.5">
+<img class="w-full h-full object-cover rounded-full" data-alt="Cyberpunk character profile avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBXJdCDc9JfeeCK0uKSJvp9FAGI36iZuyB7DY0Owh5Lqvn6dck2DXQZoqA4C6qosIhPOOGFvbYHJFIQr-0BnIJD8-Z0P2qjMyKZ3BrYAULAzisqsDCXp46BeSO7Od6Ei2aVDM3A3EeeJb2mYqlbpqSQ5ciuL28Nd5fwFbRWs-SVDni1e3nG39EEINJFzmtZR1JF62a9TwhWsBk41D6YSs0b6bzXcVJY5WiqJjw92aYetM0lgMeczza95U6CS48Wx8_0oshingdWoWU"/>
+</div>
+</div>
+</header>
+<!-- Breadcrumbs -->
+<div class="bg-black/40 px-6 py-2 border-b border-primary/10 flex items-center justify-between">
+<div class="flex items-center gap-2 text-xs font-mono tracking-wider">
+<a class="text-primary/60 hover:text-primary transition-colors" href="#">PLAYBOOK</a>
+<span class="text-slate-600">/</span>
+<a class="text-primary/60 hover:text-primary transition-colors" href="#">AGENT_01</a>
+<span class="text-slate-600">/</span>
+<span class="text-primary glow-text uppercase font-bold">logic.md</span>
+</div>
+<div class="flex items-center gap-4 text-[10px] font-mono text-slate-500 uppercase tracking-tighter">
+<span>Encoding: UTF-8</span>
+<span class="flex items-center gap-1"><span class="size-1.5 rounded-full bg-primary animate-pulse"></span> Connected</span>
+</div>
+</div>
+<!-- Main Workspace -->
+<main class="flex-1 flex overflow-hidden relative cyber-grid">
+<!-- Editor Pane -->
+<div class="flex-1 flex flex-col border-r border-primary/20 bg-black/40 backdrop-blur-sm">
+<div class="flex items-center justify-between px-4 py-2 border-b border-primary/10 bg-primary/5">
+<span class="text-[10px] font-bold text-primary tracking-[0.2em] uppercase">Code Editor</span>
+<span class="text-[10px] font-mono text-slate-400">LN 42, COL 12</span>
+</div>
+<div class="flex-1 overflow-auto font-mono text-sm leading-relaxed p-4 custom-scrollbar">
+<table class="w-full border-collapse">
+<tbody>
+<tr>
+<td class="w-10 text-right pr-4 text-primary/40 select-none text-[12px]">1</td>
+<td class="text-slate-300"><span class="text-primary/60">---</span></td>
+</tr>
+<tr>
+<td class="w-10 text-right pr-4 text-primary/40 select-none text-[12px]">2</td>
+<td class="text-slate-300"><span class="text-pink-500">agent_id</span>: <span class="text-primary">neon_phantom</span></td>
+</tr>
+<tr>
+<td class="w-10 text-right pr-4 text-primary/40 select-none text-[12px]">3</td>
+<td class="text-slate-300"><span class="text-pink-500">version</span>: <span class="text-yellow-400">2.0.4-beta</span></td>
+</tr>
+<tr>
+<td class="w-10 text-right pr-4 text-primary/40 select-none text-[12px]">4</td>
+<td class="text-slate-300"><span class="text-primary/60">---</span></td>
+</tr>
+<tr>
+<td class="w-10 text-right pr-4 text-primary/40 select-none text-[12px]">5</td>
+<td> </td>
+</tr>
+<tr>
+<td class="w-10 text-right pr-4 text-primary/40 select-none text-[12px]">6</td>
+<td class="text-white font-bold text-lg"># Objective: Neural Breach</td>
+</tr>
+<tr>
+<td class="w-10 text-right pr-4 text-primary/40 select-none text-[12px]">7</td>
+<td> </td>
+</tr>
+<tr>
+<td class="w-10 text-right pr-4 text-primary/40 select-none text-[12px]">8</td>
+<td class="text-slate-400 italic">Initialize sub-routine for multi-vector penetration.</td>
+</tr>
+<tr>
+<td class="w-10 text-right pr-4 text-primary/40 select-none text-[12px]">9</td>
+<td> </td>
+</tr>
+<tr class="bg-primary/5">
+<td class="w-10 text-right pr-4 text-primary select-none text-[12px] border-l-2 border-primary">10</td>
+<td class="text-slate-300">```python</td>
+</tr>
+<tr class="bg-primary/5">
+<td class="w-10 text-right pr-4 text-primary select-none text-[12px] border-l-2 border-primary">11</td>
+<td class="text-slate-300 pl-4"><span class="text-pink-500">def</span> <span class="text-primary">init_hack</span>(target_ip):</td>
+</tr>
+<tr class="bg-primary/5">
+<td class="w-10 text-right pr-4 text-primary select-none text-[12px] border-l-2 border-primary">12</td>
+<td class="text-slate-300 pl-8">payload = NeuralPacket(<span class="text-yellow-400">"overload"</span>)</td>
+</tr>
+<tr class="bg-primary/5">
+<td class="w-10 text-right pr-4 text-primary select-none text-[12px] border-l-2 border-primary">13</td>
+<td class="text-slate-300 pl-8"><span class="text-pink-500">return</span> payload.deploy(target_ip)</td>
+</tr>
+<tr class="bg-primary/5">
+<td class="w-10 text-right pr-4 text-primary select-none text-[12px] border-l-2 border-primary">14</td>
+<td class="text-slate-300">```</td>
+</tr>
+<tr>
+<td class="w-10 text-right pr-4 text-primary/40 select-none text-[12px]">15</td>
+<td> </td>
+</tr>
+<tr>
+<td class="w-10 text-right pr-4 text-primary/40 select-none text-[12px]">16</td>
+<td class="text-slate-300"><span class="text-primary font-bold">## Triggers</span></td>
+</tr>
+<tr>
+<td class="w-10 text-right pr-4 text-primary/40 select-none text-[12px]">17</td>
+<td class="text-slate-300">- on_input: <span class="text-yellow-400">"initiate_hack"</span></td>
+</tr>
+<tr>
+<td class="w-10 text-right pr-4 text-primary/40 select-none text-[12px]">18</td>
+<td class="text-slate-300">- on_success: <span class="text-yellow-400">"extract_data"</span></td>
+</tr>
+</tbody>
+</table>
+<!-- Blinking Cursor Simulation -->
+<div class="ml-14 w-2 h-5 bg-primary animate-pulse inline-block align-middle"></div>
+</div>
+</div>
+<!-- Preview Pane -->
+<div class="flex-1 flex flex-col bg-background-dark/60">
+<div class="flex items-center justify-between px-4 py-2 border-b border-primary/10 bg-white/5">
+<span class="text-[10px] font-bold text-slate-400 tracking-[0.2em] uppercase">Rendered Preview</span>
+<div class="flex gap-2">
+<span class="material-symbols-outlined text-slate-500 text-sm">desktop_windows</span>
+<span class="material-symbols-outlined text-slate-500 text-sm">phone_iphone</span>
+</div>
+</div>
+<div class="flex-1 overflow-auto p-10 prose prose-invert max-w-none prose-headings:text-white prose-p:text-slate-300 prose-code:text-primary custom-scrollbar">
+<div class="mb-8 p-4 border-l-4 border-primary bg-primary/5 rounded-r">
+<div class="flex justify-between items-start">
+<div>
+<p class="text-[10px] text-primary/60 font-mono uppercase mb-1">Agent Identity</p>
+<h4 class="text-xl font-bold text-primary m-0 glow-text">NEON PHANTOM v2.0</h4>
+</div>
+<span class="px-2 py-0.5 border border-primary text-primary text-[10px] font-bold rounded">STABLE</span>
+</div>
+</div>
+<h1 class="text-4xl font-bold mb-6 border-b border-primary/20 pb-2">Objective: Neural Breach</h1>
+<p class="text-lg leading-relaxed mb-6 text-slate-400 italic font-light">
+                    Initialize sub-routine for multi-vector penetration. This module handles the bypass logic for Level-4 security clusters.
+                </p>
+<div class="relative group my-8">
+<div class="absolute -inset-0.5 bg-primary/20 rounded opacity-75 blur-sm group-hover:opacity-100 transition duration-1000"></div>
+<div class="relative bg-[#0a0a0f] border border-primary/30 rounded p-6 font-mono text-sm">
+<div class="flex items-center justify-between mb-4 border-b border-white/5 pb-2">
+<span class="text-[10px] text-slate-500 uppercase tracking-widest">Python 3.10</span>
+<button class="text-primary hover:text-white transition-colors">
+<span class="material-symbols-outlined text-sm">content_copy</span>
+</button>
+</div>
+<div class="space-y-1">
+<p><span class="text-pink-500">def</span> <span class="text-primary">init_hack</span>(target_ip):</p>
+<p class="pl-4">payload = NeuralPacket(<span class="text-yellow-400">"overload"</span>)</p>
+<p class="pl-4"><span class="text-pink-500">return</span> payload.deploy(target_ip)</p>
+</div>
+</div>
+</div>
+<h2 class="text-2xl font-bold mt-10 mb-4 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">sensors</span>
+                    Triggers
+                </h2>
+<ul class="space-y-3 list-none p-0">
+<li class="flex items-center gap-3 bg-white/5 p-3 rounded border border-white/5 hover:border-primary/30 transition-all cursor-default group">
+<span class="material-symbols-outlined text-primary group-hover:scale-110 transition-transform">bolt</span>
+<div>
+<span class="text-xs text-slate-500 block uppercase tracking-tighter">on_input</span>
+<span class="text-white font-mono">initiate_hack</span>
+</div>
+</li>
+<li class="flex items-center gap-3 bg-white/5 p-3 rounded border border-white/5 hover:border-primary/30 transition-all cursor-default group">
+<span class="material-symbols-outlined text-green-400 group-hover:scale-110 transition-transform">check_circle</span>
+<div>
+<span class="text-xs text-slate-500 block uppercase tracking-tighter">on_success</span>
+<span class="text-white font-mono">extract_data</span>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</main>
+<!-- File Attachments Dock -->
+<section class="bg-[#0a0a0a] border-t border-primary/20 h-40 flex flex-col relative">
+<div class="scanline absolute inset-0 opacity-10"></div>
+<div class="px-6 py-2 border-b border-primary/10 flex items-center justify-between bg-black/40">
+<h3 class="text-[10px] font-bold text-primary/80 tracking-[0.2em] uppercase">Attached Assets</h3>
+<button class="text-[10px] flex items-center gap-1 text-slate-400 hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-[14px]">add_circle</span>
+                ADD NEW FILE
+            </button>
+</div>
+<div class="flex-1 flex gap-4 p-4 overflow-x-auto custom-scrollbar items-center">
+<!-- Asset Card 1 -->
+<div class="min-w-[200px] h-20 bg-primary/5 border border-primary/20 rounded hover:border-primary/60 hover:bg-primary/10 transition-all cursor-pointer group p-3 flex items-center gap-3">
+<div class="size-10 bg-black/40 rounded border border-primary/30 flex items-center justify-center text-primary group-hover:glow-cyan">
+<span class="material-symbols-outlined">description</span>
+</div>
+<div>
+<p class="text-xs font-bold text-white mb-0.5">config.yaml</p>
+<p class="text-[10px] text-slate-500">2.4 KB • SYSTEM</p>
+</div>
+</div>
+<!-- Asset Card 2 -->
+<div class="min-w-[200px] h-20 bg-primary/5 border border-primary/20 rounded hover:border-primary/60 hover:bg-primary/10 transition-all cursor-pointer group p-3 flex items-center gap-3">
+<div class="size-10 bg-black/40 rounded border border-primary/30 flex items-center justify-center text-yellow-500">
+<span class="material-symbols-outlined">javascript</span>
+</div>
+<div>
+<p class="text-xs font-bold text-white mb-0.5">utils.js</p>
+<p class="text-[10px] text-slate-500">14.8 KB • MODULE</p>
+</div>
+</div>
+<!-- Asset Card 3 -->
+<div class="min-w-[200px] h-20 bg-primary/5 border border-primary/20 rounded hover:border-primary/60 hover:bg-primary/10 transition-all cursor-pointer group p-3 flex items-center gap-3">
+<div class="size-10 bg-black/40 rounded border border-primary/30 flex items-center justify-center text-blue-400">
+<span class="material-symbols-outlined">database</span>
+</div>
+<div>
+<p class="text-xs font-bold text-white mb-0.5">schema.json</p>
+<p class="text-[10px] text-slate-500">8.1 KB • DATA</p>
+</div>
+</div>
+<!-- Asset Card 4 -->
+<div class="min-w-[200px] h-20 bg-primary/5 border border-primary/20 rounded hover:border-primary/60 hover:bg-primary/10 transition-all cursor-pointer group p-3 flex items-center gap-3 opacity-60">
+<div class="size-10 bg-black/40 rounded border border-primary/30 flex items-center justify-center text-slate-500">
+<span class="material-symbols-outlined">image</span>
+</div>
+<div>
+<p class="text-xs font-bold text-white mb-0.5">avatar.png</p>
+<p class="text-[10px] text-slate-500">156 KB • MEDIA</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Footer / Status Bar -->
+<footer class="bg-primary text-black px-4 py-1 flex items-center justify-between text-[10px] font-bold uppercase tracking-widest z-50">
+<div class="flex gap-6">
+<span>Skill: Neural Breach</span>
+<span>Workspace: Agent_01</span>
+</div>
+<div class="flex gap-4 items-center">
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[12px] font-bold">check</span> 
+                Synced to Playbook Cloud
+            </span>
+<span class="bg-black/20 px-2 rounded">Latency: 12ms</span>
+</div>
+</footer>
+<style>
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+            height: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.2);
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: rgba(0, 255, 255, 0.2);
+            border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: rgba(0, 255, 255, 0.5);
+        }
+    </style>
+</body></html>

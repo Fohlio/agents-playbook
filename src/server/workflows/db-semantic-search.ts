@@ -16,6 +16,16 @@ export interface SearchResult {
   source: 'system' | 'user';
 }
 
+export interface SkillSearchResult {
+  id: string;
+  name: string;
+  description: string;
+  tags: string[];
+  similarity: number;
+  source: 'system' | 'user';
+  attachmentCount: number;
+}
+
 export class DBSemanticSearch {
   /**
    * Search workflows in database using semantic similarity
@@ -39,17 +49,18 @@ export class DBSemanticSearch {
 
       // Get workflows from DB
       const workflows = await this.getWorkflows(userId);
+      const workflowsById = new Map(workflows.map((w) => [w.id, w]));
 
       // Load embeddings for workflows
       const embeddings = await prisma.workflowEmbedding.findMany({
         where: {
-          workflowId: { in: workflows.map((w: typeof workflows[0]) => w.id) }
+          workflowId: { in: workflows.map((w) => w.id) }
         }
       });
 
       // Calculate similarities
       const results = embeddings.map((emb: typeof embeddings[0]) => {
-        const workflow = workflows.find((w: typeof workflows[0]) => w.id === emb.workflowId);
+        const workflow = workflowsById.get(emb.workflowId);
         if (!workflow) return null;
 
         const similarity = this.cosineSimilarity(
@@ -171,6 +182,152 @@ export class DBSemanticSearch {
     }
 
     return dotProduct / (normA * normB);
+  }
+
+  /**
+   * Search skills in database using semantic similarity
+   */
+  async searchSkills(
+    query: string,
+    limit: number = 10,
+    userId?: string
+  ): Promise<SkillSearchResult[]> {
+    if (!process.env.OPENAI_API_KEY) {
+      console.warn('[DBSemanticSearch] OpenAI API key not available, falling back to text search for skills');
+      return this.fallbackSkillTextSearch(query, limit, userId);
+    }
+
+    try {
+      const queryEmbedding = await this.generateQueryEmbedding(query);
+      if (!queryEmbedding) {
+        return this.fallbackSkillTextSearch(query, limit, userId);
+      }
+
+      const skills = await this.getSkillsForAuth(userId);
+      const skillsById = new Map(skills.map((s) => [s.id, s]));
+
+      const embeddings = await prisma.skillEmbedding.findMany({
+        where: {
+          skillId: { in: skills.map((s) => s.id) }
+        }
+      });
+
+      const results = embeddings.map((emb: typeof embeddings[0]) => {
+        const skill = skillsById.get(emb.skillId);
+        if (!skill) return null;
+
+        const similarity = this.cosineSimilarity(
+          queryEmbedding,
+          emb.embedding as number[]
+        );
+
+        return {
+          id: skill.id,
+          name: skill.name,
+          description: skill.description || '',
+          tags: skill.tags?.map((st: { tag: { name: string } }) => st.tag.name) || [],
+          similarity,
+          source: skill.isSystemSkill ? ('system' as const) : ('user' as const),
+          attachmentCount: skill._count?.attachments || 0,
+        };
+      }).filter((r): r is SkillSearchResult => r !== null);
+
+      return results
+        .sort((a: SkillSearchResult, b: SkillSearchResult) => b.similarity - a.similarity)
+        .slice(0, limit);
+
+    } catch (error) {
+      console.error('[DBSemanticSearch] Error in skill semantic search:', error);
+      return this.fallbackSkillTextSearch(query, limit, userId);
+    }
+  }
+
+  /** Shared skill include for search queries */
+  private static readonly skillSearchInclude = {
+    tags: { include: { tag: { select: { name: true } } } },
+    _count: { select: { attachments: true } },
+  } as const;
+
+  /**
+   * Build auth-aware where clause for skill queries.
+   * - No userId: active public system skills only
+   * - With userId: user's own + referenced + public system skills
+   */
+  private async buildSkillAuthFilter(userId?: string): Promise<Record<string, unknown>> {
+    if (!userId) {
+      return {
+        isSystemSkill: true,
+        isActive: true,
+        deletedAt: null,
+        visibility: 'PUBLIC',
+      };
+    }
+
+    const skillReferences = await prisma.skillReference.findMany({
+      where: { userId },
+      select: { skillId: true },
+    });
+    const referencedSkillIds = skillReferences.map((ref: { skillId: string }) => ref.skillId);
+
+    const orConditions: Array<Record<string, unknown>> = [
+      { userId, isActive: true, deletedAt: null },
+      { isSystemSkill: true, isActive: true, deletedAt: null, visibility: 'PUBLIC' },
+    ];
+
+    if (referencedSkillIds.length > 0) {
+      orConditions.push({
+        id: { in: referencedSkillIds },
+        isActive: true,
+        deletedAt: null,
+      });
+    }
+
+    return { OR: orConditions };
+  }
+
+  /**
+   * Get skills based on user context for semantic search
+   */
+  private async getSkillsForAuth(userId?: string) {
+    const filter = await this.buildSkillAuthFilter(userId);
+    return prisma.skill.findMany({
+      where: filter,
+      include: DBSemanticSearch.skillSearchInclude,
+    });
+  }
+
+  /**
+   * Fallback text search for skills when embeddings unavailable
+   */
+  private async fallbackSkillTextSearch(
+    query: string,
+    limit: number,
+    userId?: string
+  ): Promise<SkillSearchResult[]> {
+    const authFilter = await this.buildSkillAuthFilter(userId);
+
+    const skills = await prisma.skill.findMany({
+      where: {
+        OR: [
+          { name: { contains: query, mode: 'insensitive' } },
+          { description: { contains: query, mode: 'insensitive' } },
+          { content: { contains: query, mode: 'insensitive' } },
+        ],
+        AND: authFilter,
+      },
+      include: DBSemanticSearch.skillSearchInclude,
+      take: limit,
+    });
+
+    return skills.map((s: typeof skills[0]) => ({
+      id: s.id,
+      name: s.name,
+      description: s.description || '',
+      tags: s.tags?.map((st: { tag: { name: string } }) => st.tag.name) || [],
+      similarity: 0.5,
+      source: s.isSystemSkill ? ('system' as const) : ('user' as const),
+      attachmentCount: s._count?.attachments || 0,
+    }));
   }
 
   /**

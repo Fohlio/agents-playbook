@@ -53,7 +53,8 @@
     "github": "GitHub",
     "toggleMenu": "Toggle menu",
     "toggleSidebar": "Toggle sidebar",
-    "systemOnline": "System Online"
+    "systemOnline": "System Online",
+    "skills": "Skills"
   },
   "landing": {
     "header": {
@@ -157,12 +158,11 @@
     },
     "recentItems": {
       "title": "Recent Community Additions",
-      "subtitle": "Explore the latest workflows and prompts shared by the community",
+      "subtitle": "Explore the latest workflows and skills shared by the community",
       "tabWorkflows": "Workflows ({count})",
-      "tabPrompts": "Prompts ({count})",
+      "tabSkills": "Skills ({count})",
       "noWorkflows": "No public workflows yet. Be the first to share one!",
-      "noPrompts": "No public prompts yet. Be the first to share one!",
-      "copyPrompt": "Copy Prompt"
+      "noSkills": "No public skills yet. Be the first to share one!"
     }
   },
   "auth": {
@@ -230,22 +230,23 @@
   "dashboard": {
     "title": "Dashboard",
     "header": "COMMAND CENTER",
-    "subtitle": "Manage your workflows and mini-prompts",
+    "subtitle": "Manage your workflows and skills",
+    "noActiveSkills": "No active skills",
     "stats": {
       "totalWorkflows": "Total Workflows",
       "totalWorkflowsTooltip": "Total number of workflows in your library (active and inactive)",
       "activeWorkflows": "Active Workflows",
       "activeWorkflowsTooltip": "Active workflows available in MCP server",
-      "miniPrompts": "Mini-Prompts",
-      "miniPromptsTooltip": "Reusable prompt templates that can be used across multiple workflows",
+      "skills": "Skills",
+      "skillsTooltip": "Knowledge bundles with attachments that enhance AI capabilities",
       "publicItems": "Public Items",
-      "publicItemsTooltip": "Number of your workflows and mini-prompts visible to the community"
+      "publicItemsTooltip": "Number of your workflows and skills visible to the community"
     },
     "quickActions": {
       "newWorkflow": "New Workflow",
       "newWorkflowTooltip": "Create a new workflow using the visual constructor",
-      "newMiniPrompt": "New Mini-Prompt",
-      "newMiniPromptTooltip": "Create a reusable mini-prompt template"
+      "newSkill": "New Skill",
+      "newSkillTooltip": "Create a skill with knowledge attachments"
     },
     "activeWorkflows": {
       "title": "Active Workflows",
@@ -257,17 +258,15 @@
       "viewAll": "VIEW ALL",
       "failedToDeactivate": "Failed to deactivate workflow"
     },
-    "activeMiniPrompts": {
-      "title": "Active Mini-Prompts",
-      "empty": "No active mini-prompts yet",
-      "emptyDescription": "Create and activate your first mini-prompt to get started",
-      "count": "{count} active mini-prompts",
+    "activeSkills": {
+      "title": "Active Skills",
+      "empty": "No active skills yet",
+      "emptyDescription": "Create and activate your first skill to get started",
+      "count": "{count} active skills",
       "deactivate": "Deactivate",
       "deactivating": "Deactivating...",
       "viewAll": "VIEW ALL",
-      "failedToDeactivate": "Failed to deactivate mini-prompt",
-      "failedToLoad": "Failed to load mini-prompt for editing",
-      "failedToUpdate": "Failed to update mini-prompt"
+      "failedToDeactivate": "Failed to deactivate skill"
     }
   },
   "library": {
@@ -322,9 +321,9 @@
   },
   "discover": {
     "title": "Discover",
-    "subtitle": "Browse and import public workflows and mini-prompts from the community",
+    "subtitle": "Browse and import public workflows and skills from the community",
     "searchPlaceholder": "Search workflows by name, description, or author...",
-    "searchMiniPromptsPlaceholder": "Search mini-prompts by name, description, or author...",
+    "searchSkillsPlaceholder": "Search skills by name, description, or author...",
     "noResults": "No results found",
     "noResultsDescription": "Try different keywords or clear your search",
     "clearSearch": "Clear Search",
@@ -333,8 +332,14 @@
     "clearFilters": "Clear All Filters",
     "emptyWorkflows": "No workflows found",
     "emptyWorkflowsDescription": "Be the first to share a workflow with the community!",
-    "emptyMiniPrompts": "No mini-prompts found",
-    "emptyMiniPromptsDescription": "Be the first to share a mini-prompt with the community!",
+    "emptySkills": "No skills found",
+    "emptySkillsDescription": "Be the first to share a skill with the community!",
+    "sortRecent": "Most Recent",
+    "sortMostUsed": "Most Used",
+    "sortHighestRated": "Highest Rated",
+    "sortPopular": "Popular",
+    "noSkillsMatchingSearch": "No skills match your search",
+    "noPublicSkills": "No public skills available",
     "filters": {
       "title": "Filters",
       "sortBy": "Sort By",
@@ -824,6 +829,7 @@
     "processing": "Processing...",
     "describeWorkflow": "Describe workflow...",
     "describePrompt": "Describe prompt...",
+    "describeSkill": "Describe what you want to improve in this skill...",
     "inputHint": "Enter = Send | Shift+Enter = Newline",
     "addKey": "Add Key",
     "dismiss": "Dismiss",
@@ -831,7 +837,8 @@
     "sessionStats": "{messages} msg · {tokens} tokens",
     "mode": {
       "workflow": "Workflow",
-      "prompt": "Prompt"
+      "prompt": "Prompt",
+      "skill": "Skill"
     },
     "apiKeyModal": {
       "title": "Add OpenAI API Key",
@@ -1295,7 +1302,7 @@
     "archiveEmpty": "ARCHIVE_EMPTY",
     "noPublicAssets": "No public assets available in the database",
     "publicWorkflows": "PUBLIC_WORKFLOWS",
-    "publicPrompts": "PUBLIC_PROMPTS",
+    "publicSkills": "PUBLIC_SKILLS",
     "stagesCount": "{count} stages",
     "preview": "PREVIEW",
     "import": "IMPORT",
@@ -1314,7 +1321,7 @@
     "folder": "Folder",
     "create": "Create",
     "newWorkflow": "New Workflow",
-    "newPrompt": "New Prompt"
+    "newSkill": "New Skill"
   },
   "folderContents": {
     "scanningVault": "Scanning vault...",
@@ -1333,5 +1340,50 @@
     "directories": "Directories",
     "workflows": "Workflows",
     "miniPrompts": "Mini-Prompts"
+  },
+  "skillStudio": {
+    "title": "Skill Studio",
+    "createTitle": "New Skill",
+    "editTitle": "Edit Skill",
+    "name": "Name",
+    "namePlaceholder": "Enter skill name...",
+    "description": "Description",
+    "descriptionPlaceholder": "Brief description of what this skill does...",
+    "content": "Content (Markdown)",
+    "contentPlaceholder": "Write your skill content in Markdown...",
+    "noContent": "No content yet",
+    "preview": "Preview",
+    "edit": "Edit",
+    "save": "Save",
+    "saving": "Saving...",
+    "saved": "Saved",
+    "error": "Error",
+    "unsavedChanges": "Unsaved changes",
+    "metadata": "Metadata",
+    "visibility": "Visibility",
+    "visibilityPrivate": "Private",
+    "visibilityPublic": "Public",
+    "tags": "Tags",
+    "tagsPlaceholder": "Add tags...",
+    "models": "AI Models",
+    "modelsPlaceholder": "Select models...",
+    "attachments": "Attachments",
+    "dropFiles": "Drop files here or click to upload",
+    "saveFirst": "Save the skill first to upload attachments",
+    "uploadLimit": "Max 10MB per file, 50MB total",
+    "deleteAttachment": "Delete attachment",
+    "fileExplorer": "File Explorer",
+    "files": "files",
+    "aiAssistant": "AI Assistant",
+    "backToLibrary": "Back to Library",
+    "created": "Created",
+    "updated": "Updated",
+    "author": "Author",
+    "editSkill": "Edit",
+    "duplicate": "Duplicate",
+    "copy": "Copy",
+    "download": "Download",
+    "binaryPreview": "Binary file cannot be previewed. Click to download.",
+    "skills": "Skills"
   }
 }

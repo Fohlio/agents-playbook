@@ -16,9 +16,10 @@ interface ChatSession {
 }
 
 interface UseAIChatSessionsOptions {
-  mode: 'workflow' | 'mini-prompt';
+  mode: 'workflow' | 'mini-prompt' | 'skill';
   workflowId?: string;
   miniPromptId?: string;
+  skillId?: string;
 }
 
 interface UseAIChatSessionsReturn {
@@ -40,6 +41,7 @@ export function useAIChatSessions({
   mode,
   workflowId,
   miniPromptId,
+  skillId,
 }: UseAIChatSessionsOptions): UseAIChatSessionsReturn {
   const [sessions, setSessions] = useState<ChatSession[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -79,7 +81,7 @@ export function useAIChatSessions({
   useEffect(() => {
     loadSessions();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [mode, workflowId, miniPromptId]);
+  }, [mode, workflowId, miniPromptId, skillId]);
 
   return {
     sessions,

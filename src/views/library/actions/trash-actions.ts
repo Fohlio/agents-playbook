@@ -14,7 +14,7 @@ import { FolderTargetType } from "@/server/folders/types";
  */
 
 // Input validation schemas
-const itemTypeSchema = z.enum(["WORKFLOW", "MINI_PROMPT", "FOLDER"]);
+const itemTypeSchema = z.enum(["WORKFLOW", "MINI_PROMPT", "SKILL", "FOLDER"]);
 
 const restoreItemSchema = z.object({
   type: itemTypeSchema,
@@ -36,7 +36,7 @@ type ActionResult<T = void> = {
  * Restore a single item from trash
  */
 export async function restoreItemAction(
-  type: "WORKFLOW" | "MINI_PROMPT" | "FOLDER",
+  type: "WORKFLOW" | "MINI_PROMPT" | "SKILL" | "FOLDER",
   id: string
 ): Promise<ActionResult> {
   try {
@@ -78,7 +78,7 @@ export async function restoreItemAction(
  * Permanently delete a single item
  */
 export async function permanentDeleteAction(
-  type: "WORKFLOW" | "MINI_PROMPT" | "FOLDER",
+  type: "WORKFLOW" | "MINI_PROMPT" | "SKILL" | "FOLDER",
   id: string
 ): Promise<ActionResult> {
   try {
@@ -161,7 +161,7 @@ export async function emptyTrashAction(): Promise<ActionResult<{ deleted: number
  * Bulk restore items from trash
  */
 export async function bulkRestoreAction(
-  items: { type: "WORKFLOW" | "MINI_PROMPT" | "FOLDER"; id: string }[]
+  items: { type: "WORKFLOW" | "MINI_PROMPT" | "SKILL" | "FOLDER"; id: string }[]
 ): Promise<ActionResult<{ restored: number }>> {
   try {
     const session = await auth();
@@ -205,7 +205,7 @@ export async function bulkRestoreAction(
  * Bulk permanent delete items
  */
 export async function bulkPermanentDeleteAction(
-  items: { type: "WORKFLOW" | "MINI_PROMPT" | "FOLDER"; id: string }[]
+  items: { type: "WORKFLOW" | "MINI_PROMPT" | "SKILL" | "FOLDER"; id: string }[]
 ): Promise<ActionResult<{ deleted: number }>> {
   try {
     const session = await auth();

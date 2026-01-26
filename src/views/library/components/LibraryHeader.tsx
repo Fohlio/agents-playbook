@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useTranslations } from 'next-intl';
-import { Plus, FolderPlus, FileText, LayoutGrid, List } from 'lucide-react';
+import { Plus, FolderPlus, Zap, LayoutGrid, List } from 'lucide-react';
 import { cn } from '@/shared/lib/utils/cn';
 import { Menu, MenuItem, ListItemIcon, ListItemText } from '@mui/material';
 
@@ -11,7 +11,7 @@ interface LibraryHeaderProps {
   onSearchChange: (query: string) => void;
   onCreateFolder: () => void;
   onCreateWorkflow: () => void;
-  onCreatePrompt: () => void;
+  onCreateSkill: () => void;
   viewMode?: 'grid' | 'list';
   onViewModeChange?: (mode: 'grid' | 'list') => void;
   selectedCount?: number;
@@ -28,7 +28,7 @@ export function LibraryHeader({
   onSearchChange,
   onCreateFolder,
   onCreateWorkflow,
-  onCreatePrompt,
+  onCreateSkill,
   viewMode = 'grid',
   onViewModeChange,
   selectedCount = 0,
@@ -216,12 +216,12 @@ export function LibraryHeader({
               {t('newWorkflow')}
             </ListItemText>
           </MenuItem>
-          <MenuItem onClick={() => handleCreateAction(onCreatePrompt)}>
+          <MenuItem onClick={() => handleCreateAction(onCreateSkill)}>
             <ListItemIcon>
-              <FileText className="w-5 h-5 text-pink-400" />
+              <Zap className="w-5 h-5 text-cyan-400" />
             </ListItemIcon>
             <ListItemText sx={{ '& .MuiTypography-root': { fontFamily: 'monospace', textTransform: 'uppercase', letterSpacing: '0.05em' } }}>
-              {t('newPrompt')}
+              {t('newSkill')}
             </ListItemText>
           </MenuItem>
         </Menu>

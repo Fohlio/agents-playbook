@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 import { Modal, Select, type SelectOption } from "@/shared/ui/atoms";
 import { CopyButton } from "@/shared/ui/molecules";
 
-type TargetType = "WORKFLOW" | "MINI_PROMPT";
+type TargetType = "WORKFLOW" | "MINI_PROMPT" | "SKILL";
 
 interface ShareModalProps {
   isOpen: boolean;
@@ -113,6 +113,18 @@ export function ShareModal({
     }
   };
 
+  /**
+   * Find share link ID by token from my-items endpoint
+   */
+  const findShareLinkId = async (): Promise<string | null> => {
+    const response = await fetch("/api/v1/share/my-items");
+    const data = await response.json();
+    const link = data.items?.find(
+      (item: { id: string; shareToken: string }) => item.shareToken === shareToken
+    );
+    return link?.id || null;
+  };
+
   const handleRegenerateToken = async () => {
     if (!shareToken) return;
 
@@ -120,25 +132,15 @@ export function ShareModal({
     setError(null);
 
     try {
-      const itemsResponse = await fetch("/api/v1/share/my-items");
-      const itemsData = await itemsResponse.json();
-      const shareLink = itemsData.items?.find(
-        (item: { id: string; shareToken: string }) => item.shareToken === shareToken
-      );
+      const shareLinkId = await findShareLinkId();
+      if (!shareLinkId) throw new Error(t('shareLinkNotFound'));
 
-      if (!shareLink) {
-        throw new Error(t('shareLinkNotFound'));
-      }
-
-      const response = await fetch(`/api/v1/share/${shareLink.id}/regenerate`, {
+      const response = await fetch(`/api/v1/share/${shareLinkId}/regenerate`, {
         method: "PATCH",
       });
 
       const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || t('failedToRegenerateToken'));
-      }
+      if (!response.ok) throw new Error(data.error || t('failedToRegenerateToken'));
 
       setShareToken(data.shareToken);
     } catch (err) {
@@ -155,27 +157,17 @@ export function ShareModal({
     setError(null);
 
     try {
-      const itemsResponse = await fetch("/api/v1/share/my-items");
-      const itemsData = await itemsResponse.json();
-      const shareLink = itemsData.items?.find(
-        (item: { id: string; shareToken: string }) => item.shareToken === shareToken
-      );
+      const shareLinkId = await findShareLinkId();
+      if (!shareLinkId) throw new Error(t('shareLinkNotFound'));
 
-      if (!shareLink) {
-        throw new Error(t('shareLinkNotFound'));
-      }
-
-      const response = await fetch(`/api/v1/share/${shareLink.id}/toggle`, {
+      const response = await fetch(`/api/v1/share/${shareLinkId}/toggle`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ isActive: !isActive }),
       });
 
       const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || t('failedToToggleLink'));
-      }
+      if (!response.ok) throw new Error(data.error || t('failedToToggleLink'));
 
       setIsActive(!isActive);
     } catch (err) {
@@ -191,7 +183,11 @@ export function ShareModal({
     return `${baseUrl}/s/${shareToken}`;
   };
 
-  const typeLabel = targetType === "WORKFLOW" ? tCommon('workflows').toLowerCase() : tCommon('miniPrompts').toLowerCase();
+  const typeLabel = targetType === "WORKFLOW"
+    ? tCommon('workflows').toLowerCase()
+    : targetType === "SKILL"
+      ? tCommon('skills').toLowerCase()
+      : tCommon('miniPrompts').toLowerCase();
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} testId="share-modal" className="max-w-md">

@@ -1,24 +1,26 @@
 'use client';
 
-import { useState, useEffect, useCallback, useMemo, useRef, MouseEvent } from 'react';
+import { useState, useEffect, useCallback, useMemo, MouseEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
+import { Zap } from 'lucide-react';
 import { cn } from '@/shared/lib/utils/cn';
+import { useDebounce } from '@/shared/lib/hooks/useDebounce';
 import { ROUTES } from '@/shared/routes';
-import { PublicWorkflow, PublicPrompt } from '../services/discover-service';
+import { PublicWorkflow, PublicSkill } from '../services/discover-service';
 
 interface DiscoverViewProps {
   searchQuery: string;
   onImportWorkflow: (workflowId: string) => Promise<void>;
-  onImportPrompt: (promptId: string) => Promise<void>;
+  onImportSkill: (skillId: string) => Promise<void>;
   className?: string;
   importedWorkflowIds?: Set<string>;
-  importedPromptIds?: Set<string>;
+  importedSkillIds?: Set<string>;
 }
 
 interface DiscoverData {
   workflows: PublicWorkflow[];
-  prompts: PublicPrompt[];
+  skills: PublicSkill[];
 }
 
 /**
@@ -29,20 +31,20 @@ interface DiscoverData {
 export function DiscoverView({
   searchQuery,
   onImportWorkflow,
-  onImportPrompt,
+  onImportSkill,
   className,
   importedWorkflowIds,
-  importedPromptIds,
+  importedSkillIds,
 }: DiscoverViewProps) {
   const t = useTranslations('discoverView');
   const router = useRouter();
-  const [data, setData] = useState<DiscoverData>({ workflows: [], prompts: [] });
+  const [data, setData] = useState<DiscoverData>({ workflows: [], skills: [] });
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [contextMenu, setContextMenu] = useState<{
     x: number;
     y: number;
-    item: { id: string; type: 'workflow' | 'prompt'; name: string } | null;
+    item: { id: string; type: 'workflow' | 'skill'; name: string } | null;
   }>({ x: 0, y: 0, item: null });
 
   const [importedIds, setImportedIds] = useState<Set<string>>(new Set());
@@ -66,7 +68,7 @@ export function DiscoverView({
       const result = await response.json();
       setData({
         workflows: result.workflows || [],
-        prompts: result.prompts || [],
+        skills: result.skills || [],
       });
     } catch (err) {
       console.error('Discover fetch error:', err);
@@ -90,21 +92,21 @@ export function DiscoverView({
     );
   }, [data.workflows, searchQuery]);
 
-  const filteredPrompts = useMemo(() => {
-    if (!searchQuery) return data.prompts;
+  const filteredSkills = useMemo(() => {
+    if (!searchQuery) return data.skills;
     const query = searchQuery.toLowerCase();
-    return data.prompts.filter(
-      (p) =>
-        p.name.toLowerCase().includes(query) ||
-        p.description?.toLowerCase().includes(query)
+    return data.skills.filter(
+      (s) =>
+        s.name.toLowerCase().includes(query) ||
+        s.description?.toLowerCase().includes(query)
     );
-  }, [data.prompts, searchQuery]);
+  }, [data.skills, searchQuery]);
 
-  const isEmpty = filteredWorkflows.length === 0 && filteredPrompts.length === 0;
-  const hasContent = data.workflows.length > 0 || data.prompts.length > 0;
+  const isEmpty = filteredWorkflows.length === 0 && filteredSkills.length === 0;
+  const hasContent = data.workflows.length > 0 || data.skills.length > 0;
 
   const handleContextMenu = useCallback(
-    (e: MouseEvent, item: { id: string; type: 'workflow' | 'prompt'; name: string }) => {
+    (e: MouseEvent, item: { id: string; type: 'workflow' | 'skill'; name: string }) => {
       e.preventDefault();
       setContextMenu({ x: e.clientX, y: e.clientY, item });
     },
@@ -120,7 +122,7 @@ export function DiscoverView({
     if (contextMenu.item.type === 'workflow') {
       router.push(ROUTES.LIBRARY.WORKFLOWS.EDIT(contextMenu.item.id));
     } else {
-      router.push(ROUTES.LIBRARY.MINI_PROMPTS.EDIT(contextMenu.item.id));
+      router.push(ROUTES.SKILLS.EDIT(contextMenu.item.id));
     }
     closeContextMenu();
   }, [contextMenu.item, router, closeContextMenu]);
@@ -131,27 +133,27 @@ export function DiscoverView({
       if (contextMenu.item.type === 'workflow') {
         await onImportWorkflow(contextMenu.item.id);
       } else {
-        await onImportPrompt(contextMenu.item.id);
+        await onImportSkill(contextMenu.item.id);
       }
       setImportedIds((prev) => new Set(prev).add(contextMenu.item!.id));
     } catch (err) {
       console.error('Import error:', err);
     }
     closeContextMenu();
-  }, [contextMenu.item, onImportWorkflow, onImportPrompt, closeContextMenu]);
+  }, [contextMenu.item, onImportWorkflow, onImportSkill, closeContextMenu]);
 
-  const handleCardImport = useCallback(async (id: string, type: 'workflow' | 'prompt') => {
+  const handleCardImport = useCallback(async (id: string, type: 'workflow' | 'skill') => {
     try {
       if (type === 'workflow') {
         await onImportWorkflow(id);
       } else {
-        await onImportPrompt(id);
+        await onImportSkill(id);
       }
       setImportedIds((prev) => new Set(prev).add(id));
     } catch (err) {
       console.error('Import error:', err);
     }
-  }, [onImportWorkflow, onImportPrompt]);
+  }, [onImportWorkflow, onImportSkill]);
 
   const handleOpenWorkflow = useCallback(
     (workflowId: string) => {
@@ -160,9 +162,9 @@ export function DiscoverView({
     [router]
   );
 
-  const handleOpenPrompt = useCallback(
-    (promptId: string) => {
-      router.push(ROUTES.LIBRARY.MINI_PROMPTS.EDIT(promptId));
+  const handleOpenSkill = useCallback(
+    (skillId: string) => {
+      router.push(ROUTES.SKILLS.EDIT(skillId));
     },
     [router]
   );
@@ -262,22 +264,22 @@ export function DiscoverView({
         </section>
       )}
 
-      {/* Prompts section */}
-      {filteredPrompts.length > 0 && (
+      {/* Skills section */}
+      {filteredSkills.length > 0 && (
         <section>
-          <h3 className="text-xs font-mono text-pink-500/70 uppercase tracking-wider mb-3">
-            {'//'} {t('publicPrompts')} [{filteredPrompts.length}]
+          <h3 className="text-xs font-mono text-cyan-500/70 uppercase tracking-wider mb-3">
+            {'//'} {t('publicSkills')} [{filteredSkills.length}]
           </h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {filteredPrompts.map((prompt) => (
-              <PublicPromptCard
-                key={prompt.id}
-                prompt={prompt}
-                isImported={importedIds.has(prompt.id) || !!importedPromptIds?.has(prompt.id)}
-                onOpen={() => handleOpenPrompt(prompt.id)}
-                onImport={() => handleCardImport(prompt.id, 'prompt')}
+            {filteredSkills.map((skill) => (
+              <PublicSkillCard
+                key={skill.id}
+                skill={skill}
+                isImported={importedIds.has(skill.id) || !!importedSkillIds?.has(skill.id)}
+                onOpen={() => handleOpenSkill(skill.id)}
+                onImport={() => handleCardImport(skill.id, 'skill')}
                 onContextMenu={(e) =>
-                  handleContextMenu(e, { id: prompt.id, type: 'prompt', name: prompt.name })
+                  handleContextMenu(e, { id: skill.id, type: 'skill', name: skill.name })
                 }
               />
             ))}
@@ -406,16 +408,16 @@ function PublicWorkflowCard({ workflow, isImported, onOpen, onImport, onContextM
   );
 }
 
-// Cyberpunk Public Prompt Card
-interface PublicPromptCardProps {
-  prompt: PublicPrompt;
+// Cyberpunk Public Skill Card
+interface PublicSkillCardProps {
+  skill: PublicSkill;
   isImported?: boolean;
   onOpen: () => void;
   onImport: () => void;
   onContextMenu: (e: MouseEvent) => void;
 }
 
-function PublicPromptCard({ prompt, isImported, onOpen, onImport, onContextMenu }: PublicPromptCardProps) {
+function PublicSkillCard({ skill, isImported, onOpen, onImport, onContextMenu }: PublicSkillCardProps) {
   const t = useTranslations('discoverView');
   const tCommon = useTranslations('common');
 
@@ -423,16 +425,16 @@ function PublicPromptCard({ prompt, isImported, onOpen, onImport, onContextMenu 
     <div
       className={cn(
         'relative bg-[#0a0a0f]/80 backdrop-blur-sm border p-4 transition-all duration-200 cursor-pointer',
-        'border-pink-500/30 hover:border-pink-400/60 hover:bg-pink-500/5 hover:shadow-[0_0_20px_rgba(255,0,102,0.15)]'
+        'border-cyan-500/30 hover:border-cyan-400/60 hover:bg-cyan-500/5 hover:shadow-[0_0_20px_rgba(0,255,255,0.15)]'
       )}
       style={{ clipPath: 'polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px))' }}
       onClick={onOpen}
       onContextMenu={onContextMenu}
-      data-testid={`discover-prompt-card-${prompt.id}`}
+      data-testid={`discover-skill-card-${skill.id}`}
     >
       {/* Corner accents */}
-      <div className="absolute top-0 right-0 w-3 h-3 border-t border-r border-pink-500/50"></div>
-      <div className="absolute bottom-0 left-0 w-3 h-3 border-b border-l border-pink-500/50"></div>
+      <div className="absolute top-0 right-0 w-3 h-3 border-t border-r border-cyan-500/50"></div>
+      <div className="absolute bottom-0 left-0 w-3 h-3 border-b border-l border-cyan-500/50"></div>
 
       {/* Public badge */}
       <div className="absolute top-3 right-3">
@@ -441,29 +443,31 @@ function PublicPromptCard({ prompt, isImported, onOpen, onImport, onContextMenu 
         </span>
       </div>
 
-      {/* Prompt icon */}
+      {/* Skill icon */}
       <div className="flex justify-center mb-3 mt-4">
-        <div className="p-3 bg-pink-500/10 border border-pink-500/30">
-          <svg className="w-8 h-8 text-pink-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-          </svg>
+        <div className="p-3 bg-cyan-500/10 border border-cyan-500/30">
+          <Zap className="w-8 h-8 text-cyan-400" />
         </div>
       </div>
 
-      {/* Prompt name */}
-      <h4 className="text-center font-mono text-cyan-100 truncate">{prompt.name}</h4>
+      {/* Skill name */}
+      <h4 className="text-center font-mono text-cyan-100 truncate">{skill.name}</h4>
 
       {/* Meta info */}
-      {prompt.authorName && (
-        <div className="flex items-center justify-center gap-2 mt-2 text-xs text-cyan-100/50 font-mono">
-          <span>{prompt.authorName}</span>
-        </div>
-      )}
+      <div className="flex items-center justify-center gap-2 mt-2 text-xs text-cyan-100/50 font-mono">
+        <span className="text-cyan-400">{skill.attachmentCount} files</span>
+        {skill.authorName && (
+          <>
+            <span className="text-cyan-500/30">|</span>
+            <span>{skill.authorName}</span>
+          </>
+        )}
+      </div>
 
       {/* Description */}
-      {prompt.description && (
+      {skill.description && (
         <p className="mt-2 text-xs text-cyan-100/30 text-center line-clamp-2 font-mono">
-          {prompt.description}
+          {skill.description}
         </p>
       )}
 
@@ -478,7 +482,7 @@ function PublicPromptCard({ prompt, isImported, onOpen, onImport, onContextMenu 
           'mt-3 w-full py-2 text-xs font-mono uppercase tracking-wider border transition-all',
           isImported
             ? 'border-green-500/50 text-green-400 bg-green-500/10 cursor-default'
-            : 'border-pink-500/50 text-pink-400 bg-pink-500/10 hover:bg-pink-500/20 hover:border-pink-400 cursor-pointer'
+            : 'border-cyan-500/50 text-cyan-400 bg-cyan-500/10 hover:bg-cyan-500/20 hover:border-cyan-400 cursor-pointer'
         )}
       >
         {isImported ? t('inLibrary') : t('addToLibrary')}
@@ -487,26 +491,3 @@ function PublicPromptCard({ prompt, isImported, onOpen, onImport, onContextMenu 
   );
 }
 
-// Custom hook for debouncing values
-function useDebounce<T>(value: T, delay: number): T {
-  const [debouncedValue, setDebouncedValue] = useState<T>(value);
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
-
-  useEffect(() => {
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current);
-    }
-
-    timeoutRef.current = setTimeout(() => {
-      setDebouncedValue(value);
-    }, delay);
-
-    return () => {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-      }
-    };
-  }, [value, delay]);
-
-  return debouncedValue;
-}

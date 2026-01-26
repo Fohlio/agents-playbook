@@ -1,18 +1,37 @@
 'use client';
 
-import { MouseEvent, useMemo, useState, KeyboardEvent } from 'react';
+import React, { MouseEvent, useMemo, useCallback } from 'react';
 import { useTranslations } from 'next-intl';
+import { Zap } from 'lucide-react';
 import { FolderCard } from './FolderCard';
+import { LibraryItemCard } from './LibraryItemCard';
 import { EmptyState, EmptyStateIcons } from '@/shared/ui/molecules/EmptyState';
-import { WorkflowWithMeta, PromptWithMeta, FolderWithItems } from '@/server/folders/types';
+import { CardActionsMenu } from '@/shared/ui/molecules/CardActionsMenu';
+import { ShareModal } from '@/features/sharing/components/ShareModal';
+import { WorkflowWithMeta, SkillWithFolderMeta, FolderWithItems } from '@/server/folders/types';
 import { LibraryView } from '../hooks/useLibraryNavigation';
+import { useCardActions, CardItem } from '../hooks/useCardActions';
 import { cn } from '@/shared/lib/utils/cn';
 
 export interface LibraryItem {
   id: string;
-  type: 'folder' | 'workflow' | 'prompt';
+  type: 'folder' | 'workflow' | 'skill';
   name: string;
   description: string | null;
+}
+
+/** Filter items by name or description matching search query */
+function filterBySearch<T extends { name: string; description?: string | null }>(
+  items: T[],
+  query: string
+): T[] {
+  if (!query) return items;
+  const lowerQuery = query.toLowerCase();
+  return items.filter(
+    (item) =>
+      item.name.toLowerCase().includes(lowerQuery) ||
+      item.description?.toLowerCase().includes(lowerQuery)
+  );
 }
 
 interface FolderContentsViewProps {
@@ -20,13 +39,13 @@ interface FolderContentsViewProps {
   viewMode?: 'grid' | 'list';
   folders: FolderWithItems[];
   workflows: WorkflowWithMeta[];
-  prompts: PromptWithMeta[];
+  skills: SkillWithFolderMeta[];
   searchQuery: string;
   selectedIds: Set<string>;
-  onSelectItem: (id: string, type: 'folder' | 'workflow' | 'prompt', event: MouseEvent) => void;
+  onSelectItem: (id: string, type: 'folder' | 'workflow' | 'skill', event: MouseEvent) => void;
   onOpenFolder: (folderId: string) => void;
   onOpenWorkflow: (workflowId: string) => void;
-  onOpenPrompt: (promptId: string) => void;
+  onOpenSkill: (skillId: string) => void;
   onRenameFolder?: (folderId: string) => void;
   onDeleteFolder?: (folderId: string) => void;
   onCreateFolder?: () => void;
@@ -45,13 +64,13 @@ export function FolderContentsView({
   viewMode = 'grid',
   folders,
   workflows,
-  prompts,
+  skills,
   searchQuery,
   selectedIds,
   onSelectItem,
   onOpenFolder,
   onOpenWorkflow,
-  onOpenPrompt,
+  onOpenSkill,
   onRenameFolder,
   onDeleteFolder,
   onCreateFolder,
@@ -63,43 +82,69 @@ export function FolderContentsView({
   const gridLayoutClass = 'grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4';
   const listLayoutClass = 'flex flex-col gap-2';
 
-  const filteredFolders = useMemo(() => {
-    if (!searchQuery) return folders;
-    const query = searchQuery.toLowerCase();
-    return folders.filter(
-      (f) =>
-        f.name.toLowerCase().includes(query) ||
-        f.description?.toLowerCase().includes(query)
-    );
-  }, [folders, searchQuery]);
+  // Card actions hook
+  const {
+    isDuplicating,
+    isDeleting,
+    duplicate,
+    deleteItem,
+    toggleActive,
+    toggleVisibility,
+    shareModalItem,
+    openShareModal,
+    closeShareModal,
+  } = useCardActions();
 
-  const filteredWorkflows = useMemo(() => {
-    if (!searchQuery) return workflows;
-    const query = searchQuery.toLowerCase();
-    return workflows.filter(
-      (w) =>
-        w.name.toLowerCase().includes(query) ||
-        w.description?.toLowerCase().includes(query)
-    );
-  }, [workflows, searchQuery]);
+  const filteredFolders = useMemo(() => filterBySearch(folders, searchQuery), [folders, searchQuery]);
+  const filteredWorkflows = useMemo(() => filterBySearch(workflows, searchQuery), [workflows, searchQuery]);
+  const filteredSkills = useMemo(() => filterBySearch(skills, searchQuery), [skills, searchQuery]);
 
-  const filteredPrompts = useMemo(() => {
-    if (!searchQuery) return prompts;
-    const query = searchQuery.toLowerCase();
-    return prompts.filter(
-      (p) =>
-        p.name.toLowerCase().includes(query) ||
-        p.description?.toLowerCase().includes(query)
-    );
-  }, [prompts, searchQuery]);
+  // Helper to create CardItem from workflow or skill
+  const toCardItem = useCallback((
+    item: WorkflowWithMeta | SkillWithFolderMeta,
+    type: 'workflow' | 'skill'
+  ): CardItem => ({
+    id: item.id,
+    type,
+    name: item.name,
+    isActive: item.isActive,
+    visibility: item.visibility,
+  }), []);
+
+  // Render card actions menu for an item
+  const renderActionsMenu = useCallback((
+    cardItem: CardItem,
+    onEdit: () => void
+  ) => (
+    <CardActionsMenu
+      isActive={cardItem.isActive}
+      isPublic={cardItem.visibility === 'PUBLIC'}
+      onToggleActive={(checked) => toggleActive(cardItem, checked)}
+      onTogglePublic={(checked) => toggleVisibility(cardItem, checked ? 'PUBLIC' : 'PRIVATE')}
+      onShare={() => openShareModal(cardItem)}
+      onEdit={onEdit}
+      onDuplicate={() => duplicate(cardItem)}
+      onRemove={() => deleteItem(cardItem)}
+      showActive
+      showPublic
+      showShare
+      showEdit
+      showDuplicate
+      showRemove
+      isDuplicating={isDuplicating}
+      isRemoving={isDeleting}
+      isOwned
+      testId={`${cardItem.type}-${cardItem.id}`}
+    />
+  ), [toggleActive, toggleVisibility, openShareModal, duplicate, deleteItem, isDuplicating, isDeleting]);
 
   const isEmpty =
     filteredFolders.length === 0 &&
     filteredWorkflows.length === 0 &&
-    filteredPrompts.length === 0;
+    filteredSkills.length === 0;
 
   const hasContent =
-    folders.length > 0 || workflows.length > 0 || prompts.length > 0;
+    folders.length > 0 || workflows.length > 0 || skills.length > 0;
 
   // Loading state - Cyberpunk
   if (isLoading) {
@@ -197,53 +242,54 @@ export function FolderContentsView({
   }
 
   return (
-    <div className={cn('space-y-8', className)} role="region" aria-label="Library contents">
-      {/* Folders section */}
-      {filteredFolders.length > 0 && (
-        <section aria-labelledby="folders-heading">
-          <h3 id="folders-heading" className="text-xs font-mono text-cyan-500/70 uppercase tracking-wider mb-3">
-            {'//'} {t('directories')} [{filteredFolders.length}]
-          </h3>
-          <div
-            className={viewMode === 'grid' ? gridLayoutClass : listLayoutClass}
-            role="list"
-            aria-label="Folders"
-          >
-            {filteredFolders.map((folder) => (
-              <FolderCard
-                key={folder.id}
-                folder={{
-                  id: folder.id,
-                  name: folder.name,
-                  key: folder.key,
-                  description: folder.description,
-                  visibility: folder.visibility,
-                  itemCount: folder.itemCount,
-                }}
-                isSelected={selectedIds.has(folder.id)}
-                onSelect={(id, e) => onSelectItem(id, 'folder', e)}
-                onOpen={onOpenFolder}
-                onRename={onRenameFolder}
-                onDelete={onDeleteFolder}
-                viewMode={viewMode}
-              />
-            ))}
-          </div>
-        </section>
-      )}
+    <>
+      <div className={cn('space-y-8', className)} role="region" aria-label="Library contents">
+        {/* Folders section */}
+        {filteredFolders.length > 0 && (
+          <section aria-labelledby="folders-heading">
+            <h3 id="folders-heading" className="text-xs font-mono text-cyan-500/70 uppercase tracking-wider mb-3">
+              {'//'} {t('directories')} [{filteredFolders.length}]
+            </h3>
+            <div
+              className={viewMode === 'grid' ? gridLayoutClass : listLayoutClass}
+              role="list"
+              aria-label="Folders"
+            >
+              {filteredFolders.map((folder) => (
+                <FolderCard
+                  key={folder.id}
+                  folder={{
+                    id: folder.id,
+                    name: folder.name,
+                    key: folder.key,
+                    description: folder.description,
+                    visibility: folder.visibility,
+                    itemCount: folder.itemCount,
+                  }}
+                  isSelected={selectedIds.has(folder.id)}
+                  onSelect={(id, e) => onSelectItem(id, 'folder', e)}
+                  onOpen={onOpenFolder}
+                  onRename={onRenameFolder}
+                  onDelete={onDeleteFolder}
+                  viewMode={viewMode}
+                />
+              ))}
+            </div>
+          </section>
+        )}
 
-      {/* Workflows section */}
-      {filteredWorkflows.length > 0 && (
-        <section aria-labelledby="workflows-heading">
-          <h3 id="workflows-heading" className="text-xs font-mono text-cyan-500/70 uppercase tracking-wider mb-3">
-            {'//'} {t('workflows')} [{filteredWorkflows.length}]
-          </h3>
-          <div
-            className={viewMode === 'grid' ? gridLayoutClass : listLayoutClass}
-            role="list"
-            aria-label="Workflows"
-          >
-            {filteredWorkflows.map((workflow) => (
+        {/* Workflows section */}
+        {filteredWorkflows.length > 0 && (
+          <section aria-labelledby="workflows-heading">
+            <h3 id="workflows-heading" className="text-xs font-mono text-cyan-500/70 uppercase tracking-wider mb-3">
+              {'//'} {t('workflows')} [{filteredWorkflows.length}]
+            </h3>
+            <div
+              className={viewMode === 'grid' ? gridLayoutClass : listLayoutClass}
+              role="list"
+              aria-label="Workflows"
+            >
+              {filteredWorkflows.map((workflow) => (
               <WorkflowItemCard
                 key={workflow.id}
                 workflow={workflow}
@@ -251,39 +297,77 @@ export function FolderContentsView({
                 onSelect={(e) => onSelectItem(workflow.id, 'workflow', e)}
                 onOpen={() => onOpenWorkflow(workflow.id)}
                 viewMode={viewMode}
+                actionsMenu={renderActionsMenu(
+                  toCardItem(workflow, 'workflow'),
+                  () => onOpenWorkflow(workflow.id)
+                )}
               />
             ))}
-          </div>
-        </section>
-      )}
+            </div>
+          </section>
+        )}
 
-      {/* Prompts section */}
-      {filteredPrompts.length > 0 && (
-        <section aria-labelledby="prompts-heading">
-          <h3 id="prompts-heading" className="text-xs font-mono text-pink-500/70 uppercase tracking-wider mb-3">
-            {'//'} {t('miniPrompts')} [{filteredPrompts.length}]
-          </h3>
-          <div
-            className={viewMode === 'grid' ? gridLayoutClass : listLayoutClass}
-            role="list"
-            aria-label="Prompts"
-          >
-            {filteredPrompts.map((prompt) => (
-              <PromptItemCard
-                key={prompt.id}
-                prompt={prompt}
-                isSelected={selectedIds.has(prompt.id)}
-                onSelect={(e) => onSelectItem(prompt.id, 'prompt', e)}
-                onOpen={() => onOpenPrompt(prompt.id)}
+        {/* Skills section */}
+        {filteredSkills.length > 0 && (
+          <section aria-labelledby="skills-heading">
+            <h3 id="skills-heading" className="text-xs font-mono text-cyan-500/70 uppercase tracking-wider mb-3">
+              {'//'} SKILLS [{filteredSkills.length}]
+            </h3>
+            <div
+              className={viewMode === 'grid' ? gridLayoutClass : listLayoutClass}
+              role="list"
+              aria-label="Skills"
+            >
+              {filteredSkills.map((skill) => (
+              <SkillItemCard
+                key={skill.id}
+                skill={skill}
+                isSelected={selectedIds.has(skill.id)}
+                onSelect={(e) => onSelectItem(skill.id, 'skill', e)}
+                onOpen={() => onOpenSkill(skill.id)}
                 viewMode={viewMode}
+                actionsMenu={renderActionsMenu(
+                  toCardItem(skill, 'skill'),
+                  () => onOpenSkill(skill.id)
+                )}
               />
             ))}
-          </div>
-        </section>
+            </div>
+          </section>
+        )}
+      </div>
+
+      {/* Share Modal */}
+      {shareModalItem && (
+        <ShareModal
+          isOpen={true}
+          onClose={closeShareModal}
+          targetType={shareModalItem.type === 'workflow' ? 'WORKFLOW' : 'SKILL'}
+          targetId={shareModalItem.id}
+          targetName={shareModalItem.name}
+        />
       )}
-    </div>
+    </>
   );
 }
+
+// Workflow icon component
+const WorkflowIcon = ({ size = 'md' }: { size?: 'sm' | 'md' }) => (
+  <svg
+    className={size === 'sm' ? 'w-5 h-5 text-cyan-400' : 'w-8 h-8 text-cyan-400'}
+    fill="none"
+    stroke="currentColor"
+    viewBox="0 0 24 24"
+    aria-hidden="true"
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={1.5}
+      d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"
+    />
+  </svg>
+);
 
 // Cyberpunk Workflow Card
 interface WorkflowItemCardProps {
@@ -292,333 +376,66 @@ interface WorkflowItemCardProps {
   onSelect: (e: MouseEvent) => void;
   onOpen: () => void;
   viewMode?: 'grid' | 'list';
+  actionsMenu?: React.ReactNode;
 }
 
-function WorkflowItemCard({ workflow, isSelected, onSelect, onOpen, viewMode = 'grid' }: WorkflowItemCardProps) {
-  const [isHovered, setIsHovered] = useState(false);
-
-  const handleClick = (e: MouseEvent) => {
-    if ((e.target as HTMLElement).closest('[data-title]')) {
-      return;
-    }
-    onSelect(e);
-  };
-
-  const handleKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
-    if (e.key === 'Enter') {
-      onOpen();
-    } else if (e.key === ' ') {
-      e.preventDefault();
-      onSelect(e as unknown as MouseEvent);
-    }
-  };
-
-  // List view - Cyberpunk
-  if (viewMode === 'list') {
-    return (
-      <div
-        className={cn(
-          'relative bg-[#0a0a0f]/80 backdrop-blur-sm border px-4 py-3 transition-all duration-200 cursor-pointer',
-          'flex items-center gap-4',
-          isSelected
-            ? 'border-cyan-400 bg-cyan-500/10 shadow-[0_0_15px_rgba(0,255,255,0.2)]'
-            : 'border-cyan-500/30 hover:border-cyan-400/60 hover:bg-cyan-500/5'
-        )}
-        onClick={handleClick}
-        onDoubleClick={onOpen}
-        onKeyDown={handleKeyDown}
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
-        data-testid={`workflow-card-${workflow.id}`}
-        role="listitem"
-        tabIndex={0}
-        aria-label={`${workflow.name} workflow, ${workflow._count.stages} stages, by ${workflow.user.username}${isSelected ? ', selected' : ''}`}
-      >
-        <div className={cn('transition-opacity', isSelected || isHovered ? 'opacity-100' : 'opacity-0')}>
-          <input
-            type="checkbox"
-            checked={isSelected}
-            onChange={() => {}}
-            className="w-4 h-4 bg-transparent border-2 border-cyan-500/50 text-cyan-500 focus:ring-cyan-500/50"
-            onClick={(e) => e.stopPropagation()}
-            tabIndex={-1}
-            aria-hidden="true"
-          />
-        </div>
-
-        <div className="p-2 bg-cyan-500/10 border border-cyan-500/30 flex-shrink-0">
-          <svg className="w-5 h-5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
-          </svg>
-        </div>
-
-        <div className="flex-1 min-w-0">
-          <button
-            data-title
-            onClick={(e) => {
-              e.stopPropagation();
-              onOpen();
-            }}
-            className="font-mono text-cyan-100 hover:text-cyan-400 transition-colors focus:outline-none text-left"
-            tabIndex={-1}
-          >
-            {workflow.name}
-          </button>
-          {workflow.description && (
-            <p className="text-xs text-cyan-100/40 truncate mt-0.5 font-mono">{workflow.description}</p>
-          )}
-        </div>
-
-        <div className="flex items-center gap-3 text-xs text-cyan-100/50 font-mono flex-shrink-0">
+function WorkflowItemCard({ workflow, isSelected, onSelect, onOpen, viewMode = 'grid', actionsMenu }: WorkflowItemCardProps) {
+  return (
+    <LibraryItemCard
+      id={workflow.id}
+      name={workflow.name}
+      description={workflow.description}
+      isSelected={isSelected}
+      onSelect={onSelect}
+      onOpen={onOpen}
+      viewMode={viewMode}
+      testIdPrefix="workflow"
+      ariaLabel={`${workflow.name} workflow, ${workflow._count.stages} stages, by ${workflow.user.username}`}
+      icon={<WorkflowIcon size={viewMode === 'list' ? 'sm' : 'md'} />}
+      actionsMenu={actionsMenu}
+      metaInfo={
+        <>
           <span className="text-cyan-400">{workflow._count.stages} stages</span>
           <span className="text-cyan-500/30">|</span>
-          <span>{workflow.user.username}</span>
-        </div>
-      </div>
-    );
-  }
-
-  // Grid view - Cyberpunk
-  return (
-    <div
-      className={cn(
-        'relative bg-[#0a0a0f]/80 backdrop-blur-sm border p-4 transition-all duration-200 cursor-pointer',
-        isSelected
-          ? 'border-cyan-400 bg-cyan-500/10 shadow-[0_0_20px_rgba(0,255,255,0.2)]'
-          : 'border-cyan-500/30 hover:border-cyan-400/60 hover:bg-cyan-500/5'
-      )}
-      style={{ clipPath: 'polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px))' }}
-      onClick={handleClick}
-      onDoubleClick={onOpen}
-      onKeyDown={handleKeyDown}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-      data-testid={`workflow-card-${workflow.id}`}
-      role="listitem"
-      tabIndex={0}
-      aria-label={`${workflow.name} workflow, ${workflow._count.stages} stages, by ${workflow.user.username}${isSelected ? ', selected' : ''}`}
-    >
-      {/* Corner accents */}
-      <div className="absolute top-0 right-0 w-3 h-3 border-t border-r border-cyan-500/50"></div>
-      <div className="absolute bottom-0 left-0 w-3 h-3 border-b border-l border-cyan-500/50"></div>
-
-      <div
-        className={cn(
-          'absolute top-3 left-3 transition-opacity',
-          isSelected || isHovered ? 'opacity-100' : 'opacity-0'
-        )}
-      >
-        <input
-          type="checkbox"
-          checked={isSelected}
-          onChange={() => {}}
-          className="w-4 h-4 bg-transparent border-2 border-cyan-500/50 text-cyan-500 focus:ring-cyan-500/50"
-          onClick={(e) => e.stopPropagation()}
-          tabIndex={-1}
-          aria-hidden="true"
-        />
-      </div>
-
-      <div className="flex justify-center mb-3 mt-4">
-        <div className="p-3 bg-cyan-500/10 border border-cyan-500/30">
-          <svg className="w-8 h-8 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
-          </svg>
-        </div>
-      </div>
-
-      <button
-        data-title
-        onClick={(e) => {
-          e.stopPropagation();
-          onOpen();
-        }}
-        className="w-full text-center font-mono text-cyan-100 hover:text-cyan-400 transition-colors focus:outline-none min-h-[44px] flex items-center justify-center px-1 break-words"
-        style={{ wordBreak: 'break-word' }}
-        tabIndex={-1}
-      >
-        {workflow.name}
-      </button>
-
-      <div className="flex items-center justify-center gap-2 mt-2 text-xs text-cyan-100/50 font-mono">
-        <span className="text-cyan-400">{workflow._count.stages}</span>
-        <span className="text-cyan-500/30">|</span>
-        <span>{workflow.user.username}</span>
-      </div>
-
-      {workflow.description && (
-        <p className="mt-2 text-xs text-cyan-100/30 text-center line-clamp-2 font-mono">
-          {workflow.description}
-        </p>
-      )}
-    </div>
+          <span className="text-cyan-100/50 font-mono">{workflow.user.username}</span>
+        </>
+      }
+    />
   );
 }
 
-// Cyberpunk Prompt Card
-interface PromptItemCardProps {
-  prompt: PromptWithMeta;
+// Cyberpunk Skill Card
+interface SkillItemCardProps {
+  skill: SkillWithFolderMeta;
   isSelected: boolean;
   onSelect: (e: MouseEvent) => void;
   onOpen: () => void;
   viewMode?: 'grid' | 'list';
+  actionsMenu?: React.ReactNode;
 }
 
-function PromptItemCard({ prompt, isSelected, onSelect, onOpen, viewMode = 'grid' }: PromptItemCardProps) {
-  const [isHovered, setIsHovered] = useState(false);
-
-  const handleClick = (e: MouseEvent) => {
-    if ((e.target as HTMLElement).closest('[data-title]')) {
-      return;
-    }
-    onSelect(e);
-  };
-
-  const handleKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
-    if (e.key === 'Enter') {
-      onOpen();
-    } else if (e.key === ' ') {
-      e.preventDefault();
-      onSelect(e as unknown as MouseEvent);
-    }
-  };
-
-  // List view - Cyberpunk
-  if (viewMode === 'list') {
-    return (
-      <div
-        className={cn(
-          'relative bg-[#0a0a0f]/80 backdrop-blur-sm border px-4 py-3 transition-all duration-200 cursor-pointer',
-          'flex items-center gap-4',
-          isSelected
-            ? 'border-pink-400 bg-pink-500/10 shadow-[0_0_15px_rgba(255,0,102,0.2)]'
-            : 'border-pink-500/30 hover:border-pink-400/60 hover:bg-pink-500/5'
-        )}
-        onClick={handleClick}
-        onDoubleClick={onOpen}
-        onKeyDown={handleKeyDown}
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
-        data-testid={`prompt-card-${prompt.id}`}
-        role="listitem"
-        tabIndex={0}
-        aria-label={`${prompt.name} prompt, by ${prompt.user.username}${isSelected ? ', selected' : ''}`}
-      >
-        <div className={cn('transition-opacity', isSelected || isHovered ? 'opacity-100' : 'opacity-0')}>
-          <input
-            type="checkbox"
-            checked={isSelected}
-            onChange={() => {}}
-            className="w-4 h-4 bg-transparent border-2 border-pink-500/50 text-pink-500 focus:ring-pink-500/50"
-            onClick={(e) => e.stopPropagation()}
-            tabIndex={-1}
-            aria-hidden="true"
-          />
-        </div>
-
-        <div className="p-2 bg-pink-500/10 border border-pink-500/30 flex-shrink-0">
-          <svg className="w-5 h-5 text-pink-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
-          </svg>
-        </div>
-
-        <div className="flex-1 min-w-0">
-          <button
-            data-title
-            onClick={(e) => {
-              e.stopPropagation();
-              onOpen();
-            }}
-            className="font-mono text-cyan-100 hover:text-pink-400 transition-colors focus:outline-none text-left"
-            tabIndex={-1}
-          >
-            {prompt.name}
-          </button>
-          {prompt.description && (
-            <p className="text-xs text-cyan-100/40 truncate mt-0.5 font-mono">{prompt.description}</p>
-          )}
-        </div>
-
-        <div className="flex items-center gap-3 text-xs flex-shrink-0">
-          <span className="px-2 py-0.5 font-mono bg-pink-500/20 text-pink-400 border border-pink-500/50">PROMPT</span>
-          <span className="text-cyan-100/50 font-mono">{prompt.user.username}</span>
-        </div>
-      </div>
-    );
-  }
-
-  // Grid view - Cyberpunk
+function SkillItemCard({ skill, isSelected, onSelect, onOpen, viewMode = 'grid', actionsMenu }: SkillItemCardProps) {
   return (
-    <div
-      className={cn(
-        'relative bg-[#0a0a0f]/80 backdrop-blur-sm border p-4 transition-all duration-200 cursor-pointer',
-        isSelected
-          ? 'border-pink-400 bg-pink-500/10 shadow-[0_0_20px_rgba(255,0,102,0.2)]'
-          : 'border-pink-500/30 hover:border-pink-400/60 hover:bg-pink-500/5'
-      )}
-      style={{ clipPath: 'polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px))' }}
-      onClick={handleClick}
-      onDoubleClick={onOpen}
-      onKeyDown={handleKeyDown}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-      data-testid={`prompt-card-${prompt.id}`}
-      role="listitem"
-      tabIndex={0}
-      aria-label={`${prompt.name} prompt, by ${prompt.user.username}${isSelected ? ', selected' : ''}`}
-    >
-      {/* Corner accents */}
-      <div className="absolute top-0 right-0 w-3 h-3 border-t border-r border-pink-500/50"></div>
-      <div className="absolute bottom-0 left-0 w-3 h-3 border-b border-l border-pink-500/50"></div>
-
-      <div
-        className={cn(
-          'absolute top-3 left-3 transition-opacity',
-          isSelected || isHovered ? 'opacity-100' : 'opacity-0'
-        )}
-      >
-        <input
-          type="checkbox"
-          checked={isSelected}
-          onChange={() => {}}
-          className="w-4 h-4 bg-transparent border-2 border-pink-500/50 text-pink-500 focus:ring-pink-500/50"
-          onClick={(e) => e.stopPropagation()}
-          tabIndex={-1}
-          aria-hidden="true"
-        />
-      </div>
-
-      <div className="flex justify-center mb-3 mt-4">
-        <div className="p-3 bg-pink-500/10 border border-pink-500/30">
-          <svg className="w-8 h-8 text-pink-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
-          </svg>
-        </div>
-      </div>
-
-      <button
-        data-title
-        onClick={(e) => {
-          e.stopPropagation();
-          onOpen();
-        }}
-        className="w-full text-center font-mono text-cyan-100 hover:text-pink-400 transition-colors focus:outline-none min-h-[44px] flex items-center justify-center px-1 break-words"
-        style={{ wordBreak: 'break-word' }}
-        tabIndex={-1}
-      >
-        {prompt.name}
-      </button>
-
-      <div className="flex items-center justify-center gap-2 mt-2 text-xs font-mono">
-        <span className="px-2 py-0.5 bg-pink-500/20 text-pink-400 border border-pink-500/50">PROMPT</span>
-        <span className="text-cyan-100/50">{prompt.user.username}</span>
-      </div>
-
-      {prompt.description && (
-        <p className="mt-2 text-xs text-cyan-100/30 text-center line-clamp-2 font-mono">
-          {prompt.description}
-        </p>
-      )}
-    </div>
+    <LibraryItemCard
+      id={skill.id}
+      name={skill.name}
+      description={skill.description}
+      isSelected={isSelected}
+      onSelect={onSelect}
+      onOpen={onOpen}
+      viewMode={viewMode}
+      testIdPrefix="skill"
+      ariaLabel={`${skill.name} skill, by ${skill.user.username}`}
+      icon={<Zap className={viewMode === 'list' ? 'w-5 h-5 text-cyan-400' : 'w-8 h-8 text-cyan-400'} aria-hidden="true" />}
+      badge={<span className="px-2 py-0.5 font-mono bg-cyan-500/20 text-cyan-400 border border-cyan-500/50">SKILL</span>}
+      actionsMenu={actionsMenu}
+      metaInfo={
+        <>
+          <span className="text-cyan-400">{skill.attachmentCount} files</span>
+          <span className="text-cyan-500/30">|</span>
+          <span className="text-cyan-100/50 font-mono">{skill.user.username}</span>
+        </>
+      }
+    />
   );
 }

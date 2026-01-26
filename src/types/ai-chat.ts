@@ -5,7 +5,19 @@ import { UIMessage } from 'ai';
  *
  * Determines which instruction set and tools to use
  */
-export type AIChatMode = 'workflow' | 'mini-prompt';
+export type AIChatMode = 'workflow' | 'mini-prompt' | 'skill';
+
+/**
+ * Skill Context for AI
+ *
+ * Provides current skill state to the AI assistant
+ */
+export interface SkillContext {
+  id: string;
+  name: string;
+  description?: string | null;
+  content: string;
+}
 
 /**
  * AI Chat Session
@@ -17,6 +29,7 @@ export interface AIChatSession {
   userId: string;
   workflowId?: string | null;
   miniPromptId?: string | null;
+  skillId?: string | null;
   mode: string;
   totalTokens: number;
   archivedAt?: Date | null;
@@ -142,6 +155,7 @@ export interface WorkflowContext {
     description?: string | null;
     content: string;
   };
+  currentSkill?: SkillContext;
   mode?: AIChatMode;
 }
 
@@ -182,8 +196,10 @@ export interface ChatSessionSummary {
   mode: string;
   workflowId?: string | null;
   miniPromptId?: string | null;
+  skillId?: string | null;
   workflowName?: string;
   miniPromptName?: string;
+  skillName?: string;
   lastMessageAt: Date;
   messageCount: number;
   totalTokens: number;

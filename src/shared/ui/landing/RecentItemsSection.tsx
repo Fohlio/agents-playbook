@@ -4,11 +4,12 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { useTranslations } from "next-intl";
-import { Workflow, MiniPrompt, Tag, Model } from "@prisma/client";
+import { Workflow, Skill, Tag, Model } from "@prisma/client";
+import { Zap } from "lucide-react";
 import { WorkflowDiscoveryCard } from "@/shared/ui/molecules/WorkflowDiscoveryCard";
-import { MiniPromptDiscoveryCard } from "@/shared/ui/molecules/MiniPromptDiscoveryCard";
 import { WorkflowPreviewModal } from "@/shared/ui/molecules/WorkflowPreviewModal";
 import { PublicWorkflowWithMeta } from "@/views/discover/types";
+import { ROUTES } from "@/shared/routes";
 
 interface WorkflowWithMeta extends Workflow {
   user: { id: string; username: string };
@@ -18,14 +19,14 @@ interface WorkflowWithMeta extends Workflow {
   _count: { stages: number; references: number };
 }
 
-interface MiniPromptWithMeta extends MiniPrompt {
+interface SkillWithMeta extends Skill {
   user: { id: string; username: string };
   tags?: { tag: Tag }[];
   models?: { model: Model }[];
-  _count: { stageMiniPrompts: number; references: number };
+  _count: { attachments: number; references: number };
 }
 
-type TabType = "workflows" | "prompts";
+type TabType = "workflows" | "skills";
 
 // Transform landing workflow data to PublicWorkflowWithMeta format for the preview modal
 function toPublicWorkflowWithMeta(workflow: WorkflowWithMeta): PublicWorkflowWithMeta {
@@ -48,13 +49,12 @@ export default function RecentItemsSection() {
   const isAuthenticated = status === "authenticated";
   const t = useTranslations('landing.recentItems');
   const tCommon = useTranslations('common');
-  
+
   const [activeTab, setActiveTab] = useState<TabType>("workflows");
   const [workflows, setWorkflows] = useState<WorkflowWithMeta[]>([]);
-  const [miniPrompts, setMiniPrompts] = useState<MiniPromptWithMeta[]>([]);
+  const [skills, setSkills] = useState<SkillWithMeta[]>([]);
   const [loading, setLoading] = useState(true);
   const [previewWorkflow, setPreviewWorkflow] = useState<WorkflowWithMeta | null>(null);
-  const [previewMiniPrompt, setPreviewMiniPrompt] = useState<MiniPromptWithMeta | null>(null);
   const [isImporting, setIsImporting] = useState(false);
 
   const handleImport = async (workflowId: string) => {
@@ -62,13 +62,13 @@ export default function RecentItemsSection() {
       router.push("/auth/login?returnUrl=/dashboard/discover");
       return;
     }
-    
+
     setIsImporting(true);
     try {
       const response = await fetch(`/api/v1/workflows/import/${workflowId}`, {
         method: "POST",
       });
-      
+
       if (response.ok) {
         // Close modal and redirect to library
         setPreviewWorkflow(null);
@@ -81,12 +81,16 @@ export default function RecentItemsSection() {
     }
   };
 
+  const handleViewSkill = (skillId: string) => {
+    router.push(ROUTES.SKILLS.EDIT(skillId));
+  };
+
   useEffect(() => {
     fetch("/api/public/recent")
       .then((res) => res.json())
       .then((data) => {
         setWorkflows(data.workflows || []);
-        setMiniPrompts(data.miniPrompts || []);
+        setSkills(data.skills || []);
       })
       .catch((error) => {
         console.error("Failed to fetch recent items:", error);
@@ -95,15 +99,6 @@ export default function RecentItemsSection() {
         setLoading(false);
       });
   }, []);
-
-  const handleCopyMiniPrompt = async (miniPrompt: MiniPromptWithMeta) => {
-    try {
-      await navigator.clipboard.writeText(miniPrompt.content);
-      // Could add a toast notification here
-    } catch (error) {
-      console.error("Failed to copy mini-prompt:", error);
-    }
-  };
 
   if (loading) {
     return (
@@ -131,7 +126,7 @@ export default function RecentItemsSection() {
     <section className="py-16 px-4 sm:px-6 lg:px-8 bg-[#050508] relative overflow-hidden">
       {/* Circuit background */}
       <div className="absolute inset-0 cyber-circuit-bg opacity-20 pointer-events-none"></div>
-      
+
       <div className="relative max-w-7xl mx-auto">
         <div className="text-center mb-12">
           <h2 className="text-3xl font-black tracking-tight mb-4">
@@ -162,14 +157,14 @@ export default function RecentItemsSection() {
               {t('tabWorkflows', { count: workflows.length })}
             </button>
             <button
-              onClick={() => setActiveTab("prompts")}
+              onClick={() => setActiveTab("skills")}
               className={`px-6 py-2 text-sm font-mono uppercase tracking-wider transition-all ${
-                activeTab === "prompts"
-                  ? "bg-pink-500/20 text-pink-400 border border-pink-500/50 shadow-[0_0_15px_rgba(255,0,102,0.2)]"
-                  : "text-cyan-100/60 hover:text-pink-400 border border-transparent"
+                activeTab === "skills"
+                  ? "bg-cyan-500/20 text-cyan-400 border border-cyan-500/50 shadow-[0_0_15px_rgba(0,255,255,0.2)]"
+                  : "text-cyan-100/60 hover:text-cyan-400 border border-transparent"
               }`}
             >
-              {t('tabPrompts', { count: miniPrompts.length })}
+              {t('tabSkills', { count: skills.length })}
             </button>
           </div>
         </div>
@@ -216,39 +211,17 @@ export default function RecentItemsSection() {
               ))}
             </div>
           )
-        ) : miniPrompts.length === 0 ? (
+        ) : skills.length === 0 ? (
           <div className="text-center text-cyan-100/40 py-12 font-mono">
-            {t('noPrompts')}
+            {t('noSkills')}
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {miniPrompts.map((miniPrompt) => (
-              <MiniPromptDiscoveryCard
-                key={miniPrompt.id}
-                miniPrompt={{
-                  id: miniPrompt.id,
-                  name: miniPrompt.name,
-                  description: miniPrompt.description || null,
-                  user: { username: miniPrompt.user.username },
-                  workflowsCount: miniPrompt._count.stageMiniPrompts || 0,
-                  referencesCount: miniPrompt._count.references,
-                  tags: miniPrompt.tags?.map((t) => t.tag) || [],
-                  models: miniPrompt.models?.map((m) => ({
-                    id: m.model.id,
-                    name: m.model.name,
-                    slug: m.model.slug,
-                    category: m.model.category,
-                  })) || [],
-                  rating: { average: null, count: 0 },
-                }}
-                state={{
-                  isActive: true,
-                  isPublic: true,
-                }}
-                visibility={{}}
-                handlers={{
-                  onCardClick: () => setPreviewMiniPrompt(miniPrompt),
-                }}
+            {skills.map((skill) => (
+              <SkillCard
+                key={skill.id}
+                skill={skill}
+                onClick={() => handleViewSkill(skill.id)}
               />
             ))}
           </div>
@@ -266,56 +239,60 @@ export default function RecentItemsSection() {
             isOwnWorkflow={session?.user?.id === previewWorkflow.user.id}
           />
         )}
-
-        {/* Mini-Prompt Preview Modal - Cyberpunk Style */}
-        {previewMiniPrompt && (
-          <div
-            className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50"
-            onClick={() => setPreviewMiniPrompt(null)}
-          >
-            <div
-              className="bg-[#0a0a0f] border border-cyan-500/50 max-w-2xl w-full max-h-[80vh] overflow-auto p-6 shadow-[0_0_50px_rgba(0,255,255,0.2)]"
-              onClick={(e) => e.stopPropagation()}
-              style={{
-                clipPath: 'polygon(0 0, calc(100% - 20px) 0, 100% 20px, 100% 100%, 20px 100%, 0 calc(100% - 20px))',
-              }}
-            >
-              <div className="flex justify-between items-start mb-4">
-                <h3 className="text-xl font-bold cyber-text-cyan">
-                  {previewMiniPrompt.name}
-                </h3>
-                <button
-                  onClick={() => setPreviewMiniPrompt(null)}
-                  className="text-cyan-400 hover:text-cyan-300 transition-colors font-mono"
-                >
-                  [X]
-                </button>
-              </div>
-              {previewMiniPrompt.description && (
-                <p className="text-cyan-100/60 mb-4">{previewMiniPrompt.description}</p>
-              )}
-              <div className="bg-[#050508] border border-cyan-500/30 p-4 mb-4">
-                <pre className="whitespace-pre-wrap text-sm text-green-400 font-mono">
-                  {previewMiniPrompt.content}
-                </pre>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-cyan-100/40 font-mono">
-                  {tCommon('by', { author: previewMiniPrompt.user.username })}
-                </span>
-                <button
-                  onClick={() => {
-                    handleCopyMiniPrompt(previewMiniPrompt);
-                  }}
-                  className="px-4 py-2 bg-cyan-500/20 border border-cyan-500/50 text-cyan-400 font-mono uppercase text-sm tracking-wider hover:bg-cyan-500/30 hover:shadow-[0_0_15px_rgba(0,255,255,0.3)] transition-all"
-                >
-                  {t('copyPrompt')}
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
       </div>
     </section>
+  );
+}
+
+// Skill Card Component for Landing Page
+interface SkillCardProps {
+  skill: SkillWithMeta;
+  onClick: () => void;
+}
+
+function SkillCard({ skill, onClick }: SkillCardProps) {
+  const tCommon = useTranslations('common');
+
+  return (
+    <div
+      onClick={onClick}
+      className="relative bg-[#0a0a0f]/80 backdrop-blur-sm border border-cyan-500/30 p-4 cursor-pointer transition-all duration-200 hover:border-cyan-400/60 hover:bg-cyan-500/5 hover:shadow-[0_0_20px_rgba(0,255,255,0.15)]"
+      style={{ clipPath: 'polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px))' }}
+    >
+      {/* Corner accents */}
+      <div className="absolute top-0 right-0 w-3 h-3 border-t border-r border-cyan-500/50"></div>
+      <div className="absolute bottom-0 left-0 w-3 h-3 border-b border-l border-cyan-500/50"></div>
+
+      {/* Public badge */}
+      <div className="absolute top-3 right-3">
+        <span className="px-2 py-0.5 text-xs font-mono bg-green-500/20 text-green-400 border border-green-500/50 uppercase">
+          {tCommon('public')}
+        </span>
+      </div>
+
+      {/* Skill icon */}
+      <div className="flex justify-center mb-3 mt-4">
+        <div className="p-3 bg-cyan-500/10 border border-cyan-500/30">
+          <Zap className="w-8 h-8 text-cyan-400" />
+        </div>
+      </div>
+
+      {/* Skill name */}
+      <h4 className="text-center font-mono text-cyan-100 truncate">{skill.name}</h4>
+
+      {/* Meta info */}
+      <div className="flex items-center justify-center gap-2 mt-2 text-xs text-cyan-100/50 font-mono">
+        <span className="text-cyan-400">{skill._count.attachments} files</span>
+        <span className="text-cyan-500/30">|</span>
+        <span>{skill.user.username}</span>
+      </div>
+
+      {/* Description */}
+      {skill.description && (
+        <p className="mt-2 text-xs text-cyan-100/30 text-center line-clamp-2 font-mono">
+          {skill.description}
+        </p>
+      )}
+    </div>
   );
 }

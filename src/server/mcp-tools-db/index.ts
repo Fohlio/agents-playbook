@@ -28,6 +28,12 @@ export { editWorkflowToolSchema, editWorkflowHandler, type EditWorkflowInput } f
 export { addPromptToolSchema, addPromptHandler, type AddPromptInput } from './add-prompt-handler';
 export { editPromptToolSchema, editPromptHandler, type EditPromptInput } from './edit-prompt-handler';
 
+// Skill tools
+export { getSkillsToolSchema, getSkillsHandler, type GetSkillsInput } from './get-skills-handler';
+export { getSelectedSkillToolSchema, getSelectedSkillHandler, type GetSelectedSkillInput } from './get-selected-skill-handler';
+export { addSkillToolSchema, addSkillHandler, type AddSkillInput } from './add-skill-handler';
+export { editSkillToolSchema, editSkillHandler, type EditSkillInput } from './edit-skill-handler';
+
 // Folder tools
 export { getByFolderToolSchema, getByFolderHandler, type GetByFolderInput } from './get-by-folder-handler';
 export { createFolderToolSchema, createFolderHandler, type CreateFolderInput } from './create-folder-handler';

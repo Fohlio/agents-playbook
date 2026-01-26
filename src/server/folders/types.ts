@@ -1,4 +1,4 @@
-import { Visibility, Workflow, MiniPrompt } from '@prisma/client';
+import { Visibility, Workflow, MiniPrompt, Skill } from '@prisma/client';
 
 /**
  * Folder Types for Library File System
@@ -7,7 +7,7 @@ import { Visibility, Workflow, MiniPrompt } from '@prisma/client';
  * with folder organization, trash management, and multi-folder membership.
  */
 
-export type FolderTargetType = 'WORKFLOW' | 'MINI_PROMPT';
+export type FolderTargetType = 'WORKFLOW' | 'MINI_PROMPT' | 'SKILL';
 
 export interface FolderWithItems {
   id: string;
@@ -31,9 +31,23 @@ export interface FolderBasic {
   position: number;
 }
 
+export interface SkillWithFolderMeta extends Pick<
+  Skill,
+  'id' | 'name' | 'description' | 'visibility' | 'isActive' | 'createdAt' | 'updatedAt' | 'key'
+> {
+  user: {
+    id: string;
+    username: string;
+    email: string;
+  };
+  folderPosition: number;
+  attachmentCount: number;
+}
+
 export interface FolderContents {
   workflows: WorkflowWithMeta[];
   prompts: PromptWithMeta[];
+  skills: SkillWithFolderMeta[];
 }
 
 export interface WorkflowWithMeta extends Pick<
@@ -103,4 +117,5 @@ export interface FolderServiceResult<T> {
 export interface UncategorizedItems {
   workflows: WorkflowWithMeta[];
   prompts: PromptWithMeta[];
+  skills: SkillWithFolderMeta[];
 }

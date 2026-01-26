@@ -18,7 +18,7 @@ export interface FindOrCreateFolderInput {
   userId: string;
   folderId?: string;
   folderName?: string;
-  targetType: 'WORKFLOW' | 'MINI_PROMPT';
+  targetType: 'WORKFLOW' | 'MINI_PROMPT' | 'SKILL';
   targetId: string;
 }
 

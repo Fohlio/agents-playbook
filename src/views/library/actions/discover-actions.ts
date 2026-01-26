@@ -3,7 +3,7 @@
 /**
  * Discover Actions
  *
- * Server actions for importing public workflows and prompts to user's library.
+ * Server actions for importing public workflows and skills to user's library.
  */
 
 import { auth } from '@/server/auth/auth';
@@ -78,20 +78,20 @@ export async function importWorkflowAction(workflowId: string): Promise<ActionRe
 }
 
 /**
- * Import a public prompt to user's library
- * Creates a MiniPromptReference linking the user to the prompt
+ * Import a public skill to user's library
+ * Creates a SkillReference linking the user to the skill
  */
-export async function importPromptAction(promptId: string): Promise<ActionResult> {
+export async function importSkillAction(skillId: string): Promise<ActionResult> {
   const session = await auth();
   if (!session?.user?.id) {
     return { success: false, error: 'Unauthorized' };
   }
 
   try {
-    // Verify the prompt exists and is public
-    const prompt = await prisma.miniPrompt.findFirst({
+    // Verify the skill exists and is public
+    const skill = await prisma.skill.findFirst({
       where: {
-        id: promptId,
+        id: skillId,
         visibility: 'PUBLIC',
         isActive: true,
         deletedAt: null,
@@ -99,20 +99,20 @@ export async function importPromptAction(promptId: string): Promise<ActionResult
       select: { id: true, userId: true },
     });
 
-    if (!prompt) {
-      return { success: false, error: 'Prompt not found or not public' };
+    if (!skill) {
+      return { success: false, error: 'Skill not found or not public' };
     }
 
-    // Check if user already owns this prompt
-    if (prompt.userId === session.user.id) {
-      return { success: false, error: 'You already own this prompt' };
+    // Check if user already owns this skill
+    if (skill.userId === session.user.id) {
+      return { success: false, error: 'You already own this skill' };
     }
 
     // Check if already imported (reference exists)
-    const existing = await prisma.miniPromptReference.findFirst({
+    const existing = await prisma.skillReference.findFirst({
       where: {
         userId: session.user.id,
-        miniPromptId: promptId,
+        skillId,
       },
     });
 
@@ -122,10 +122,10 @@ export async function importPromptAction(promptId: string): Promise<ActionResult
 
     // Create reference
     await withRetry(() =>
-      prisma.miniPromptReference.create({
+      prisma.skillReference.create({
         data: {
           userId: session.user.id,
-          miniPromptId: promptId,
+          skillId,
         },
       })
     );
@@ -133,8 +133,8 @@ export async function importPromptAction(promptId: string): Promise<ActionResult
     revalidatePath('/dashboard/library');
     return { success: true };
   } catch (error) {
-    console.error('[DiscoverActions] importPrompt error:', error);
-    return { success: false, error: 'Failed to import prompt' };
+    console.error('[DiscoverActions] importSkill error:', error);
+    return { success: false, error: 'Failed to import skill' };
   }
 }
 
@@ -166,9 +166,9 @@ export async function checkWorkflowInLibraryAction(workflowId: string): Promise<
 }
 
 /**
- * Check if a prompt is already in user's library
+ * Check if a skill is already in user's library
  */
-export async function checkPromptInLibraryAction(promptId: string): Promise<{
+export async function checkSkillInLibraryAction(skillId: string): Promise<{
   inLibrary: boolean;
   owned: boolean;
 }> {
@@ -177,16 +177,16 @@ export async function checkPromptInLibraryAction(promptId: string): Promise<{
     return { inLibrary: false, owned: false };
   }
 
-  // Check if user owns the prompt
-  const owned = await prisma.miniPrompt.findFirst({
-    where: { id: promptId, userId: session.user.id },
+  // Check if user owns the skill
+  const owned = await prisma.skill.findFirst({
+    where: { id: skillId, userId: session.user.id },
     select: { id: true },
   });
   if (owned) return { inLibrary: true, owned: true };
 
-  // Check if user has a reference to the prompt
-  const reference = await prisma.miniPromptReference.findFirst({
-    where: { miniPromptId: promptId, userId: session.user.id },
+  // Check if user has a reference to the skill
+  const reference = await prisma.skillReference.findFirst({
+    where: { skillId, userId: session.user.id },
     select: { id: true },
   });
   return { inLibrary: !!reference, owned: false };

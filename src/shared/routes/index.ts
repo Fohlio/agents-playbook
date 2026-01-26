@@ -18,6 +18,7 @@ export const PUBLIC_ROUTES = {
  * Library routes (workflows under library)
  */
 export const LIBRARY_ROUTES = {
+  ROOT: "/dashboard/library",
   WORKFLOWS: {
     NEW: "/dashboard/library/workflows/new",
     EDIT: (id: string) => `/dashboard/library/workflows/${id}/constructor`,
@@ -30,6 +31,14 @@ export const LIBRARY_ROUTES = {
 } as const;
 
 /**
+ * Skills routes
+ */
+export const SKILLS_ROUTES = {
+  NEW: "/dashboard/skills/new",
+  EDIT: (id: string) => `/dashboard/skills/${id}/edit`,
+} as const;
+
+/**
  * Protected routes (authentication required)
  */
 export const PROTECTED_ROUTES = {
@@ -37,6 +46,7 @@ export const PROTECTED_ROUTES = {
   SETTINGS: "/dashboard/settings",
   DISCOVER: "/dashboard/discover",
   LIBRARY: "/dashboard/library",
+  SKILLS_STUDIO: "/dashboard/skills/studio",
   SHARING: "/dashboard/sharing",
   COMMUNITY: "/dashboard/community",
   GETTING_STARTED: "/dashboard/getting-started",
@@ -75,6 +85,7 @@ export const ROUTES = {
   ...PUBLIC_ROUTES,
   ...PROTECTED_ROUTES,
   LIBRARY: LIBRARY_ROUTES,
+  SKILLS: SKILLS_ROUTES,
   ADMIN: ADMIN_ROUTES,
   API: API_ROUTES,
 } as const;

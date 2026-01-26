@@ -3,17 +3,18 @@ import { prisma } from "@/server/db/client";
 
 /**
  * GET /api/public/recent
- * 
- * Returns the 10 most recent public workflows and 10 most recent public mini-prompts.
+ *
+ * Returns the 10 most recent public workflows and 10 most recent public skills.
  * This endpoint is used on the landing page and requires no authentication.
  */
 export async function GET() {
   try {
-    const [workflows, miniPrompts] = await Promise.all([
+    const [workflows, skills] = await Promise.all([
       prisma.workflow.findMany({
         where: {
           visibility: "PUBLIC",
           isActive: true,
+          deletedAt: null,
         },
         include: {
           user: {
@@ -44,11 +45,11 @@ export async function GET() {
         },
         take: 10,
       }),
-      prisma.miniPrompt.findMany({
+      prisma.skill.findMany({
         where: {
           visibility: "PUBLIC",
           isActive: true,
-          isAutomatic: false,
+          deletedAt: null,
         },
         include: {
           user: {
@@ -66,7 +67,7 @@ export async function GET() {
           },
           _count: {
             select: {
-              stageMiniPrompts: true,
+              attachments: true,
               references: true,
             },
           },
@@ -80,7 +81,7 @@ export async function GET() {
 
     return NextResponse.json({
       workflows,
-      miniPrompts,
+      skills,
     });
   } catch (error) {
     console.error("[GET /api/public/recent] Error:", error);
@@ -90,4 +91,3 @@ export async function GET() {
     );
   }
 }
-

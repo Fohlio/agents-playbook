@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useEffect } from 'react';
 
-export type SelectableItemType = 'folder' | 'workflow' | 'prompt';
+export type SelectableItemType = 'folder' | 'workflow' | 'prompt' | 'skill';
 
 export interface SelectableItem {
   id: string;

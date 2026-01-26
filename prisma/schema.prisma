@@ -33,6 +33,8 @@ model User {
   sharedLinks           SharedLink[]
   createdTags           Tag[]
   topics                Topic[]
+  skills                Skill[]
+  skillReferences       SkillReference[]
   workflowReferences    WorkflowReference[]
   workflows             Workflow[]
 
@@ -106,6 +108,7 @@ model WorkflowStage {
   includeMultiAgentChat Boolean           @default(false) @map("include_multi_agent_chat")
   itemOrder             Json?             @map("item_order")
   miniPrompts           StageMiniPrompt[]
+  stageSkills           StageSkill[]
   workflow              Workflow          @relation(fields: [workflowId], references: [id], onDelete: Cascade)
 
   @@index([workflowId])
@@ -258,6 +261,7 @@ model Tag {
   isActive       Boolean         @default(true) @map("is_active")
   createdBy      String          @map("created_by")
   miniPromptTags MiniPromptTag[]
+  skillTags      SkillTag[]
   creator        User            @relation(fields: [createdBy], references: [id])
   workflowTags   WorkflowTag[]
 
@@ -298,6 +302,7 @@ model Model {
   category         ModelCategory
   createdAt        DateTime          @default(now()) @map("created_at")
   miniPromptModels MiniPromptModel[]
+  skillModels      SkillModel[]
   workflowModels   WorkflowModel[]
 
   @@index([category])
@@ -357,6 +362,7 @@ model AIChatSession {
   userId        String        @map("user_id")
   workflowId    String?       @map("workflow_id")
   miniPromptId  String?       @map("mini_prompt_id")
+  skillId       String?       @map("skill_id")
   mode          String        @db.VarChar(50)
   lastMessageAt DateTime      @default(now()) @map("last_message_at")
   createdAt     DateTime      @default(now()) @map("created_at")
@@ -364,6 +370,7 @@ model AIChatSession {
   archivedAt    DateTime?     @map("archived_at")
   totalTokens   Int           @default(0) @map("total_tokens")
   miniPrompt    MiniPrompt?   @relation(fields: [miniPromptId], references: [id], onDelete: Cascade)
+  skill         Skill?        @relation(fields: [skillId], references: [id], onDelete: Cascade)
   user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
   workflow      Workflow?     @relation(fields: [workflowId], references: [id], onDelete: Cascade)
   messages      ChatMessage[]
@@ -371,6 +378,7 @@ model AIChatSession {
   @@index([userId])
   @@index([workflowId])
   @@index([miniPromptId])
+  @@index([skillId])
   @@index([mode])
   @@index([lastMessageAt])
   @@index([updatedAt])
@@ -497,6 +505,126 @@ model folders {
   @@index([deleted_at])
 }
 
+model Skill {
+  id             String            @id @default(uuid())
+  userId         String            @map("user_id")
+  name           String            @db.VarChar(255)
+  content        String
+  description    String?           @db.VarChar(1000)
+  key            String?           @unique @db.VarChar(100)
+  visibility     Visibility        @default(PRIVATE)
+  isActive       Boolean           @default(true) @map("is_active")
+  isSystemSkill  Boolean           @default(false) @map("is_system_skill")
+  position       Int               @default(0) @map("position")
+  deletedAt      DateTime?         @map("deleted_at")
+  createdAt      DateTime          @default(now()) @map("created_at")
+  updatedAt      DateTime          @updatedAt @map("updated_at")
+
+  user           User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  attachments    SkillAttachment[]
+  tags           SkillTag[]
+  embedding      SkillEmbedding?
+  stageSkills    StageSkill[]
+  models         SkillModel[]
+  references     SkillReference[]
+  aiChatSessions AIChatSession[]
+
+  @@index([userId])
+  @@index([key])
+  @@index([visibility])
+  @@index([isActive])
+  @@index([isSystemSkill])
+  @@index([createdAt])
+  @@index([userId, position])
+  @@index([deletedAt])
+  @@map("skills")
+}
+
+model SkillAttachment {
+  id        String   @id @default(uuid())
+  skillId   String   @map("skill_id")
+  fileName  String   @map("file_name") @db.VarChar(255)
+  fileSize  Int      @map("file_size")
+  mimeType  String   @map("mime_type") @db.VarChar(100)
+  blobUrl   String   @map("blob_url")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  skill     Skill    @relation(fields: [skillId], references: [id], onDelete: Cascade)
+
+  @@index([skillId])
+  @@map("skill_attachments")
+}
+
+model StageSkill {
+  id              String        @id @default(uuid())
+  workflowStageId String        @map("workflow_stage_id")
+  skillId         String        @map("skill_id")
+  order           Int           @default(0)
+
+  workflowStage   WorkflowStage @relation(fields: [workflowStageId], references: [id], onDelete: Cascade)
+  skill           Skill         @relation(fields: [skillId], references: [id], onDelete: Cascade)
+
+  @@unique([workflowStageId, skillId])
+  @@index([workflowStageId])
+  @@index([skillId])
+  @@map("stage_skills")
+}
+
+model SkillTag {
+  skillId String @map("skill_id")
+  tagId   String @map("tag_id")
+
+  skill   Skill  @relation(fields: [skillId], references: [id], onDelete: Cascade)
+  tag     Tag    @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([skillId, tagId])
+  @@index([skillId])
+  @@index([tagId])
+  @@map("skill_tags")
+}
+
+model SkillEmbedding {
+  id         String   @id @default(uuid())
+  skillId    String   @unique @map("skill_id")
+  embedding  Json
+  searchText String   @map("search_text")
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
+  skill      Skill    @relation(fields: [skillId], references: [id], onDelete: Cascade)
+
+  @@index([skillId])
+  @@map("skill_embeddings")
+}
+
+model SkillModel {
+  skillId String @map("skill_id")
+  modelId String @map("model_id")
+
+  skill   Skill  @relation(fields: [skillId], references: [id], onDelete: Cascade)
+  model   Model  @relation(fields: [modelId], references: [id], onDelete: Cascade)
+
+  @@id([skillId, modelId])
+  @@index([skillId])
+  @@index([modelId])
+  @@map("skill_models")
+}
+
+model SkillReference {
+  id      String   @id @default(uuid())
+  userId  String   @map("user_id")
+  skillId String   @map("skill_id")
+  addedAt DateTime @default(now()) @map("added_at")
+
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  skill   Skill    @relation(fields: [skillId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, skillId])
+  @@index([userId])
+  @@index([skillId])
+  @@map("skill_references")
+}
+
 enum UserTier {
   FREE
   PREMIUM
@@ -515,6 +643,7 @@ enum Visibility {
 enum TargetType {
   WORKFLOW
   MINI_PROMPT
+  SKILL
 }
 
 enum WorkflowComplexity {

@@ -5,10 +5,10 @@ import { ROUTES } from "@/shared/routes";
 import {
   getDashboardStats,
   getActiveWorkflows,
-  getActiveMiniPrompts,
+  getActiveSkills,
   DashboardStats,
   ActiveWorkflowsSection,
-  ActiveMiniPromptsSection,
+  ActiveSkillsSection,
   QuickActions,
 } from "@/views/dashboard";
 
@@ -16,7 +16,7 @@ import {
  * Dashboard Page - Cyberpunk Command Center
  *
  * Main landing page after user authentication.
- * Displays user statistics, active workflows, active mini-prompts, and quick actions.
+ * Displays user statistics, active workflows, active skills, and quick actions.
  */
 export default async function DashboardPage() {
   const session = await auth();
@@ -27,10 +27,10 @@ export default async function DashboardPage() {
   }
 
   // Fetch all dashboard data in parallel
-  const [stats, activeWorkflows, activeMiniPrompts] = await Promise.all([
+  const [stats, activeWorkflows, activeSkills] = await Promise.all([
     getDashboardStats(session.user.id),
     getActiveWorkflows(session.user.id),
-    getActiveMiniPrompts(session.user.id),
+    getActiveSkills(session.user.id),
   ]);
 
   const header = t('header');
@@ -58,8 +58,8 @@ export default async function DashboardPage() {
       {/* Active Workflows */}
       <ActiveWorkflowsSection workflows={activeWorkflows} />
 
-      {/* Active Mini-Prompts */}
-      <ActiveMiniPromptsSection miniPrompts={activeMiniPrompts} />
+      {/* Active Skills */}
+      <ActiveSkillsSection skills={activeSkills} />
     </div>
   );
 }

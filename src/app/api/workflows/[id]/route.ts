@@ -3,31 +3,38 @@ import { auth } from '@/server/auth/auth';
 import { prisma } from '@/server/db/client';
 import { userWorkflowEmbeddings } from '@/server/embeddings/user-workflow-embeddings';
 
-export async function PATCH(
-  request: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
+/**
+ * Verify user is authenticated and owns the workflow
+ */
+async function verifyWorkflowAccess(workflowId: string) {
   const session = await auth();
-
   if (!session?.user?.id) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    return { error: NextResponse.json({ error: 'Unauthorized' }, { status: 401 }) };
   }
 
-  const { id } = await params;
-
-  // Verify ownership
   const workflow = await prisma.workflow.findUnique({
-    where: { id },
+    where: { id: workflowId },
     select: { userId: true },
   });
 
   if (!workflow) {
-    return NextResponse.json({ error: 'Workflow not found' }, { status: 404 });
+    return { error: NextResponse.json({ error: 'Workflow not found' }, { status: 404 }) };
   }
 
   if (workflow.userId !== session.user.id) {
-    return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    return { error: NextResponse.json({ error: 'Forbidden' }, { status: 403 }) };
   }
+
+  return { userId: session.user.id };
+}
+
+export async function PATCH(
+  request: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const { id } = await params;
+  const access = await verifyWorkflowAccess(id);
+  if ('error' in access) return access.error;
 
   const body = await request.json();
 
@@ -48,10 +55,12 @@ export async function PATCH(
 
   const updated = await prisma.workflow.update({
     where: { id },
-    data: { isActive: body.isActive },
+    data: {
+      ...(body.isActive !== undefined && { isActive: body.isActive }),
+      ...(body.visibility !== undefined && { visibility: body.visibility }),
+    },
   });
 
-  // Trigger embedding regeneration if tags changed (tags affect searchability)
   if (body.tagIds !== undefined) {
     userWorkflowEmbeddings.syncWorkflowEmbedding(id).catch((error) => {
       console.error('[PATCH /api/workflows/[id]] Failed to regenerate embedding:', error);
@@ -65,27 +74,9 @@ export async function DELETE(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const session = await auth();
-
-  if (!session?.user?.id) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
-
   const { id } = await params;
-
-  // Verify ownership
-  const workflow = await prisma.workflow.findUnique({
-    where: { id },
-    select: { userId: true },
-  });
-
-  if (!workflow) {
-    return NextResponse.json({ error: 'Workflow not found' }, { status: 404 });
-  }
-
-  if (workflow.userId !== session.user.id) {
-    return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
-  }
+  const access = await verifyWorkflowAccess(id);
+  if ('error' in access) return access.error;
 
   await prisma.workflow.delete({
     where: { id },

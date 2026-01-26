@@ -62,7 +62,8 @@ export function ChatSidebar({
   } = useAIChatSessions({
     mode,
     workflowId: workflowContext?.workflow?.id,
-    miniPromptId: undefined,
+    miniPromptId: workflowContext?.currentMiniPrompt?.id,
+    skillId: workflowContext?.currentSkill?.id,
   });
 
   const { loadSession: fetchSession, isLoading: isLoadingSession } =
@@ -88,7 +89,6 @@ export function ChatSidebar({
   }, [messages]);
 
   useEffect(() => {
-    console.log('[ChatSidebar] isOpen changed to:', isOpen);
     if (isOpen) {
       inputRef.current?.focus();
     }
@@ -115,7 +115,7 @@ export function ChatSidebar({
               {t('beta')}
             </span>
             <span className="text-xs text-cyan-100/40">
-              ({mode === 'workflow' ? t('mode.workflow') : t('mode.prompt')})
+              ({mode === 'workflow' ? t('mode.workflow') : mode === 'skill' ? t('mode.skill') : t('mode.prompt')})
             </span>
           </h2>
         </div>
@@ -130,10 +130,7 @@ export function ChatSidebar({
           </button>
           <button
             onClick={() => {
-              if (isLoading) {
-                console.warn('[ChatSidebar] Prevented close during AI processing');
-                return;
-              }
+              if (isLoading) return;
               onClose();
             }}
             className="p-2 hover:bg-cyan-500/10 transition-colors cursor-pointer"
@@ -330,6 +327,8 @@ export function ChatSidebar({
             placeholder={
               mode === 'workflow'
                 ? t('describeWorkflow')
+                : mode === 'skill'
+                ? t('describeSkill')
                 : t('describePrompt')
             }
             className="flex-1 px-3 py-2 bg-[#050508]/50 border border-purple-500/50 text-cyan-100 font-mono text-sm placeholder:text-cyan-500/30 focus:outline-none focus:border-purple-400 focus:shadow-[0_0_15px_rgba(168,85,247,0.2)] resize-none transition-all"

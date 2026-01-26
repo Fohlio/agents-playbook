@@ -53,7 +53,8 @@
     "github": "GitHub",
     "toggleMenu": "Переключить меню",
     "toggleSidebar": "Переключить боковую панель",
-    "systemOnline": "Система онлайн"
+    "systemOnline": "Система онлайн",
+    "skills": "Навыки"
   },
   "landing": {
     "header": {
@@ -823,6 +824,7 @@
     "toolsCalled": "Вызвано инструментов",
     "processing": "Обработка...",
     "describeWorkflow": "Опишите воркфлоу...",
+    "describeSkill": "Опишите, что вы хотите улучшить в этом навыке...",
     "describePrompt": "Опишите промпт...",
     "inputHint": "Enter = Отправить | Shift+Enter = Новая строка",
     "addKey": "Добавить ключ",
@@ -831,7 +833,8 @@
     "sessionStats": "{messages} сообщ. · {tokens} токенов",
     "mode": {
       "workflow": "Воркфлоу",
-      "prompt": "Промпт"
+      "prompt": "Промпт",
+      "skill": "Навык"
     },
     "apiKeyModal": {
       "title": "Добавить API ключ OpenAI",
@@ -1333,5 +1336,50 @@
     "directories": "Директории",
     "workflows": "Воркфлоу",
     "miniPrompts": "Мини-промпты"
+  },
+  "skillStudio": {
+    "title": "Студия навыков",
+    "createTitle": "Новый навык",
+    "editTitle": "Редактировать навык",
+    "name": "Название",
+    "namePlaceholder": "Введите название навыка...",
+    "description": "Описание",
+    "descriptionPlaceholder": "Краткое описание назначения навыка...",
+    "content": "Содержимое (Markdown)",
+    "contentPlaceholder": "Напишите содержимое навыка в формате Markdown...",
+    "noContent": "Пока нет содержимого",
+    "preview": "Просмотр",
+    "edit": "Редактировать",
+    "save": "Сохранить",
+    "saving": "Сохранение...",
+    "saved": "Сохранено",
+    "error": "Ошибка",
+    "unsavedChanges": "Несохранённые изменения",
+    "metadata": "Метаданные",
+    "visibility": "Видимость",
+    "visibilityPrivate": "Приватный",
+    "visibilityPublic": "Публичный",
+    "tags": "Теги",
+    "tagsPlaceholder": "Добавить теги...",
+    "models": "Модели ИИ",
+    "modelsPlaceholder": "Выберите модели...",
+    "attachments": "Вложения",
+    "dropFiles": "Перетащите файлы сюда или нажмите для загрузки",
+    "saveFirst": "Сначала сохраните навык для загрузки вложений",
+    "uploadLimit": "Макс. 10 МБ на файл, 50 МБ всего",
+    "deleteAttachment": "Удалить вложение",
+    "fileExplorer": "Проводник файлов",
+    "files": "файлов",
+    "aiAssistant": "ИИ-ассистент",
+    "backToLibrary": "Назад в библиотеку",
+    "created": "Создано",
+    "updated": "Обновлено",
+    "author": "Автор",
+    "editSkill": "Редактировать",
+    "duplicate": "Дублировать",
+    "copy": "Копировать",
+    "download": "Скачать",
+    "binaryPreview": "Бинарный файл не может быть отображён. Нажмите для скачивания.",
+    "skills": "Навыки"
   }
 }

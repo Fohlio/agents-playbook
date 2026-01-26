@@ -13,6 +13,7 @@
 export { DashboardStats } from "./components/DashboardStats";
 export { ActiveWorkflowsSection } from "./components/ActiveWorkflowsSection";
 export { ActiveMiniPromptsSection } from "./components/ActiveMiniPromptsSection";
+export { ActiveSkillsSection } from "./components/ActiveSkillsSection";
 export { QuickActions } from "./components/QuickActions";
 
 // ============================================================================
@@ -26,6 +27,11 @@ export {
   getMiniPrompts,
   getRecentActivity,
 } from "./lib/dashboard-service";
+
+export {
+  getActiveSkills,
+  deactivateSkill,
+} from "./lib/skills-service";
 
 // ============================================================================
 // Actions (Mutations)
@@ -53,3 +59,5 @@ export type {
   MiniPromptWithUsage,
   ActivityItem,
 } from "./lib/dashboard-service";
+
+export type { ActiveSkillData } from "./components/ActiveSkillsSection";

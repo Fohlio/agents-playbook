@@ -12,10 +12,9 @@ import { ItemContextMenu, ContextMenuPosition, ContextMenuItem } from './compone
 import { TrashView } from './components/TrashView';
 import { DiscoverView } from './components/DiscoverView';
 import { UncategorizedPromptState } from './components/LibraryEmptyStates';
-import { PromptPreviewModal } from './components/PromptPreviewModal';
 import { useLibraryNavigation } from './hooks/useLibraryNavigation';
 import { useSelection, SelectableItem } from './hooks/useSelection';
-import { FolderWithItems, WorkflowWithMeta, PromptWithMeta, TrashedItem } from '@/server/folders/types';
+import { FolderWithItems, WorkflowWithMeta, SkillWithFolderMeta, TrashedItem } from '@/server/folders/types';
 import { Tabs } from '@/shared/ui/molecules/Tabs';
 import { ROUTES } from '@/shared/routes';
 import {
@@ -36,7 +35,7 @@ import {
 } from './actions/trash-actions';
 import {
   importWorkflowAction,
-  importPromptAction,
+  importSkillAction,
 } from './actions/discover-actions';
 
 /**
@@ -63,12 +62,12 @@ export function LibraryPage() {
   const [folders, setFolders] = useState<FolderWithItems[]>([]);
   const [currentFolderData, setCurrentFolderData] = useState<{
     workflows: WorkflowWithMeta[];
-    prompts: PromptWithMeta[];
-  }>({ workflows: [], prompts: [] });
+    skills: SkillWithFolderMeta[];
+  }>({ workflows: [], skills: [] });
   const [uncategorizedData, setUncategorizedData] = useState<{
     workflows: WorkflowWithMeta[];
-    prompts: PromptWithMeta[];
-  }>({ workflows: [], prompts: [] });
+    skills: SkillWithFolderMeta[];
+  }>({ workflows: [], skills: [] });
   const [trashedItems, setTrashedItems] = useState<TrashedItem[]>([]);
 
   // UI state
@@ -79,20 +78,14 @@ export function LibraryPage() {
     items: ContextMenuItem[];
   }>({ position: null, items: [] });
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
-  const [previewPrompt, setPreviewPrompt] = useState<PromptWithMeta | null>(null);
 
-  // Check for prompt preview from URL
+  // Check for skill edit from URL - navigate to skill studio
   useEffect(() => {
-    const promptId = searchParams.get('prompt');
-    if (promptId) {
-      // Find the prompt in current data
-      const allPrompts = [...uncategorizedData.prompts, ...currentFolderData.prompts];
-      const prompt = allPrompts.find(p => p.id === promptId);
-      if (prompt) {
-        setPreviewPrompt(prompt);
-      }
+    const skillId = searchParams.get('skill');
+    if (skillId) {
+      router.push(ROUTES.SKILLS.EDIT(skillId));
     }
-  }, [searchParams, uncategorizedData.prompts, currentFolderData.prompts]);
+  }, [searchParams, router]);
 
   // Build selectable items list for the selection hook
   const selectableItems = useMemo((): SelectableItem[] => {
@@ -103,10 +96,10 @@ export function LibraryPage() {
       folders.forEach((f) => items.push({ id: f.id, type: 'folder' }));
     }
 
-    // Add workflows and prompts based on current view
+    // Add workflows and skills based on current view
     const viewData =
       navigation.view === 'trash'
-        ? { workflows: [], prompts: [] } // Trash has its own selection
+        ? { workflows: [], skills: [] } // Trash has its own selection
         : navigation.view === 'uncategorized'
           ? uncategorizedData
           : navigation.currentFolderId
@@ -114,7 +107,7 @@ export function LibraryPage() {
             : uncategorizedData;
 
     viewData.workflows.forEach((w) => items.push({ id: w.id, type: 'workflow' }));
-    viewData.prompts.forEach((p) => items.push({ id: p.id, type: 'prompt' }));
+    viewData.skills.forEach((s) => items.push({ id: s.id, type: 'skill' }));
 
     return items;
   }, [
@@ -152,7 +145,7 @@ export function LibraryPage() {
           const data = await response.json();
           setCurrentFolderData({
             workflows: data.workflows || [],
-            prompts: data.prompts || [],
+            skills: data.skills || [],
           });
           // Find and set current folder
           const folder = folders.find((f) => f.id === folderId);
@@ -173,7 +166,7 @@ export function LibraryPage() {
         const data = await response.json();
         setUncategorizedData({
           workflows: data.workflows || [],
-          prompts: data.prompts || [],
+          skills: data.skills || [],
         });
       }
     } catch (error) {
@@ -220,7 +213,7 @@ export function LibraryPage() {
       fetchFolderContents(navigation.currentFolderId);
     } else {
       setCurrentFolder(null);
-      setCurrentFolderData({ workflows: [], prompts: [] });
+      setCurrentFolderData({ workflows: [], skills: [] });
     }
   }, [navigation.currentFolderId, fetchFolderContents]);
 
@@ -234,7 +227,7 @@ export function LibraryPage() {
 
   // Compute counts
   const uncategorizedCount =
-    uncategorizedData.workflows.length + uncategorizedData.prompts.length;
+    uncategorizedData.workflows.length + uncategorizedData.skills.length;
   const trashCount = trashedItems.length;
 
   // Build breadcrumbs
@@ -283,7 +276,7 @@ export function LibraryPage() {
 
   // Selection handlers
   const handleSelectItem = useCallback(
-    (id: string, type: 'folder' | 'workflow' | 'prompt', event: MouseEvent) => {
+    (id: string, type: 'folder' | 'workflow' | 'skill', event: MouseEvent) => {
       selection.handleItemClick(id, event);
     },
     [selection]
@@ -294,7 +287,7 @@ export function LibraryPage() {
   const handleContextMenu = useCallback(
     (
       event: MouseEvent,
-      items: { id: string; type: 'folder' | 'workflow' | 'prompt'; name: string; visibility?: 'PUBLIC' | 'PRIVATE' }[]
+      items: { id: string; type: 'folder' | 'workflow' | 'skill'; name: string; visibility?: 'PUBLIC' | 'PRIVATE' }[]
     ) => {
       event.preventDefault();
       setContextMenu({
@@ -373,8 +366,8 @@ export function LibraryPage() {
     router.push(ROUTES.LIBRARY.WORKFLOWS.NEW);
   }, [router]);
 
-  const handleCreatePrompt = useCallback(() => {
-    router.push(ROUTES.LIBRARY.MINI_PROMPTS.NEW);
+  const handleCreateSkill = useCallback(() => {
+    router.push(ROUTES.SKILLS.NEW);
   }, [router]);
 
   const handleOpenWorkflow = useCallback(
@@ -384,32 +377,19 @@ export function LibraryPage() {
     [router]
   );
 
-  const handleOpenPrompt = useCallback(
-    (promptId: string) => {
-      // Find the prompt and show preview modal
-      const allPrompts = [...uncategorizedData.prompts, ...currentFolderData.prompts];
-      const prompt = allPrompts.find(p => p.id === promptId);
-      if (prompt) {
-        setPreviewPrompt(prompt);
-      }
+  const handleOpenSkill = useCallback(
+    (skillId: string) => {
+      router.push(ROUTES.SKILLS.EDIT(skillId));
     },
-    [uncategorizedData.prompts, currentFolderData.prompts]
+    [router]
   );
 
-  const handleClosePromptPreview = useCallback(() => {
-    setPreviewPrompt(null);
-    // Remove prompt param from URL if present
-    const url = new URL(window.location.href);
-    url.searchParams.delete('prompt');
-    router.replace(url.pathname + url.search);
-  }, [router]);
-
-  // Helper to get selected workflows/prompts mapped to server action format
+  // Helper to get selected workflows/skills mapped to server action format
   const getSelectedFolderItems = useCallback(() => {
     return selection.getSelectedItems()
-      .filter((item) => item.type === 'workflow' || item.type === 'prompt')
+      .filter((item) => item.type === 'workflow' || item.type === 'skill')
       .map((item) => ({
-        type: item.type === 'workflow' ? ('WORKFLOW' as const) : ('MINI_PROMPT' as const),
+        type: item.type === 'workflow' ? ('WORKFLOW' as const) : ('SKILL' as const),
         id: item.id,
       }));
   }, [selection]);
@@ -473,7 +453,7 @@ export function LibraryPage() {
           ? ('FOLDER' as const)
           : item.type === 'workflow'
             ? ('WORKFLOW' as const)
-            : ('MINI_PROMPT' as const),
+            : ('SKILL' as const),
       id: item.id,
     }));
 
@@ -495,7 +475,7 @@ export function LibraryPage() {
     return items
       .filter((i) => i.type !== 'folder')
       .map((item) => ({
-        type: item.type === 'workflow' ? ('WORKFLOW' as const) : ('MINI_PROMPT' as const),
+        type: item.type === 'workflow' ? ('WORKFLOW' as const) : ('SKILL' as const),
         id: item.id,
       }));
   };
@@ -560,7 +540,7 @@ export function LibraryPage() {
             ? ('FOLDER' as const)
             : item.type === 'workflow'
               ? ('WORKFLOW' as const)
-              : ('MINI_PROMPT' as const),
+              : ('SKILL' as const),
         id: item.id,
       }));
 
@@ -681,7 +661,7 @@ export function LibraryPage() {
         onSearchChange={navigation.setSearchQuery}
         onCreateFolder={handleCreateFolder}
         onCreateWorkflow={handleCreateWorkflow}
-        onCreatePrompt={handleCreatePrompt}
+        onCreateSkill={handleCreateSkill}
         viewMode={viewMode}
         onViewModeChange={setViewMode}
         selectedCount={selection.selectedCount}
@@ -712,13 +692,13 @@ export function LibraryPage() {
           viewMode={viewMode}
           folders={navigation.view === 'root' ? folders : []}
           workflows={currentViewData.workflows}
-          prompts={currentViewData.prompts}
+          skills={currentViewData.skills}
           searchQuery={navigation.searchQuery}
           selectedIds={selection.selectedIds}
           onSelectItem={handleSelectItem}
           onOpenFolder={navigation.navigateToFolder}
           onOpenWorkflow={handleOpenWorkflow}
-          onOpenPrompt={handleOpenPrompt}
+          onOpenSkill={handleOpenSkill}
           onRenameFolder={handleRenameFolder}
           onDeleteFolder={handleDeleteFolder}
           onCreateFolder={handleCreateFolder}
@@ -759,7 +739,7 @@ export function LibraryPage() {
           } else if (item?.type === 'workflow') {
             handleOpenWorkflow(id);
           } else {
-            handleOpenPrompt(id);
+            handleOpenSkill(id);
           }
           closeContextMenu();
         }}
@@ -790,13 +770,13 @@ export function LibraryPage() {
     }
   }, [refreshData]);
 
-  const handleImportPrompt = useCallback(async (promptId: string) => {
-    const result = await importPromptAction(promptId);
+  const handleImportSkill = useCallback(async (skillId: string) => {
+    const result = await importSkillAction(skillId);
     if (result.success) {
       // Optionally refresh library data after import
       await refreshData();
     } else {
-      alert(result.error || 'Failed to import prompt');
+      alert(result.error || 'Failed to import skill');
     }
   }, [refreshData]);
 
@@ -834,7 +814,7 @@ export function LibraryPage() {
       <DiscoverView
         searchQuery={discoverSearchQuery}
         onImportWorkflow={handleImportWorkflow}
-        onImportPrompt={handleImportPrompt}
+        onImportSkill={handleImportSkill}
       />
     </div>
   );
@@ -855,12 +835,6 @@ export function LibraryPage() {
             content: discoverContent,
           },
         ]}
-      />
-
-      {/* Prompt Preview Modal */}
-      <PromptPreviewModal
-        prompt={previewPrompt}
-        onClose={handleClosePromptPreview}
       />
     </div>
   );

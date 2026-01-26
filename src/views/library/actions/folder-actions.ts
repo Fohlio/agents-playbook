@@ -25,7 +25,7 @@ const renameFolderSchema = z.object({
 });
 
 const folderItemSchema = z.object({
-  type: z.enum(["WORKFLOW", "MINI_PROMPT"]),
+  type: z.enum(["WORKFLOW", "MINI_PROMPT", "SKILL"]),
   id: z.string().uuid("Invalid item ID"),
 });
 
@@ -43,7 +43,7 @@ const moveToFolderSchema = z.object({
 const bulkTrashSchema = z.object({
   items: z.array(
     z.object({
-      type: z.enum(["WORKFLOW", "MINI_PROMPT", "FOLDER"]),
+      type: z.enum(["WORKFLOW", "MINI_PROMPT", "SKILL", "FOLDER"]),
       id: z.string().uuid("Invalid item ID"),
     })
   ).min(1, "At least one item required"),
@@ -166,7 +166,7 @@ export async function deleteFolderAction(folderId: string): Promise<ActionResult
  */
 export async function addToFolderAction(
   folderId: string,
-  items: { type: "WORKFLOW" | "MINI_PROMPT"; id: string }[]
+  items: { type: "WORKFLOW" | "MINI_PROMPT" | "SKILL"; id: string }[]
 ): Promise<ActionResult> {
   try {
     const session = await auth();
@@ -208,7 +208,7 @@ export async function addToFolderAction(
  */
 export async function removeFromFolderAction(
   folderId: string,
-  items: { type: "WORKFLOW" | "MINI_PROMPT"; id: string }[]
+  items: { type: "WORKFLOW" | "MINI_PROMPT" | "SKILL"; id: string }[]
 ): Promise<ActionResult> {
   try {
     const session = await auth();
@@ -245,7 +245,7 @@ export async function removeFromFolderAction(
  */
 export async function moveToFolderAction(
   targetFolderId: string,
-  items: { type: "WORKFLOW" | "MINI_PROMPT"; id: string }[],
+  items: { type: "WORKFLOW" | "MINI_PROMPT" | "SKILL"; id: string }[],
   sourceFolderId?: string
 ): Promise<ActionResult> {
   try {
@@ -304,7 +304,7 @@ export async function moveToFolderAction(
  * Bulk move items to trash
  */
 export async function bulkMoveToTrashAction(
-  items: { type: "WORKFLOW" | "MINI_PROMPT" | "FOLDER"; id: string }[]
+  items: { type: "WORKFLOW" | "MINI_PROMPT" | "SKILL" | "FOLDER"; id: string }[]
 ): Promise<ActionResult> {
   try {
     const session = await auth();
@@ -319,16 +319,16 @@ export async function bulkMoveToTrashAction(
 
     // Handle folders separately
     const folders = validation.data.items.filter((i) => i.type === "FOLDER");
-    const workflowsAndPrompts = validation.data.items.filter((i) => i.type !== "FOLDER");
+    const workflowsPromptsAndSkills = validation.data.items.filter((i) => i.type !== "FOLDER");
 
     // Delete folders
     for (const folder of folders) {
       await folderService.deleteFolder(folder.id, session.user.id);
     }
 
-    // Trash workflows and prompts
-    if (workflowsAndPrompts.length > 0) {
-      const mappedItems = workflowsAndPrompts.map((item) => ({
+    // Trash workflows, prompts and skills
+    if (workflowsPromptsAndSkills.length > 0) {
+      const mappedItems = workflowsPromptsAndSkills.map((item) => ({
         targetType: item.type as FolderTargetType,
         targetId: item.id,
       }));

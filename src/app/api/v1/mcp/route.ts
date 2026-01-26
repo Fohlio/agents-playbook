@@ -6,23 +6,12 @@ import { z } from 'zod';
 import { dbSemanticSearch } from '@/server/workflows/db-semantic-search';
 import { unifiedWorkflowService } from '@/server/workflows/unified-workflow-service';
 import { executionPlanBuilder } from '@/server/mcp-tools-db/execution-plan-builder';
-// Import database-backed handlers for prompts (already using DB)
-import {
-  getPromptsToolSchema,
-  getPromptsHandler,
-  getSelectedPromptToolSchema,
-  getSelectedPromptHandler,
-} from '@/server/mcp-tools';
 // Import auth helpers
 import { getUserId, extractUserIdFromRequest, userIdStorage } from '@/server/mcp-tools-db/mcp-auth-helpers';
-// Import new CRUD handlers
+// Import CRUD handlers
 import {
   getWorkflowToolSchema,
   getWorkflowHandler,
-  addPromptToolSchema,
-  addPromptHandler,
-  editPromptToolSchema,
-  editPromptHandler,
   addWorkflowToolSchema,
   addWorkflowHandler,
   editWorkflowToolSchema,
@@ -33,6 +22,11 @@ import {
   createFolderToolSchema,
   createFolderHandler,
 } from '@/server/mcp-tools-db';
+// Import skill handlers
+import { getSkillsToolSchema, getSkillsHandler } from '@/server/mcp-tools-db/get-skills-handler';
+import { getSelectedSkillToolSchema, getSelectedSkillHandler } from '@/server/mcp-tools-db/get-selected-skill-handler';
+import { addSkillToolSchema, addSkillHandler } from '@/server/mcp-tools-db/add-skill-handler';
+import { editSkillToolSchema, editSkillHandler } from '@/server/mcp-tools-db/edit-skill-handler';
 // Load environment variables
 config();
 
@@ -202,6 +196,8 @@ const handler = createMcpHandler(
             const icon = step.autoPromptType === 'memory-board' ? '📋' : '🤖';
             const badge = step.autoPromptType === 'memory-board' ? '[REVIEW]' : '[AUTO]';
             response += `**Type:** ${icon} ${badge}\n\n`;
+          } else if (step.type === 'skill') {
+            response += `**Type:** 🛠️ Skill\n\n`;
           } else {
             response += `**Type:** Mini-prompt\n\n`;
           }
@@ -212,12 +208,22 @@ const handler = createMcpHandler(
             response += `${step.description}\n\n`;
           }
 
-          // Add prompt content
+          // Add prompt/skill content
           if (step.content) {
             response += `---\n\n${step.content}\n\n`;
-            
-            // Add instruction to follow steps (only for mini-prompt types, not auto-prompts)
-            if (step.type === 'mini-prompt') {
+
+            // Add attachment info for skills
+            if (step.type === 'skill' && step.attachments && step.attachments.length > 0) {
+              response += `### Attachments\n\n`;
+              for (const att of step.attachments) {
+                const sizeKB = Math.round(att.fileSize / 1024);
+                response += `- **${att.fileName}** (${att.mimeType}, ${sizeKB}KB)\n  URL: ${att.blobUrl}\n`;
+              }
+              response += `\n`;
+            }
+
+            // Add instruction to follow steps (for mini-prompt and skill types, not auto-prompts)
+            if (step.type === 'mini-prompt' || step.type === 'skill') {
               response += `---\n\n**⚠️ Important:** Strictly follow all the steps outlined above.\n\n`;
             }
           }
@@ -254,28 +260,28 @@ const handler = createMcpHandler(
       },
     );
 
-    // Tool 4: Get mini prompts
-    // - No auth: Returns public active mini prompts
-    // - With auth: Returns active mini prompts from user's library
+    // Tool 4: Get skills
+    // - No auth: Returns public system skills
+    // - With auth: Returns active skills from user's library
     server.tool(
-      'get_prompts',
-      'Get mini prompts. Without auth: public active prompts. With auth: active prompts from your library.',
-      getPromptsToolSchema,
-      async ({ search }) => {
+      'get_skills',
+      'Get skills. Without auth: public system skills. With auth: active skills from your library.',
+      getSkillsToolSchema,
+      async ({ search, task_description }) => {
         const userId = await getUserId();
-
-        return await getPromptsHandler({ search, userId: userId || undefined });
+        return await getSkillsHandler({ search, task_description }, userId);
       },
     );
 
-    // Tool 5: Get selected mini prompt details
-    // Supports lookup by ID or by unique key (for system prompts)
+    // Tool 5: Get selected skill details
+    // Supports lookup by ID or by unique key
     server.tool(
-      'get_selected_prompt',
-      'Get complete details and content for a specific mini prompt. Supports lookup by ID or by unique key (for system prompts).',
-      getSelectedPromptToolSchema,
-      async ({ prompt_id, key }) => {
-        return await getSelectedPromptHandler({ prompt_id, key });
+      'get_selected_skill',
+      'Get complete details and content for a specific skill. Supports lookup by ID or by unique key.',
+      getSelectedSkillToolSchema,
+      async ({ skill_id, key }) => {
+        const userId = await getUserId();
+        return await getSelectedSkillHandler({ skill_id, key }, userId);
       },
     );
 
@@ -315,27 +321,27 @@ const handler = createMcpHandler(
       },
     );
 
-    // Tool 9: Add new prompt
+    // Tool 9: Add new skill
     // Requires authentication
     server.tool(
-      'add_prompt',
-      'Create a new mini-prompt with optional tags. Can optionally add to a folder. Requires authentication.',
-      addPromptToolSchema,
-      async ({ name, content, description, visibility, tags, folder_id }) => {
+      'add_skill',
+      'Create a new skill with markdown content and optional tags. Can optionally add to a folder. Requires authentication.',
+      addSkillToolSchema,
+      async ({ name, content, description, visibility, tags, folder_id, folder }) => {
         const userId = await getUserId();
-        return await addPromptHandler({ name, content, description, visibility, tags, folder_id }, userId);
+        return await addSkillHandler({ name, content, description, visibility, tags, folder_id, folder }, userId);
       },
     );
 
-    // Tool 10: Edit existing prompt
+    // Tool 10: Edit existing skill
     // Requires authentication and ownership
     server.tool(
-      'edit_prompt',
-      'Update an existing mini-prompt. Requires authentication and ownership.',
-      editPromptToolSchema,
-      async ({ prompt_id, name, content, description, visibility, is_active, tags }) => {
+      'edit_skill',
+      'Update an existing skill. Requires authentication and ownership.',
+      editSkillToolSchema,
+      async ({ skill_id, name, content, description, visibility, is_active, tags }) => {
         const userId = await getUserId();
-        return await editPromptHandler({ prompt_id, name, content, description, visibility, is_active, tags }, userId);
+        return await editSkillHandler({ skill_id, name, content, description, visibility, is_active, tags }, userId);
       },
     );
 

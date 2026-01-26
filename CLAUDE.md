@@ -26,6 +26,9 @@ npm run build:embeddings # Generate OpenAI embeddings
 ## Startup Hub
 **Project Slug:** `agents-playbook-Rjm09y`
 
+## Stitch (UI Design)
+**Agents Playbook Cyberpunk Landing Page:** `projects/8677603339170374500`
+
 ## UI Learnings
 
 ### Key Principles
