@@ -40,7 +40,7 @@ export const MarkdownContent: React.FC<MarkdownContentProps> = ({
   return (
     <div
       data-testid={testId}
-      className={className}
+      className={`${colors.text} ${className}`.trim()}
     >
       <ReactMarkdown
         remarkPlugins={[remarkGfm, remarkBreaks]}

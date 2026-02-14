@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { DndProvider } from 'react-dnd';
@@ -12,6 +12,7 @@ import { useWorkflowAIIntegration } from '../lib/use-workflow-ai-integration';
 import { MiniPromptLibrary } from './MiniPromptLibrary';
 import { StageSection } from './StageSection';
 import { StageCreateForm } from './StageCreateForm';
+import { MiniPromptEditorModal } from './MiniPromptEditorModal';
 import { createWorkflow } from '../actions/workflow-actions';
 import { Tooltip } from '@/shared/ui/molecules';
 import { ChatSidebar } from '@/features/ai-assistant/components/ChatSidebar';
@@ -29,6 +30,12 @@ export function WorkflowConstructorWrapper({
 }: WorkflowConstructorWrapperProps) {
   const router = useRouter();
   const t = useTranslations('workflowConstructorWrapper');
+  const [previewMiniPrompt, setPreviewMiniPrompt] = useState<{
+    id: string;
+    name: string;
+    description?: string | null;
+    content: string;
+  } | null>(null);
 
   const reset = useWorkflowConstructorStore((s) => s.reset);
   const setMiniPrompts = useWorkflowConstructorStore((s) => s.setMiniPrompts);
@@ -281,6 +288,7 @@ export function WorkflowConstructorWrapper({
                       onEditStage={handleEditStage}
                       onMiniPromptClick={(miniPrompt) => {
                         setViewingMiniPromptId(miniPrompt.id);
+                        setPreviewMiniPrompt(miniPrompt);
                       }}
                     />
                   );
@@ -387,6 +395,18 @@ export function WorkflowConstructorWrapper({
             includeMultiAgentChat,
           ])}
           onToolCall={handleToolCall}
+        />
+
+        <MiniPromptEditorModal
+          isOpen={!!previewMiniPrompt}
+          onClose={() => setPreviewMiniPrompt(null)}
+          viewOnly={true}
+          initialData={previewMiniPrompt ? {
+            name: previewMiniPrompt.name,
+            description: previewMiniPrompt.description || '',
+            content: previewMiniPrompt.content,
+            visibility: 'PRIVATE',
+          } : undefined}
         />
 
         {/* Floating AI Assistant Button */}

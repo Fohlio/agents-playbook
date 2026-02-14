@@ -62,6 +62,12 @@ export function WorkflowConstructor({ data, readOnly }: WorkflowConstructorProps
   } = useWorkflowConstructorStore();
 
   const [editingMiniPrompt, setEditingMiniPrompt] = useState<typeof miniPrompts[0] | null>(null);
+  const [previewMiniPrompt, setPreviewMiniPrompt] = useState<{
+    id: string;
+    name: string;
+    description?: string | null;
+    content: string;
+  } | null>(null);
 
   useEffect(() => {
     if (editingMiniPrompt) {
@@ -273,6 +279,7 @@ export function WorkflowConstructor({ data, readOnly }: WorkflowConstructorProps
           onCreateStageClick={() => setIsCreatingStage(true)}
           onMiniPromptClick={(miniPrompt) => {
             setViewingMiniPromptId(miniPrompt.id);
+            setPreviewMiniPrompt(miniPrompt);
           }}
         />
 
@@ -312,6 +319,18 @@ export function WorkflowConstructor({ data, readOnly }: WorkflowConstructorProps
           content: editingMiniPrompt.content,
           visibility: editingMiniPrompt.visibility as 'PUBLIC' | 'PRIVATE',
           key: editingMiniPrompt.key,
+        } : undefined}
+      />
+
+      <MiniPromptEditorModal
+        isOpen={!!previewMiniPrompt}
+        onClose={() => setPreviewMiniPrompt(null)}
+        viewOnly={true}
+        initialData={previewMiniPrompt ? {
+          name: previewMiniPrompt.name,
+          description: previewMiniPrompt.description || '',
+          content: previewMiniPrompt.content,
+          visibility: 'PRIVATE',
         } : undefined}
       />
     </div>
