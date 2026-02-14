@@ -4,24 +4,6 @@
   "mode": "ai",
   "environment": "local",
   "timeout": 30000,
-  "credentials": {
-    "default": {
-      "email": "test@example.com",
-      "password": "Test@123456"
-    }
-  },
-  "auth": {
-    "loginUrl": "/auth/login",
-    "credentials": "default",
-    "fields": {
-      "email": "[data-testid=\"login-email-input\"]",
-      "password": "[data-testid=\"login-password-input\"]"
-    },
-    "submitButton": "[data-testid=\"login-submit-button\"]",
-    "successIndicator": {
-      "url": "/dashboard"
-    }
-  },
   "deduplication": {
     "enabled": true,
     "autoMerge": false
