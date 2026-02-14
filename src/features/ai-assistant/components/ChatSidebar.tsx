@@ -279,7 +279,7 @@ export function ChatSidebar({
                 <p className="text-sm font-mono whitespace-pre-wrap break-words">{message.content}</p>
               ) : (
                 <div className="text-sm font-mono break-words">
-                  <MarkdownContent content={message.content} className="prose prose-sm prose-invert max-w-none prose-p:my-1 prose-headings:my-2 prose-ul:my-1 prose-ol:my-1 prose-li:my-0.5 prose-pre:my-2 prose-code:text-xs prose-code:bg-cyan-500/20 prose-code:px-1 prose-code:py-0.5 prose-pre:bg-[#0a0a0f] prose-pre:border prose-pre:border-cyan-500/30 prose-pre:break-words prose-code:break-words" />
+                  <MarkdownContent content={message.content} variant="dark" className="prose prose-sm prose-invert max-w-none prose-p:my-1 prose-headings:my-2 prose-ul:my-1 prose-ol:my-1 prose-li:my-0.5 prose-pre:my-2 prose-code:text-xs prose-code:bg-cyan-500/20 prose-code:px-1 prose-code:py-0.5 prose-pre:bg-[#0a0a0f] prose-pre:border prose-pre:border-cyan-500/30 prose-pre:break-words prose-code:break-words" />
                 </div>
               )}
               {message.toolInvocations && message.toolInvocations.length > 0 && (

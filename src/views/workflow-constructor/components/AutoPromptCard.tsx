@@ -37,8 +37,9 @@ export function AutoPromptCard({ autoPrompt, className, isDraggable = false }: A
 
   const icon = autoPrompt.type === 'memory-board' ? '📋' : '🤖';
   const badgeText = autoPrompt.type === 'memory-board' ? 'Review' : 'Auto';
+  const isMemoryBoard = autoPrompt.type === 'memory-board';
   const tooltipText =
-    autoPrompt.type === 'memory-board'
+    isMemoryBoard
       ? 'Memory Board: Auto-attached when "With Review" is enabled. Provides handoff context between stages.'
       : 'Multi-Agent Chat: Auto-attached when "Include Multi-Agent Chat" is enabled. Facilitates coordination between agents.';
 
@@ -55,10 +56,12 @@ export function AutoPromptCard({ autoPrompt, className, isDraggable = false }: A
     >
       <Card
         className={cn(
-          'p-3 border-2 border-dashed relative',
-          'bg-gray-50 border-gray-300',
-          isDraggable && !isDragging && 'hover:shadow-md hover:border-gray-400',
-          isDragging && 'shadow-lg border-accent-primary',
+          'p-3 border-2 border-dashed relative bg-[#0a0a0f]/80',
+          isMemoryBoard ? 'border-cyan-500/35' : 'border-pink-500/35',
+          isDraggable && !isDragging && (isMemoryBoard
+            ? 'hover:border-cyan-400/60 hover:shadow-[0_0_15px_rgba(0,255,255,0.12)]'
+            : 'hover:border-pink-400/60 hover:shadow-[0_0_15px_rgba(255,0,102,0.12)]'),
+          isDragging && 'shadow-[0_0_20px_rgba(0,255,255,0.3)] border-cyan-400/80',
           className
         )}
         testId={`auto-prompt-${autoPrompt.id}`}
@@ -69,25 +72,30 @@ export function AutoPromptCard({ autoPrompt, className, isDraggable = false }: A
           </span>
           <div className="flex-1">
             <div className="flex items-center gap-2 mb-1">
-              <h4 className="text-sm font-medium text-gray-700">
+              <h4 className={cn('text-sm font-medium', isMemoryBoard ? 'text-cyan-300' : 'text-pink-300')}>
                 {autoPrompt.name}
               </h4>
-              <span className="px-2 py-0.5 text-xs font-medium bg-gray-200 text-gray-700 rounded">
+              <span className={cn(
+                'px-2 py-0.5 text-xs font-medium rounded border',
+                isMemoryBoard
+                  ? 'bg-cyan-500/15 text-cyan-300 border-cyan-500/30'
+                  : 'bg-pink-500/15 text-pink-300 border-pink-500/30'
+              )}>
                 {badgeText}
               </span>
             </div>
-            <p className="text-xs text-gray-600">
+            <p className={cn('text-xs', isMemoryBoard ? 'text-cyan-100/65' : 'text-cyan-100/55')}>
               {autoPrompt.type === 'memory-board'
                 ? 'Handoff memory board for stage review'
                 : 'Internal agents coordination chat'}
             </p>
           </div>
           {isDraggable ? (
-            <div className="text-gray-400 select-none" title="Drag to reorder">
+            <div className="text-cyan-400/60 select-none" title="Drag to reorder">
               ⋮⋮
             </div>
           ) : (
-            <div className="text-gray-400" title="Auto-attached">
+            <div className="text-cyan-400/60" title="Auto-attached">
               🔒
             </div>
           )}

@@ -227,11 +227,11 @@ export function MiniPromptEditorModal({
             </div>
             {viewOnly ? (
               <div className="w-full min-h-[200px] max-h-[400px] overflow-y-auto px-4 py-3 bg-[#050508]/50 border border-cyan-500/30">
-                <MarkdownContent content={content} />
+                <MarkdownContent content={content} variant="dark" />
               </div>
             ) : showPreview ? (
               <div className="w-full min-h-[200px] max-h-[400px] overflow-y-auto px-4 py-3 bg-[#050508]/50 border border-cyan-500/30">
-                <MarkdownContent content={content} />
+                <MarkdownContent content={content} variant="dark" />
               </div>
             ) : (
               <textarea
